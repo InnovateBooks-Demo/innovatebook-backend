@@ -43,3 +43,41 @@ memory/
 *.txt
 gitconfig.txt
 gitignore.txt
+
+
+
+# ===== Python =====
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# ===== Node / Frontend =====
+node_modules/
+build/
+dist/
+
+# ===== Environment files =====
+.env
+.env.*
+!.env.example
+
+# ===== Logs =====
+*.log
+*.out
+
+# ===== Test artifacts =====
+test_reports/
+*.xml
+
+# ===== Runtime / uploads =====
+uploads/
+memory/
+
+# ===== OS / Editor =====
+.DS_Store
+.vscode/
+.idea/
+
+
+# test outputs / reports
+test_reports/
