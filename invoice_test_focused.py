@@ -20,7 +20,8 @@ API_BASE = f"{BASE_URL}/api"
 
 # Test credentials
 TEST_EMAIL = "demo@innovatebooks.com"
-TEST_PASSWORD = "demo123"
+TEST_PASSWORD = os.getenv("TEST_PASSWORD", "Test1234")   # or demo123 as default
+
 
 class InvoiceTester:
     def __init__(self):

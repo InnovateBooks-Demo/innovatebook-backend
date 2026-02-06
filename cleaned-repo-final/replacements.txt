@@ -1,0 +1,2 @@
+Authorization: Bearer==>AUTH_HEADER
+REPLACE_WITH_JWT==>JWT_TOKEN

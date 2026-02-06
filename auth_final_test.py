@@ -19,7 +19,8 @@ RANDOM_ID = random.randint(1000, 9999)
 TEST_USER_DATA = {
     "full_name": "Test User",
     "email": f"testuser{RANDOM_ID}@example.com",
-    "password": "Test1234",
+    TEST_PASSWORD = os.getenv("TEST_PASSWORD", "Test1234")   # or demo123 as default
+,
     "mobile": f"987654{RANDOM_ID}",
     "mobile_country_code": "+91",
     "role": "cfo",

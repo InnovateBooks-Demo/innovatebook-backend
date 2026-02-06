@@ -14,7 +14,8 @@ BACKEND_URL = "https://saas-finint.preview.emergentagent.com/api"
 
 # Test credentials
 TEST_EMAIL = "demo@innovatebooks.com"
-TEST_PASSWORD = "demo123"
+TEST_PASSWORD = os.getenv("TEST_PASSWORD", "Test1234")   # or demo123 as default
+
 
 # Global token storage
 auth_token = None

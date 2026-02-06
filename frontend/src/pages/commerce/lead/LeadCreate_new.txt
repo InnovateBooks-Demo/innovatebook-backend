@@ -1,0 +1,265 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Save, X, Plus, Search, Building2, User, Package, DollarSign } from 'lucide-react';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+const LeadCreate = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [customers, setCustomers] = useState([]);
+  const [skus, setSKUs] = useState([]);
+  const [showCustomerModal, setShowCustomerModal] = useState(false);
+  const [showSKUModal, setShowSKUModal] = useState(false);
+  const [customerSearch, setCustomerSearch] = useState('');
+  const [skuSearch, setSKUSearch] = useState('');
+
+  // Form Data
+  const [formData, setFormData] = useState({
+    customer_id: '',
+    customer_name: '',
+    customer_industry: '',
+    contact_name: '',
+    contact_email: '',
+    contact_phone: '',
+    sku_id: '',
+    sku_description: '',
+    product_description: '',
+    quantity: '',
+    uom: 'PC',
+    delivery_date_required: '',
+    target_price: '',
+    currency: 'INR',
+    payment_terms: 'Net 30',
+    incoterms: 'EXW',
+    material_grade: '',
+    tolerances: '',
+    surface_finish: '',
+    coating: '',
+    certifications_required: []
+  });
+
+  // New Customer Form
+  const [newCustomer, setNewCustomer] = useState({
+    customer_code: '',
+    customer_name: '',
+    industry: 'Automotive',
+    region: 'North',
+    country: 'India',
+    contact_person: '',
+    contact_email: '',
+    contact_phone: '',
+    credit_rating: 'B',
+    payment_terms: 'Net 30',
+    billing_address: '',
+    shipping_address: ''
+  });
+
+  // New SKU Form
+  const [newSKU, setNewSKU] = useState({
+    sku_code: '',
+    sku_name: '',
+    product_family_id: '',
+    uom: 'PC',
+    specification: '',
+    drawing_number: '',
+    material_grade: '',
+    weight_per_unit: ''
+  });
+
+  useEffect(() => {
+    fetchMasterData();
+  }, []);
+
+  const fetchMasterData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const [customersRes, skusRes] = await Promise.all([
+        axios.get(\`\${BACKEND_URL}/api/manufacturing/masters/customers\`, {
+          headers: { Authorization: \`Bearer \${token}\` }
+        }),
+        axios.get(\`\${BACKEND_URL}/api/manufacturing/masters/skus\`, {
+          headers: { Authorization: \`Bearer \${token}\` }
+        })
+      ]);
+      setCustomers(customersRes.data.customers || []);
+      setSKUs(skusRes.data.skus || []);
+    } catch (error) {
+      console.error('Error fetching master data:', error);
+    }
+  };
+
+  const handleCustomerSelect = (customer) => {
+    setFormData({
+      ...formData,
+      customer_id: customer.id,
+      customer_name: customer.customer_name,
+      customer_industry: customer.industry,
+      contact_name: customer.contact_person || '',
+      contact_email: customer.contact_email || '',
+      contact_phone: customer.contact_phone || '',
+      payment_terms: customer.payment_terms || 'Net 30'
+    });
+    setCustomerSearch('');
+  };
+
+  const handleSKUSelect = (sku) => {
+    setFormData({
+      ...formData,
+      sku_id: sku.id,
+      sku_description: sku.sku_name,
+      product_description: sku.specification || sku.sku_name,
+      uom: sku.uom,
+      material_grade: sku.material_grade || ''
+    });
+    setSKUSearch('');
+  };
+
+  const handleCreateCustomer = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        \`\${BACKEND_URL}/api/manufacturing/masters/customers\`,
+        newCustomer,
+        { headers: { Authorization: \`Bearer \${token}\` } }
+      );
+      const createdCustomer = response.data.customer;
+      setCustomers([...customers, createdCustomer]);
+      handleCustomerSelect(createdCustomer);
+      setShowCustomerModal(false);
+      setNewCustomer({
+        customer_code: '',
+        customer_name: '',
+        industry: 'Automotive',
+        region: 'North',
+        country: 'India',
+        contact_person: '',
+        contact_email: '',
+        contact_phone: '',
+        credit_rating: 'B',
+        payment_terms: 'Net 30',
+        billing_address: '',
+        shipping_address: ''
+      });
+    } catch (error) {
+      console.error('Error creating customer:', error);
+      alert('Failed to create customer. Please try again.');
+    }
+  };
+
+  const handleCreateSKU = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        \`\${BACKEND_URL}/api/manufacturing/masters/skus\`,
+        newSKU,
+        { headers: { Authorization: \`Bearer \${token}\` } }
+      );
+      const createdSKU = response.data.sku;
+      setSKUs([...skus, createdSKU]);
+      handleSKUSelect(createdSKU);
+      setShowSKUModal(false);
+      setNewSKU({
+        sku_code: '',
+        sku_name: '',
+        product_family_id: '',
+        uom: 'PC',
+        specification: '',
+        drawing_number: '',
+        material_grade: '',
+        weight_per_unit: ''
+      });
+    } catch (error) {
+      console.error('Error creating SKU:', error);
+      alert('Failed to create SKU. Please try again.');
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.customer_id) {
+      alert('Please select a customer');
+      return;
+    }
+    if (!formData.product_description || !formData.quantity) {
+      alert('Please provide product description and quantity');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      
+      const payload = {
+        customer_id: formData.customer_id,
+        customer_name: formData.customer_name,
+        customer_industry: formData.customer_industry,
+        contact_name: formData.contact_name,
+        contact_email: formData.contact_email,
+        contact_phone: formData.contact_phone,
+        sku_id: formData.sku_id || null,
+        sku_description: formData.sku_description || formData.product_description,
+        product_description: formData.product_description,
+        quantity: parseInt(formData.quantity),
+        uom: formData.uom,
+        delivery_date_required: formData.delivery_date_required || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+        target_price: parseFloat(formData.target_price) || 0,
+        currency: formData.currency,
+        payment_terms: formData.payment_terms,
+        incoterms: formData.incoterms,
+        material_grade: formData.material_grade || '',
+        tolerances: formData.tolerances || '',
+        surface_finish: formData.surface_finish || '',
+        coating: formData.coating || '',
+        certifications_required: formData.certifications_required
+      };
+
+      const response = await axios.post(
+        \`\${BACKEND_URL}/api/manufacturing/leads\`,
+        payload,
+        { headers: { Authorization: \`Bearer \${token}\` } }
+      );
+
+      if (response.data.success) {
+        alert('Lead created successfully!');
+        navigate(\`/commerce/lead/\${response.data.lead.lead_id}\`);
+      }
+    } catch (error) {
+      console.error('Error creating lead:', error);
+      alert('Failed to create lead. Please check all fields and try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredCustomers = customers.filter(c =>
+    c.customer_name?.toLowerCase().includes(customerSearch.toLowerCase()) ||
+    c.customer_code?.toLowerCase().includes(customerSearch.toLowerCase())
+  );
+
+  const filteredSKUs = skus.filter(s =>
+    s.sku_name?.toLowerCase().includes(skuSearch.toLowerCase()) ||
+    s.sku_code?.toLowerCase().includes(skuSearch.toLowerCase())
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <button 
+            onClick={() => navigate('/commerce/lead')} 
+            className="flex items-center gap-2 text-[#3A4E63] hover:text-[#022E75] font-semibold mb-4 transition-all"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            Back to Leads
+          </button>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent mb-2" style={{ fontFamily: 'Poppins' }}>
+            Create New Lead
+          </h1>
+          <p className="text-[#3A4E63] font-medium text-lg">Capture manufacturing opportunity details</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Customer Section - continuing in next message due to length... */}

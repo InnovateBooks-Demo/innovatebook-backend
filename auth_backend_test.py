@@ -17,7 +17,8 @@ BACKEND_URL = "https://saas-finint.preview.emergentagent.com/api"
 TEST_USER_DATA = {
     "full_name": "Test User",
     "email": "test@example.com",
-    "password": "Test1234",
+    TEST_PASSWORD = os.getenv("TEST_PASSWORD", "Test1234")   # or demo123 as default
+,
     "mobile": "9876543210",
     "mobile_country_code": "+91",
     "role": "cfo",
