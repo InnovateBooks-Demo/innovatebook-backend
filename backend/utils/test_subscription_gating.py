@@ -122,7 +122,7 @@ async def main():
     logger.info("")
     logger.info(f"2. Try to create customer (should get 402 Payment Required):")
     logger.info(f"   curl -X POST http://localhost:8001/api/finance/customers \\")
-    logger.info(f"     -H 'Authorization: <AUTH_HEADER>' \\")
+    logger.info(f"     -H logger.info(f"     -H '<AUTH_HEADER>' \\")
     logger.info(f"     -H 'Content-Type: application/json' \\")
     logger.info(f"     -d '{{\"name\":\"Test\",\"email\":\"test@test.com\"}}'")
     
