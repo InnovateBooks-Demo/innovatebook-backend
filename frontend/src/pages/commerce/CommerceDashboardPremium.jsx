@@ -69,7 +69,7 @@ const CommerceDashboardPremium = () => {
       icon: UserPlus,
       color: "blue",
       gradient: "from-[#0147CC] to-blue-700",
-      borderColor: "border-blue-200",
+      borderColor: "border-[rgba(3,63,153,0.25)]",
       bgGradient: "from-[#3A4E63]/10",
     },
     {

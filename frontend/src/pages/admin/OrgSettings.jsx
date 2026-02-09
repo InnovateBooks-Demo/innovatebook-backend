@@ -292,7 +292,7 @@ const OrgSettings = () => {
                     <Building2 className="h-10 w-10 text-gray-400" />
                   )}
                 </div>
-                <button className="px-4 py-2 text-sm font-medium text-[#3A4E63] border border-[#3A4E63] rounded-lg hover:bg-blue-50">
+                <button className="px-4 py-2 text-sm font-medium text-[#3A4E63] border border-[#3A4E63] rounded-lg hover:bg-[rgba(3,63,153,0.08)]">
                   Upload Logo
                 </button>
               </div>

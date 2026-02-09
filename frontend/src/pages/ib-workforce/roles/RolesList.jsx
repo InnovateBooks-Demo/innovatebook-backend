@@ -84,7 +84,7 @@ const RolesList = () => {
       label: "Operational",
       value: roles.filter((r) => r.role_category === "operational").length,
       icon: Users,
-      color: "text-blue-600",
+      color: "text-[#033F99]",
     },
     {
       label: "Admin",

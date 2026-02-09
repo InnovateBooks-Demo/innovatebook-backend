@@ -348,7 +348,7 @@ const WorkflowBuilder = () => {
                     onClick={() => fetchWorkflowDetails(workflow.workflow_id)}
                     className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                       selectedWorkflow?.workflow_id === workflow.workflow_id
-                        ? "border-[#3A4E63] bg-blue-50"
+                        ? "border-[#3A4E63] bg-[rgba(3,63,153,0.08)]"
                         : "hover:bg-gray-50"
                     }`}
                   >

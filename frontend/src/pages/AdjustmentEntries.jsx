@@ -214,7 +214,7 @@ const AdjustmentEntries = () => {
                 {entries.length}
               </p>
             </div>
-            <FileText className="h-8 w-8 text-blue-600" />
+            <FileText className="h-8 w-8 text-[#033F99]" />
           </div>
         </Card>
 
@@ -411,7 +411,7 @@ const AdjustmentEntries = () => {
                           onClick={() => handleViewEntry(entry.id)}
                           variant="ghost"
                           size="sm"
-                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                          className="text-[#033F99] hover:text-blue-800 hover:bg-[rgba(3,63,153,0.08)]"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>

@@ -353,7 +353,7 @@ const CashFlowActualsElite = () => {
               Cash Flow Statement
             </h2>
             <div className="space-y-4">
-              <div className="p-6 bg-blue-50 rounded-2xl border-2 border-blue-200">
+              <div className="p-6 bg-[rgba(3,63,153,0.08)] rounded-2xl border-2 border-[rgba(3,63,153,0.25)]">
                 <p className="text-sm font-bold text-blue-900 mb-2">
                   Opening Balance
                 </p>

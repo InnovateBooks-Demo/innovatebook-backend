@@ -504,7 +504,7 @@ const CashFlowActualsPro = () => {
                   {transactions.map((txn, index) => (
                     <tr
                       key={`item-${index}`}
-                      className={`border-b border-gray-100 hover:bg-blue-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
+                      className={`border-b border-gray-100 hover:bg-[rgba(3,63,153,0.08)] transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
                     >
                       <td className="px-6 py-4">
                         <span
@@ -620,7 +620,7 @@ const CashFlowActualsPro = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="flex justify-between items-center py-3 mt-3 bg-blue-50 px-4 rounded">
+                  <div className="flex justify-between items-center py-3 mt-3 bg-[rgba(3,63,153,0.08)] px-4 rounded">
                     <span
                       className="font-bold text-gray-900"
                       style={{

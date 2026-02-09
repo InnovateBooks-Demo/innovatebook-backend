@@ -365,7 +365,7 @@ const Invoices = () => {
                       onClick={(e) => handleEdit(invoice, e)}
                       className="h-8 w-8 p-0"
                     >
-                      <Edit className="h-4 w-4 text-blue-600" />
+                      <Edit className="h-4 w-4 text-[#033F99]" />
                     </Button>
                     <Button
                       variant="ghost"

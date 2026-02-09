@@ -192,7 +192,7 @@ const CashFlowVariance = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-3 gap-6">
-                  <div className="text-center p-6 bg-blue-50 rounded-lg">
+                  <div className="text-center p-6 bg-[rgba(3,63,153,0.08)] rounded-lg">
                     <p className="text-sm text-gray-600 mb-2">
                       Budgeted Net Flow
                     </p>
@@ -443,7 +443,7 @@ const CashFlowVariance = () => {
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
-                            className="bg-blue-600 h-2 rounded-full"
+                            className="text-blue-700 h-2 rounded-full"
                             style={{ width: `${variance.outflow_accuracy}%` }}
                           ></div>
                         </div>

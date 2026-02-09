@@ -169,7 +169,7 @@ const GeneralLedger = () => {
                   <td className="px-4 py-3 text-xs text-gray-500 font-mono">
                     {txn.entry_id?.slice(0, 8)}
                   </td>
-                  <td className="px-4 py-3 text-xs text-right font-semibold text-blue-600">
+                  <td className="px-4 py-3 text-xs text-right font-semibold text-[#033F99]">
                     {txn.debit > 0 ? formatCurrency(txn.debit) : "-"}
                   </td>
                   <td className="px-4 py-3 text-xs text-right font-semibold text-green-600">

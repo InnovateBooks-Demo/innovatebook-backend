@@ -185,7 +185,7 @@ const GrantDetail = () => {
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
           <p className="text-sm text-gray-500 mb-1">Exercised</p>
-          <p className="text-2xl font-bold text-blue-600">
+          <p className="text-2xl font-bold text-[#033F99]">
             {formatNumber(grant.exercised_options)}
           </p>
         </div>
@@ -284,9 +284,9 @@ const GrantDetail = () => {
               </div>
 
               {exerciseAmount && (
-                <div className="p-4 bg-blue-50 rounded-lg">
+                <div className="p-4 bg-[rgba(3,63,153,0.08)] rounded-lg">
                   <p className="text-sm text-blue-700">Exercise Cost</p>
-                  <p className="text-xl font-bold text-blue-600">
+                  <p className="text-xl font-bold text-[#033F99]">
                     {formatCurrency(exerciseValue)}
                   </p>
                 </div>

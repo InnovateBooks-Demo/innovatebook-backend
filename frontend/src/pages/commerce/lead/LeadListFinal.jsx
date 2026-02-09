@@ -113,7 +113,7 @@ const LeadList = () => {
         <p className="text-slate-600 mb-8">
           Powered by <span className="text-orange-600 font-semibold">Zoho</span>{" "}
           + <span className="text-orange-500 font-semibold">HubSpot</span> +{" "}
-          <span className="text-blue-600 font-semibold">Salesforce</span>
+          <span className="text-[#033F99] font-semibold">Salesforce</span>
         </p>
 
         {/* Quick Stats */}

@@ -358,8 +358,8 @@ const InventoryPage = () => {
                   1 item low stock
                 </span>
               </div>
-              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 flex items-center gap-2">
-                <RefreshCw className="h-5 w-5 text-blue-600" />
+              <div className="bg-[rgba(3,63,153,0.08)] p-3 rounded-lg border border-[rgba(3,63,153,0.25)] flex items-center gap-2">
+                <RefreshCw className="h-5 w-5 text-[#033F99]" />
                 <span className="text-sm text-blue-700 font-medium">
                   2 reorders suggested
                 </span>

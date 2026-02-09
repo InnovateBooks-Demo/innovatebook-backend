@@ -280,7 +280,7 @@ const IBWorkforceDashboard = () => {
                   person: "Priya Sharma",
                   time: "4 hours ago",
                   icon: CheckCircle,
-                  color: "text-blue-600",
+                  color: "text-[#033F99]",
                 },
                 {
                   action: "Role assigned",

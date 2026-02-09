@@ -295,7 +295,7 @@ const LeadCreate = () => {
                     <span className="text-orange-600 font-medium">Zoho</span> +{" "}
                     <span className="text-orange-500 font-medium">HubSpot</span>{" "}
                     +{" "}
-                    <span className="text-blue-600 font-medium">
+                    <span className="text-[#033F99] font-medium">
                       Salesforce
                     </span>{" "}
                     Fields
@@ -326,7 +326,7 @@ const LeadCreate = () => {
                     tab.platform === "HubSpot"
                       ? "bg-orange-100 text-orange-600"
                       : tab.platform === "Salesforce"
-                        ? "bg-blue-100 text-blue-600"
+                        ? "bg-blue-100 text-[#033F99]"
                         : "bg-orange-100 text-orange-700"
                   }`}
                 >
@@ -839,7 +839,7 @@ const LeadCreate = () => {
               <div className="p-4 space-y-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-2">
-                    <Linkedin className="h-4 w-4 text-blue-600" />
+                    <Linkedin className="h-4 w-4 text-[#033F99]" />
                     LinkedIn URL
                   </label>
                   <input
@@ -887,7 +887,7 @@ const LeadCreate = () => {
           {activeTab === "campaign" && (
             <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
               <div className="px-4 py-3 bg-white border-b border-gray-200 flex items-center gap-2">
-                <span className="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-0.5 rounded">
+                <span className="text-xs font-semibold text-[#033F99] bg-blue-100 px-2 py-0.5 rounded">
                   Salesforce
                 </span>
                 <h2 className="text-sm font-semibold text-gray-900">
@@ -947,7 +947,7 @@ const LeadCreate = () => {
           {activeTab === "deal" && (
             <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
               <div className="px-4 py-3 bg-white border-b border-gray-200 flex items-center gap-2">
-                <span className="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-0.5 rounded">
+                <span className="text-xs font-semibold text-[#033F99] bg-blue-100 px-2 py-0.5 rounded">
                   Salesforce
                 </span>
                 <h2 className="text-sm font-semibold text-gray-900">

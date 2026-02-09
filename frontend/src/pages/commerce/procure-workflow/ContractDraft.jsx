@@ -192,7 +192,7 @@ const ProcureContractDraft = () => {
                 className={`w-14 h-14 rounded-xl flex items-center justify-center ${isSigned ? "bg-green-100" : "bg-blue-100"}`}
               >
                 <FileText
-                  className={`h-7 w-7 ${isSigned ? "text-green-600" : "text-blue-600"}`}
+                  className={`h-7 w-7 ${isSigned ? "text-green-600" : "text-[#033F99]"}`}
                 />
               </div>
               <div>

@@ -147,8 +147,8 @@ const GovernanceEngineDashboard = () => {
       blue: {
         bg: "bg-blue-100",
         text: "text-blue-700",
-        icon: "text-blue-600",
-        border: "border-blue-200",
+        icon: "text-[#033F99]",
+        border: "border-[rgba(3,63,153,0.25)]",
       },
       purple: {
         bg: "bg-purple-100",

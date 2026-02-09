@@ -312,7 +312,7 @@ const CreateInvoice = () => {
                     </SelectContent>
                   </Select>
                   {selectedCategory && (
-                    <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
+                    <div className="mt-2 p-2 bg-[rgba(3,63,153,0.08)] rounded border border-[rgba(3,63,153,0.25)]">
                       <p className="text-xs text-blue-900">
                         <strong>COA:</strong> {selectedCategory.coa_account}
                       </p>
@@ -676,7 +676,7 @@ const CreateInvoice = () => {
               {/* Calculation Summary */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Calculator className="h-5 w-5 text-blue-600" />
+                  <Calculator className="h-5 w-5 text-[#033F99]" />
                   <h3
                     className="text-lg font-semibold text-gray-900"
                     style={{
@@ -742,7 +742,7 @@ const CreateInvoice = () => {
                     </span>
                   </div>
 
-                  <div className="flex justify-between pt-2 bg-blue-50 -mx-6 px-6 py-3 rounded">
+                  <div className="flex justify-between pt-2 bg-[rgba(3,63,153,0.08)] -mx-6 px-6 py-3 rounded">
                     <span className="text-blue-900 font-bold">
                       Net Receivable
                     </span>
@@ -759,7 +759,7 @@ const CreateInvoice = () => {
 
               {/* Accounting Info */}
               {selectedCategory && (
-                <div className="bg-gradient-to-br from-blue-50 to-[#EBF3FC] rounded-lg shadow-sm border border-blue-200 p-6">
+                <div className="bg-gradient-to-br from-blue-50 to-[#EBF3FC] rounded-lg shadow-sm border border-[rgba(3,63,153,0.25)] p-6">
                   <h3
                     className="text-sm font-semibold text-blue-900 mb-3"
                     style={{

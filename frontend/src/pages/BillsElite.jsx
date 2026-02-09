@@ -229,7 +229,7 @@ const BillsElite = () => {
                       >
                         <Eye className="h-4 w-4 text-[#3A4E63]" />
                       </button>
-                      <button className="p-2 hover:bg-blue-50 rounded-lg transition-all">
+                      <button className="p-2 hover:bg-[rgba(3,63,153,0.08)] rounded-lg transition-all">
                         <Edit className="h-4 w-4 text-blue-500" />
                       </button>
                       <button className="p-2 hover:bg-red-50 rounded-lg transition-all">

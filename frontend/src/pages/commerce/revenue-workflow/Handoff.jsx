@@ -154,14 +154,16 @@ const RevenueHandoff = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Operations Handoff */}
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-6 py-4 bg-blue-50 border-b border-blue-200">
+            <div className="px-6 py-4 bg-[rgba(3,63,153,0.08)] border-b border-[rgba(3,63,153,0.25)]">
               <div className="flex items-center gap-2">
-                <Truck className="h-5 w-5 text-blue-600" />
+                <Truck className="h-5 w-5 text-[#033F99]" />
                 <h2 className="text-lg font-medium text-blue-900">
                   To IB Operations
                 </h2>
               </div>
-              <p className="text-xs text-blue-600 mt-1">Scope, SLA, Delivery</p>
+              <p className="text-xs text-[#033F99] mt-1">
+                Scope, SLA, Delivery
+              </p>
             </div>
             <div className="p-6 space-y-4">
               <div>

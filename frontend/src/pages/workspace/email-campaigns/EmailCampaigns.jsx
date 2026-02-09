@@ -403,7 +403,7 @@ const EmailCampaigns = () => {
                     onClick={() => fetchCampaignDetails(campaign.campaign_id)}
                     className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                       selectedCampaign?.campaign_id === campaign.campaign_id
-                        ? "border-[#3A4E63] bg-blue-50"
+                        ? "border-[#3A4E63] bg-[rgba(3,63,153,0.08)]"
                         : "hover:bg-gray-50"
                     }`}
                   >
@@ -503,9 +503,9 @@ const EmailCampaigns = () => {
                       </p>
                       <p className="text-xs text-gray-500">Sent</p>
                     </div>
-                    <div className="p-3 bg-blue-50 rounded-lg text-center">
-                      <Eye className="h-5 w-5 mx-auto mb-1 text-blue-600" />
-                      <p className="text-xl font-semibold text-blue-600">
+                    <div className="p-3 bg-[rgba(3,63,153,0.08)] rounded-lg text-center">
+                      <Eye className="h-5 w-5 mx-auto mb-1 text-[#033F99]" />
+                      <p className="text-xl font-semibold text-[#033F99]">
                         {selectedCampaign.stats?.opened || 0}
                       </p>
                       <p className="text-xs text-gray-500">Opened</p>

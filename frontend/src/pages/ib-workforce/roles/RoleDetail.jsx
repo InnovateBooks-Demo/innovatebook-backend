@@ -188,7 +188,7 @@ const RoleDetail = () => {
                 <div className="bg-white rounded-xl border border-gray-200 p-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                      <Users className="h-5 w-5 text-blue-600" />
+                      <Users className="h-5 w-5 text-[#033F99]" />
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-gray-900">
@@ -311,7 +311,7 @@ const RoleDetail = () => {
                     className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">
+                      <div className="w-8 h-8 rounded-full bg-[rgba(3,63,153,0.08)]0 flex items-center justify-center text-white text-sm font-medium">
                         U
                       </div>
                       <div>

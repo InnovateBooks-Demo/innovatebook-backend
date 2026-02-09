@@ -43,7 +43,7 @@ export const OfflineStatusIndicator = ({ className = "" }) => {
     if (!isOnline) return "bg-red-500";
     if (hasConflicts) return "bg-yellow-500";
     if (hasPending) return "bg-orange-500";
-    if (syncStatus === "syncing") return "bg-blue-500";
+    if (syncStatus === "syncing") return "bg-[rgba(3,63,153,0.08)]0";
     return "bg-green-500";
   };
 
@@ -176,7 +176,7 @@ export const ConflictResolutionModal = ({ onClose }) => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="bg-blue-50 rounded-lg p-3">
+                  <div className="bg-[rgba(3,63,153,0.08)] rounded-lg p-3">
                     <p className="text-xs font-medium text-blue-700 mb-1">
                       Your Changes
                     </p>

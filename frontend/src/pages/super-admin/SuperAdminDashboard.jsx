@@ -134,7 +134,7 @@ const SuperAdminDashboard = () => {
       title: "Total Organizations",
       value: stats?.stats?.total_organizations || 0,
       icon: Building2,
-      color: "bg-blue-500",
+      color: "bg-[rgba(3,63,153,0.08)]0",
       change: `${stats?.stats?.active_organizations || 0} active`,
     },
     {
@@ -253,15 +253,15 @@ const SuperAdminDashboard = () => {
             <div className="space-y-3">
               <Link
                 to="/super-admin/organizations"
-                className="flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors group"
+                className="flex items-center justify-between p-4 bg-[rgba(3,63,153,0.08)] hover:bg-blue-100 rounded-xl transition-colors group"
               >
                 <div className="flex items-center gap-3">
-                  <Building2 className="w-5 h-5 text-blue-600" />
+                  <Building2 className="w-5 h-5 text-[#033F99]" />
                   <span className="font-medium text-slate-900">
                     Manage Organizations
                   </span>
                 </div>
-                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-blue-600 transition-colors" />
+                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-[#033F99] transition-colors" />
               </Link>
 
               <Link
@@ -307,7 +307,7 @@ const SuperAdminDashboard = () => {
                           plan === "enterprise"
                             ? "bg-purple-500"
                             : plan === "professional"
-                              ? "bg-blue-500"
+                              ? "bg-[rgba(3,63,153,0.08)]0"
                               : plan === "basic"
                                 ? "bg-green-500"
                                 : "bg-slate-400"
@@ -391,7 +391,7 @@ const SuperAdminDashboard = () => {
                 >
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-100 rounded-lg">
-                      <Building2 className="w-4 h-4 text-blue-600" />
+                      <Building2 className="w-4 h-4 text-[#033F99]" />
                     </div>
                     <div>
                       <p className="font-medium text-slate-900">

@@ -165,7 +165,7 @@ const CollectCreate = () => {
             </div>
           </div>
 
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mt-6 p-4 bg-[rgba(3,63,153,0.08)] border border-[rgba(3,63,153,0.25)] rounded-lg">
             <p className="text-sm text-blue-800">
               <strong>Note:</strong> Collection will be created with 'Pending'
               status. You can record payments and update status from the

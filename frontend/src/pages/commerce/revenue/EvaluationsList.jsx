@@ -69,8 +69,8 @@ const RevenueEvaluationsList = () => {
         dot: "bg-amber-500",
       },
       in_progress: {
-        color: "bg-blue-50 text-blue-700 ring-blue-600/20",
-        dot: "bg-blue-500",
+        color: "bg-[rgba(3,63,153,0.08)] text-blue-700 ring-blue-600/20",
+        dot: "bg-[rgba(3,63,153,0.08)]0",
       },
       completed: {
         color: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
@@ -141,8 +141,8 @@ const RevenueEvaluationsList = () => {
                   {evaluations.length}
                 </p>
               </div>
-              <div className="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
-                <ClipboardCheck className="h-6 w-6 text-blue-600" />
+              <div className="h-12 w-12 rounded-lg bg-[rgba(3,63,153,0.08)] flex items-center justify-center">
+                <ClipboardCheck className="h-6 w-6 text-[#033F99]" />
               </div>
             </div>
           </div>

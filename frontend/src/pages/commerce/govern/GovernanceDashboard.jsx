@@ -277,7 +277,7 @@ const GovernanceDashboard = () => {
                 className="flex items-center gap-3 p-3 rounded-lg bg-gray-50"
               >
                 <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <Shield className="h-4 w-4 text-blue-600" />
+                  <Shield className="h-4 w-4 text-[#033F99]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">

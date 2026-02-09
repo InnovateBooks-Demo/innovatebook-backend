@@ -319,7 +319,7 @@ const WorkspaceDashboard = () => {
             className="bg-white rounded-xl p-4 border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-[rgba(3,63,153,0.08)]0 rounded-lg flex items-center justify-center">
                 <Hash className="h-5 w-5 text-white" />
               </div>
               <div>

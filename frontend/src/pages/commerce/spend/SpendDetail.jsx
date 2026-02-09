@@ -227,7 +227,7 @@ const SpendDetail = () => {
       </div>
 
       {spend.expense_status === "Draft" && (
-        <Card className="p-6 bg-blue-50 border-blue-200">
+        <Card className="p-6 bg-[rgba(3,63,153,0.08)] border-[rgba(3,63,153,0.25)]">
           <h3 className="text-lg font-semibold text-slate-900 mb-4">
             Status Actions
           </h3>

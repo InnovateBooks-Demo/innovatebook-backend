@@ -180,7 +180,7 @@ const PaymentsNewPro = () => {
               {filteredPayments.map((payment, index) => (
                 <tr
                   key={payment.id}
-                  className={`border-b border-gray-100 hover:bg-blue-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
+                  className={`border-b border-gray-100 hover:bg-[rgba(3,63,153,0.08)] transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
@@ -191,7 +191,7 @@ const PaymentsNewPro = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="font-mono text-blue-600 font-semibold">
+                    <span className="font-mono text-[#033F99] font-semibold">
                       {payment.reference}
                     </span>
                   </td>

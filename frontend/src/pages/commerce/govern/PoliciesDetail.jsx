@@ -159,7 +159,7 @@ const PoliciesDetail = () => {
                     <p className="text-sm font-medium text-gray-500 mb-1">
                       Policy Type
                     </p>
-                    <span className="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium capitalize">
+                    <span className="inline-flex items-center px-3 py-1 bg-[rgba(3,63,153,0.08)] text-blue-700 rounded-lg text-sm font-medium capitalize">
                       <Shield className="h-4 w-4 mr-2" />
                       {policy.policy_type}
                     </span>

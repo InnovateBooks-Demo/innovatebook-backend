@@ -222,7 +222,7 @@ const CashFlowActuals = () => {
                       ({formatCurrency(summary?.actual_outflow)})
                     </span>
                   </div>
-                  <div className="flex justify-between py-3 bg-blue-50 rounded-lg px-4">
+                  <div className="flex justify-between py-3 bg-[rgba(3,63,153,0.08)] rounded-lg px-4">
                     <span
                       className="font-semibold"
                       style={{ color: "#3A4E63" }}

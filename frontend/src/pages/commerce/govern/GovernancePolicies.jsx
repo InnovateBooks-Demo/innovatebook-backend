@@ -90,7 +90,7 @@ const GovernancePolicies = () => {
               </p>
             </div>
             <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-              <Shield className="w-6 h-6 text-blue-600" />
+              <Shield className="w-6 h-6 text-[#033F99]" />
             </div>
           </div>
         </div>

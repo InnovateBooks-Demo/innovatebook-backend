@@ -324,11 +324,11 @@ const CompliancePage = () => {
                           ₹{(data.itcSummary.claimed / 100000).toFixed(1)}L
                         </p>
                       </div>
-                      <div className="bg-blue-50 p-3 rounded-lg">
+                      <div className="bg-[rgba(3,63,153,0.08)] p-3 rounded-lg">
                         <p className="text-sm text-slate-600">
                           Eligible as per 2B
                         </p>
-                        <p className="text-xl font-bold text-blue-600">
+                        <p className="text-xl font-bold text-[#033F99]">
                           ₹{(data.itcSummary.eligible / 100000).toFixed(1)}L
                         </p>
                       </div>

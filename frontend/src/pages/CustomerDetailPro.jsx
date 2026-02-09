@@ -228,8 +228,8 @@ const CustomerDetailPro = () => {
                 <span className="text-sm font-medium text-gray-600">
                   Total Invoices
                 </span>
-                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <FileText className="h-4 w-4 text-blue-600" />
+                <div className="w-8 h-8 rounded-lg bg-[rgba(3,63,153,0.08)] flex items-center justify-center">
+                  <FileText className="h-4 w-4 text-[#033F99]" />
                 </div>
               </div>
               <p className="text-2xl font-bold text-gray-900">
@@ -303,7 +303,7 @@ const CustomerDetailPro = () => {
                 onClick={() => setActiveTab(tab)}
                 className={`py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab
-                    ? "border-blue-600 text-blue-600"
+                    ? "border-blue-600 text-[#033F99]"
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
                 style={

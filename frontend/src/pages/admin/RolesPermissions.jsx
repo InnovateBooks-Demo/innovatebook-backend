@@ -218,7 +218,7 @@ const RolesPermissions = () => {
                   onClick={() => setSelectedRole(role)}
                   className={`px-4 py-3 cursor-pointer hover:bg-gray-50 ${
                     selectedRole?.role_id === role.role_id
-                      ? "bg-blue-50 border-l-2 border-l-[#3A4E63]"
+                      ? "bg-[rgba(3,63,153,0.08)] border-l-2 border-l-[#3A4E63]"
                       : ""
                   }`}
                 >

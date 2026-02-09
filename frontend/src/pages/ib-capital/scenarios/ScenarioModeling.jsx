@@ -344,7 +344,7 @@ const ScenarioModeling = () => {
                   onClick={() => fetchScenarioDetails(scenario.scenario_id)}
                   className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                     selectedScenario?.scenario_id === scenario.scenario_id
-                      ? "border-[#3A4E63] bg-blue-50"
+                      ? "border-[#3A4E63] bg-[rgba(3,63,153,0.08)]"
                       : "hover:bg-gray-50"
                   }`}
                 >
@@ -526,7 +526,7 @@ const ScenarioModeling = () => {
 
                   {/* Summary */}
                   <div className="grid grid-cols-4 gap-4 mb-6">
-                    <div className="p-3 bg-blue-50 rounded-lg">
+                    <div className="p-3 bg-[rgba(3,63,153,0.08)] rounded-lg">
                       <p className="text-sm text-gray-500">Total Rounds</p>
                       <p className="text-xl font-semibold">
                         {analysisResult.summary?.total_rounds}

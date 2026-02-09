@@ -178,7 +178,7 @@ const ReturnDetail = () => {
                 <tr key={ent.owner_id} className="border-b border-gray-50">
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-[#033F99] font-semibold text-sm">
                         {ent.owner_name?.charAt(0)}
                       </div>
                       <span className="font-medium text-gray-900">

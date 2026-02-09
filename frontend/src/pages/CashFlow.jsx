@@ -144,7 +144,7 @@ const CashFlow = () => {
                 {formatCurrency(summary?.net_actual_flow)}
               </span>
             </div>
-            <div className="flex justify-between items-center py-3 bg-blue-50 rounded-lg px-4 mt-4">
+            <div className="flex justify-between items-center py-3 bg-[rgba(3,63,153,0.08)] rounded-lg px-4 mt-4">
               <span className="font-semibold" style={{ color: "#3A4E63" }}>
                 Projected Closing Balance
               </span>

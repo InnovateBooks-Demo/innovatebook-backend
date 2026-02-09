@@ -6627,7 +6627,7 @@
 //     return (
 //       <div className="min-h-screen flex items-center justify-center bg-[#f4f6f8]">
 //         <div className="bg-white border border-gray-200 rounded-2xl shadow-sm px-6 py-5 flex items-center gap-3">
-//           <div className="h-3 w-3 rounded-full bg-blue-600 animate-pulse" />
+//           <div className="h-3 w-3 rounded-full text-blue-700 animate-pulse" />
 //           <p className="text-gray-700 font-medium">Loading customers…</p>
 //         </div>
 //       </div>
@@ -6655,7 +6655,7 @@
 //             <div className="flex-1">
 //               <div className="flex items-start justify-between gap-4">
 //                 <div className="text-left">
-//                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold">
+//                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[rgba(3,63,153,0.25)] bg-[rgba(3,63,153,0.08)] text-blue-700 text-xs font-semibold">
 //                     <ShieldCheck className="h-4 w-4" />
 //                     Finance Workflow
 //                   </div>
@@ -7608,7 +7608,7 @@
 //               <div className="flex flex-col gap-4">
 //                 <div className="flex items-start justify-between gap-6">
 //                   <div>
-//                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold">
+//                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[rgba(3,63,153,0.25)] bg-[rgba(3,63,153,0.08)] text-blue-700 text-xs font-semibold">
 //                       <ShieldCheck className="h-4 w-4" />
 //                       Finance Revenue Workflow
 //                     </div>
@@ -7648,7 +7648,7 @@
 //                 {/* Current user (customer) banner */}
 //                 {/* <div className="rounded-2xl border border-gray-200 bg-gradient-to-r from-white to-blue-50 p-4 flex items-center justify-between gap-4">
 //                   <div className="flex items-center gap-3 min-w-0">
-//                     <div className="h-10 w-10 rounded-2xl bg-blue-600/10 flex items-center justify-center">
+//                     <div className="h-10 w-10 rounded-2xl text-blue-700/10 flex items-center justify-center">
 //                       <UserCircle2 className="h-5 w-5 text-blue-700" />
 //                     </div>
 //                     <div className="min-w-0">
@@ -7874,7 +7874,7 @@
 //                       key={idx}
 //                       className={`rounded-2xl border overflow-hidden ${
 //                         isPrimary
-//                           ? "border-blue-200 bg-blue-50/40"
+//                           ? "border-[rgba(3,63,153,0.25)] bg-[rgba(3,63,153,0.08)]/40"
 //                           : "border-gray-200 bg-white"
 //                       }`}
 //                     >
@@ -7988,7 +7988,7 @@
 //                   );
 //                 })}
 
-//                 <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900 flex items-start gap-3">
+//                 <div className="rounded-xl border border-[rgba(3,63,153,0.25)] bg-[rgba(3,63,153,0.08)] p-4 text-sm text-blue-900 flex items-start gap-3">
 //                   <ShieldCheck className="h-5 w-5 text-blue-700 mt-0.5" />
 //                   <div>
 //                     Only the <span className="font-semibold">Primary</span>{" "}
@@ -8035,7 +8035,7 @@
 //                       key={idx}
 //                       className={`rounded-2xl border overflow-hidden ${
 //                         isPrimary
-//                           ? "border-blue-200 bg-blue-50/30"
+//                           ? "border-[rgba(3,63,153,0.25)] bg-[rgba(3,63,153,0.08)]/30"
 //                           : "border-gray-200 bg-white"
 //                       }`}
 //                     >
@@ -8043,7 +8043,7 @@
 //                       <div
 //                         className={`px-6 py-4 flex items-center justify-between gap-4 ${
 //                           isPrimary
-//                             ? "border-b border-blue-200/70"
+//                             ? "border-b border-[rgba(3,63,153,0.25)]/70"
 //                             : "border-b border-gray-200"
 //                         }`}
 //                       >
@@ -8175,7 +8175,7 @@
 //                 })}
 
 //                 {/* Footer note */}
-//                 <div className="rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 flex items-start gap-3">
+//                 <div className="rounded-2xl border border-[rgba(3,63,153,0.25)] bg-[rgba(3,63,153,0.08)] px-5 py-4 flex items-start gap-3">
 //                   <ShieldCheck className="h-5 w-5 text-blue-700 mt-0.5" />
 //                   <p className="text-sm text-blue-900">
 //                     <span className="font-semibold">Only the Primary</span>{" "}
@@ -8694,7 +8694,7 @@ const RevenueLeadCreate = () => {
               <div className="flex flex-col gap-4">
                 <div className="flex items-start justify-between gap-6">
                   <div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[rgba(3,63,153,0.25)] bg-[rgba(3,63,153,0.08)] text-blue-700 text-xs font-semibold">
                       <ShieldCheck className="h-4 w-4" />
                       Finance Revenue Workflow
                     </div>
@@ -8944,7 +8944,7 @@ const RevenueLeadCreate = () => {
                       key={idx}
                       className={`rounded-2xl border overflow-hidden ${
                         isPrimary
-                          ? "border-blue-200 bg-blue-50/30"
+                          ? "border-[rgba(3,63,153,0.25)] bg-[rgba(3,63,153,0.08)]/30"
                           : "border-gray-200 bg-white"
                       }`}
                     >
@@ -8952,7 +8952,7 @@ const RevenueLeadCreate = () => {
                       <div
                         className={`px-6 py-4 flex items-center justify-between gap-4 ${
                           isPrimary
-                            ? "border-b border-blue-200/70"
+                            ? "border-b border-[rgba(3,63,153,0.25)]/70"
                             : "border-b border-gray-200"
                         }`}
                       >
@@ -9079,7 +9079,7 @@ const RevenueLeadCreate = () => {
                   );
                 })}
 
-                <div className="rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 flex items-start gap-3">
+                <div className="rounded-2xl border border-[rgba(3,63,153,0.25)] bg-[rgba(3,63,153,0.08)] px-5 py-4 flex items-start gap-3">
                   <ShieldCheck className="h-5 w-5 text-blue-700 mt-0.5" />
                   <p className="text-sm text-blue-900">
                     <span className="font-semibold">Only the Primary</span>{" "}

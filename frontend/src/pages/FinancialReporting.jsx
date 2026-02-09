@@ -122,9 +122,9 @@ const FinancialReporting = () => {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-8 py-8">
         {/* Info Banner */}
-        <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-[#EBF3FC] border border-blue-200">
+        <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-[#EBF3FC] border border-[rgba(3,63,153,0.25)]">
           <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-full text-blue-700 flex items-center justify-center flex-shrink-0">
               <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div className="flex-1">
@@ -224,7 +224,7 @@ const FinancialReporting = () => {
                   Journal Entries
                 </p>
               </div>
-              <PieChart className="h-10 w-10 text-blue-600" />
+              <PieChart className="h-10 w-10 text-[#033F99]" />
             </div>
           </Card>
 

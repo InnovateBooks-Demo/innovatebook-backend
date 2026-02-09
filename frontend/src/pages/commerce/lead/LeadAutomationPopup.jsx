@@ -456,7 +456,7 @@ const LeadAutomationPopup = ({ leadId, leadData, onClose, onComplete }) => {
                                   {stageData.data.fit_score}
                                 </p>
                               </div>
-                              <div className="text-center p-3 bg-blue-50 rounded-lg">
+                              <div className="text-center p-3 bg-[rgba(3,63,153,0.08)] rounded-lg">
                                 <p className="text-xs text-slate-600 font-medium">
                                   Intent Score
                                 </p>

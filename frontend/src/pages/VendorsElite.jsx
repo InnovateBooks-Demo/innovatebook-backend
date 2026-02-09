@@ -136,7 +136,7 @@ const VendorsElite = () => {
                     e.stopPropagation();
                     navigate(`/finance/vendors/${vendor.id}/edit`);
                   }}
-                  className="p-2 hover:bg-blue-50 rounded-lg transition-all"
+                  className="p-2 hover:bg-[rgba(3,63,153,0.08)] rounded-lg transition-all"
                 >
                   <Edit className="h-4 w-4 text-blue-500" />
                 </button>

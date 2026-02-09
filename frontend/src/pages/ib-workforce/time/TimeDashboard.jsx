@@ -134,7 +134,7 @@ const TimeDashboard = () => {
       label: "Today Attendance",
       value: attendance.length,
       icon: Users,
-      color: "text-blue-600",
+      color: "text-[#033F99]",
     },
     {
       label: "Time Entries",

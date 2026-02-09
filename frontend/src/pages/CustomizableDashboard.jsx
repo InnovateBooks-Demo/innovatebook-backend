@@ -215,7 +215,7 @@ const CustomizableDashboard = () => {
                   key={i}
                   className="flex items-start gap-2 p-2 bg-slate-50 rounded-lg"
                 >
-                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" />
+                  <div className="w-2 h-2 rounded-full bg-[rgba(3,63,153,0.08)]0 mt-2" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-slate-700 truncate">
                       {activity.description}
@@ -254,7 +254,7 @@ const CustomizableDashboard = () => {
                         ? "bg-red-500"
                         : task.priority === "high"
                           ? "bg-orange-500"
-                          : "bg-blue-500"
+                          : "bg-[rgba(3,63,153,0.08)]0"
                     }`}
                   />
                   <span className="text-sm text-slate-700 truncate flex-1">
@@ -293,7 +293,7 @@ const CustomizableDashboard = () => {
                       ? "bg-red-50 border-red-500"
                       : signal.severity === "warning"
                         ? "bg-amber-50 border-amber-500"
-                        : "bg-blue-50 border-blue-500"
+                        : "bg-[rgba(3,63,153,0.08)] border-blue-500"
                   }`}
                 >
                   <p className="text-sm text-slate-700 truncate">
@@ -516,7 +516,7 @@ const CustomizableDashboard = () => {
                   <button
                     key={type}
                     onClick={() => addWidget(type)}
-                    className="p-4 border border-slate-200 rounded-xl hover:border-[#3A4E63] hover:bg-blue-50 transition-colors text-left"
+                    className="p-4 border border-slate-200 rounded-xl hover:border-[#3A4E63] hover:bg-[rgba(3,63,153,0.08)] transition-colors text-left"
                   >
                     <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center mb-3">
                       <Icon className="w-5 h-5 text-slate-600" />

@@ -151,7 +151,7 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
       id: "commerce",
       name: "IB Commerce",
       icon: ShoppingCart,
-      color: "bg-blue-500",
+      color: "bg-[rgba(3,63,153,0.08)]0",
     },
     {
       id: "workforce",

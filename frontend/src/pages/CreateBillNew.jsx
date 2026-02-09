@@ -454,7 +454,7 @@ const CreateBillNew = () => {
                     isSearchable
                   />
                   {selectedCategory && (
-                    <p className="text-xs text-blue-600 mt-1">
+                    <p className="text-xs text-[#033F99] mt-1">
                       COA: {selectedCategory.coa_account}
                     </p>
                   )}

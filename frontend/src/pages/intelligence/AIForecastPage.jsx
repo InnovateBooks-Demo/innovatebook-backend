@@ -574,7 +574,7 @@ const AIForecastPage = () => {
                                   ? "bg-red-50 border-l-2 border-red-500"
                                   : insight.severity === "warning"
                                     ? "bg-amber-50 border-l-2 border-amber-500"
-                                    : "bg-blue-50 border-l-2 border-blue-500"
+                                    : "bg-[rgba(3,63,153,0.08)] border-l-2 border-blue-500"
                               }`}
                             >
                               <p className="text-sm font-medium">

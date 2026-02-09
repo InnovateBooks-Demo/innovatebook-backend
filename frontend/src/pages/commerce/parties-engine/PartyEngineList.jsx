@@ -276,7 +276,7 @@ const PartyEngineList = () => {
         </div>
 
         {/* Readiness Legend */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        <div className="bg-[rgba(3,63,153,0.08)] border border-[rgba(3,63,153,0.25)] rounded-xl p-4 mb-6">
           <div className="flex items-center gap-6 text-sm">
             <span className="font-medium text-blue-800">
               Readiness Indicators:

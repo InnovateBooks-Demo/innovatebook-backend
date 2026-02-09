@@ -222,8 +222,8 @@ const LeadDetail = () => {
     if (score >= 60)
       return {
         grade: "B",
-        color: "text-blue-600",
-        bg: "bg-blue-500",
+        color: "text-[#033F99]",
+        bg: "bg-[rgba(3,63,153,0.08)]0",
         label: "Good",
       };
     if (score >= 40)
@@ -397,7 +397,7 @@ const LeadDetail = () => {
                 <div className="col-span-3 grid grid-cols-3 gap-4">
                   <div className="bg-slate-50 rounded-xl p-4 text-center">
                     <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                      <TrendingUp className="h-5 w-5 text-blue-600" />
+                      <TrendingUp className="h-5 w-5 text-[#033F99]" />
                     </div>
                     <p className="text-2xl font-bold text-slate-900">
                       {lead.lifecycle_stage || "Lead"}
@@ -552,7 +552,7 @@ const LeadDetail = () => {
                         href={lead.linkedin_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm text-blue-600 hover:underline"
+                        className="flex items-center gap-2 text-sm text-[#033F99] hover:underline"
                       >
                         <Linkedin className="h-4 w-4" />
                         LinkedIn Profile
@@ -623,7 +623,7 @@ const LeadDetail = () => {
                       {act.activity_type === "Call" ? (
                         <PhoneCall className="h-5 w-5 text-green-600" />
                       ) : act.activity_type === "Email" ? (
-                        <Mail className="h-5 w-5 text-blue-600" />
+                        <Mail className="h-5 w-5 text-[#033F99]" />
                       ) : (
                         <Video className="h-5 w-5 text-purple-600" />
                       )}
@@ -701,7 +701,7 @@ const LeadDetail = () => {
             <div className="grid grid-cols-5 gap-4">
               <div className="bg-slate-50 rounded-xl p-6 text-center">
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <Mail className="h-6 w-6 text-blue-600" />
+                  <Mail className="h-6 w-6 text-[#033F99]" />
                 </div>
                 <p className="text-3xl font-bold text-slate-900">
                   {lead.email_opens || 0}

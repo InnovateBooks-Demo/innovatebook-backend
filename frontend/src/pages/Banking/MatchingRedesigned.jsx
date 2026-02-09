@@ -120,7 +120,7 @@ const MatchingRedesigned = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   }
@@ -265,7 +265,7 @@ const MatchingRedesigned = () => {
                 {(transaction.is_matched ||
                   transaction.status === "Matched") && (
                   <div className="pt-4 border-t">
-                    <div className="flex items-center gap-2 text-blue-600 bg-blue-50 p-3 rounded-lg">
+                    <div className="flex items-center gap-2 text-[#033F99] bg-[rgba(3,63,153,0.08)] p-3 rounded-lg">
                       <CheckCircle2 className="h-5 w-5" />
                       <span className="text-sm font-medium">
                         Already Matched
@@ -295,9 +295,9 @@ const MatchingRedesigned = () => {
             ) : (
               <>
                 {/* Matching Instructions */}
-                <Card className="p-4 bg-blue-50 border-blue-200 mb-6">
+                <Card className="p-4 bg-[rgba(3,63,153,0.08)] border-[rgba(3,63,153,0.25)] mb-6">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full text-blue-700 text-white flex items-center justify-center flex-shrink-0">
                       <span className="text-sm font-bold">i</span>
                     </div>
                     <div>

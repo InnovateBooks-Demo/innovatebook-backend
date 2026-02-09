@@ -60,7 +60,7 @@ const CapacityDashboard = () => {
       label: "Capacity Profiles",
       value: capacityProfiles.length,
       icon: Users,
-      color: "text-blue-600",
+      color: "text-[#033F99]",
     },
     {
       label: "Active Allocations",

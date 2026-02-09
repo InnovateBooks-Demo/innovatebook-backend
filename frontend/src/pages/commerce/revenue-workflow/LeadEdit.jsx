@@ -560,7 +560,7 @@
 
 //   const stagePill = useMemo(() => {
 //     const map = {
-//       new: "bg-blue-50 text-blue-700 ring-blue-200",
+//       new: "bg-[rgba(3,63,153,0.08)] text-blue-700 ring-blue-200",
 //       qualified: "bg-indigo-50 text-indigo-700 ring-indigo-200",
 //       proposal: "bg-amber-50 text-amber-700 ring-amber-200",
 //       negotiation: "bg-orange-50 text-orange-700 ring-orange-200",
@@ -1033,7 +1033,7 @@
 //                       key={val}
 //                       className={`px-3 py-2 rounded-xl border text-sm cursor-pointer transition ${
 //                         formData.budget_mentioned === val
-//                           ? "border-[#3A4E63] bg-blue-50 text-[#3A4E63]"
+//                           ? "border-[#3A4E63] bg-[rgba(3,63,153,0.08)] text-[#3A4E63]"
 //                           : "border-slate-200 hover:bg-slate-50 text-slate-600"
 //                       }`}
 //                     >
@@ -1937,14 +1937,14 @@ const RevenueLeadEdit = () => {
                     key={idx}
                     className={`rounded-xl border overflow-hidden ${
                       isPrimary
-                        ? "border-blue-200 bg-blue-50/30"
+                        ? "border-[rgba(3,63,153,0.25)] bg-[rgba(3,63,153,0.08)]/30"
                         : "border-gray-200 bg-white"
                     }`}
                   >
                     <div
                       className={`px-5 py-4 flex items-center justify-between gap-4 ${
                         isPrimary
-                          ? "border-b border-blue-200/70"
+                          ? "border-b border-[rgba(3,63,153,0.25)]/70"
                           : "border-b border-gray-200"
                       }`}
                     >
@@ -2147,7 +2147,7 @@ const RevenueLeadEdit = () => {
                       key={val}
                       className={`px-3 py-2 rounded-lg border text-sm cursor-pointer transition ${
                         formData.budget_mentioned === val
-                          ? "border-[#3A4E63] bg-blue-50 text-[#3A4E63]"
+                          ? "border-[#3A4E63] bg-[rgba(3,63,153,0.08)] text-[#3A4E63]"
                           : "border-gray-200 hover:bg-gray-50 text-gray-600"
                       }`}
                     >

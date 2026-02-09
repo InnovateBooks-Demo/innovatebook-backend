@@ -206,7 +206,7 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
           </div>
         </div>
 
-        <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-blue-200/50 shadow-xl hover:shadow-2xl transition-all duration-300">
+        <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[rgba(3,63,153,0.25)]/50 shadow-xl hover:shadow-2xl transition-all duration-300">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full -mr-16 -mt-16"></div>
           <div className="relative">
             <div className="p-3 bg-gradient-to-br from-[#0147CC] to-blue-700 rounded-2xl shadow-lg inline-block mb-3">

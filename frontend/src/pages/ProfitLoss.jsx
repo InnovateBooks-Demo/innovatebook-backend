@@ -189,14 +189,14 @@ const ProfitLoss = () => {
 
         {loading && (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
           </div>
         )}
 
         {!loading && data && (
           <>
             {/* Period Info */}
-            <Card className="p-4 mb-6 bg-blue-50 border border-blue-200">
+            <Card className="p-4 mb-6 bg-[rgba(3,63,153,0.08)] border border-[rgba(3,63,153,0.25)]">
               <div className="flex items-center justify-between">
                 <div
                   className="text-sm text-blue-900"
@@ -245,7 +245,7 @@ const ProfitLoss = () => {
               )}
 
               {/* Operating Profit */}
-              <div className="my-6 p-4 bg-gradient-to-r from-blue-50 to-[#EBF3FC] rounded-lg border border-blue-200">
+              <div className="my-6 p-4 bg-gradient-to-r from-blue-50 to-[#EBF3FC] rounded-lg border border-[rgba(3,63,153,0.25)]">
                 <div className="flex justify-between items-center">
                   <span className="text-base font-bold text-blue-900">
                     Operating Profit (EBIT)

@@ -406,7 +406,7 @@ const PartyEngineDetail = () => {
                                   onClick={() =>
                                     handleVerifyProfile(profile.key)
                                   }
-                                  className="px-3 py-1.5 text-sm font-medium text-[#3A4E63] bg-blue-50 rounded-lg hover:bg-blue-100"
+                                  className="px-3 py-1.5 text-sm font-medium text-[#3A4E63] bg-[rgba(3,63,153,0.08)] rounded-lg hover:bg-blue-100"
                                 >
                                   Verify
                                 </button>
@@ -830,7 +830,7 @@ const PartyEngineDetail = () => {
                           className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg"
                         >
                           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                            <History className="h-5 w-5 text-blue-600" />
+                            <History className="h-5 w-5 text-[#033F99]" />
                           </div>
                           <div className="flex-1">
                             <p className="font-medium text-gray-900 capitalize">

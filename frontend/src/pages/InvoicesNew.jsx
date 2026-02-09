@@ -317,7 +317,7 @@ const InvoicesNew = () => {
               {filteredInvoices.map((invoice, index) => (
                 <tr
                   key={invoice.id}
-                  className={`hover:bg-blue-50 cursor-pointer transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
+                  className={`hover:bg-[rgba(3,63,153,0.08)] cursor-pointer transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
                 >
                   <td
                     className="px-4 py-4"

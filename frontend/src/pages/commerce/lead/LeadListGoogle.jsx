@@ -1,8 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Search, Plus, RefreshCw, MoreVertical, CheckSquare, Square, Star, Edit, Eye } from 'lucide-react';
-import axios from 'axios';
-import { toast } from 'sonner';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Search,
+  Plus,
+  RefreshCw,
+  MoreVertical,
+  CheckSquare,
+  Square,
+  Star,
+  Edit,
+  Eye,
+} from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -10,8 +20,8 @@ const LeadListGoogle = () => {
   const navigate = useNavigate();
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedLeads, setSelectedLeads] = useState(new Set());
   const [hoveredLead, setHoveredLead] = useState(null);
 
@@ -21,22 +31,27 @@ const LeadListGoogle = () => {
 
   const fetchLeads = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${BACKEND_URL}/api/manufacturing/leads`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${BACKEND_URL}/api/manufacturing/leads`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       setLeads(response.data.leads || []);
       setLoading(false);
     } catch (error) {
-      toast.error('Failed to load leads');
+      toast.error("Failed to load leads");
       setLoading(false);
     }
   };
 
-  const filteredLeads = leads.filter(lead => {
-    const matchesSearch = lead.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         lead.contact_person?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = selectedStatus === 'all' || lead.status === selectedStatus;
+  const filteredLeads = leads.filter((lead) => {
+    const matchesSearch =
+      lead.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.contact_person?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      selectedStatus === "all" || lead.status === selectedStatus;
     return matchesSearch && matchesStatus;
   });
 
@@ -52,12 +67,12 @@ const LeadListGoogle = () => {
 
   const getStatusColor = (status) => {
     const colors = {
-      'New': 'text-blue-700 bg-blue-50',
-      'Active': 'text-green-700 bg-green-50',
-      'Qualified': 'text-purple-700 bg-purple-50',
-      'Converted': 'text-gray-700 bg-gray-100'
+      New: "text-blue-700 bg-[rgba(3,63,153,0.08)]",
+      Active: "text-green-700 bg-green-50",
+      Qualified: "text-purple-700 bg-purple-50",
+      Converted: "text-gray-700 bg-gray-100",
     };
-    return colors[status] || 'text-blue-700 bg-blue-50';
+    return colors[status] || "text-blue-700 bg-[rgba(3,63,153,0.08)]";
   };
 
   if (loading) {
@@ -100,8 +115,8 @@ const LeadListGoogle = () => {
               <RefreshCw className="w-5 h-5 text-gray-600" />
             </button>
             <button
-              onClick={() => navigate('/commerce/lead/create')}
-              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors text-sm font-medium shadow-sm"
+              onClick={() => navigate("/commerce/lead/create")}
+              className="flex items-center gap-2 px-6 py-2.5 text-blue-700 hover:bg-blue-700 text-white rounded-full transition-colors text-sm font-medium shadow-sm"
             >
               <Plus className="w-4 h-4" />
               Compose
@@ -110,19 +125,21 @@ const LeadListGoogle = () => {
 
           {/* Filter Tabs */}
           <div className="flex items-center gap-1">
-            {['all', 'New', 'Active', 'Qualified', 'Converted'].map((status) => (
-              <button
-                key={status}
-                onClick={() => setSelectedStatus(status)}
-                className={`px-4 py-2 text-sm font-medium rounded-full transition-colors ${
-                  selectedStatus === status
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                {status === 'all' ? 'All' : status}
-              </button>
-            ))}
+            {["all", "New", "Active", "Qualified", "Converted"].map(
+              (status) => (
+                <button
+                  key={status}
+                  onClick={() => setSelectedStatus(status)}
+                  className={`px-4 py-2 text-sm font-medium rounded-full transition-colors ${
+                    selectedStatus === status
+                      ? "bg-blue-100 text-blue-700"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  {status === "all" ? "All" : status}
+                </button>
+              ),
+            )}
           </div>
         </div>
       </div>
@@ -139,7 +156,7 @@ const LeadListGoogle = () => {
               onMouseEnter={() => setHoveredLead(lead.id)}
               onMouseLeave={() => setHoveredLead(null)}
               className={`border-b border-gray-100 hover:shadow-sm transition-all cursor-pointer ${
-                isSelected ? 'bg-blue-50' : 'hover:bg-gray-50'
+                isSelected ? "bg-[rgba(3,63,153,0.08)]" : "hover:bg-gray-50"
               }`}
             >
               <div className="px-6 py-3">
@@ -153,7 +170,7 @@ const LeadListGoogle = () => {
                     className="flex-shrink-0 text-gray-400 hover:text-gray-600"
                   >
                     {isSelected ? (
-                      <CheckSquare className="w-5 h-5 text-blue-600" />
+                      <CheckSquare className="w-5 h-5 text-[#033F99]" />
                     ) : (
                       <Square className="w-5 h-5" />
                     )}
@@ -172,7 +189,7 @@ const LeadListGoogle = () => {
                   </button>
 
                   {/* Company Name */}
-                  <div 
+                  <div
                     onClick={() => navigate(`/commerce/lead/${lead.id}`)}
                     className="min-w-[200px] flex-shrink-0"
                   >
@@ -183,7 +200,9 @@ const LeadListGoogle = () => {
 
                   {/* Status Badge */}
                   <div className="flex-shrink-0">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(lead.status)}`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(lead.status)}`}
+                    >
                       {lead.status}
                     </span>
                   </div>
@@ -195,21 +214,27 @@ const LeadListGoogle = () => {
                         <span className="truncate">{lead.contact_person}</span>
                       )}
                       {lead.contact_email && (
-                        <span className="text-xs text-gray-500 truncate">{lead.contact_email}</span>
+                        <span className="text-xs text-gray-500 truncate">
+                          {lead.contact_email}
+                        </span>
                       )}
                     </div>
                   </div>
 
                   {/* Lead Score */}
                   <div className="flex-shrink-0 text-right min-w-[60px]">
-                    <span className="text-sm font-medium text-gray-900">{lead.lead_score || 0}</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {lead.lead_score || 0}
+                    </span>
                     <span className="text-xs text-gray-500">/100</span>
                   </div>
 
                   {/* Actions */}
-                  <div className={`flex items-center gap-1 transition-opacity ${
-                    isHovered ? 'opacity-100' : 'opacity-0'
-                  }`}>
+                  <div
+                    className={`flex items-center gap-1 transition-opacity ${
+                      isHovered ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -250,14 +275,18 @@ const LeadListGoogle = () => {
           <div className="text-gray-400 mb-4">
             <Search className="w-16 h-16" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No leads found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No leads found
+          </h3>
           <p className="text-sm text-gray-600 mb-6">
-            {searchTerm ? 'Try a different search term' : 'Get started by creating your first lead'}
+            {searchTerm
+              ? "Try a different search term"
+              : "Get started by creating your first lead"}
           </p>
           {!searchTerm && (
             <button
-              onClick={() => navigate('/commerce/lead/create')}
-              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors text-sm font-medium"
+              onClick={() => navigate("/commerce/lead/create")}
+              className="flex items-center gap-2 px-6 py-2.5 text-blue-700 hover:bg-blue-700 text-white rounded-full transition-colors text-sm font-medium"
             >
               <Plus className="w-4 h-4" />
               Create Lead
@@ -269,7 +298,9 @@ const LeadListGoogle = () => {
       {/* Selection Bar */}
       {selectedLeads.size > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-4">
-          <span className="text-sm font-medium">{selectedLeads.size} selected</span>
+          <span className="text-sm font-medium">
+            {selectedLeads.size} selected
+          </span>
           <button className="px-4 py-1.5 bg-white/20 hover:bg-white/30 rounded-full text-sm transition-colors">
             Delete
           </button>

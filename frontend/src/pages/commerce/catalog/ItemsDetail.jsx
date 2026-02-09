@@ -168,8 +168,8 @@ const ItemsDetail = () => {
                   ₹{(item.cost_price || 0).toLocaleString()}
                 </p>
               </div>
-              <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                <Tag className="h-5 w-5 text-blue-600" />
+              <div className="h-10 w-10 rounded-lg bg-[rgba(3,63,153,0.08)] flex items-center justify-center">
+                <Tag className="h-5 w-5 text-[#033F99]" />
               </div>
             </div>
           </div>

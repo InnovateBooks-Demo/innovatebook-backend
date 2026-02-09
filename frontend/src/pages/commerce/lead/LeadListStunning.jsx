@@ -1,8 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Filter, TrendingUp, Zap, Star, Eye, Edit2, Mail, Phone, Calendar, ExternalLink, Sparkles, ArrowRight, Target, Award, ChevronRight } from 'lucide-react';
-import axios from 'axios';
-import { toast } from 'sonner';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Search,
+  Plus,
+  Filter,
+  TrendingUp,
+  Zap,
+  Star,
+  Eye,
+  Edit2,
+  Mail,
+  Phone,
+  Calendar,
+  ExternalLink,
+  Sparkles,
+  ArrowRight,
+  Target,
+  Award,
+  ChevronRight,
+} from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -10,9 +28,9 @@ const LeadListStunning = () => {
   const navigate = useNavigate();
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [selectedPriority, setSelectedPriority] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedPriority, setSelectedPriority] = useState("all");
   const [hoveredLead, setHoveredLead] = useState(null);
 
   useEffect(() => {
@@ -21,84 +39,90 @@ const LeadListStunning = () => {
 
   const fetchLeads = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${BACKEND_URL}/api/manufacturing/leads`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${BACKEND_URL}/api/manufacturing/leads`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       setLeads(response.data.leads || []);
       setLoading(false);
     } catch (error) {
-      toast.error('Failed to load leads');
+      toast.error("Failed to load leads");
       setLoading(false);
     }
   };
 
-  const filteredLeads = leads.filter(lead => {
-    const matchesSearch = lead.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         lead.contact_person?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         lead.rfq_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         lead.contact_email?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = selectedStatus === 'all' || lead.status === selectedStatus;
-    const matchesPriority = selectedPriority === 'all' || lead.priority === selectedPriority;
+  const filteredLeads = leads.filter((lead) => {
+    const matchesSearch =
+      lead.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.contact_person?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.rfq_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.contact_email?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      selectedStatus === "all" || lead.status === selectedStatus;
+    const matchesPriority =
+      selectedPriority === "all" || lead.priority === selectedPriority;
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
   const getStatusConfig = (status) => {
     const configs = {
-      'New': { 
-        gradient: 'from-blue-400 via-cyan-400 to-teal-400',
-        bg: 'bg-gradient-to-r from-blue-500/10 to-cyan-500/10',
-        text: 'text-blue-600',
+      New: {
+        gradient: "from-blue-400 via-cyan-400 to-teal-400",
+        bg: "bg-gradient-to-r from-blue-500/10 to-cyan-500/10",
+        text: "text-[#033F99]",
         icon: Sparkles,
-        glow: 'shadow-blue-500/20'
+        glow: "shadow-blue-500/20",
       },
-      'Active': { 
-        gradient: 'from-purple-400 via-pink-400 to-rose-400',
-        bg: 'bg-gradient-to-r from-purple-500/10 to-pink-500/10',
-        text: 'text-purple-600',
+      Active: {
+        gradient: "from-purple-400 via-pink-400 to-rose-400",
+        bg: "bg-gradient-to-r from-purple-500/10 to-pink-500/10",
+        text: "text-purple-600",
         icon: Zap,
-        glow: 'shadow-purple-500/20'
+        glow: "shadow-purple-500/20",
       },
-      'Qualified': { 
-        gradient: 'from-emerald-400 via-green-400 to-teal-400',
-        bg: 'bg-gradient-to-r from-emerald-500/10 to-green-500/10',
-        text: 'text-emerald-600',
+      Qualified: {
+        gradient: "from-emerald-400 via-green-400 to-teal-400",
+        bg: "bg-gradient-to-r from-emerald-500/10 to-green-500/10",
+        text: "text-emerald-600",
         icon: Award,
-        glow: 'shadow-emerald-500/20'
+        glow: "shadow-emerald-500/20",
       },
-      'Converted': { 
-        gradient: 'from-amber-400 via-orange-400 to-rose-400',
-        bg: 'bg-gradient-to-r from-amber-500/10 to-orange-500/10',
-        text: 'text-amber-600',
+      Converted: {
+        gradient: "from-amber-400 via-orange-400 to-rose-400",
+        bg: "bg-gradient-to-r from-amber-500/10 to-orange-500/10",
+        text: "text-amber-600",
         icon: Target,
-        glow: 'shadow-amber-500/20'
-      }
+        glow: "shadow-amber-500/20",
+      },
     };
-    return configs[status] || configs['New'];
+    return configs[status] || configs["New"];
   };
 
   const getPriorityConfig = (priority) => {
     const configs = {
-      'High': { 
-        color: 'from-red-500 to-pink-500',
-        text: 'text-red-600',
-        bg: 'bg-red-50',
-        border: 'border-red-200'
+      High: {
+        color: "from-red-500 to-pink-500",
+        text: "text-red-600",
+        bg: "bg-red-50",
+        border: "border-red-200",
       },
-      'Medium': { 
-        color: 'from-amber-500 to-orange-500',
-        text: 'text-amber-600',
-        bg: 'bg-amber-50',
-        border: 'border-amber-200'
+      Medium: {
+        color: "from-amber-500 to-orange-500",
+        text: "text-amber-600",
+        bg: "bg-amber-50",
+        border: "border-amber-200",
       },
-      'Low': { 
-        color: 'from-blue-500 to-cyan-500',
-        text: 'text-blue-600',
-        bg: 'bg-blue-50',
-        border: 'border-blue-200'
-      }
+      Low: {
+        color: "from-blue-500 to-cyan-500",
+        text: "text-[#033F99]",
+        bg: "bg-[rgba(3,63,153,0.08)]",
+        border: "border-[rgba(3,63,153,0.25)]",
+      },
     };
-    return configs[priority] || configs['Medium'];
+    return configs[priority] || configs["Medium"];
   };
 
   if (loading) {
@@ -109,7 +133,9 @@ const LeadListStunning = () => {
             <div className="absolute w-24 h-24 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full blur-xl opacity-60 animate-pulse"></div>
             <div className="relative w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
           </div>
-          <p className="text-white/90 font-semibold text-lg">Loading your pipeline...</p>
+          <p className="text-white/90 font-semibold text-lg">
+            Loading your pipeline...
+          </p>
         </div>
       </div>
     );
@@ -142,12 +168,15 @@ const LeadListStunning = () => {
                   <h1 className="text-3xl font-black bg-gradient-to-r from-slate-900 via-purple-800 to-pink-600 bg-clip-text text-transparent">
                     Lead Pipeline
                   </h1>
-                  <p className="text-sm text-slate-600 font-medium">{filteredLeads.length} opportunities • Close more deals faster</p>
+                  <p className="text-sm text-slate-600 font-medium">
+                    {filteredLeads.length} opportunities • Close more deals
+                    faster
+                  </p>
                 </div>
               </div>
-              
+
               <button
-                onClick={() => navigate('/commerce/lead/create')}
+                onClick={() => navigate("/commerce/lead/create")}
                 className="group relative px-6 py-3.5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold rounded-xl overflow-hidden shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -219,10 +248,14 @@ const LeadListStunning = () => {
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   {/* Gradient Border Effect */}
-                  <div className={`absolute inset-0 bg-gradient-to-r ${statusConfig.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500 rounded-2xl`}></div>
-                  
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-r ${statusConfig.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500 rounded-2xl`}
+                  ></div>
+
                   {/* Priority Ribbon */}
-                  <div className={`absolute top-4 -right-10 w-32 py-1 bg-gradient-to-r ${priorityConfig.color} text-white text-xs font-bold text-center transform rotate-45 shadow-lg`}>
+                  <div
+                    className={`absolute top-4 -right-10 w-32 py-1 bg-gradient-to-r ${priorityConfig.color} text-white text-xs font-bold text-center transform rotate-45 shadow-lg`}
+                  >
                     {lead.priority}
                   </div>
 
@@ -230,19 +263,24 @@ const LeadListStunning = () => {
                     {/* Header */}
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${statusConfig.gradient} flex items-center justify-center shadow-lg ${statusConfig.glow} group-hover:shadow-xl transition-shadow`}>
+                        <div
+                          className={`w-14 h-14 rounded-xl bg-gradient-to-br ${statusConfig.gradient} flex items-center justify-center shadow-lg ${statusConfig.glow} group-hover:shadow-xl transition-shadow`}
+                        >
                           <span className="text-white font-bold text-xl">
-                            {lead.customer_name?.charAt(0)?.toUpperCase() || '?'}
+                            {lead.customer_name?.charAt(0)?.toUpperCase() ||
+                              "?"}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="text-lg font-bold text-slate-900 truncate group-hover:text-purple-600 transition-colors">
                             {lead.customer_name}
                           </h3>
-                          <p className="text-xs text-slate-500 font-mono">{lead.rfq_number || 'No RFQ'}</p>
+                          <p className="text-xs text-slate-500 font-mono">
+                            {lead.rfq_number || "No RFQ"}
+                          </p>
                         </div>
                       </div>
-                      
+
                       {lead.lead_score >= 70 && (
                         <div className="flex-shrink-0">
                           <Star className="w-6 h-6 text-amber-400 fill-amber-400 animate-pulse" />
@@ -251,9 +289,15 @@ const LeadListStunning = () => {
                     </div>
 
                     {/* Status Badge */}
-                    <div className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg ${statusConfig.bg} mb-4 shadow-md`}>
+                    <div
+                      className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg ${statusConfig.bg} mb-4 shadow-md`}
+                    >
                       <StatusIcon className={`w-4 h-4 ${statusConfig.text}`} />
-                      <span className={`text-sm font-bold ${statusConfig.text}`}>{lead.status}</span>
+                      <span
+                        className={`text-sm font-bold ${statusConfig.text}`}
+                      >
+                        {lead.status}
+                      </span>
                     </div>
 
                     {/* Contact Info */}
@@ -263,7 +307,9 @@ const LeadListStunning = () => {
                           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
                             <Mail className="w-3.5 h-3.5 text-slate-600" />
                           </div>
-                          <span className="font-medium truncate">{lead.contact_person}</span>
+                          <span className="font-medium truncate">
+                            {lead.contact_person}
+                          </span>
                         </div>
                       )}
                       {lead.contact_email && (
@@ -279,13 +325,15 @@ const LeadListStunning = () => {
                     {/* Lead Score */}
                     <div className="mb-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">Lead Score</span>
+                        <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">
+                          Lead Score
+                        </span>
                         <span className="text-lg font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                           {lead.lead_score || 0}%
                         </span>
                       </div>
                       <div className="relative h-3 bg-gradient-to-r from-slate-100 to-slate-200 rounded-full overflow-hidden shadow-inner">
-                        <div 
+                        <div
                           className={`absolute inset-y-0 left-0 bg-gradient-to-r ${statusConfig.gradient} rounded-full shadow-lg transition-all duration-1000 ease-out`}
                           style={{ width: `${lead.lead_score || 0}%` }}
                         >
@@ -295,7 +343,9 @@ const LeadListStunning = () => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className={`flex items-center gap-2 transition-all duration-300 ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+                    <div
+                      className={`flex items-center gap-2 transition-all duration-300 ${isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}
+                    >
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -332,22 +382,28 @@ const LeadListStunning = () => {
                   <Search className="w-10 h-10 text-white" />
                 </div>
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">No leads found</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">
+                No leads found
+              </h3>
               <p className="text-slate-600 mb-8 text-lg">
-                {searchTerm || selectedStatus !== 'all' || selectedPriority !== 'all'
-                  ? 'Try adjusting your filters to see more results'
-                  : 'Start building your pipeline by creating your first lead'}
+                {searchTerm ||
+                selectedStatus !== "all" ||
+                selectedPriority !== "all"
+                  ? "Try adjusting your filters to see more results"
+                  : "Start building your pipeline by creating your first lead"}
               </p>
-              {!searchTerm && selectedStatus === 'all' && selectedPriority === 'all' && (
-                <button
-                  onClick={() => navigate('/commerce/lead/create')}
-                  className="px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold rounded-xl shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-105 inline-flex items-center gap-3"
-                >
-                  <Plus className="w-5 h-5" />
-                  Create Your First Lead
-                  <ArrowRight className="w-5 h-5" />
-                </button>
-              )}
+              {!searchTerm &&
+                selectedStatus === "all" &&
+                selectedPriority === "all" && (
+                  <button
+                    onClick={() => navigate("/commerce/lead/create")}
+                    className="px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold rounded-xl shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-105 inline-flex items-center gap-3"
+                  >
+                    <Plus className="w-5 h-5" />
+                    Create Your First Lead
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                )}
             </div>
           )}
         </div>
@@ -355,8 +411,13 @@ const LeadListStunning = () => {
 
       <style jsx>{`
         @keyframes float {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(5deg); }
+          0%,
+          100% {
+            transform: translateY(0) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-20px) rotate(5deg);
+          }
         }
         .animate-float {
           animation: float 6s ease-in-out infinite;

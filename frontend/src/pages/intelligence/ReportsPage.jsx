@@ -308,7 +308,7 @@ const ReportsPage = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
-                        <button className="p-2 text-gray-400 hover:text-blue-600 rounded-lg">
+                        <button className="p-2 text-gray-400 hover:text-[#033F99] rounded-lg">
                           <Eye className="h-4 w-4" />
                         </button>
                         <button className="p-2 text-gray-400 hover:text-green-600 rounded-lg">
@@ -380,7 +380,7 @@ const ReportsPage = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
-                        <button className="p-2 text-gray-400 hover:text-blue-600 rounded-lg">
+                        <button className="p-2 text-gray-400 hover:text-[#033F99] rounded-lg">
                           {report.active ? (
                             <Pause className="h-4 w-4" />
                           ) : (

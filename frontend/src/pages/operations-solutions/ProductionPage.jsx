@@ -301,9 +301,9 @@ const ProductionPage = () => {
                     {variance}%
                   </p>
                 </div>
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-[rgba(3,63,153,0.08)] p-4 rounded-lg">
                   <p className="text-sm text-slate-600 mb-1">Quality Rate</p>
-                  <p className="text-xl font-bold text-blue-600">
+                  <p className="text-xl font-bold text-[#033F99]">
                     {selected.quality}%
                   </p>
                 </div>

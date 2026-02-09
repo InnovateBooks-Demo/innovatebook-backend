@@ -154,7 +154,7 @@ const PayrollDashboard = () => {
       label: "Total Pay Runs",
       value: payruns.length,
       icon: FileText,
-      color: "text-blue-600",
+      color: "text-[#033F99]",
     },
     {
       label: "Pending Approval",

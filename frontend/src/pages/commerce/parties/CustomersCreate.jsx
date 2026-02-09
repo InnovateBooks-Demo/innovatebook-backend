@@ -759,7 +759,7 @@
 //                                   {contact.name}
 //                                 </span>
 //                                 {contact.is_primary ? (
-//                                   <span className="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+//                                   <span className="text-[11px] px-2 py-0.5 rounded-full bg-[rgba(3,63,153,0.08)] text-blue-700 border border-[rgba(3,63,153,0.25)]">
 //                                     Primary
 //                                   </span>
 //                                 ) : null}
@@ -1240,7 +1240,7 @@ const CustomersCreate = ({ isOverlay = false, onSuccess, onCancel }) => {
                                   {contact.name}
                                 </span>
                                 {contact.is_primary ? (
-                                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-[rgba(3,63,153,0.08)] text-blue-700 border border-[rgba(3,63,153,0.25)]">
                                     Primary
                                   </span>
                                 ) : null}

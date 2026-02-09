@@ -1,11 +1,26 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Bell, X, AlertTriangle, AlertCircle, Info, CheckCircle, Wifi, WifiOff } from 'lucide-react';
-import { useFinanceNotifications } from '../context/FinanceNotificationContext';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Bell,
+  X,
+  AlertTriangle,
+  AlertCircle,
+  Info,
+  CheckCircle,
+  Wifi,
+  WifiOff,
+} from "lucide-react";
+import { useFinanceNotifications } from "../context/FinanceNotificationContext";
+import { useNavigate } from "react-router-dom";
 
 const FinanceNotificationBell = () => {
   const navigate = useNavigate();
-  const { notifications, unreadCount, connected, markAllAsRead, clearNotification } = useFinanceNotifications();
+  const {
+    notifications,
+    unreadCount,
+    connected,
+    markAllAsRead,
+    clearNotification,
+  } = useFinanceNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -16,32 +31,35 @@ const FinanceNotificationBell = () => {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const getNotificationIcon = (type, severity) => {
-    if (type === 'overdue_receivable' || severity === 'critical') {
+    if (type === "overdue_receivable" || severity === "critical") {
       return <AlertTriangle className="h-4 w-4 text-red-500" />;
     }
-    if (type === 'payment_due' || severity === 'warning') {
+    if (type === "payment_due" || severity === "warning") {
       return <AlertCircle className="h-4 w-4 text-amber-500" />;
     }
-    if (type === 'billing_approved' || type === 'period_closed') {
+    if (type === "billing_approved" || type === "period_closed") {
       return <CheckCircle className="h-4 w-4 text-green-500" />;
     }
     return <Info className="h-4 w-4 text-blue-500" />;
   };
 
   const getNotificationBg = (type, severity) => {
-    if (type === 'overdue_receivable' || severity === 'critical') return 'bg-red-50 border-red-100';
-    if (type === 'payment_due' || severity === 'warning') return 'bg-amber-50 border-amber-100';
-    if (type === 'billing_approved' || type === 'period_closed') return 'bg-green-50 border-green-100';
-    return 'bg-blue-50 border-blue-100';
+    if (type === "overdue_receivable" || severity === "critical")
+      return "bg-red-50 border-red-100";
+    if (type === "payment_due" || severity === "warning")
+      return "bg-amber-50 border-amber-100";
+    if (type === "billing_approved" || type === "period_closed")
+      return "bg-green-50 border-green-100";
+    return "bg-[rgba(3,63,153,0.08)] border-blue-100";
   };
 
   const formatTime = (timestamp) => {
-    if (!timestamp) return '';
+    if (!timestamp) return "";
     const date = new Date(timestamp);
     const now = new Date();
     const diff = now - date;
@@ -49,7 +67,7 @@ const FinanceNotificationBell = () => {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1) return 'Just now';
+    if (minutes < 1) return "Just now";
     if (minutes < 60) return `${minutes}m ago`;
     if (hours < 24) return `${hours}h ago`;
     if (days < 7) return `${days}d ago`;
@@ -74,7 +92,7 @@ const FinanceNotificationBell = () => {
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
           <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-            {unreadCount > 9 ? '9+' : unreadCount}
+            {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
@@ -86,15 +104,21 @@ const FinanceNotificationBell = () => {
           <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-gray-900">Finance Alerts</h3>
-              <span className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${connected ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                {connected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
-                {connected ? 'Live' : 'Offline'}
+              <span
+                className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${connected ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+              >
+                {connected ? (
+                  <Wifi className="h-3 w-3" />
+                ) : (
+                  <WifiOff className="h-3 w-3" />
+                )}
+                {connected ? "Live" : "Offline"}
               </span>
             </div>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                className="text-xs text-[#033F99] hover:text-blue-800 font-medium"
               >
                 Mark all read
               </button>
@@ -107,7 +131,9 @@ const FinanceNotificationBell = () => {
               <div className="px-4 py-8 text-center text-gray-500">
                 <Bell className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                 <p className="text-sm">No notifications</p>
-                <p className="text-xs text-gray-400 mt-1">You're all caught up!</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  You're all caught up!
+                </p>
               </div>
             ) : (
               <div className="divide-y divide-gray-100">
@@ -119,17 +145,25 @@ const FinanceNotificationBell = () => {
                   >
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 mt-0.5">
-                        {getNotificationIcon(notification.type, notification.severity)}
+                        {getNotificationIcon(
+                          notification.type,
+                          notification.severity,
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
-                          {notification.title || notification.type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          {notification.title ||
+                            notification.type
+                              ?.replace(/_/g, " ")
+                              .replace(/\b\w/g, (l) => l.toUpperCase())}
                         </p>
                         <p className="text-sm text-gray-600 mt-0.5">
                           {notification.message}
                         </p>
                         <p className="text-xs text-gray-400 mt-1">
-                          {formatTime(notification.timestamp || notification.created_at)}
+                          {formatTime(
+                            notification.timestamp || notification.created_at,
+                          )}
                         </p>
                       </div>
                       <button
@@ -152,10 +186,10 @@ const FinanceNotificationBell = () => {
           <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
             <button
               onClick={() => {
-                navigate('/ib-finance');
+                navigate("/ib-finance");
                 setIsOpen(false);
               }}
-              className="w-full text-center text-sm text-blue-600 hover:text-blue-800 font-medium"
+              className="w-full text-center text-sm text-[#033F99] hover:text-blue-800 font-medium"
             >
               View Finance Dashboard →
             </button>

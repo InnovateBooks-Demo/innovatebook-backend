@@ -236,7 +236,7 @@ const VendorDetailNewPro = () => {
                 {bills.slice(0, 5).map((bill) => (
                   <div
                     key={bill.id}
-                    className="p-4 border rounded-lg hover:bg-blue-50 cursor-pointer"
+                    className="p-4 border rounded-lg hover:bg-[rgba(3,63,153,0.08)] cursor-pointer"
                     onClick={() => navigate(`/bills/${bill.id}`)}
                   >
                     <div className="flex justify-between items-center">
