@@ -463,7 +463,7 @@ const BankingMatching = () => {
                         suggestion.id ||
                         `${suggestion.type}-${suggestion.reference}-${suggestion.amount}`
                       }
-                      className="p-4 border-2 rounded-lg hover:border-blue-500 hover:bg-[rgba(3,63,153,0.08)] cursor-pointer transition-all"
+                      className="p-4 border-2 rounded-lg hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all"
                       onClick={() => handleAISuggestionClick(suggestion)}
                     >
                       <div className="flex justify-between items-start">
@@ -517,7 +517,7 @@ const BankingMatching = () => {
                                     suggestion.match_score >= 90
                                       ? "bg-green-500"
                                       : suggestion.match_score >= 70
-                                        ? "bg-[rgba(3,63,153,0.08)]0"
+                                        ? "bg-blue-500"
                                         : suggestion.match_score >= 50
                                           ? "bg-yellow-500"
                                           : "bg-orange-500"
@@ -532,7 +532,7 @@ const BankingMatching = () => {
                                   suggestion.match_score >= 90
                                     ? "text-green-600"
                                     : suggestion.match_score >= 70
-                                      ? "text-[#033F99]"
+                                      ? "text-blue-600"
                                       : suggestion.match_score >= 50
                                         ? "text-yellow-600"
                                         : "text-orange-600"
@@ -614,7 +614,7 @@ const BankingMatching = () => {
                       {filteredEntities.map((entity) => (
                         <div
                           key={entity.id}
-                          className={`p-3 cursor-pointer hover:bg-[rgba(3,63,153,0.08)] ${
+                          className={`p-3 cursor-pointer hover:bg-blue-50 ${
                             selectedEntity?.id === entity.id
                               ? "bg-blue-100 border-l-4 border-blue-500"
                               : ""

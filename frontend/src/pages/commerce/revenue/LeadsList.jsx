@@ -97,7 +97,7 @@ const LeadsList = () => {
               </p>
             </div>
             <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-              <Users className="w-6 h-6 text-[#033F99]" />
+              <Users className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </div>

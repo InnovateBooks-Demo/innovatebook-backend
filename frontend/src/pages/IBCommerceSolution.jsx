@@ -1103,7 +1103,7 @@ const IBCommerceSolution = () => {
                                                     )}
                                                     {subModule.example.result
                                                       .action && (
-                                                      <p className="text-[#033F99]">
+                                                      <p className="text-blue-600">
                                                         →{" "}
                                                         {
                                                           subModule.example
@@ -1197,7 +1197,7 @@ const IBCommerceSolution = () => {
                                                 </span>
                                               </div>
                                             ))}
-                                            <div className="border-t pt-2 mt-2 text-[#033F99] font-semibold">
+                                            <div className="border-t pt-2 mt-2 text-blue-600 font-semibold">
                                               {subModule.example.usage}
                                             </div>
                                           </div>

@@ -447,7 +447,7 @@ const RevenueEvaluationWorkspace = () => {
                   </div>
                   <button
                     onClick={addItem}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#3A4E63] bg-[rgba(3,63,153,0.08)] rounded-lg hover:bg-blue-100"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#3A4E63] bg-blue-50 rounded-lg hover:bg-blue-100"
                   >
                     <Plus className="h-4 w-4" />
                     Add Item

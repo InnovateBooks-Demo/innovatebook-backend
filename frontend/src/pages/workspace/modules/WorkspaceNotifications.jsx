@@ -112,7 +112,7 @@ const WorkspaceNotifications = () => {
   const getEventColor = (eventType) => {
     switch (eventType) {
       case "new_chat_message":
-        return "bg-[rgba(3,63,153,0.08)] border-[rgba(3,63,153,0.25)]";
+        return "bg-blue-50 border-blue-200";
       case "channel_mention":
         return "bg-purple-50 border-purple-200";
       case "task_assigned":
@@ -189,7 +189,7 @@ const WorkspaceNotifications = () => {
               <div
                 key={notification.notification_id}
                 className={`p-4 flex items-start gap-4 hover:bg-gray-50 transition-colors ${
-                  !notification.read_status ? "bg-[rgba(3,63,153,0.08)]/30" : ""
+                  !notification.read_status ? "bg-blue-50/30" : ""
                 }`}
               >
                 <div

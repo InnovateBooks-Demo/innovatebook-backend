@@ -258,7 +258,7 @@ const CustomersNewPro = () => {
               {filteredCustomers.map((customer, index) => (
                 <tr
                   key={customer.id}
-                  className={`border-b border-gray-100 hover:bg-[rgba(3,63,153,0.08)] transition-colors ${
+                  className={`border-b border-gray-100 hover:bg-blue-50 transition-colors ${
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   }`}
                 >
@@ -278,7 +278,7 @@ const CustomersNewPro = () => {
                     onClick={() => navigate(`/customers/${customer.id}`)}
                   >
                     <span
-                      className="font-mono font-semibold text-[#033F99]"
+                      className="font-mono font-semibold text-blue-600"
                       style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       #{customer.customer_id}

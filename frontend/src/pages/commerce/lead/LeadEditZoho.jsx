@@ -649,7 +649,7 @@ const LeadEdit = () => {
               <div className="space-y-6">
                 <div>
                   <label className={labelClass}>
-                    <Linkedin className="inline h-4 w-4 text-[#033F99] mr-2" />
+                    <Linkedin className="inline h-4 w-4 text-blue-600 mr-2" />
                     LinkedIn URL
                   </label>
                   <input

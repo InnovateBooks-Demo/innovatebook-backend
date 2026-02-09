@@ -232,7 +232,7 @@ const TrialBalance = () => {
                         <td className="px-6 py-3 text-sm text-gray-900 font-medium">
                           {account.account}
                         </td>
-                        <td className="px-6 py-3 text-sm text-right text-[#033F99] font-semibold">
+                        <td className="px-6 py-3 text-sm text-right text-blue-600 font-semibold">
                           {account.debit > 0
                             ? formatCurrency(account.debit)
                             : "-"}
@@ -327,7 +327,7 @@ const TrialBalance = () => {
               <Card className="p-4 bg-white border-0 shadow-md">
                 <div className="text-center">
                   <p className="text-xs text-gray-500 mb-1">Total Debits</p>
-                  <p className="text-2xl font-bold text-[#033F99]">
+                  <p className="text-2xl font-bold text-blue-600">
                     {formatCurrency(data.totals.debit)}
                   </p>
                 </div>

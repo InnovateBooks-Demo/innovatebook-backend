@@ -137,7 +137,7 @@ const SuperAdminOrganizations = () => {
   const getStatusBadge = (status) => {
     const styles = {
       active: "bg-emerald-100 text-emerald-700 border-emerald-200",
-      trial: "bg-blue-100 text-blue-700 border-[rgba(3,63,153,0.25)]",
+      trial: "bg-blue-100 text-blue-700 border-blue-200",
       expired: "bg-red-100 text-red-700 border-red-200",
       cancelled: "bg-slate-100 text-slate-700 border-slate-200",
     };
@@ -305,7 +305,7 @@ const SuperAdminOrganizations = () => {
           </div>
 
           {/* Activation Rate */}
-          <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[rgba(3,63,153,0.25)]/50 shadow-xl hover:shadow-2xl hover:border-[rgba(3,63,153,0.25)] transition-all duration-300">
+          <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-blue-200/50 shadow-xl hover:shadow-2xl hover:border-blue-200 transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full -mr-16 -mt-16"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-3">
@@ -609,9 +609,9 @@ const SuperAdminOrganizations = () => {
               </div>
 
               {/* Info Box */}
-              <div className="bg-[rgba(3,63,153,0.08)] border-2 border-[rgba(3,63,153,0.25)] rounded-xl p-4">
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                 <div className="flex items-start gap-3">
-                  <TrendingUp className="w-5 h-5 text-[#033F99] flex-shrink-0 mt-0.5" />
+                  <TrendingUp className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm text-blue-900 font-semibold mb-1">
                       What happens next?
@@ -788,13 +788,13 @@ const SuperAdminOrganizations = () => {
               </div>
 
               {/* Metrics */}
-              <div className="bg-[rgba(3,63,153,0.08)] rounded-2xl p-6 border-2 border-[rgba(3,63,153,0.25)] md:col-span-2">
+              <div className="bg-blue-50 rounded-2xl p-6 border-2 border-blue-200 md:col-span-2">
                 <h3 className="text-xl font-bold text-blue-700 mb-4">
                   Platform Usage
                 </h3>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center">
-                    <div className="text-3xl font-black text-[#033F99]">
+                    <div className="text-3xl font-black text-blue-600">
                       {selectedOrg.metrics.customers}
                     </div>
                     <div className="text-sm text-slate-600 font-semibold mt-1">

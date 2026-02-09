@@ -150,7 +150,7 @@ const AuditDetail = () => {
                   <p className="text-sm font-medium text-gray-500 mb-1">
                     Audit Type
                   </p>
-                  <span className="inline-flex items-center px-3 py-1 bg-[rgba(3,63,153,0.08)] text-blue-700 rounded-lg text-sm font-medium capitalize">
+                  <span className="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium capitalize">
                     {audit.audit_type}
                   </span>
                 </div>
@@ -213,7 +213,7 @@ const AuditDetail = () => {
                 className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold capitalize ${getStatusColor(audit.status)}`}
               >
                 <span
-                  className={`w-2 h-2 rounded-full mr-2 ${audit.status === "completed" ? "bg-green-500" : audit.status === "in_progress" ? "bg-[rgba(3,63,153,0.08)]0" : audit.status === "planned" ? "bg-yellow-500" : "bg-gray-500"}`}
+                  className={`w-2 h-2 rounded-full mr-2 ${audit.status === "completed" ? "bg-green-500" : audit.status === "in_progress" ? "bg-blue-500" : audit.status === "planned" ? "bg-yellow-500" : "bg-gray-500"}`}
                 ></span>
                 {audit.status?.replace("_", " ")}
               </span>

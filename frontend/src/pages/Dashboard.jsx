@@ -19,7 +19,6 @@ import {
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
-console.log("THEME PRIMARY =", COLORS.primary);
 
 const Dashboard = () => {
   const [metrics, setMetrics] = useState(null);
@@ -62,7 +61,7 @@ const Dashboard = () => {
       <div className="mb-8">
         <h1
           className="text-3xl font-semibold mb-2"
-          style={{ fontFamily: "Inter", color: COLORS.primary }}
+          style={{ fontFamily: "Inter", color: "COLORS.primary" }}
         >
           Dashboard
         </h1>
@@ -84,7 +83,7 @@ const Dashboard = () => {
               <div>
                 <p
                   className="text-2xl font-semibold"
-                  style={{ fontFamily: "Inter", color: COLORS.primary }}
+                  style={{ fontFamily: "Inter", color: "COLORS.primary" }}
                 >
                   {formatCurrency(metrics?.cash_on_hand)}
                 </p>
@@ -133,14 +132,14 @@ const Dashboard = () => {
               <div>
                 <p
                   className="text-2xl font-semibold"
-                  style={{ fontFamily: "Inter", color: COLORS.primary }}
+                  style={{ fontFamily: "Inter", color: "COLORS.primary" }}
                 >
                   {formatCurrency(metrics?.revenue_mtd)}
                 </p>
               </div>
               <TrendingUp
                 className="h-8 w-8"
-                style={{ color: COLORS.primary }}
+                style={{ color: "COLORS.primary" }}
               />
             </div>
           </CardContent>
@@ -157,12 +156,12 @@ const Dashboard = () => {
               <div>
                 <p
                   className="text-2xl font-semibold"
-                  style={{ fontFamily: "Inter", color: COLORS.primary }}
+                  style={{ fontFamily: "Inter", color: "COLORS.primary" }}
                 >
                   {Math.round(metrics?.runway_days || 0)} days
                 </p>
               </div>
-              <Clock className="h-8 w-8" style={{ color: COLORS.primary }} />
+              <Clock className="h-8 w-8" style={{ color: "COLORS.primary" }} />
             </div>
           </CardContent>
         </Card>
@@ -174,7 +173,7 @@ const Dashboard = () => {
           <CardHeader>
             <CardTitle
               className="text-xl font-semibold"
-              style={{ fontFamily: "Inter", color: COLORS.primary }}
+              style={{ fontFamily: "Inter", color: "COLORS.primary" }}
             >
               Accounts Receivable
             </CardTitle>
@@ -188,7 +187,7 @@ const Dashboard = () => {
                 <span className="text-gray-600">Outstanding</span>
                 <span
                   className="text-lg font-semibold"
-                  style={{ color: COLORS.primary }}
+                  style={{ color: "COLORS.primary" }}
                 >
                   {formatCurrency(metrics?.ar_outstanding)}
                 </span>
@@ -209,7 +208,7 @@ const Dashboard = () => {
                 <span className="text-gray-600">DSO (Days)</span>
                 <span
                   className="text-lg font-semibold"
-                  style={{ color: COLORS.primary }}
+                  style={{ color: "COLORS.primary" }}
                 >
                   {metrics?.dso?.toFixed(1) || 0}
                 </span>
@@ -222,7 +221,7 @@ const Dashboard = () => {
           <CardHeader>
             <CardTitle
               className="text-xl font-semibold"
-              style={{ fontFamily: "Inter", color: COLORS.primary }}
+              style={{ fontFamily: "Inter", color: "COLORS.primary" }}
             >
               Accounts Payable
             </CardTitle>
@@ -234,7 +233,7 @@ const Dashboard = () => {
                 <span className="text-gray-600">Outstanding</span>
                 <span
                   className="text-lg font-semibold"
-                  style={{ color: COLORS.primary }}
+                  style={{ color: "COLORS.primary" }}
                 >
                   {formatCurrency(metrics?.ap_outstanding)}
                 </span>
@@ -249,7 +248,7 @@ const Dashboard = () => {
                 <span className="text-gray-600">DPO (Days)</span>
                 <span
                   className="text-lg font-semibold"
-                  style={{ color: COLORS.primary }}
+                  style={{ color: "COLORS.primary" }}
                 >
                   {metrics?.dpo?.toFixed(1) || 0}
                 </span>
@@ -270,7 +269,7 @@ const Dashboard = () => {
         <CardHeader>
           <CardTitle
             className="text-xl font-semibold"
-            style={{ fontFamily: "Inter", color: COLORS.primary }}
+            style={{ fontFamily: "Inter", color: "COLORS.primary" }}
           >
             AI-Powered Insights
           </CardTitle>
@@ -279,7 +278,7 @@ const Dashboard = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="bg-[rgba(3,63,153,0.08)] p-4 rounded-lg border border-[rgba(3,63,153,0.25)]">
+          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
             <p className="text-gray-700 whitespace-pre-line">
               {metrics?.ai_insights || "Loading insights..."}
             </p>
@@ -293,7 +292,7 @@ const Dashboard = () => {
           <CardHeader>
             <CardTitle
               className="text-xl font-semibold"
-              style={{ fontFamily: "Inter", color: COLORS.primary }}
+              style={{ fontFamily: "Inter", color: "COLORS.primary" }}
             >
               Alerts & Actions
             </CardTitle>
@@ -307,14 +306,14 @@ const Dashboard = () => {
                   className={`flex items-start gap-3 p-3 rounded-lg ${
                     alert.type === "warning"
                       ? "bg-orange-50 border border-orange-200"
-                      : "bg-[rgba(3,63,153,0.08)] border border-[rgba(3,63,153,0.25)]"
+                      : "bg-blue-50 border border-blue-200"
                   }`}
                 >
                   <AlertCircle
                     className={`h-5 w-5 mt-0.5 ${
                       alert.type === "warning"
                         ? "text-orange-600"
-                        : "text-[#033F99]"
+                        : "text-blue-600"
                     }`}
                   />
                   <p className="text-gray-700">{alert.message}</p>

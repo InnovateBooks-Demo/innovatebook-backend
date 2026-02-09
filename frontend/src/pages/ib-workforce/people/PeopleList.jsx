@@ -97,7 +97,7 @@ const PeopleList = () => {
       label: "Total People",
       value: people.length,
       icon: Users,
-      color: "text-[#033F99]",
+      color: "text-blue-600",
     },
     {
       label: "Active",

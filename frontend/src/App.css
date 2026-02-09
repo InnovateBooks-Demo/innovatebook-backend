@@ -3,7 +3,7 @@
   background: linear-gradient(135deg, #eef4ff 0%, #ffffff 100%);
 }
 
-/* .stat-card {
+.stat-card {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -15,10 +15,10 @@
 .stat-card:hover {
   box-shadow: 0 4px 12px rgba(3, 63, 153, 0.15);
   transform: translateY(-2px);
-} */
+}
 
 .sidebar {
-  background: linear-gradient(180deg, #033F99  0%, #033F99 100%);
+  background: linear-gradient(180deg, #3A4E63 0%, #025bb5 100%);
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -42,16 +42,16 @@
   font-weight: 500;
 }
 
-/* .chart-container {
+.chart-container {
   background: white;
   border-radius: 12px;
   padding: 1.5rem;
   border: 1px solid #e5e7eb;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-} */
+}
 
 .btn-primary {
-  background: #033F99  ;
+  background: #3A4E63;
   color: white;
   padding: 0.625rem 1.5rem;
   border-radius: 8px;
@@ -62,7 +62,7 @@
 }
 
 .btn-primary:hover {
-  background: #033F99;
+  background: #025bb5;
   box-shadow: 0 4px 12px rgba(3, 63, 153, 0.3);
 }
 
@@ -127,7 +127,7 @@
 
 .loading-spinner {
   border: 3px solid #f3f4f6;
-  border-top: 3px solid #033F99  ;
+  border-top: 3px solid #3A4E63;
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -365,7 +365,7 @@
 
 /* Gradient Text Animation */
 .gradient-text-animated {
-  background: linear-gradient(90deg, #033F99  , #6366f1, #033F99);
+  background: linear-gradient(90deg, #3A4E63, #6366f1, #3A4E63);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -468,7 +468,7 @@
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #033F99  , #6366f1);
+  background: linear-gradient(90deg, #3A4E63, #6366f1);
   border-radius: 2px;
   transition: width 0.5s ease;
 }
@@ -502,7 +502,7 @@
   content: "";
   position: absolute;
   inset: -2px;
-  background: linear-gradient(45deg, #033F99  , #6366f1, #033F99);
+  background: linear-gradient(45deg, #3A4E63, #6366f1, #3A4E63);
   border-radius: inherit;
   z-index: -1;
   opacity: 0;
@@ -532,12 +532,12 @@ html {
 /* Selection Color */
 ::selection {
   background: rgba(3, 63, 153, 0.2);
-  color: #033F99  ;
+  color: #3A4E63;
 }
 
 /* Focus Styles */
 :focus-visible {
-  outline: 2px solid #033F99  ;
+  outline: 2px solid #3A4E63;
   outline-offset: 2px;
 }
 

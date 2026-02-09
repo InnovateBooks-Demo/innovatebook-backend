@@ -68,7 +68,7 @@ const ComplianceDashboard = () => {
       label: "Total Documents",
       value: dashboardData.documents?.total || 0,
       icon: FileText,
-      color: "text-[#033F99]",
+      color: "text-blue-600",
     },
     {
       label: "Verified",

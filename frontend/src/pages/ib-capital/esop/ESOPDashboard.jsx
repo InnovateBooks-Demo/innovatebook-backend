@@ -201,7 +201,7 @@ const ESOPDashboard = () => {
             title={`Exercised: ${formatNumber(dashboard?.exercised)}`}
           />
           <div
-            className="bg-[rgba(3,63,153,0.08)]0 h-full"
+            className="bg-blue-500 h-full"
             style={{
               width: `${((dashboard?.vested - dashboard?.exercised || 0) / Math.max(dashboard?.total_pool, 1)) * 100}%`,
             }}
@@ -228,7 +228,7 @@ const ESOPDashboard = () => {
             <span>Exercised</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded bg-[rgba(3,63,153,0.08)]0"></div>
+            <div className="w-3 h-3 rounded bg-blue-500"></div>
             <span>Vested</span>
           </div>
           <div className="flex items-center gap-2">

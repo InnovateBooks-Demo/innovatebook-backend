@@ -60,8 +60,8 @@ const LeadListCommerce = () => {
   const getStatusStyle = (status) => {
     const styles = {
       New: {
-        bg: "bg-[rgba(3,63,153,0.08)]0",
-        badge: "bg-blue-100 text-blue-700 border-[rgba(3,63,153,0.25)]",
+        bg: "bg-blue-500",
+        badge: "bg-blue-100 text-blue-700 border-blue-200",
       },
       Active: {
         bg: "bg-green-500",

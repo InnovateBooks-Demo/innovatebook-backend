@@ -1,14 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  FaIndustry,
-  FaSave,
-  FaTimes,
-  FaUser,
-  FaBox,
-  FaCog,
-  FaDollarSign,
-} from "react-icons/fa";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaIndustry, FaSave, FaTimes, FaUser, FaBox, FaCog, FaDollarSign } from 'react-icons/fa';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -18,31 +10,31 @@ const ManufacturingLeadCreate = () => {
   const [customers, setCustomers] = useState([]);
   const [productFamilies, setProductFamilies] = useState([]);
   const [skus, setSkus] = useState([]);
-
+  
   const [formData, setFormData] = useState({
-    customer_id: "",
-    contact_person: "",
-    contact_email: "",
-    contact_phone: "",
-    product_family_id: "",
-    sku_id: "",
-    product_description: "",
-    quantity: "",
-    uom: "PC",
-    delivery_date_required: "",
-    application: "",
-    material_grade: "",
-    tolerances: "",
-    surface_finish: "",
-    coating: "",
+    customer_id: '',
+    contact_person: '',
+    contact_email: '',
+    contact_phone: '',
+    product_family_id: '',
+    sku_id: '',
+    product_description: '',
+    quantity: '',
+    uom: 'PC',
+    delivery_date_required: '',
+    application: '',
+    material_grade: '',
+    tolerances: '',
+    surface_finish: '',
+    coating: '',
     certifications_required: [],
-    expected_price_per_unit: "",
-    currency: "INR",
-    payment_terms: "Net 30",
+    expected_price_per_unit: '',
+    currency: 'INR',
+    payment_terms: 'Net 30',
     sample_required: false,
-    sample_quantity: "",
-    priority: "Medium",
-    rfq_number: "",
+    sample_quantity: '',
+    priority: 'Medium',
+    rfq_number: ''
   });
 
   const [errors, setErrors] = useState({});
@@ -53,119 +45,101 @@ const ManufacturingLeadCreate = () => {
 
   const fetchMasterData = async () => {
     try {
-      const token = localStorage.getItem("access_token");
-      const headers = { Authorization: `Bearer ${token}` };
-
+      const token = localStorage.getItem('access_token');
+      const headers = { 'Authorization': `Bearer ${token}` };
+      
       // Fetch customers
-      const customersRes = await fetch(
-        `${API_URL}/api/manufacturing/masters/customers`,
-        { headers },
-      );
+      const customersRes = await fetch(`${API_URL}/api/manufacturing/masters/customers`, { headers });
       if (customersRes.ok) {
         const data = await customersRes.json();
         setCustomers(data.customers || []);
       }
-
+      
       // Fetch product families
-      const familiesRes = await fetch(
-        `${API_URL}/api/manufacturing/masters/product-families`,
-        { headers },
-      );
+      const familiesRes = await fetch(`${API_URL}/api/manufacturing/masters/product-families`, { headers });
       if (familiesRes.ok) {
         const data = await familiesRes.json();
         setProductFamilies(data.product_families || []);
       }
-
+      
       // Fetch SKUs
-      const skusRes = await fetch(`${API_URL}/api/manufacturing/masters/skus`, {
-        headers,
-      });
+      const skusRes = await fetch(`${API_URL}/api/manufacturing/masters/skus`, { headers });
       if (skusRes.ok) {
         const data = await skusRes.json();
         setSkus(data.skus || []);
       }
     } catch (error) {
-      console.error("Error fetching master data:", error);
+      console.error('Error fetching master data:', error);
     }
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === 'checkbox' ? checked : value
     }));
-
+    
     // Clear error for this field
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
   const validate = () => {
     const newErrors = {};
-
-    if (!formData.customer_id) newErrors.customer_id = "Customer is required";
-    if (!formData.contact_person)
-      newErrors.contact_person = "Contact person is required";
-    if (!formData.contact_email)
-      newErrors.contact_email = "Contact email is required";
-    if (!formData.contact_phone)
-      newErrors.contact_phone = "Contact phone is required";
-    if (!formData.product_description)
-      newErrors.product_description = "Product description is required";
-    if (!formData.quantity || formData.quantity <= 0)
-      newErrors.quantity = "Valid quantity is required";
-    if (!formData.delivery_date_required)
-      newErrors.delivery_date_required = "Delivery date is required";
-
+    
+    if (!formData.customer_id) newErrors.customer_id = 'Customer is required';
+    if (!formData.contact_person) newErrors.contact_person = 'Contact person is required';
+    if (!formData.contact_email) newErrors.contact_email = 'Contact email is required';
+    if (!formData.contact_phone) newErrors.contact_phone = 'Contact phone is required';
+    if (!formData.product_description) newErrors.product_description = 'Product description is required';
+    if (!formData.quantity || formData.quantity <= 0) newErrors.quantity = 'Valid quantity is required';
+    if (!formData.delivery_date_required) newErrors.delivery_date_required = 'Delivery date is required';
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     if (!validate()) {
       return;
     }
-
+    
     try {
       setLoading(true);
-      const token = localStorage.getItem("access_token");
-
+      const token = localStorage.getItem('access_token');
+      
       // Convert quantity to number
       const payload = {
         ...formData,
         quantity: parseFloat(formData.quantity),
-        sample_quantity: formData.sample_quantity
-          ? parseInt(formData.sample_quantity)
-          : null,
-        expected_price_per_unit: formData.expected_price_per_unit
-          ? parseFloat(formData.expected_price_per_unit)
-          : null,
+        sample_quantity: formData.sample_quantity ? parseInt(formData.sample_quantity) : null,
+        expected_price_per_unit: formData.expected_price_per_unit ? parseFloat(formData.expected_price_per_unit) : null
       };
-
+      
       const response = await fetch(`${API_URL}/api/manufacturing/leads`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
-
+      
       if (response.ok) {
         const data = await response.json();
         alert(`Lead ${data.lead.lead_id} created successfully!`);
-        navigate("/commerce/manufacturing-leads");
+        navigate('/commerce/manufacturing-leads');
       } else {
         const errorData = await response.json();
-        alert(`Error: ${errorData.detail || "Failed to create lead"}`);
+        alert(`Error: ${errorData.detail || 'Failed to create lead'}`);
       }
     } catch (error) {
-      console.error("Error creating lead:", error);
-      alert("Error creating lead. Please try again.");
+      console.error('Error creating lead:', error);
+      alert('Error creating lead. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -177,22 +151,20 @@ const ManufacturingLeadCreate = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <FaIndustry className="text-[#033F99]" />
+            <FaIndustry className="text-blue-600" />
             Create Manufacturing Lead
           </h1>
-          <p className="text-gray-600 mt-1">
-            Add a new manufacturing lead to the pipeline
-          </p>
+          <p className="text-gray-600 mt-1">Add a new manufacturing lead to the pipeline</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           {/* Customer Information Section */}
           <div className="bg-white rounded-xl shadow-md p-6 mb-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <FaUser className="text-[#033F99]" />
+              <FaUser className="text-blue-600" />
               Customer Information
             </h2>
-
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -202,22 +174,18 @@ const ManufacturingLeadCreate = () => {
                   name="customer_id"
                   value={formData.customer_id}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.customer_id ? "border-red-500" : "border-gray-300"}`}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.customer_id ? 'border-red-500' : 'border-gray-300'}`}
                 >
                   <option value="">Select Customer</option>
-                  {customers.map((customer) => (
+                  {customers.map(customer => (
                     <option key={customer.id} value={customer.id}>
                       {customer.customer_name} ({customer.industry})
                     </option>
                   ))}
                 </select>
-                {errors.customer_id && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.customer_id}
-                  </p>
-                )}
+                {errors.customer_id && <p className="text-red-500 text-xs mt-1">{errors.customer_id}</p>}
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   RFQ Number
@@ -231,7 +199,7 @@ const ManufacturingLeadCreate = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Contact Person <span className="text-red-500">*</span>
@@ -241,15 +209,11 @@ const ManufacturingLeadCreate = () => {
                   name="contact_person"
                   value={formData.contact_person}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.contact_person ? "border-red-500" : "border-gray-300"}`}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.contact_person ? 'border-red-500' : 'border-gray-300'}`}
                 />
-                {errors.contact_person && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.contact_person}
-                  </p>
-                )}
+                {errors.contact_person && <p className="text-red-500 text-xs mt-1">{errors.contact_person}</p>}
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Contact Email <span className="text-red-500">*</span>
@@ -259,15 +223,11 @@ const ManufacturingLeadCreate = () => {
                   name="contact_email"
                   value={formData.contact_email}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.contact_email ? "border-red-500" : "border-gray-300"}`}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.contact_email ? 'border-red-500' : 'border-gray-300'}`}
                 />
-                {errors.contact_email && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.contact_email}
-                  </p>
-                )}
+                {errors.contact_email && <p className="text-red-500 text-xs mt-1">{errors.contact_email}</p>}
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Contact Phone <span className="text-red-500">*</span>
@@ -277,15 +237,11 @@ const ManufacturingLeadCreate = () => {
                   name="contact_phone"
                   value={formData.contact_phone}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.contact_phone ? "border-red-500" : "border-gray-300"}`}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.contact_phone ? 'border-red-500' : 'border-gray-300'}`}
                 />
-                {errors.contact_phone && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.contact_phone}
-                  </p>
-                )}
+                {errors.contact_phone && <p className="text-red-500 text-xs mt-1">{errors.contact_phone}</p>}
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Priority
@@ -308,10 +264,10 @@ const ManufacturingLeadCreate = () => {
           {/* Product Requirements Section */}
           <div className="bg-white rounded-xl shadow-md p-6 mb-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <FaBox className="text-[#033F99]" />
+              <FaBox className="text-blue-600" />
               Product Requirements
             </h2>
-
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -324,14 +280,14 @@ const ManufacturingLeadCreate = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select Product Family</option>
-                  {productFamilies.map((family) => (
+                  {productFamilies.map(family => (
                     <option key={family.id} value={family.id}>
                       {family.family_name} ({family.category})
                     </option>
                   ))}
                 </select>
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   SKU (if existing)
@@ -343,14 +299,14 @@ const ManufacturingLeadCreate = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select SKU or leave blank for new</option>
-                  {skus.map((sku) => (
+                  {skus.map(sku => (
                     <option key={sku.id} value={sku.id}>
                       {sku.sku_code} - {sku.sku_name}
                     </option>
                   ))}
                 </select>
               </div>
-
+              
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Product Description <span className="text-red-500">*</span>
@@ -360,16 +316,12 @@ const ManufacturingLeadCreate = () => {
                   value={formData.product_description}
                   onChange={handleChange}
                   rows="3"
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.product_description ? "border-red-500" : "border-gray-300"}`}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.product_description ? 'border-red-500' : 'border-gray-300'}`}
                   placeholder="Detailed product description..."
                 />
-                {errors.product_description && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.product_description}
-                  </p>
-                )}
+                {errors.product_description && <p className="text-red-500 text-xs mt-1">{errors.product_description}</p>}
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Quantity <span className="text-red-500">*</span>
@@ -381,13 +333,11 @@ const ManufacturingLeadCreate = () => {
                   onChange={handleChange}
                   min="1"
                   step="any"
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.quantity ? "border-red-500" : "border-gray-300"}`}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.quantity ? 'border-red-500' : 'border-gray-300'}`}
                 />
-                {errors.quantity && (
-                  <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>
-                )}
+                {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>}
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   UOM
@@ -405,7 +355,7 @@ const ManufacturingLeadCreate = () => {
                   <option value="M">M (Meter)</option>
                 </select>
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Delivery Date Required <span className="text-red-500">*</span>
@@ -415,16 +365,12 @@ const ManufacturingLeadCreate = () => {
                   name="delivery_date_required"
                   value={formData.delivery_date_required}
                   onChange={handleChange}
-                  min={new Date().toISOString().split("T")[0]}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.delivery_date_required ? "border-red-500" : "border-gray-300"}`}
+                  min={new Date().toISOString().split('T')[0]}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.delivery_date_required ? 'border-red-500' : 'border-gray-300'}`}
                 />
-                {errors.delivery_date_required && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.delivery_date_required}
-                  </p>
-                )}
+                {errors.delivery_date_required && <p className="text-red-500 text-xs mt-1">{errors.delivery_date_required}</p>}
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Application / End Use
@@ -444,10 +390,10 @@ const ManufacturingLeadCreate = () => {
           {/* Technical Specifications Section */}
           <div className="bg-white rounded-xl shadow-md p-6 mb-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <FaCog className="text-[#033F99]" />
+              <FaCog className="text-blue-600" />
               Technical Specifications
             </h2>
-
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -462,7 +408,7 @@ const ManufacturingLeadCreate = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Tolerances
@@ -476,7 +422,7 @@ const ManufacturingLeadCreate = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Surface Finish
@@ -490,7 +436,7 @@ const ManufacturingLeadCreate = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Coating
@@ -510,10 +456,10 @@ const ManufacturingLeadCreate = () => {
           {/* Commercial Data Section */}
           <div className="bg-white rounded-xl shadow-md p-6 mb-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <FaDollarSign className="text-[#033F99]" />
+              <FaDollarSign className="text-blue-600" />
               Commercial Information
             </h2>
-
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -530,7 +476,7 @@ const ManufacturingLeadCreate = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Currency
@@ -547,7 +493,7 @@ const ManufacturingLeadCreate = () => {
                   <option value="GBP">GBP (£)</option>
                 </select>
               </div>
-
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Payment Terms
@@ -573,20 +519,20 @@ const ManufacturingLeadCreate = () => {
             <h2 className="text-xl font-bold text-gray-900 mb-4">
               Sample Requirements
             </h2>
-
+            
             <div className="flex items-center mb-4">
               <input
                 type="checkbox"
                 name="sample_required"
                 checked={formData.sample_required}
                 onChange={handleChange}
-                className="w-4 h-4 text-[#033F99] rounded focus:ring-2 focus:ring-blue-500"
+                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
               />
               <label className="ml-2 text-sm font-medium text-gray-700">
                 Sample/Prototype Required
               </label>
             </div>
-
+            
             {formData.sample_required && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -624,10 +570,10 @@ const ManufacturingLeadCreate = () => {
                 </>
               )}
             </button>
-
+            
             <button
               type="button"
-              onClick={() => navigate("/commerce/manufacturing-leads")}
+              onClick={() => navigate('/commerce/manufacturing-leads')}
               className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-all duration-300 flex items-center gap-2"
             >
               <FaTimes /> Cancel

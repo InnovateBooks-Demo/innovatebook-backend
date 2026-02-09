@@ -209,7 +209,7 @@ const CommerceDashboard = () => {
               value: stats?.lead?.total || 0,
               icon: UserPlus,
               change: "+12%",
-              color: "bg-[rgba(3,63,153,0.08)] text-[#0147CC]",
+              color: "bg-blue-50 text-[#0147CC]",
             },
             {
               label: "Open Invoices",

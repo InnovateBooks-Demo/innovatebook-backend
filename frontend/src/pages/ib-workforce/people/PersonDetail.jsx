@@ -554,7 +554,7 @@ const PersonDetail = () => {
               </div>
               {person.status === "active" && (
                 <div className="flex items-start gap-3 pb-4 border-b border-gray-100">
-                  <div className="w-2 h-2 mt-2 rounded-full bg-[rgba(3,63,153,0.08)]0" />
+                  <div className="w-2 h-2 mt-2 rounded-full bg-blue-500" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">
                       Person Activated

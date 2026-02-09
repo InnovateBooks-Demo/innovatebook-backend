@@ -300,7 +300,7 @@ const CreateBill = () => {
                     </SelectContent>
                   </Select>
                   {selectedCategory && (
-                    <div className="mt-2 p-2 bg-[rgba(3,63,153,0.08)] rounded border border-[rgba(3,63,153,0.25)]">
+                    <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
                       <p className="text-xs text-blue-900">
                         <strong>COA:</strong> {selectedCategory.coa_account}
                       </p>
@@ -574,7 +574,7 @@ const CreateBill = () => {
               {/* Calculation Summary */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Calculator className="h-5 w-5 text-[#033F99]" />
+                  <Calculator className="h-5 w-5 text-blue-600" />
                   <h3
                     className="text-lg font-semibold text-gray-900"
                     style={{

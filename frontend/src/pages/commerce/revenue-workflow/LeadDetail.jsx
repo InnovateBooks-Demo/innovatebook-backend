@@ -881,7 +881,7 @@
 
 //             {/* Active fill */}
 //             <div
-//               className="absolute left-0 top-0 h-12 bg-[rgba(3,63,153,0.08)]0 rounded-full"
+//               className="absolute left-0 top-0 h-12 bg-blue-500 rounded-full"
 //               style={{ width: `${progressPct}%` }}
 //             />
 
@@ -918,9 +918,9 @@
 
 //               const circleStyle =
 //                 state === "done"
-//                   ? "bg-[rgba(3,63,153,0.08)]0 border-white"
+//                   ? "bg-blue-500 border-white"
 //                   : state === "current"
-//                     ? "bg-[rgba(3,63,153,0.08)]0 border-white ring-4 ring-blue-200"
+//                     ? "bg-blue-500 border-white ring-4 ring-blue-200"
 //                     : "bg-gray-200 border-white";
 
 //               const iconStyle =
@@ -1351,7 +1351,7 @@
 //               <div className="p-6 space-y-4">
 //                 <div className="flex items-center gap-3">
 //                   {lead.problem_identified ? (
-//                     <CheckCircle2 className="h-5 w-5 text-[#033F99]" />
+//                     <CheckCircle2 className="h-5 w-5 text-blue-600" />
 //                   ) : (
 //                     <Clock className="h-5 w-5 text-gray-300" />
 //                   )}
@@ -1368,7 +1368,7 @@
 
 //                 <div className="flex items-center gap-3">
 //                   {lead.budget_mentioned === "yes" ? (
-//                     <CheckCircle2 className="h-5 w-5 text-[#033F99]" />
+//                     <CheckCircle2 className="h-5 w-5 text-blue-600" />
 //                   ) : lead.budget_mentioned === "no" ? (
 //                     <AlertTriangle className="h-5 w-5 text-red-500" />
 //                   ) : (
@@ -1384,7 +1384,7 @@
 
 //                 <div className="flex items-center gap-3">
 //                   {lead.authority_known ? (
-//                     <CheckCircle2 className="h-5 w-5 text-[#033F99]" />
+//                     <CheckCircle2 className="h-5 w-5 text-blue-600" />
 //                   ) : (
 //                     <Clock className="h-5 w-5 text-gray-300" />
 //                   )}
@@ -1401,7 +1401,7 @@
 
 //                 <div className="flex items-center gap-3">
 //                   {lead.need_timeline ? (
-//                     <CheckCircle2 className="h-5 w-5 text-[#033F99]" />
+//                     <CheckCircle2 className="h-5 w-5 text-blue-600" />
 //                   ) : (
 //                     <Clock className="h-5 w-5 text-gray-300" />
 //                   )}
@@ -1723,7 +1723,7 @@ const WorkflowStepper = ({ lead }) => {
             </div>
 
             <div
-              className="absolute left-0 top-0 h-12 bg-[rgba(3,63,153,0.08)]0 rounded-full"
+              className="absolute left-0 top-0 h-12 bg-blue-500 rounded-full"
               style={{ width: `${progressPct}%` }}
             />
 
@@ -1758,9 +1758,9 @@ const WorkflowStepper = ({ lead }) => {
 
               const circleStyle =
                 state === "done"
-                  ? "bg-[rgba(3,63,153,0.08)]0 border-white"
+                  ? "bg-blue-500 border-white"
                   : state === "current"
-                    ? "bg-[rgba(3,63,153,0.08)]0 border-white ring-4 ring-blue-200"
+                    ? "bg-blue-500 border-white ring-4 ring-blue-200"
                     : "bg-gray-200 border-white";
 
               const iconStyle =
@@ -2238,7 +2238,7 @@ const RevenueLeadDetail = () => {
               <div className="p-6 space-y-4">
                 <div className="flex items-center gap-3">
                   {lead.problem_identified ? (
-                    <CheckCircle2 className="h-5 w-5 text-[#033F99]" />
+                    <CheckCircle2 className="h-5 w-5 text-blue-600" />
                   ) : (
                     <Clock className="h-5 w-5 text-gray-300" />
                   )}
@@ -2255,7 +2255,7 @@ const RevenueLeadDetail = () => {
 
                 <div className="flex items-center gap-3">
                   {lead.budget_mentioned === "yes" ? (
-                    <CheckCircle2 className="h-5 w-5 text-[#033F99]" />
+                    <CheckCircle2 className="h-5 w-5 text-blue-600" />
                   ) : lead.budget_mentioned === "no" ? (
                     <AlertTriangle className="h-5 w-5 text-red-500" />
                   ) : (
@@ -2271,7 +2271,7 @@ const RevenueLeadDetail = () => {
 
                 <div className="flex items-center gap-3">
                   {lead.authority_known ? (
-                    <CheckCircle2 className="h-5 w-5 text-[#033F99]" />
+                    <CheckCircle2 className="h-5 w-5 text-blue-600" />
                   ) : (
                     <Clock className="h-5 w-5 text-gray-300" />
                   )}
@@ -2288,7 +2288,7 @@ const RevenueLeadDetail = () => {
 
                 <div className="flex items-center gap-3">
                   {lead.need_timeline ? (
-                    <CheckCircle2 className="h-5 w-5 text-[#033F99]" />
+                    <CheckCircle2 className="h-5 w-5 text-blue-600" />
                   ) : (
                     <Clock className="h-5 w-5 text-gray-300" />
                   )}

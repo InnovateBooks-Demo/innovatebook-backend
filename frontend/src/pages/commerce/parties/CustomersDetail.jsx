@@ -71,7 +71,7 @@
 //       <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 flex items-center justify-center">
 //         <div className="text-center">
 //           <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-//           <p className="mt-4 text-[#033F99] font-semibold text-lg">Loading customer details...</p>
+//           <p className="mt-4 text-blue-600 font-semibold text-lg">Loading customer details...</p>
 //         </div>
 //       </div>
 //     );
@@ -82,7 +82,7 @@
 //       <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 flex items-center justify-center">
 //         <div className="text-center">
 //           <h2 className="text-2xl font-bold text-gray-900 mb-2">Customer Not Found</h2>
-//           <button onClick={() => navigate('/commerce/parties/customers')} className="px-6 py-3 text-blue-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all">
+//           <button onClick={() => navigate('/commerce/parties/customers')} className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all">
 //             Back to Customers
 //           </button>
 //         </div>
@@ -100,13 +100,13 @@
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50" style={{ fontFamily: 'Poppins' }}>
 //       <div className="max-w-[1600px] mx-auto px-6 py-8">
-//         <button onClick={() => navigate('/commerce/parties/customers')} className="flex items-center gap-2 text-[#033F99] hover:text-blue-700 font-semibold mb-6 transition-all">
+//         <button onClick={() => navigate('/commerce/parties/customers')} className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold mb-6 transition-all">
 //           <ArrowLeft className="h-5 w-5" />
 //           Back to Customers
 //         </button>
 
 //         {/* Header Card */}
-//         <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-[rgba(3,63,153,0.25)] mb-6">
+//         <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-blue-200 mb-6">
 //           <div className="flex items-start justify-between">
 //             <div className="flex-1">
 //               <div className="flex items-center gap-4 mb-4">
@@ -150,7 +150,7 @@
 //             </div>
 
 //             <div className="flex gap-3">
-//               <button onClick={() => navigate(`/commerce/parties/customers/${customer_id}/edit`)} className="flex items-center gap-2 px-6 py-3 text-blue-700 hover:bg-blue-700 text-white font-bold rounded-xl transition-all">
+//               <button onClick={() => navigate(`/commerce/parties/customers/${customer_id}/edit`)} className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all">
 //                 <Edit className="h-5 w-5" />
 //                 Edit
 //               </button>
@@ -163,8 +163,8 @@
 //         </div>
 
 //         {/* Tabs */}
-//         <div className="bg-white rounded-3xl shadow-2xl border-2 border-[rgba(3,63,153,0.25)] overflow-hidden">
-//           <div className="flex overflow-x-auto border-b-2 border-[rgba(3,63,153,0.25)] bg-[rgba(3,63,153,0.08)]">
+//         <div className="bg-white rounded-3xl shadow-2xl border-2 border-blue-200 overflow-hidden">
+//           <div className="flex overflow-x-auto border-b-2 border-blue-200 bg-blue-50">
 //             {tabs.map(tab => {
 //               const Icon = tab.icon;
 //               return (
@@ -173,7 +173,7 @@
 //                   onClick={() => setActiveTab(tab.key)}
 //                   className={`flex items-center gap-2 px-6 py-4 font-semibold transition-all whitespace-nowrap ${
 //                     activeTab === tab.key
-//                       ? 'text-blue-700 text-white border-b-4 border-blue-800'
+//                       ? 'bg-blue-600 text-white border-b-4 border-blue-800'
 //                       : 'text-gray-600 hover:bg-blue-100'
 //                   }`}
 //                 >
@@ -257,9 +257,9 @@
 //                 {customer.contacts && customer.contacts.length > 0 ? (
 //                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //                     {customer.contacts.map((contact, index) => (
-//                       <div key={`item-${index}`} className="bg-[rgba(3,63,153,0.08)] rounded-2xl p-6 border-2 border-[rgba(3,63,153,0.25)]">
+//                       <div key={`item-${index}`} className="bg-blue-50 rounded-2xl p-6 border-2 border-blue-200">
 //                         <div className="flex items-center gap-3 mb-3">
-//                           <div className="w-10 h-10 text-blue-700 rounded-full flex items-center justify-center">
+//                           <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
 //                             <Users className="h-5 w-5 text-white" />
 //                           </div>
 //                           <div>
@@ -267,7 +267,7 @@
 //                             {contact.role && <p className="text-sm text-gray-600">{contact.role}</p>}
 //                           </div>
 //                           {contact.is_primary && (
-//                             <span className="ml-auto px-2 py-1 text-blue-700 text-white rounded-lg text-xs font-semibold">Primary</span>
+//                             <span className="ml-auto px-2 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold">Primary</span>
 //                           )}
 //                         </div>
 //                         <div className="space-y-2">
@@ -299,10 +299,10 @@
 //                 {customer.locations && customer.locations.length > 0 ? (
 //                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //                     {customer.locations.map((location, index) => (
-//                       <div key={`item-${index}`} className="bg-[rgba(3,63,153,0.08)] rounded-2xl p-6 border-2 border-[rgba(3,63,153,0.25)]">
+//                       <div key={`item-${index}`} className="bg-blue-50 rounded-2xl p-6 border-2 border-blue-200">
 //                         <div className="flex items-center gap-2 mb-3">
-//                           <MapPin className="h-5 w-5 text-[#033F99]" />
-//                           <span className="px-3 py-1 text-blue-700 text-white rounded-lg text-xs font-semibold">
+//                           <MapPin className="h-5 w-5 text-blue-600" />
+//                           <span className="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold">
 //                             {location.address_type}
 //                           </span>
 //                         </div>
@@ -326,8 +326,8 @@
 //                 <h3 className="text-xl font-bold text-gray-900 mb-4">Activity Log</h3>
 //                 <div className="space-y-3">
 //                   {customer.created_at && (
-//                     <div className="flex items-start gap-3 p-4 bg-[rgba(3,63,153,0.08)] rounded-xl">
-//                       <Activity className="h-5 w-5 text-[#033F99] mt-1" />
+//                     <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-xl">
+//                       <Activity className="h-5 w-5 text-blue-600 mt-1" />
 //                       <div>
 //                         <p className="font-semibold text-gray-900">Customer Created</p>
 //                         <p className="text-sm text-gray-600">
@@ -525,7 +525,7 @@ const CustomersDetail = () => {
       <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-          <p className="mt-4 text-[#033F99] font-semibold text-lg">
+          <p className="mt-4 text-blue-600 font-semibold text-lg">
             Loading customer details...
           </p>
         </div>
@@ -542,7 +542,7 @@ const CustomersDetail = () => {
           </h2>
           <button
             onClick={() => navigate("/commerce/parties/customers")}
-            className="px-6 py-3 text-blue-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
+            className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
           >
             Back to Customers
           </button>
@@ -571,14 +571,14 @@ const CustomersDetail = () => {
       <div className="max-w-[1600px] mx-auto px-6 py-8">
         <button
           onClick={() => navigate("/commerce/parties/customers")}
-          className="flex items-center gap-2 text-[#033F99] hover:text-blue-700 font-semibold mb-6 transition-all"
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold mb-6 transition-all"
         >
           <ArrowLeft className="h-5 w-5" />
           Back to Customers
         </button>
 
         {/* Header Card */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-[rgba(3,63,153,0.25)] mb-6">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-blue-200 mb-6">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-4">
@@ -620,7 +620,7 @@ const CustomersDetail = () => {
                 onClick={() =>
                   navigate(`/commerce/parties/customers/${customer_id}/edit`)
                 }
-                className="flex items-center gap-2 px-6 py-3 text-blue-700 hover:bg-blue-700 text-white font-bold rounded-xl transition-all"
+                className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all"
               >
                 <Edit className="h-5 w-5" />
                 Edit
@@ -637,8 +637,8 @@ const CustomersDetail = () => {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-3xl shadow-2xl border-2 border-[rgba(3,63,153,0.25)] overflow-hidden">
-          <div className="flex overflow-x-auto border-b-2 border-[rgba(3,63,153,0.25)] bg-[rgba(3,63,153,0.08)]">
+        <div className="bg-white rounded-3xl shadow-2xl border-2 border-blue-200 overflow-hidden">
+          <div className="flex overflow-x-auto border-b-2 border-blue-200 bg-blue-50">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -647,7 +647,7 @@ const CustomersDetail = () => {
                   onClick={() => setActiveTab(tab.key)}
                   className={`flex items-center gap-2 px-6 py-4 font-semibold transition-all whitespace-nowrap ${
                     activeTab === tab.key
-                      ? "text-blue-700 text-white border-b-4 border-blue-800"
+                      ? "bg-blue-600 text-white border-b-4 border-blue-800"
                       : "text-gray-600 hover:bg-blue-100"
                   }`}
                 >
@@ -713,7 +713,7 @@ const CustomersDetail = () => {
 
                 {/* Contact Snapshot */}
                 {(view.email || view.phone || view.address) && (
-                  <div className="bg-[rgba(3,63,153,0.08)] rounded-2xl p-6 border-2 border-[rgba(3,63,153,0.25)]">
+                  <div className="bg-blue-50 rounded-2xl p-6 border-2 border-blue-200">
                     <h3 className="text-xl font-bold text-gray-900 mb-4">
                       Contact Details
                     </h3>
@@ -758,10 +758,10 @@ const CustomersDetail = () => {
                     {view.contacts.map((contact, index) => (
                       <div
                         key={`contact-${index}`}
-                        className="bg-[rgba(3,63,153,0.08)] rounded-2xl p-6 border-2 border-[rgba(3,63,153,0.25)]"
+                        className="bg-blue-50 rounded-2xl p-6 border-2 border-blue-200"
                       >
                         <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 text-blue-700 rounded-full flex items-center justify-center">
+                          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
                             <Users className="h-5 w-5 text-white" />
                           </div>
                           <div>
@@ -775,7 +775,7 @@ const CustomersDetail = () => {
                             )}
                           </div>
                           {contact.is_primary && (
-                            <span className="ml-auto px-2 py-1 text-blue-700 text-white rounded-lg text-xs font-semibold">
+                            <span className="ml-auto px-2 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold">
                               Primary
                             </span>
                           )}
@@ -815,11 +815,11 @@ const CustomersDetail = () => {
                     {view.locations.map((location, index) => (
                       <div
                         key={`loc-${index}`}
-                        className="bg-[rgba(3,63,153,0.08)] rounded-2xl p-6 border-2 border-[rgba(3,63,153,0.25)]"
+                        className="bg-blue-50 rounded-2xl p-6 border-2 border-blue-200"
                       >
                         <div className="flex items-center gap-2 mb-3">
-                          <MapPin className="h-5 w-5 text-[#033F99]" />
-                          <span className="px-3 py-1 text-blue-700 text-white rounded-lg text-xs font-semibold">
+                          <MapPin className="h-5 w-5 text-blue-600" />
+                          <span className="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold">
                             {location.address_type || "N/A"}
                           </span>
                         </div>
@@ -858,8 +858,8 @@ const CustomersDetail = () => {
                 </h3>
                 <div className="space-y-3">
                   {view.createdAt && (
-                    <div className="flex items-start gap-3 p-4 bg-[rgba(3,63,153,0.08)] rounded-xl">
-                      <Activity className="h-5 w-5 text-[#033F99] mt-1" />
+                    <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-xl">
+                      <Activity className="h-5 w-5 text-blue-600 mt-1" />
                       <div>
                         <p className="font-semibold text-gray-900">
                           Customer Created

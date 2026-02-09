@@ -286,7 +286,7 @@ const CashFlowStatementReport = () => {
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center p-4 bg-[rgba(3,63,153,0.08)] rounded-lg border border-[rgba(3,63,153,0.25)]">
+                <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <span className="text-base font-semibold text-blue-900">
                     Net Change in Cash
                   </span>

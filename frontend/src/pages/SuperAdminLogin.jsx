@@ -153,9 +153,9 @@ const SuperAdminLogin = () => {
         </div>
 
         {/* Info Card */}
-        <div className="mt-6 bg-[rgba(3,63,153,0.08)] border-2 border-[rgba(3,63,153,0.25)] rounded-xl p-4">
+        <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
           <div className="flex items-start gap-3">
-            <TrendingUp className="w-5 h-5 text-[#033F99] flex-shrink-0 mt-0.5" />
+            <TrendingUp className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div>
               <p className="text-sm text-blue-900 font-semibold mb-1">
                 Test Credentials

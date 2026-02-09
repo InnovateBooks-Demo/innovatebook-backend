@@ -20,7 +20,7 @@ import { toast } from "sonner";
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const eventTypeColors = {
-  meeting: "bg-[rgba(3,63,153,0.08)]0",
+  meeting: "bg-blue-500",
   task: "bg-green-500",
   deadline: "bg-red-500",
   milestone: "bg-purple-500",
@@ -293,13 +293,13 @@ const CalendarPage = () => {
                     key={`item-${index}`}
                     className={`min-h-[100px] p-2 border border-slate-100 rounded-lg ${
                       day ? "hover:bg-slate-50 cursor-pointer" : ""
-                    } ${isToday ? "bg-[rgba(3,63,153,0.08)] border-[rgba(3,63,153,0.25)]" : ""}`}
+                    } ${isToday ? "bg-blue-50 border-blue-200" : ""}`}
                     onClick={() => day && setSelectedDate(day)}
                   >
                     {day && (
                       <>
                         <span
-                          className={`text-sm font-medium ${isToday ? "text-[#033F99]" : "text-slate-700"}`}
+                          className={`text-sm font-medium ${isToday ? "text-blue-600" : "text-slate-700"}`}
                         >
                           {day}
                         </span>

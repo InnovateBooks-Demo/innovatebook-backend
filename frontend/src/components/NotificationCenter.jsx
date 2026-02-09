@@ -34,7 +34,7 @@ const typeIcons = {
 const severityColors = {
   critical: "bg-red-100 text-red-700 border-red-200",
   warning: "bg-amber-100 text-amber-700 border-amber-200",
-  info: "bg-blue-100 text-blue-700 border-[rgba(3,63,153,0.25)]",
+  info: "bg-blue-100 text-blue-700 border-blue-200",
   success: "bg-green-100 text-green-700 border-green-200",
 };
 
@@ -236,7 +236,7 @@ const NotificationCenter = ({ isOpen, onClose, onNotificationCountChange }) => {
                 <div
                   key={notification.notification_id}
                   className={`px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer ${
-                    !notification.read ? "bg-[rgba(3,63,153,0.08)]/50" : ""
+                    !notification.read ? "bg-blue-50/50" : ""
                   }`}
                   onClick={() => handleNotificationClick(notification)}
                 >

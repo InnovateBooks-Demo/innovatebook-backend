@@ -144,7 +144,7 @@ const AgingDSO = () => {
                     {formatCurrency(aging?.["90+"]?.amount)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-3 bg-[rgba(3,63,153,0.08)] rounded-lg px-4">
+                <div className="flex justify-between items-center py-3 bg-blue-50 rounded-lg px-4">
                   <span className="font-semibold" style={{ color: "#3A4E63" }}>
                     Total Outstanding
                   </span>
@@ -185,7 +185,7 @@ const AgingDSO = () => {
                           </td>
                           <td>{inv.days_overdue} days</td>
                           <td onClick={(e) => e.stopPropagation()}>
-                            <span className="text-[#033F99] hover:underline">
+                            <span className="text-blue-600 hover:underline">
                               View Details
                             </span>
                           </td>

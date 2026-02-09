@@ -63,8 +63,8 @@ const RevenueCommitsList = () => {
         dot: "bg-gray-500",
       },
       sent: {
-        color: "bg-[rgba(3,63,153,0.08)] text-blue-700 ring-blue-600/20",
-        dot: "bg-[rgba(3,63,153,0.08)]0",
+        color: "bg-blue-50 text-blue-700 ring-blue-600/20",
+        dot: "bg-blue-500",
       },
       accepted: {
         color: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
@@ -135,8 +135,8 @@ const RevenueCommitsList = () => {
                   {commits.length}
                 </p>
               </div>
-              <div className="h-12 w-12 rounded-lg bg-[rgba(3,63,153,0.08)] flex items-center justify-center">
-                <FileCheck className="h-6 w-6 text-[#033F99]" />
+              <div className="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
+                <FileCheck className="h-6 w-6 text-blue-600" />
               </div>
             </div>
           </div>
@@ -176,8 +176,8 @@ const RevenueCommitsList = () => {
                   {commits.filter((c) => c.status === "sent").length}
                 </p>
               </div>
-              <div className="h-12 w-12 rounded-lg bg-[rgba(3,63,153,0.08)] flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-[#033F99]" />
+              <div className="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
+                <TrendingUp className="h-6 w-6 text-blue-600" />
               </div>
             </div>
           </div>

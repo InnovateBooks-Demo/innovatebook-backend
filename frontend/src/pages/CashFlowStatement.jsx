@@ -211,7 +211,7 @@ const CashFlowStatement = () => {
             </Card>
 
             {/* Opening Balance */}
-            <Card className="p-6 mb-6 bg-gradient-to-r from-blue-50 to-[#EBF3FC] border border-[rgba(3,63,153,0.25)]">
+            <Card className="p-6 mb-6 bg-gradient-to-r from-blue-50 to-[#EBF3FC] border border-blue-200">
               <div className="flex justify-between items-center">
                 <span className="text-base font-bold text-blue-900">
                   Opening Cash Balance
@@ -340,7 +340,7 @@ const CashFlowStatement = () => {
             </div>
 
             {/* Reconciliation Info */}
-            <Card className="p-4 mt-6 bg-[rgba(3,63,153,0.08)] border border-[rgba(3,63,153,0.25)]">
+            <Card className="p-4 mt-6 bg-blue-50 border border-blue-200">
               <div
                 className="text-xs text-blue-900"
                 style={{ fontFamily: "Inter, sans-serif" }}

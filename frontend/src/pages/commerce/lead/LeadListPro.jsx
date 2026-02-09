@@ -99,7 +99,7 @@ const LeadListPro = () => {
 
   const getStatusBadge = (status) => {
     const styles = {
-      New: "bg-[rgba(3,63,153,0.08)] text-blue-700",
+      New: "bg-blue-50 text-blue-700",
       Validated: "bg-emerald-50 text-emerald-700",
       Qualified: "bg-[#EBF3FC] text-[#3A4E63]",
       Converted: "bg-green-50 text-green-700",

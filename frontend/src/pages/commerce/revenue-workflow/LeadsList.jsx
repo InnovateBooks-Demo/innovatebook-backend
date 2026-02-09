@@ -124,10 +124,10 @@
 //         <div className="bg-white p-4 rounded-xl border border-gray-200">
 //           <div className="flex items-center gap-3">
 //             <div className="p-2 bg-blue-100 rounded-lg">
-//               <Target className="h-5 w-5 text-[#033F99]" />
+//               <Target className="h-5 w-5 text-blue-600" />
 //             </div>
 //             <div>
-//               <p className="text-2xl font-bold text-[#033F99]">{stats.new}</p>
+//               <p className="text-2xl font-bold text-blue-600">{stats.new}</p>
 //               <p className="text-xs text-gray-500">New</p>
 //             </div>
 //           </div>
@@ -485,10 +485,10 @@
 //         <div className="bg-white p-4 rounded-xl border border-gray-200">
 //           <div className="flex items-center gap-3">
 //             <div className="p-2 bg-blue-100 rounded-lg">
-//               <Target className="h-5 w-5 text-[#033F99]" />
+//               <Target className="h-5 w-5 text-blue-600" />
 //             </div>
 //             <div>
-//               <p className="text-2xl font-bold text-[#033F99]">{stats.new}</p>
+//               <p className="text-2xl font-bold text-blue-600">{stats.new}</p>
 //               <p className="text-xs text-gray-500">New</p>
 //             </div>
 //           </div>
@@ -949,10 +949,10 @@ const RevenueLeadsList = () => {
         <div className="bg-white p-4 rounded-xl border border-gray-200">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
-              <Target className="h-5 w-5 text-[#033F99]" />
+              <Target className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#033F99]">{stats.new}</p>
+              <p className="text-2xl font-bold text-blue-600">{stats.new}</p>
               <p className="text-xs text-gray-500">New</p>
             </div>
           </div>

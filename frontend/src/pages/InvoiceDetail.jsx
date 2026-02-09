@@ -486,7 +486,7 @@ const InvoiceDetail = () => {
                     + {formatCurrency(invoice?.gst_amount)}
                   </span>
                 </div>
-                <div className="flex justify-between py-4 text-blue-700 text-white px-4 rounded-lg shadow-md">
+                <div className="flex justify-between py-4 bg-blue-600 text-white px-4 rounded-lg shadow-md">
                   <span className="font-bold text-lg">
                     Total Invoice Amount
                   </span>

@@ -142,7 +142,7 @@ const WorkspaceChats = () => {
   const getChatTypeColor = (type) => {
     switch (type) {
       case "internal":
-        return "bg-[rgba(3,63,153,0.08)]0";
+        return "bg-blue-500";
       case "client":
         return "bg-green-500";
       case "vendor":

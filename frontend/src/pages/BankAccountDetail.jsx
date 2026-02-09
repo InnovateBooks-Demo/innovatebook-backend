@@ -367,9 +367,7 @@ const BankAccountDetail = () => {
                   <div
                     key={`item-${index}`}
                     className={`p-3 border-b cursor-pointer hover:bg-gray-50 ${
-                      selectedEntity?.id === suggestion.id
-                        ? "bg-[rgba(3,63,153,0.08)]"
-                        : ""
+                      selectedEntity?.id === suggestion.id ? "bg-blue-50" : ""
                     }`}
                     onClick={() => {
                       setSelectedEntity(suggestion);

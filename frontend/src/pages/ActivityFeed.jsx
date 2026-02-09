@@ -27,7 +27,7 @@ const moduleIcons = {
 };
 
 const moduleColors = {
-  Commerce: "bg-[rgba(3,63,153,0.08)]0",
+  Commerce: "bg-blue-500",
   Finance: "bg-green-500",
   Operations: "bg-purple-500",
   Workforce: "bg-orange-500",
@@ -37,13 +37,13 @@ const moduleColors = {
 
 const actionColors = {
   created: "text-green-600",
-  updated: "text-[#033F99]",
+  updated: "text-blue-600",
   deleted: "text-red-600",
   converted: "text-purple-600",
   approved: "text-emerald-600",
   rejected: "text-red-600",
   completed: "text-green-600",
-  assigned: "text-[#033F99]",
+  assigned: "text-blue-600",
   sent: "text-cyan-600",
   payment_received: "text-green-600",
   milestone_completed: "text-purple-600",

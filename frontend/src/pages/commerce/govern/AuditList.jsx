@@ -59,8 +59,8 @@ const AuditList = () => {
   const getStatusConfig = (status) => {
     const configs = {
       planned: {
-        color: "bg-[rgba(3,63,153,0.08)] text-blue-700 ring-blue-600/20",
-        dot: "bg-[rgba(3,63,153,0.08)]0",
+        color: "bg-blue-50 text-blue-700 ring-blue-600/20",
+        dot: "bg-blue-500",
       },
       in_progress: {
         color: "bg-amber-50 text-amber-700 ring-amber-600/20",
@@ -131,8 +131,8 @@ const AuditList = () => {
                   {audits.length}
                 </p>
               </div>
-              <div className="h-12 w-12 rounded-lg bg-[rgba(3,63,153,0.08)] flex items-center justify-center">
-                <ClipboardList className="h-6 w-6 text-[#033F99]" />
+              <div className="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
+                <ClipboardList className="h-6 w-6 text-blue-600" />
               </div>
             </div>
           </div>

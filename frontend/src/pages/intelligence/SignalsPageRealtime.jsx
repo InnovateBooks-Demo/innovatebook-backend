@@ -202,7 +202,7 @@ const SignalsPageRealtime = () => {
       case "warning":
         return "bg-amber-50 border-amber-200 text-amber-700";
       default:
-        return "bg-[rgba(3,63,153,0.08)] border-[rgba(3,63,153,0.25)] text-blue-700";
+        return "bg-blue-50 border-blue-200 text-blue-700";
     }
   };
 
@@ -324,11 +324,11 @@ const SignalsPageRealtime = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-5 border border-[rgba(3,63,153,0.25)] border-l-4 border-l-blue-500">
+          <div className="bg-white rounded-xl p-5 border border-blue-200 border-l-4 border-l-blue-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500">Info</p>
-                <p className="text-3xl font-bold text-[#033F99] mt-1">
+                <p className="text-3xl font-bold text-blue-600 mt-1">
                   {summary?.by_severity?.info || 0}
                 </p>
               </div>

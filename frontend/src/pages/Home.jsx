@@ -483,11 +483,11 @@ const Home = () => {
             {/* Solutions Layer */}
             <div className="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 text-blue-700 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
                   <Target className="h-6 w-6 text-white" />
                 </div>
                 <h3
-                  className="text-2xl font-bold text-[#033F99]"
+                  className="text-2xl font-bold text-blue-600"
                   style={{ fontFamily: "Poppins" }}
                 >
                   Solutions Layer
@@ -639,7 +639,7 @@ const Home = () => {
                     key={`item-${index}`}
                     className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
                   >
-                    <td className="px-8 py-5 font-semibold text-[#033F99]">
+                    <td className="px-8 py-5 font-semibold text-blue-600">
                       {moat.type}
                     </td>
                     <td className="px-8 py-5 text-slate-600">
@@ -698,7 +698,7 @@ const Home = () => {
             ].map((testimonial, index) => (
               <div
                 key={`item-${index}`}
-                className="bg-slate-50 p-8 rounded-2xl border border-slate-200 hover:border-[rgba(3,63,153,0.25)] hover:shadow-lg transition-all"
+                className="bg-slate-50 p-8 rounded-2xl border border-slate-200 hover:border-blue-200 hover:shadow-lg transition-all"
               >
                 <div className="flex gap-1 mb-4">
                   {[1, 2, 3, 4, 5].map((star) => (

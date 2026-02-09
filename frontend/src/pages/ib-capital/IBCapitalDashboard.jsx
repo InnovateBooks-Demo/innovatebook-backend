@@ -172,7 +172,7 @@ const IBCapitalDashboard = () => {
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-3">
             <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <PieChart className="w-5 h-5 text-[#033F99]" />
+              <PieChart className="w-5 h-5 text-blue-600" />
             </div>
             <span className="text-green-500 text-sm font-medium flex items-center gap-1">
               <ArrowUpRight className="w-4 h-4" />

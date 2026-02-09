@@ -137,7 +137,7 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }) => {
           <div className="flex gap-2">
             <button
               onClick={() => setShowPreview(!showPreview)}
-              className={`px-3 py-2 border rounded-lg flex items-center gap-2 ${showPreview ? "bg-[rgba(3,63,153,0.08)] border-blue-300" : ""}`}
+              className={`px-3 py-2 border rounded-lg flex items-center gap-2 ${showPreview ? "bg-blue-50 border-blue-300" : ""}`}
             >
               {showPreview ? (
                 <EyeOff className="h-4 w-4" />
@@ -346,7 +346,7 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }) => {
                           onClick={() => insertVariable(v.name)}
                           className="w-full text-left px-2 py-1 text-sm hover:bg-gray-100 rounded"
                         >
-                          <span className="font-mono text-[#033F99]">{`{{${v.name}}}`}</span>
+                          <span className="font-mono text-blue-600">{`{{${v.name}}}`}</span>
                           <span className="text-gray-500 ml-2">{v.label}</span>
                         </button>
                       ))}

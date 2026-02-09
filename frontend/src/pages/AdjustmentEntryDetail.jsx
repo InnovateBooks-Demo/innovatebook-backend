@@ -234,7 +234,7 @@ const AdjustmentEntryDetail = () => {
                   onClick={() =>
                     navigate(`/adjustment-entries/edit/${entry.id}`)
                   }
-                  className="text-blue-700 hover:bg-blue-700 text-white"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Edit className="h-4 w-4 mr-2" />
                   Edit
@@ -480,7 +480,7 @@ const AdjustmentEntryDetail = () => {
           {/* Created */}
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-              <FileText className="h-5 w-5 text-[#033F99]" />
+              <FileText className="h-5 w-5 text-blue-600" />
             </div>
             <div>
               <p
@@ -560,7 +560,7 @@ const AdjustmentEntryDetail = () => {
                 </p>
                 {entry.journal_entry_id && (
                   <p
-                    className="text-xs text-[#033F99] mt-1 cursor-pointer hover:underline"
+                    className="text-xs text-blue-600 mt-1 cursor-pointer hover:underline"
                     style={{ fontFamily: "Inter, sans-serif" }}
                     onClick={() =>
                       navigate(`/journal-entries/${entry.journal_entry_id}`)

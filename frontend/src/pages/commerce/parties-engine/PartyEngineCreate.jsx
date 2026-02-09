@@ -259,7 +259,7 @@ const PartyEngineCreate = () => {
           </div>
 
           {/* Info Box */}
-          <div className="bg-[rgba(3,63,153,0.08)] border border-[rgba(3,63,153,0.25)] rounded-xl p-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
             <p className="text-sm text-blue-700">
               <strong>Note:</strong> After creating the party, you'll need to
               complete the Identity, Legal, Tax, Risk, and Compliance profiles

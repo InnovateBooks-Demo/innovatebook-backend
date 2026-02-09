@@ -132,7 +132,7 @@ const IntelligenceDashboard = () => {
       icon: BarChart3,
       path: "/intelligence/metrics",
       color: "from-blue-500 to-indigo-600",
-      bgColor: "bg-[rgba(3,63,153,0.08)]",
+      bgColor: "bg-blue-50",
       stat: dashboard?.key_metrics?.length || 0,
       statLabel: "Active KPIs",
       status: "healthy",
@@ -474,7 +474,7 @@ const IntelligenceDashboard = () => {
                           ? "bg-red-500"
                           : signal.severity === "warning"
                             ? "bg-amber-500"
-                            : "bg-[rgba(3,63,153,0.08)]0"
+                            : "bg-blue-500"
                       }`}
                     />
                     <div className="flex-1 min-w-0">

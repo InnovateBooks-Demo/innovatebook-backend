@@ -728,7 +728,7 @@ const IBChatPremium = ({ viewMode = "chat" }) => {
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 mt-2">
                       <button
                         onClick={() => setReplyToMessage(message)}
-                        className="p-2 hover:bg-blue-100 text-[#033F99] rounded-xl transition-all"
+                        className="p-2 hover:bg-blue-100 text-blue-600 rounded-xl transition-all"
                       >
                         <Reply className="h-4 w-4" />
                       </button>

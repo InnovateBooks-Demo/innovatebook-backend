@@ -77,7 +77,7 @@ const GovernancePoliciesList = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
-                <FileText className="h-7 w-7 text-[#033F99]" />
+                <FileText className="h-7 w-7 text-blue-600" />
               </div>
               <div>
                 <h1 className="text-2xl font-semibold text-gray-900">

@@ -157,7 +157,7 @@ const CommitDetail = () => {
             commit.commit_status === "Cancelled"
           }
           variant="outline"
-          className="h-auto py-4 flex-col gap-2 border-blue-300 text-[#0147CC] hover:bg-[rgba(3,63,153,0.08)]"
+          className="h-auto py-4 flex-col gap-2 border-blue-300 text-[#0147CC] hover:bg-blue-50"
         >
           <CheckCircle className="h-5 w-5" />
           <span className="text-xs">Approve Contract</span>

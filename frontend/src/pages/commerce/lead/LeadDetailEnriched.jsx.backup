@@ -139,7 +139,7 @@ const LeadDetailEnriched = () => {
                   <span className={`px-4 py-2 rounded-full font-bold text-sm ${
                     lead.lead_score_category === 'Hot' ? 'bg-red-500 text-white' :
                     lead.lead_score_category === 'Warm' ? 'bg-amber-500 text-white' :
-                    'bg-[rgba(3,63,153,0.08)]0 text-white'
+                    'bg-blue-500 text-white'
                   }`}>
                     {lead.lead_score_category} Lead
                   </span>
@@ -365,7 +365,7 @@ const LeadDetailEnriched = () => {
               <Section title="🎯 Key Markets" icon={Target}>
                 <div className="space-y-2">
                   {lead.key_markets.map((market, idx) => (
-                    <div key={idx} className="p-2 bg-[rgba(3,63,153,0.08)] rounded-lg">
+                    <div key={idx} className="p-2 bg-blue-50 rounded-lg">
                       <p className="text-slate-900 font-semibold text-sm">{market}</p>
                     </div>
                   ))}

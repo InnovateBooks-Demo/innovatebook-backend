@@ -623,9 +623,9 @@ const PricingPage = () => {
             </div>
             <div
               ref={speedupRef}
-              className="text-center p-6 rounded-3xl bg-gradient-to-br from-blue-50 to-blue-100 border border-[rgba(3,63,153,0.25)]"
+              className="text-center p-6 rounded-3xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200"
             >
-              <p className="text-5xl font-bold text-[#033F99] mb-2">
+              <p className="text-5xl font-bold text-blue-600 mb-2">
                 {speedup}%
               </p>
               <p className="text-slate-900 font-semibold">Faster Reporting</p>

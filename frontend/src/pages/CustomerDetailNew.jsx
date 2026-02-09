@@ -179,7 +179,7 @@ const CustomerDetailNew = () => {
                   <>
                     <Button
                       onClick={() => setIsEditing(true)}
-                      className="bg-white text-[#033F99] hover:bg-[rgba(3,63,153,0.08)] shadow-lg font-semibold"
+                      className="bg-white text-blue-600 hover:bg-blue-50 shadow-lg font-semibold"
                       size="lg"
                     >
                       <Edit className="h-5 w-5 mr-2" />
@@ -232,7 +232,7 @@ const CustomerDetailNew = () => {
                   <p className="text-sm text-gray-500 font-medium mb-1">
                     Total Invoices
                   </p>
-                  <p className="text-3xl font-bold text-[#033F99]">
+                  <p className="text-3xl font-bold text-blue-600">
                     {totalInvoices}
                   </p>
                 </div>
@@ -448,7 +448,7 @@ const CustomerDetailNew = () => {
             <CardHeader className="bg-gradient-to-br from-blue-50 to-[#C4D9F4]">
               <CardTitle className="flex items-center gap-3 text-2xl font-bold text-blue-900">
                 <div className="w-12 h-12 rounded-xl bg-white shadow-lg flex items-center justify-center">
-                  <User className="h-6 w-6 text-[#033F99]" />
+                  <User className="h-6 w-6 text-blue-600" />
                 </div>
                 Contact Information
               </CardTitle>
@@ -457,7 +457,7 @@ const CustomerDetailNew = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
                   <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-                    <User className="h-6 w-6 text-[#033F99]" />
+                    <User className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Contact Person</p>
@@ -521,7 +521,7 @@ const CustomerDetailNew = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
                   <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-                    <FileText className="h-6 w-6 text-[#033F99]" />
+                    <FileText className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">GSTIN</p>

@@ -125,8 +125,8 @@ const LimitsList = () => {
                   {limits.length}
                 </p>
               </div>
-              <div className="h-12 w-12 rounded-lg bg-[rgba(3,63,153,0.08)] flex items-center justify-center">
-                <Gauge className="h-6 w-6 text-[#033F99]" />
+              <div className="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
+                <Gauge className="h-6 w-6 text-blue-600" />
               </div>
             </div>
           </div>

@@ -244,9 +244,9 @@ const OptimizationPage = () => {
                   ₹{(cashAnalysis.totalCash / 10000000).toFixed(1)} Cr
                 </p>
               </div>
-              <div className="bg-[rgba(3,63,153,0.08)] p-4 rounded-xl border border-[rgba(3,63,153,0.25)] text-center">
+              <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 text-center">
                 <p className="text-sm text-slate-600">Working Capital</p>
-                <p className="text-2xl font-bold text-[#033F99]">
+                <p className="text-2xl font-bold text-blue-600">
                   ₹{(cashAnalysis.working / 10000000).toFixed(1)} Cr
                 </p>
               </div>

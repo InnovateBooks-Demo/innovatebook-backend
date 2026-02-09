@@ -83,7 +83,7 @@ const RiskPage = () => {
 
   const getStatusBadge = (status) => {
     const styles = {
-      open: "bg-blue-100 text-blue-700 border-[rgba(3,63,153,0.25)]",
+      open: "bg-blue-100 text-blue-700 border-blue-200",
       escalating: "bg-red-100 text-red-700 border-red-200",
       mitigated: "bg-green-100 text-green-700 border-green-200",
       closed: "bg-slate-100 text-slate-700 border-slate-200",
@@ -414,7 +414,7 @@ const RiskPage = () => {
           </h3>
           <div className="bg-slate-50 rounded-xl p-4 font-mono text-sm">
             <span className="text-purple-600">Risk Score</span> ={" "}
-            <span className="text-[#033F99]">Probability</span> ×{" "}
+            <span className="text-blue-600">Probability</span> ×{" "}
             <span className="text-amber-600">Impact</span>
           </div>
           <p className="text-sm text-slate-500 mt-3">

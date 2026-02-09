@@ -200,7 +200,7 @@ const OwnershipDashboard = () => {
                   >
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-[#033F99] font-semibold text-sm">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">
                           {entry.owner_name?.charAt(0)}
                         </div>
                         <span className="font-medium text-gray-900">
@@ -282,7 +282,7 @@ const OwnershipDashboard = () => {
                   >
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-[#033F99] font-semibold text-sm">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm">
                           {owner.name?.charAt(0)}
                         </div>
                         <div>

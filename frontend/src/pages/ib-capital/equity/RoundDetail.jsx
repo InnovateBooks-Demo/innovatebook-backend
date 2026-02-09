@@ -103,7 +103,7 @@ const RoundDetail = () => {
           </div>
           <div className="flex gap-2">
             {round.status === "planned" && (
-              <button className="px-4 py-2 bg-[rgba(3,63,153,0.08)]0 text-white rounded-lg hover:text-blue-700 flex items-center gap-2">
+              <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2">
                 <Play className="w-4 h-4" />
                 Open Round
               </button>

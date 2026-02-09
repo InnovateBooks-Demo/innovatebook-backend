@@ -7,35 +7,30 @@ This design follows modern CRM best practices inspired by industry-leading produ
 ## Key Design Principles Applied
 
 ### 1. **Minimal Color Palette**
-
 - **Primary**: Black/Gray-900 for important actions
 - **Neutrals**: Gray scale (50-900) for backgrounds, borders, text
 - **Accent Colors**: Used sparingly and only for status/priority badges
 - **No gradients** except where absolutely necessary for data visualization
 
 ### 2. **Clean Typography Hierarchy**
-
 - **Page Title**: `text-xl font-semibold` - Clear but not overpowering
 - **Table Headers**: `text-xs font-medium uppercase` - Professional, scannable
 - **Data Text**: `text-sm` with appropriate font weights
 - **System fonts** for optimal performance and native feel
 
 ### 3. **Subtle Depth & Shadows**
-
 - Minimal use of shadows - only on hover states
 - Clean borders (`border-gray-200`, `border-gray-300`)
 - No heavy drop shadows or glows
 - Flat design with subtle layering through borders
 
 ### 4. **Professional Layout**
-
 - **Sticky header** with clean border separation
 - **Table-first approach** - no kanban view
 - **Optimal spacing**: `px-6 py-4` for table cells
 - **Hover states** that reveal actions without being distracting
 
 ### 5. **Smart Interactions**
-
 - **Bulk selection** with checkboxes
 - **Hover-revealed actions** on each row
 - **Smooth transitions** (200-300ms)
@@ -43,7 +38,6 @@ This design follows modern CRM best practices inspired by industry-leading produ
 - Actions appear on row hover, not always visible
 
 ### 6. **Data-Centric Design**
-
 - Focus on **displaying information clearly**
 - **No unnecessary decorations** or icons
 - **Status badges** with subtle colors and borders
@@ -53,7 +47,6 @@ This design follows modern CRM best practices inspired by industry-leading produ
 ## What Was Removed
 
 ### ❌ Removed from Previous Design:
-
 1. **Stats/Insights Section** - User explicitly requested this be in separate module
 2. **Kanban View** - User requested list view only
 3. **Gradient backgrounds** - Too busy, not professional
@@ -66,7 +59,6 @@ This design follows modern CRM best practices inspired by industry-leading produ
 ## What Was Added
 
 ### ✅ New Features:
-
 1. **Clean table design** with proper column structure
 2. **Bulk selection** with checkboxes
 3. **Multi-level filtering** - Status and Priority dropdowns
@@ -81,7 +73,6 @@ This design follows modern CRM best practices inspired by industry-leading produ
 ## Design Specifications
 
 ### Colors
-
 ```
 Primary Action: bg-gray-900 hover:bg-gray-800
 Borders: border-gray-200
@@ -90,7 +81,7 @@ Text Primary: text-gray-900
 Text Secondary: text-gray-500
 
 Status Colors (Subtle):
-- New: bg-[rgba(3,63,153,0.08)] text-blue-700 border-[rgba(3,63,153,0.25)]
+- New: bg-blue-50 text-blue-700 border-blue-200
 - Active: bg-purple-50 text-purple-700 border-purple-200
 - Qualified: bg-emerald-50 text-emerald-700 border-emerald-200
 - Converted: bg-gray-50 text-gray-700 border-gray-200
@@ -102,7 +93,6 @@ Priority Colors (Subtle):
 ```
 
 ### Spacing
-
 ```
 Page Padding: px-6
 Table Cell: px-6 py-4
@@ -112,7 +102,6 @@ Badge Padding: px-2.5 py-0.5
 ```
 
 ### Borders & Shadows
-
 ```
 Default Border: border border-gray-200
 Hover Border: border-gray-300
@@ -121,7 +110,6 @@ Minimal Shadow: shadow-sm (used sparingly)
 ```
 
 ### Typography
-
 ```
 Page Title: text-xl font-semibold
 Count Badge: text-sm text-gray-500
@@ -133,7 +121,6 @@ Badges: text-xs font-medium
 ## Comparison with Modern CRMs
 
 ### Attio-Inspired Elements:
-
 - ✅ Clean table structure
 - ✅ Minimal color usage
 - ✅ Subtle borders and spacing
@@ -141,14 +128,12 @@ Badges: text-xs font-medium
 - ✅ Hover-revealed actions
 
 ### Linear-Inspired Elements:
-
 - ✅ Fast, lightweight feel
 - ✅ Keyboard-friendly (bulk selection)
 - ✅ Minimal decoration
 - ✅ Focus on data
 
 ### Notion-Inspired Elements:
-
 - ✅ Clean, scannable layout
 - ✅ Proper use of white space
 - ✅ Contextual actions
@@ -187,7 +172,6 @@ Badges: text-xs font-medium
 ## Result
 
 A **world-class, professional CRM lead list** that:
-
 - ✅ Focuses on data and usability
 - ✅ Removes unnecessary visual noise
 - ✅ Provides efficient workflows
