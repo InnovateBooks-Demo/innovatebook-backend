@@ -1,333 +1,971 @@
-from fastapi import APIRouter, HTTPException, Depends
-from motor.motor_asyncio import AsyncIOMotorDatabase
+# from fastapi import APIRouter, HTTPException, Depends, status
+# from datetime import datetime, timezone, timedelta
+# import secrets
+# import logging
+# from typing import Dict, List, Optional
+
+# from utils.email import send_invite_email
+# from ..deps import get_db, get_current_user_admin
+
+# logger = logging.getLogger(__name__)
+# router = APIRouter(prefix="/admin", tags=["admin"])
+
+# # ==================== DASHBOARD ====================
+
+# @router.get("/dashboard")
+# async def get_admin_dashboard(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+#     try:
+#         org_id = current_user["org_id"]
+
+#         total_users = await db.enterprise_users.count_documents({"org_id": org_id})
+#         active_users = await db.enterprise_users.count_documents(
+#             {"org_id": org_id, "is_active": True}
+#         )
+
+#         pending_invites = await db.user_invites.count_documents({
+#             "org_id": org_id,
+#             "status": "pending",
+#             "expires_at": {"$gt": datetime.now(timezone.utc)}
+#         })
+
+#         total_roles = await db.roles.count_documents({"org_id": org_id})
+
+#         return {
+#             "success": True,
+#             "stats": {
+#                 "total_users": total_users,
+#                 "active_users": active_users,
+#                 "pending_invites": pending_invites,
+#                 "total_roles": total_roles,
+#             }
+#         }
+
+#     except Exception as e:
+#         logger.error(f"Dashboard error: {e}")
+#         raise HTTPException(status_code=500, detail="Failed to fetch dashboard")
+
+
+# # ==================== USERS ====================
+
+# @router.get("/users")
+# async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+#     try:
+#         org_id = current_user["org_id"]
+
+#         users = await db.enterprise_users.find(
+#             {"org_id": org_id},
+#             {"_id": 0, "password_hash": 0}
+#         ).to_list(length=200)
+
+#         return {"success": True, "users": users}
+
+#     except Exception as e:
+#         logger.error(f"List users error: {e}")
+#         raise HTTPException(status_code=500, detail="Failed to fetch users")
+
+# @router.post("/users/{user_id}/deactivate")
+# async def deactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+#     org_id = current_user["org_id"]
+
+#     result = await db.enterprise_users.update_one(
+#         {"user_id": user_id, "org_id": org_id},
+#         {"$set": {
+#             "is_active": False,
+#             "deactivated_at": datetime.now(timezone.utc).isoformat()
+#         }}
+#     )
+
+#     if result.modified_count == 0:
+#         raise HTTPException(status_code=404, detail="User not found")
+
+#     return {"success": True}
+
+
+# @router.post("/users/{user_id}/reactivate")
+# async def reactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+#     org_id = current_user["org_id"]
+
+#     result = await db.enterprise_users.update_one(
+#         {"user_id": user_id, "org_id": org_id},
+#         {"$set": {"is_active": True, "deactivated_at": None}}
+#     )
+
+#     if result.modified_count == 0:
+#         raise HTTPException(status_code=404, detail="User not found")
+
+#     return {"success": True}
+
+
+# # ==================== INVITES ====================
+
+# @router.get("/invites")
+# async def list_invites(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+#     org_id = current_user["org_id"]
+
+#     invites = await db.user_invites.find(
+#         {"org_id": org_id, "status": "pending"},
+#         {"_id": 0}
+#     ).to_list(length=100)
+
+#     return {"success": True, "invites": invites}
+
+
+# @router.post("/invites")
+# async def create_invite(invite_data: dict, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+#     org_id = current_user["org_id"]
+
+#     email = (invite_data.get("email") or "").strip().lower()
+#     role_id = invite_data.get("role_id")
+
+#     if not email:
+#         raise HTTPException(status_code=400, detail="Email required")
+
+#     if not role_id:
+#         raise HTTPException(status_code=400, detail="Role required")
+
+#     existing_user = await db.enterprise_users.find_one({
+#         "email": email,
+#         "org_id": org_id
+#     })
+
+#     if existing_user:
+#         raise HTTPException(status_code=400, detail="User already exists")
+
+#     existing_invite = await db.user_invites.find_one({
+#         "org_id": org_id,
+#         "email": email,
+#         "status": "pending"
+#     })
+
+#     if existing_invite:
+#         raise HTTPException(status_code=400, detail="Active invite already exists")
+
+#     invite_id = f"inv_{secrets.token_urlsafe(8)}"
+#     invite_token = secrets.token_urlsafe(32)
+
+#     invite_doc = {
+#         "invite_id": invite_id,
+#         "org_id": org_id,
+#         "email": email,
+#         "role_id": role_id,
+#         "invite_token": invite_token,
+#         "status": "pending",
+#         "invited_by": current_user["user_id"],
+#         "created_at": datetime.now(timezone.utc).isoformat(),
+#         "expires_at": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
+#     }
+
+#     await db.user_invites.insert_one(invite_doc)
+
+#     send_invite_email(
+#         to_email=email,
+#         invite_token=invite_token,
+#         org_name="Your Organization"
+#     )
+
+#     return {"success": True}
+
+
+# @router.post("/invites/{invite_id}/resend")
+# async def resend_invite(invite_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+#     org_id = current_user["org_id"]
+
+#     invite = await db.user_invites.find_one({
+#         "invite_id": invite_id,
+#         "org_id": org_id
+#     })
+
+#     if not invite:
+#         raise HTTPException(status_code=404, detail="Invite not found")
+
+#     await db.user_invites.update_one(
+#         {"invite_id": invite_id},
+#         {"$set": {
+#             "expires_at": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
+#         }}
+#     )
+
+#     send_invite_email(
+#         to_email=invite["email"],
+#         invite_token=invite["invite_token"],
+#         org_name="Your Organization"
+#     )
+
+#     return {"success": True}
+
+
+# # ==================== ROLES ====================
+
+# @router.get("/roles")
+# async def list_roles(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+#     org_id = current_user["org_id"]
+
+#     roles = await db.roles.find(
+#         {"$or": [{"org_id": org_id}, {"is_system": True}]},
+#         {"_id": 0}
+#     ).to_list(length=100)
+
+#     return {"success": True, "roles": roles}
+
+
+# @router.post("/roles")
+# async def create_role(role_data: dict, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+#     org_id = current_user["org_id"]
+
+#     role_id = f"role_{secrets.token_urlsafe(8)}"
+
+#     await db.roles.insert_one({
+#         "role_id": role_id,
+#         "org_id": org_id,
+#         "role_name": role_data.get("role_name"),
+#         "description": role_data.get("description", ""),
+#         "permissions": role_data.get("permissions", []),
+#         "is_system": False,
+#         "created_at": datetime.now(timezone.utc).isoformat()
+#     })
+
+#     return {"success": True}
+
+
+# # ==================== SETTINGS ====================
+
+# @router.get("/settings")
+# async def get_settings(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+#     org_id = current_user["org_id"]
+
+#     settings = await db.org_settings.find_one(
+#         {"org_id": org_id},
+#         {"_id": 0}
+#     )
+
+#     return {"success": True, "settings": settings or {}}
+
+
+# @router.put("/settings")
+# async def update_settings(settings_data: dict, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+#     org_id = current_user["org_id"]
+
+#     settings_data["org_id"] = org_id
+#     settings_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+#     await db.org_settings.update_one(
+#         {"org_id": org_id},
+#         {"$set": settings_data},
+#         upsert=True
+#     )
+
+#     return {"success": True}
+
+
+
+
+# # from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks
+# # from datetime import datetime, timezone, timedelta
+# # import secrets
+# # import logging
+# # from typing import Any, Dict, List, Optional
+
+# # from pydantic import BaseModel, EmailStr, Field
+
+# # from utils.email import send_invite_email
+# # from ..deps import get_db, get_current_user_admin
+
+# # logger = logging.getLogger(__name__)
+# # router = APIRouter(prefix="/admin", tags=["admin"])
+
+
+# # # ==================== HELPERS ====================
+
+# # def utc_now() -> datetime:
+# #     return datetime.now(timezone.utc)
+
+
+# # # ==================== SCHEMAS ====================
+
+# # class InviteCreateIn(BaseModel):
+# #     email: EmailStr
+# #     role_id: str = Field(..., min_length=3)
+
+
+# # class RoleCreateIn(BaseModel):
+# #     role_name: str = Field(..., min_length=2)
+# #     description: str = ""
+# #     permissions: List[str] = []
+
+
+# # class SettingsUpdateIn(BaseModel):
+# #     # keep flexible but still validated dict-ish
+# #     data: Dict[str, Any] = {}
+
+
+# # # ==================== DASHBOARD ====================
+
+# # @router.get("/dashboard")
+# # async def get_admin_dashboard(
+# #     db=Depends(get_db),
+# #     current_user=Depends(get_current_user_admin),
+# # ):
+# #     try:
+# #         org_id = current_user["org_id"]
+
+# #         total_users = await db.enterprise_users.count_documents({"org_id": org_id})
+# #         active_users = await db.enterprise_users.count_documents(
+# #             {"org_id": org_id, "is_active": True}
+# #         )
+
+# #         pending_invites = await db.user_invites.count_documents({
+# #             "org_id": org_id,
+# #             "status": "pending",
+# #             "expires_at": {"$gt": utc_now()},
+# #         })
+
+# #         total_roles = await db.roles.count_documents({"org_id": org_id})
+
+# #         return {
+# #             "success": True,
+# #             "stats": {
+# #                 "total_users": total_users,
+# #                 "active_users": active_users,
+# #                 "pending_invites": pending_invites,
+# #                 "total_roles": total_roles,
+# #             },
+# #         }
+
+# #     except Exception as e:
+# #         logger.exception(f"Dashboard error: {e}")
+# #         raise HTTPException(status_code=500, detail="Failed to fetch dashboard")
+
+
+# # # ==================== USERS ====================
+
+# # @router.get("/users")
+# # async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+# #     try:
+# #         org_id = current_user["org_id"]
+
+# #         users = await db.enterprise_users.find(
+# #             {"org_id": org_id},
+# #             {"_id": 0, "password_hash": 0},
+# #         ).to_list(length=200)
+
+# #         return {"success": True, "users": users}
+
+# #     except Exception as e:
+# #         logger.exception(f"List users error: {e}")
+# #         raise HTTPException(status_code=500, detail="Failed to fetch users")
+
+
+# # @router.post("/users/{user_id}/deactivate")
+# # async def deactivate_user(
+# #     user_id: str,
+# #     db=Depends(get_db),
+# #     current_user=Depends(get_current_user_admin),
+# # ):
+# #     org_id = current_user["org_id"]
+
+# #     result = await db.enterprise_users.update_one(
+# #         {"user_id": user_id, "org_id": org_id},
+# #         {"$set": {
+# #             "is_active": False,
+# #             "deactivated_at": utc_now(),
+# #             "updated_at": utc_now(),
+# #             "updated_by": current_user["user_id"],
+# #         }},
+# #     )
+
+# #     if result.modified_count == 0:
+# #         raise HTTPException(status_code=404, detail="User not found")
+
+# #     return {"success": True}
+
+
+# # @router.post("/users/{user_id}/reactivate")
+# # async def reactivate_user(
+# #     user_id: str,
+# #     db=Depends(get_db),
+# #     current_user=Depends(get_current_user_admin),
+# # ):
+# #     org_id = current_user["org_id"]
+
+# #     result = await db.enterprise_users.update_one(
+# #         {"user_id": user_id, "org_id": org_id},
+# #         {"$set": {
+# #             "is_active": True,
+# #             "deactivated_at": None,
+# #             "updated_at": utc_now(),
+# #             "updated_by": current_user["user_id"],
+# #         }},
+# #     )
+
+# #     if result.modified_count == 0:
+# #         raise HTTPException(status_code=404, detail="User not found")
+
+# #     return {"success": True}
+
+
+# # # ==================== INVITES ====================
+
+# # @router.get("/invites")
+# # async def list_invites(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+# #     org_id = current_user["org_id"]
+
+# #     invites = await db.user_invites.find(
+# #         {"org_id": org_id, "status": "pending"},
+# #         {"_id": 0},
+# #     ).sort("created_at", -1).to_list(length=100)
+
+# #     return {"success": True, "invites": invites}
+
+
+# # @router.post("/invites", status_code=status.HTTP_201_CREATED)
+# # async def create_invite(
+# #     payload: InviteCreateIn,
+# #     background_tasks: BackgroundTasks,
+# #     db=Depends(get_db),
+# #     current_user=Depends(get_current_user_admin),
+# # ):
+# #     org_id = current_user["org_id"]
+
+# #     email = payload.email.strip().lower()
+# #     role_id = payload.role_id
+
+# #     # 1) validate role exists (org role or system role)
+# #     role = await db.roles.find_one(
+# #         {"role_id": role_id, "$or": [{"org_id": org_id}, {"is_system": True}]},
+# #         {"_id": 0},
+# #     )
+# #     if not role:
+# #         raise HTTPException(status_code=400, detail="Invalid role")
+
+# #     # 2) prevent inviting existing user
+# #     existing_user = await db.enterprise_users.find_one({"email": email, "org_id": org_id}, {"_id": 0})
+# #     if existing_user:
+# #         raise HTTPException(status_code=400, detail="User already exists")
+
+# #     # 3) prevent duplicate active invite
+# #     existing_invite = await db.user_invites.find_one({
+# #         "org_id": org_id,
+# #         "email": email,
+# #         "status": "pending",
+# #         "expires_at": {"$gt": utc_now()},
+# #     }, {"_id": 0})
+
+# #     if existing_invite:
+# #         raise HTTPException(status_code=400, detail="Active invite already exists")
+
+# #     invite_id = f"inv_{secrets.token_urlsafe(8)}"
+# #     invite_token = secrets.token_urlsafe(32)
+
+# #     created_at = utc_now()
+# #     expires_at = created_at + timedelta(days=7)
+
+# #     invite_doc = {
+# #         "invite_id": invite_id,
+# #         "org_id": org_id,
+# #         "email": email,
+# #         "role_id": role_id,
+# #         "invite_token": invite_token,
+# #         "status": "pending",
+# #         "invited_by": current_user["user_id"],
+# #         "created_at": created_at,
+# #         "expires_at": expires_at,
+# #         # audit
+# #         "updated_at": created_at,
+# #         "updated_by": current_user["user_id"],
+# #     }
+
+# #     await db.user_invites.insert_one(invite_doc)
+
+# #     # pull org name from settings if present
+# #     org_settings = await db.org_settings.find_one({"org_id": org_id}, {"_id": 0, "org_name": 1})
+# #     org_name = (org_settings or {}).get("org_name") or "Your Organization"
+
+# #     # send email async (don’t block API)
+# #     background_tasks.add_task(
+# #         send_invite_email,
+# #         to_email=email,
+# #         invite_token=invite_token,
+# #         org_name=org_name,
+# #     )
+
+# #     return {"success": True, "invite_id": invite_id}
+
+
+# # @router.post("/invites/{invite_id}/resend")
+# # async def resend_invite(
+# #     invite_id: str,
+# #     background_tasks: BackgroundTasks,
+# #     db=Depends(get_db),
+# #     current_user=Depends(get_current_user_admin),
+# # ):
+# #     org_id = current_user["org_id"]
+
+# #     invite = await db.user_invites.find_one(
+# #         {"invite_id": invite_id, "org_id": org_id},
+# #         {"_id": 0},
+# #     )
+
+# #     if not invite:
+# #         raise HTTPException(status_code=404, detail="Invite not found")
+
+# #     if invite.get("status") != "pending":
+# #         raise HTTPException(status_code=400, detail="Invite is not pending")
+
+# #     new_expiry = utc_now() + timedelta(days=7)
+
+# #     await db.user_invites.update_one(
+# #         {"invite_id": invite_id, "org_id": org_id},
+# #         {"$set": {
+# #             "expires_at": new_expiry,
+# #             "updated_at": utc_now(),
+# #             "updated_by": current_user["user_id"],
+# #         }},
+# #     )
+
+# #     org_settings = await db.org_settings.find_one({"org_id": org_id}, {"_id": 0, "org_name": 1})
+# #     org_name = (org_settings or {}).get("org_name") or "Your Organization"
+
+# #     background_tasks.add_task(
+# #         send_invite_email,
+# #         to_email=invite["email"],
+# #         invite_token=invite["invite_token"],
+# #         org_name=org_name,
+# #     )
+
+# #     return {"success": True}
+
+
+# # @router.post("/invites/{invite_id}/revoke")
+# # async def revoke_invite(
+# #     invite_id: str,
+# #     db=Depends(get_db),
+# #     current_user=Depends(get_current_user_admin),
+# # ):
+# #     org_id = current_user["org_id"]
+
+# #     result = await db.user_invites.update_one(
+# #         {"invite_id": invite_id, "org_id": org_id, "status": "pending"},
+# #         {"$set": {
+# #             "status": "revoked",
+# #             "revoked_at": utc_now(),
+# #             "updated_at": utc_now(),
+# #             "updated_by": current_user["user_id"],
+# #         }},
+# #     )
+
+# #     if result.modified_count == 0:
+# #         raise HTTPException(status_code=404, detail="Invite not found or not pending")
+
+# #     return {"success": True}
+
+
+# # # ==================== ROLES ====================
+
+# # @router.get("/roles")
+# # async def list_roles(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+# #     org_id = current_user["org_id"]
+
+# #     roles = await db.roles.find(
+# #         {"$or": [{"org_id": org_id}, {"is_system": True}]},
+# #         {"_id": 0},
+# #     ).sort("created_at", -1).to_list(length=100)
+
+# #     return {"success": True, "roles": roles}
+
+
+# # @router.post("/roles", status_code=status.HTTP_201_CREATED)
+# # async def create_role(
+# #     payload: RoleCreateIn,
+# #     db=Depends(get_db),
+# #     current_user=Depends(get_current_user_admin),
+# # ):
+# #     org_id = current_user["org_id"]
+# #     role_id = f"role_{secrets.token_urlsafe(8)}"
+
+# #     doc = {
+# #         "role_id": role_id,
+# #         "org_id": org_id,
+# #         "role_name": payload.role_name.strip(),
+# #         "description": (payload.description or "").strip(),
+# #         "permissions": payload.permissions or [],
+# #         "is_system": False,
+# #         "created_at": utc_now(),
+# #         # audit
+# #         "created_by": current_user["user_id"],
+# #         "updated_at": utc_now(),
+# #         "updated_by": current_user["user_id"],
+# #     }
+
+# #     await db.roles.insert_one(doc)
+# #     return {"success": True, "role_id": role_id}
+
+
+# # # ==================== SETTINGS ====================
+
+# # @router.get("/settings")
+# # async def get_settings(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+# #     org_id = current_user["org_id"]
+
+# #     settings = await db.org_settings.find_one({"org_id": org_id}, {"_id": 0})
+# #     return {"success": True, "settings": settings or {}}
+
+
+# # @router.put("/settings")
+# # async def update_settings(
+# #     payload: SettingsUpdateIn,
+# #     db=Depends(get_db),
+# #     current_user=Depends(get_current_user_admin),
+# # ):
+# #     org_id = current_user["org_id"]
+
+# #     # store user-provided keys under the document root
+# #     update_doc = {
+# #         **(payload.data or {}),
+# #         "org_id": org_id,
+# #         "updated_at": utc_now(),
+# #         "updated_by": current_user["user_id"],
+# #     }
+
+# #     await db.org_settings.update_one(
+# #         {"org_id": org_id},
+# #         {"$set": update_doc},
+# #         upsert=True,
+# #     )
+
+# #     return {"success": True}
+
+
+
+from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks
 from datetime import datetime, timezone, timedelta
-from typing import Optional, List
 import secrets
 import logging
+from typing import Any, Dict, List
+
+from pydantic import BaseModel, EmailStr, Field
+
+from utils.email import send_invite_email
+from ..deps import get_db, get_current_user_admin
 
 logger = logging.getLogger(__name__)
-
 router = APIRouter(prefix="/admin", tags=["admin"])
 
-def get_db():
-    from server import db
-    return db
 
-async def get_current_user_admin(db = Depends(get_db)):
-    """Verify user has admin permissions - simplified for now"""
-    return {"user_id": "admin", "org_id": "org_demo"}
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _to_dt(value):
+    """Convert Mongo Date or ISO string -> datetime (UTC-aware)."""
+    if not value:
+        return None
+    if isinstance(value, datetime):
+        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+    if isinstance(value, str):
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except Exception:
+            return None
+    return None
+
+
+def _last_login_label(dt: datetime) -> str:
+    """Return Today/Yesterday/N days ago based on UTC date."""
+    if not dt:
+        return "-"
+    today = datetime.now(timezone.utc).date()
+    d = dt.date()
+    diff = (today - d).days
+    if diff <= 0:
+        return "Today"
+    if diff == 1:
+        return "Yesterday"
+    return f"{diff} days ago"
+
+
+class InviteCreateIn(BaseModel):
+    email: EmailStr
+    role_id: str = Field(..., min_length=2)
+
+
+class RoleCreateIn(BaseModel):
+    role_name: str = Field(..., min_length=2)
+    description: str = ""
+    permissions: List[str] = []
+
 
 # ==================== DASHBOARD ====================
 
 @router.get("/dashboard")
-async def get_admin_dashboard(db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """Get admin dashboard stats"""
+async def get_admin_dashboard(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
     try:
-        org_id = current_user.get("org_id", "org_demo")
-        
-        # Count users
+        org_id = current_user["org_id"]
+
         total_users = await db.enterprise_users.count_documents({"org_id": org_id})
         active_users = await db.enterprise_users.count_documents({"org_id": org_id, "is_active": True})
-        
-        # Count pending invites
+
         pending_invites = await db.user_invites.count_documents({
-            "org_id": org_id, 
+            "org_id": org_id,
             "status": "pending",
-            "expires_at": {"$gt": datetime.now(timezone.utc)}
+            "expires_at": {"$gt": utc_now()},
         })
-        
-        # Count roles
+
         total_roles = await db.roles.count_documents({"org_id": org_id})
-        
-        # Recent activity
-        recent_activity = await db.admin_audit_log.find(
-            {"org_id": org_id}
-        ).sort("timestamp", -1).limit(10).to_list(length=10)
-        
-        for activity in recent_activity:
-            activity.pop("_id", None)
-        
+
         return {
             "success": True,
             "stats": {
-                "total_users": total_users or 20,
-                "active_users": active_users or 18,
-                "pending_invites": pending_invites or 2,
-                "total_roles": total_roles or 5,
-                "storage_used": 12.5,
-                "api_calls_today": 1250
-            },
-            "recent_activity": recent_activity or [
-                {"type": "user_added", "description": "New user added: john@company.com", "actor": "Admin", "timestamp": "2 hours ago"},
-                {"type": "role_changed", "description": "Role updated for sarah@company.com", "actor": "Admin", "timestamp": "5 hours ago"},
-                {"type": "settings_updated", "description": "Organization settings updated", "actor": "Admin", "timestamp": "1 day ago"}
-            ]
+                "total_users": total_users,
+                "active_users": active_users,
+                "pending_invites": pending_invites,
+                "total_roles": total_roles,
+            }
         }
+
     except Exception as e:
-        logger.error(f"Admin dashboard error: {e}")
+        logger.exception(f"Dashboard error: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch dashboard")
 
-# ==================== USER MANAGEMENT ====================
+
+# ==================== USERS ====================
 
 @router.get("/users")
-async def list_users(db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """List all users in the organization"""
+async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+    """
+    List users in current org.
+    Returns demo-like shape so frontend renders:
+      user_id, email, full_name, role_id, role_name, is_active, last_login
+    """
     try:
-        org_id = current_user.get("org_id", "org_demo")
-        
+        org_id = current_user["org_id"]
+
         users = await db.enterprise_users.find(
             {"org_id": org_id},
             {"_id": 0, "password_hash": 0}
-        ).to_list(length=100)
-        
-        if not users:
-            # Return demo users
-            users = [
-                {"user_id": "usr_001", "email": "admin@innovatebooks.com", "full_name": "Admin User", "role_id": "admin", "is_active": True, "last_login": "Today"},
-                {"user_id": "usr_002", "email": "demo@innovatebooks.com", "full_name": "Demo User", "role_id": "member", "is_active": True, "last_login": "Today"},
-                {"user_id": "usr_003", "email": "manager@innovatebooks.com", "full_name": "Project Manager", "role_id": "manager", "is_active": True, "last_login": "Yesterday"}
-            ]
-        
-        return {"success": True, "users": users}
+        ).to_list(length=200)
+
+        # Role map (org + system)
+        roles = await db.roles.find(
+            {"$or": [{"org_id": org_id}, {"is_system": True}]},
+            {"_id": 0, "role_id": 1, "role_name": 1}
+        ).to_list(length=200)
+        role_map = {r["role_id"]: r.get("role_name") for r in roles}
+
+        enriched = []
+        for u in users:
+            last_dt = _to_dt(u.get("last_active_at")) or _to_dt(u.get("last_login_at")) or _to_dt(u.get("created_at"))
+
+            enriched.append({
+                "user_id": u.get("user_id"),
+                "email": (u.get("email") or "").strip().lower(),
+                "full_name": (
+                    u.get("full_name")
+                    or f"{u.get('first_name','')} {u.get('last_name','')}".strip()
+                    or u.get("user_id")
+                    or ""
+                ),
+                "role_id": u.get("role_id"),
+                "role_name": role_map.get(u.get("role_id")) or u.get("role_id") or "",
+                "is_active": u.get("is_active", True),
+                "last_login": _last_login_label(last_dt),
+                # keep these if frontend wants later; harmless if unused
+                "org_id": u.get("org_id"),
+                "is_super_admin": u.get("is_super_admin", False),
+                "created_at": u.get("created_at"),
+            })
+
+        return {"success": True, "users": enriched}
+
     except Exception as e:
-        logger.error(f"List users error: {e}")
+        logger.exception(f"List users error: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch users")
 
+
 @router.post("/users/{user_id}/deactivate")
-async def deactivate_user(user_id: str, db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """Deactivate a user"""
-    try:
-        result = await db.enterprise_users.update_one(
-            {"user_id": user_id},
-            {"$set": {"is_active": False, "deactivated_at": datetime.now(timezone.utc).isoformat()}}
-        )
-        
-        return {"success": True, "message": "User deactivated"}
-    except Exception as e:
-        logger.error(f"Deactivate user error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to deactivate user")
+async def deactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+    org_id = current_user["org_id"]
+
+    result = await db.enterprise_users.update_one(
+        {"user_id": user_id, "org_id": org_id},
+        {"$set": {
+            "is_active": False,
+            "deactivated_at": utc_now(),
+            "updated_at": utc_now(),
+            "updated_by": current_user["user_id"],
+        }}
+    )
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {"success": True}
+
 
 @router.post("/users/{user_id}/reactivate")
-async def reactivate_user(user_id: str, db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """Reactivate a user"""
-    try:
-        result = await db.enterprise_users.update_one(
-            {"user_id": user_id},
-            {"$set": {"is_active": True, "deactivated_at": None}}
-        )
-        
-        return {"success": True, "message": "User reactivated"}
-    except Exception as e:
-        logger.error(f"Reactivate user error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to reactivate user")
+async def reactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+    org_id = current_user["org_id"]
+
+    result = await db.enterprise_users.update_one(
+        {"user_id": user_id, "org_id": org_id},
+        {"$set": {
+            "is_active": True,
+            "deactivated_at": None,
+            "updated_at": utc_now(),
+            "updated_by": current_user["user_id"],
+        }}
+    )
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {"success": True}
+
 
 # ==================== INVITES ====================
 
 @router.get("/invites")
-async def list_invites(db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """List pending invites"""
-    try:
-        org_id = current_user.get("org_id", "org_demo")
-        
-        invites = await db.user_invites.find(
-            {"org_id": org_id, "status": "pending"},
-            {"_id": 0}
-        ).to_list(length=50)
-        
-        return {"success": True, "invites": invites or []}
-    except Exception as e:
-        logger.error(f"List invites error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to fetch invites")
+async def list_invites(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+    org_id = current_user["org_id"]
 
-@router.post("/invites")
-async def create_invite(invite_data: dict, db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """Create a new user invite"""
-    try:
-        org_id = current_user.get("org_id", "org_demo")
-        
-        invite_id = f"inv_{secrets.token_urlsafe(8)}"
-        invite_token = secrets.token_urlsafe(32)
-        
-        invite_doc = {
-            "invite_id": invite_id,
-            "org_id": org_id,
-            "email": invite_data.get("email"),
-            "role_id": invite_data.get("role_id"),
-            "invite_token": invite_token,
-            "status": "pending",
-            "invited_by": current_user.get("user_id"),
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "expires_at": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
-        }
-        
-        await db.user_invites.insert_one(invite_doc)
-        
-        # In production, send email here
-        logger.info(f"📧 Invite created for {invite_data.get('email')}")
-        
-        return {"success": True, "invite_id": invite_id}
-    except Exception as e:
-        logger.error(f"Create invite error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to create invite")
+    invites = await db.user_invites.find(
+        {"org_id": org_id, "status": "pending"},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(length=100)
+
+    return {"success": True, "invites": invites}
+
+
+@router.post("/invites", status_code=status.HTTP_201_CREATED)
+async def create_invite(
+    payload: InviteCreateIn,
+    background_tasks: BackgroundTasks,
+    db=Depends(get_db),
+    current_user=Depends(get_current_user_admin),
+):
+    org_id = current_user["org_id"]
+    email = payload.email.strip().lower()
+    role_id = payload.role_id.strip()
+
+    # validate role exists (org role or system role)
+    role = await db.roles.find_one(
+        {"role_id": role_id, "$or": [{"org_id": org_id}, {"is_system": True}]},
+        {"_id": 0}
+    )
+    if not role:
+        raise HTTPException(status_code=400, detail="Invalid role")
+
+    existing_user = await db.enterprise_users.find_one({"email": email, "org_id": org_id}, {"_id": 0})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    existing_invite = await db.user_invites.find_one(
+        {"org_id": org_id, "email": email, "status": "pending", "expires_at": {"$gt": utc_now()}},
+        {"_id": 0}
+    )
+    if existing_invite:
+        raise HTTPException(status_code=400, detail="Active invite already exists")
+
+    invite_id = f"inv_{secrets.token_urlsafe(8)}"
+    invite_token = secrets.token_urlsafe(32)
+
+    created_at = utc_now()
+    expires_at = created_at + timedelta(days=7)
+
+    invite_doc = {
+        "invite_id": invite_id,
+        "org_id": org_id,
+        "email": email,
+        "role_id": role_id,
+        "invite_token": invite_token,
+        "status": "pending",
+        "invited_by": current_user["user_id"],
+        "created_at": created_at,
+        "expires_at": expires_at,
+        "updated_at": created_at,
+        "updated_by": current_user["user_id"],
+    }
+
+    await db.user_invites.insert_one(invite_doc)
+
+    # org name from settings if present
+    org_settings = await db.org_settings.find_one({"org_id": org_id}, {"_id": 0, "org_name": 1})
+    org_name = (org_settings or {}).get("org_name") or "Your Organization"
+
+    background_tasks.add_task(
+        send_invite_email,
+        to_email=email,
+        invite_token=invite_token,
+        org_name=org_name,
+    )
+
+    return {"success": True, "invite_id": invite_id}
+
 
 @router.post("/invites/{invite_id}/resend")
-async def resend_invite(invite_id: str, db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """Resend an invite"""
-    try:
-        invite = await db.user_invites.find_one({"invite_id": invite_id})
-        if not invite:
-            raise HTTPException(status_code=404, detail="Invite not found")
-        
-        # Update expiration
-        await db.user_invites.update_one(
-            {"invite_id": invite_id},
-            {"$set": {"expires_at": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()}}
-        )
-        
-        # In production, resend email
-        logger.info(f"📧 Invite resent to {invite.get('email')}")
-        
-        return {"success": True, "message": "Invite resent"}
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Resend invite error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to resend invite")
+async def resend_invite(
+    invite_id: str,
+    background_tasks: BackgroundTasks,
+    db=Depends(get_db),
+    current_user=Depends(get_current_user_admin),
+):
+    org_id = current_user["org_id"]
+
+    invite = await db.user_invites.find_one({"invite_id": invite_id, "org_id": org_id}, {"_id": 0})
+    if not invite:
+        raise HTTPException(status_code=404, detail="Invite not found")
+
+    if invite.get("status") != "pending":
+        raise HTTPException(status_code=400, detail="Invite is not pending")
+
+    new_expiry = utc_now() + timedelta(days=7)
+
+    await db.user_invites.update_one(
+        {"invite_id": invite_id, "org_id": org_id},
+        {"$set": {"expires_at": new_expiry, "updated_at": utc_now(), "updated_by": current_user["user_id"]}}
+    )
+
+    org_settings = await db.org_settings.find_one({"org_id": org_id}, {"_id": 0, "org_name": 1})
+    org_name = (org_settings or {}).get("org_name") or "Your Organization"
+
+    background_tasks.add_task(
+        send_invite_email,
+        to_email=invite["email"],
+        invite_token=invite["invite_token"],
+        org_name=org_name,
+    )
+
+    return {"success": True}
+
 
 # ==================== ROLES ====================
 
 @router.get("/roles")
-async def list_roles(db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """List all roles"""
-    try:
-        org_id = current_user.get("org_id", "org_demo")
-        
-        roles = await db.roles.find(
-            {"$or": [{"org_id": org_id}, {"is_system": True}]},
-            {"_id": 0}
-        ).to_list(length=50)
-        
-        if not roles:
-            # Return default roles
-            roles = [
-                {"role_id": "owner", "role_name": "Owner", "description": "Full access to all features", "permissions": ["*"], "is_system": True, "user_count": 1},
-                {"role_id": "admin", "role_name": "Admin", "description": "Administrative access", "permissions": ["admin.users", "admin.roles", "admin.settings"], "is_system": True, "user_count": 2},
-                {"role_id": "manager", "role_name": "Manager", "description": "Team management access", "permissions": ["commerce.read", "commerce.write", "operations.read", "operations.write"], "is_system": False, "user_count": 5},
-                {"role_id": "member", "role_name": "Member", "description": "Standard user access", "permissions": ["commerce.read", "operations.read", "finance.read"], "is_system": False, "user_count": 10},
-                {"role_id": "viewer", "role_name": "Viewer", "description": "Read-only access", "permissions": ["commerce.read", "operations.read"], "is_system": False, "user_count": 2}
-            ]
-        
-        return {"success": True, "roles": roles}
-    except Exception as e:
-        logger.error(f"List roles error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to fetch roles")
+async def list_roles(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+    org_id = current_user["org_id"]
 
-@router.post("/roles")
-async def create_role(role_data: dict, db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """Create a new role"""
-    try:
-        org_id = current_user.get("org_id", "org_demo")
-        
-        role_id = f"role_{secrets.token_urlsafe(8)}"
-        
-        role_doc = {
-            "role_id": role_id,
-            "org_id": org_id,
-            "role_name": role_data.get("role_name"),
-            "description": role_data.get("description", ""),
-            "permissions": role_data.get("permissions", []),
-            "is_system": False,
-            "user_count": 0,
-            "created_at": datetime.now(timezone.utc).isoformat()
-        }
-        
-        await db.roles.insert_one(role_doc)
-        
-        return {"success": True, "role_id": role_id}
-    except Exception as e:
-        logger.error(f"Create role error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to create role")
+    roles = await db.roles.find(
+        {"$or": [{"org_id": org_id}, {"is_system": True}]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(length=100)
 
-@router.put("/roles/{role_id}/permissions")
-async def update_role_permissions(role_id: str, permissions_data: dict, db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """Update role permissions"""
-    try:
-        result = await db.roles.update_one(
-            {"role_id": role_id, "is_system": {"$ne": True}},
-            {"$set": {"permissions": permissions_data.get("permissions", [])}}
-        )
-        
-        return {"success": True, "message": "Permissions updated"}
-    except Exception as e:
-        logger.error(f"Update permissions error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to update permissions")
+    return {"success": True, "roles": roles}
 
-@router.delete("/roles/{role_id}")
-async def delete_role(role_id: str, db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """Delete a role"""
-    try:
-        # Check if it's a system role
-        role = await db.roles.find_one({"role_id": role_id})
-        if role and role.get("is_system"):
-            raise HTTPException(status_code=400, detail="Cannot delete system role")
-        
-        await db.roles.delete_one({"role_id": role_id})
-        
-        return {"success": True, "message": "Role deleted"}
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Delete role error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to delete role")
 
-# ==================== SETTINGS ====================
+@router.post("/roles", status_code=status.HTTP_201_CREATED)
+async def create_role(payload: RoleCreateIn, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+    org_id = current_user["org_id"]
 
-@router.get("/settings")
-async def get_settings(db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """Get organization settings"""
-    try:
-        org_id = current_user.get("org_id", "org_demo")
-        
-        settings = await db.org_settings.find_one({"org_id": org_id}, {"_id": 0})
-        
-        if not settings:
-            settings = {
-                "company_name": "Innovate Books Pvt. Ltd.",
-                "business_type": "private_limited",
-                "industry": "manufacturing",
-                "country": "IN",
-                "timezone": "Asia/Kolkata",
-                "language": "en",
-                "website": "https://innovatebooks.com",
-                "primary_color": "#3A4E63",
-                "notification_email": True,
-                "notification_push": True,
-                "notification_sms": False,
-                "two_factor_required": False,
-                "session_timeout": 30
-            }
-        
-        return {"success": True, "settings": settings}
-    except Exception as e:
-        logger.error(f"Get settings error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to fetch settings")
+    role_id = f"role_{secrets.token_urlsafe(8)}"
 
-@router.put("/settings")
-async def update_settings(settings_data: dict, db = Depends(get_db), current_user = Depends(get_current_user_admin)):
-    """Update organization settings"""
-    try:
-        org_id = current_user.get("org_id", "org_demo")
-        
-        settings_data["org_id"] = org_id
-        settings_data["updated_at"] = datetime.now(timezone.utc).isoformat()
-        
-        await db.org_settings.update_one(
-            {"org_id": org_id},
-            {"$set": settings_data},
-            upsert=True
-        )
-        
-        return {"success": True, "message": "Settings updated"}
-    except Exception as e:
-        logger.error(f"Update settings error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to update settings")
+    await db.roles.insert_one({
+        "role_id": role_id,
+        "org_id": org_id,
+        "role_name": payload.role_name.strip(),
+        "description": payload.description.strip() if payload.description else "",
+        "permissions": payload.permissions or [],
+        "is_system": False,
+        "created_at": utc_now(),
+        "created_by": current_user["user_id"],
+    })
+
+    return {"success": True, "role_id": role_id}

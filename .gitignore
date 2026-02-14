@@ -106,3 +106,10 @@ Thumbs.db
 /*.txt
 gitignore.txt
 gitconfig.txt
+
+
+# local cleanup repos / temp copies
+cleaned-repo*/
+cleaned-repo
+cleaned-repo-final
+cleaned-repo-2

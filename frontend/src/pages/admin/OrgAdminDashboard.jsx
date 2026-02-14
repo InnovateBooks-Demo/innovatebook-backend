@@ -42,7 +42,7 @@ const OrgAdminDashboard = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setStats(data.stats || stats);
+        setStats((prev) => ({ ...prev, ...(data.stats || {}) }));
         setRecentActivity(data.recent_activity || []);
       }
     } catch (error) {
@@ -176,7 +176,7 @@ const OrgAdminDashboard = () => {
               <div>
                 <p className="text-sm text-gray-500">API Calls Today</p>
                 <p className="text-3xl font-bold text-gray-900 mt-1">
-                  {stats.api_calls_today.toLocaleString()}
+                  {stats.api_calls_today?.toLocaleString() ?? 0}
                 </p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -259,26 +259,24 @@ const OrgAdminDashboard = () => {
               {recentActivity.map((activity, i) => (
                 <div key={i} className="px-6 py-4 flex items-center gap-4">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      activity.type === "user_added"
-                        ? "bg-green-100"
-                        : activity.type === "role_changed"
-                          ? "bg-purple-100"
-                          : activity.type === "settings_updated"
-                            ? "bg-blue-100"
-                            : "bg-gray-100"
-                    }`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${activity.type === "user_added"
+                      ? "bg-green-100"
+                      : activity.type === "role_changed"
+                        ? "bg-purple-100"
+                        : activity.type === "settings_updated"
+                          ? "bg-blue-100"
+                          : "bg-gray-100"
+                      }`}
                   >
                     <Bell
-                      className={`h-5 w-5 ${
-                        activity.type === "user_added"
-                          ? "text-green-600"
-                          : activity.type === "role_changed"
-                            ? "text-purple-600"
-                            : activity.type === "settings_updated"
-                              ? "text-blue-600"
-                              : "text-gray-600"
-                      }`}
+                      className={`h-5 w-5 ${activity.type === "user_added"
+                        ? "text-green-600"
+                        : activity.type === "role_changed"
+                          ? "text-purple-600"
+                          : activity.type === "settings_updated"
+                            ? "text-blue-600"
+                            : "text-gray-600"
+                        }`}
                     />
                   </div>
                   <div className="flex-1">

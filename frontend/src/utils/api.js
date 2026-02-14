@@ -1,13 +1,18 @@
 import axios from 'axios';
 import { getAuthHeaders } from './auth';
 
-//const API_URL = process.env.REACT_APP_BACKEND_URL + '/api';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL
+// Ensure API_URL always ends with /api
+let envUrl = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:8000";
+// Remove trailing slash if present
+if (envUrl.endsWith("/")) envUrl = envUrl.slice(0, -1);
+// Append /api if not present
+const API_URL = envUrl.endsWith("/api") ? envUrl : `${envUrl}/api`;
 
 const api = axios.create({
   baseURL: API_URL,
 });
+
+console.log("[API] baseURL:", api.defaults.baseURL);
 
 // Add auth header to all requests
 // api.interceptors.request.use((config) => {
@@ -115,7 +120,7 @@ export const cashFlowAPI = {
 // Collections APIs
 export const collectionsAPI = {
   getAll: () => api.get('/collections'),
-  updateStatus: (invoiceId, status, comment) => 
+  updateStatus: (invoiceId, status, comment) =>
     api.post(`/collections/${invoiceId}/status`, { status, comment }),
 };
 
@@ -141,7 +146,7 @@ export const billAPI = {
 // Payments APIs
 export const paymentsAPI = {
   getAll: () => api.get('/payments'),
-  updateStatus: (billId, status, comment, scheduledDate = null) => 
+  updateStatus: (billId, status, comment, scheduledDate = null) =>
     api.post(`/payments/${billId}/status`, { status, comment, scheduled_date: scheduledDate }),
 };
 
@@ -155,17 +160,17 @@ export const bankAPI = {
   createTransaction: (data) => api.post('/transactions', data),
   deleteTransaction: (id) => api.delete(`/transactions/${id}`),
   getMatchSuggestions: (transactionId) => api.get(`/transactions/${transactionId}/match-suggestions-enhanced`),
-  matchTransaction: (transactionId, entityType, entityId) => 
+  matchTransaction: (transactionId, entityType, entityId) =>
     api.post(`/transactions/${transactionId}/match`, null, {
       params: { entity_type: entityType, entity_id: entityId }
     }),
-  matchTransactionManual: (transactionId, matches) => 
+  matchTransactionManual: (transactionId, matches) =>
     api.post(`/transactions/${transactionId}/match-manual`, matches),
   dematchTransaction: (transactionId) => api.post(`/transactions/${transactionId}/dematch`),
   getTransactionDetails: (transactionId) => api.get(`/transactions/${transactionId}/details`),
-  reconcileTransactions: (transactionIds, period) => 
+  reconcileTransactions: (transactionIds, period) =>
     api.post('/transactions/reconcile', { transaction_ids: transactionIds, period }),
-  deReconcileTransaction: (transactionId) => 
+  deReconcileTransaction: (transactionId) =>
     api.post(`/transactions/${transactionId}/de-reconcile`),
   uploadTransactions: (file) => {
     const formData = new FormData();
@@ -185,11 +190,11 @@ export const categoryAPI = {
   getById: (id) => api.get(`/categories/${id}`),
   getStats: () => api.get('/categories/summary/stats'),
   create: (data) => api.post('/categories', data),
-  getOperatingInflows: () => api.get('/categories', { 
-    params: { cashflow_activity: 'Operating', cashflow_flow: 'Inflow' } 
+  getOperatingInflows: () => api.get('/categories', {
+    params: { cashflow_activity: 'Operating', cashflow_flow: 'Inflow' }
   }),
-  getOperatingOutflows: () => api.get('/categories', { 
-    params: { cashflow_activity: 'Operating', cashflow_flow: 'Outflow' } 
+  getOperatingOutflows: () => api.get('/categories', {
+    params: { cashflow_activity: 'Operating', cashflow_flow: 'Outflow' }
   }),
 };
 

@@ -26,8 +26,15 @@ import asyncio
 import pandas as pd
 import io
 
+# from routes.public_invite_routes import router as public_invite_router
+
+
+
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -63,6 +70,9 @@ ACCESS_TOKEN_EXPIRE = int(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES', 43200))
 app = FastAPI()
 
 
+# app.include_router(public_invite_router)
+
+
 
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -82,6 +92,13 @@ app.add_middleware(
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+
+
+from routes.public_invite_routes import router as public_invite_router
+
+# api_router.include_router(public_invite_router)
+
+app.include_router(public_invite_router, prefix="/api")
 # ==================== HEALTH CHECK ENDPOINT ====================
 @app.get("/health")
 async def health_check():
@@ -615,6 +632,7 @@ async def register(user_data: UserRegister):
 
 @api_router.get("/auth/me", response_model=User)
 async def get_me(current_user: User = Depends(get_current_user)):
+    print(current_user)
     return current_user
 
 # ==================== DASHBOARD ROUTES ====================
@@ -4486,6 +4504,8 @@ from commerce_routes import commerce_router
 from lead_sop_complete import lead_router
 from engagement_routes import engagement_router
 from auth_routes import router as auth_router
+# from routes.auth.auth_routes import router as auth_router
+
 from test_helpers import router as test_helpers_router
 from chat_routes import router as chat_router
 from user_management_routes import router as user_management_router
@@ -4594,7 +4614,7 @@ from governance_engine_routes import router as governance_engine_router
 app.include_router(governance_engine_router, prefix="/api")
 
 # Admin routes
-from admin_routes import router as admin_router
+from routes.admin.admin_routes import router as admin_router
 app.include_router(admin_router, prefix="/api")
 
 # GST Reporting routes

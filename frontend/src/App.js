@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { WebRTCProvider } from './context/WebRTCContext';
 import { FinanceNotificationProvider } from './context/FinanceNotificationContext';
 import './App.css';
+import AcceptInvite from "./pages/AcceptInvite";
+
 import { authService } from './utils/auth';
 import { Toaster } from './components/ui/sonner';
 import LandingPage from './pages/LandingPage';
@@ -492,23 +494,23 @@ function App() {
       const authStatus = authService.isAuthenticated();
       console.log('Auth check on mount:', authStatus);
       setIsAuthenticated(authStatus);
-      
+
       // Get user data
       if (authStatus) {
         const userData = JSON.parse(localStorage.getItem('user') || '{}');
         setCurrentUser(userData);
       }
-      
+
       setAuthLoading(false);
     };
     checkAuth();
-    
+
     // Also listen for storage changes (e.g., when user logs in/out in another tab)
     const handleStorageChange = () => {
       const authStatus = authService.isAuthenticated();
       console.log('Auth changed via storage:', authStatus);
       setIsAuthenticated(authStatus);
-      
+
       if (authStatus) {
         const userData = JSON.parse(localStorage.getItem('user') || '{}');
         setCurrentUser(userData);
@@ -516,7 +518,7 @@ function App() {
         setCurrentUser(null);
       }
     };
-    
+
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
@@ -524,7 +526,7 @@ function App() {
   const PrivateRoute = ({ children }) => {
     // Double-check auth from localStorage directly
     const currentAuth = authService.isAuthenticated();
-    
+
     // Show loading while checking auth
     if (authLoading) {
       return (
@@ -536,13 +538,13 @@ function App() {
         </div>
       );
     }
-    
+
     // Use current auth check from localStorage (most up-to-date)
     if (!currentAuth) {
       console.log('Not authenticated, redirecting to landing');
       return <Navigate to="/" replace />;
     }
-    
+
     return children;
   };
 
@@ -550,684 +552,687 @@ function App() {
     <div className="App">
       <WebRTCProvider userId={currentUser?.id}>
         <FinanceNotificationProvider>
-        <BrowserRouter>
-          <Routes>
-          {/* Public Website Routes */}
-          <Route path="/" element={<Home />} />
-          
-          {/* Auth Routes - New Login/Signup System */}
-          <Route path="/auth/login" element={<LoginPage />} />
-          <Route path="/auth/signup" element={<SignupPage />} />
-          
-          {/* Super Admin Routes */}
-          <Route path="/super-admin/login" element={<SuperAdminLoginNew />} />
-          <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
-          <Route path="/super-admin/organizations" element={<SuperAdminOrgsPage />} />
-          <Route path="/super-admin/users" element={<SuperAdminUsersPage />} />
-          
-          {/* Redirect old login routes to new auth pages */}
-          <Route path="/login" element={<Navigate to="/auth/login" replace />} />
-          <Route path="/commerce/login" element={<Navigate to="/auth/login" replace />} />
-          <Route path="/commerce-login" element={<Navigate to="/auth/login" replace />} />
-          
-          {/* Public Website Overview Pages */}
-          <Route path="/pricing" element={<MainPricingPage />} />
-          <Route path="/workspace-overview" element={<WorkspaceOverview />} />
-          <Route path="/intelligence-overview" element={<IntelligenceOverview />} />
-          
-          <Route path="/solutions" element={<SolutionsIndex />} />
-          <Route path="/solutions/commerce" element={<IBCommerceSolution />} />
-          <Route path="/solutions/commerce/overview" element={<IBCommerceOverview />} />
-          <Route path="/solutions/commerce/parties" element={<PartiesModule />} />
-          <Route path="/solutions/commerce/parties/customers" element={<CustomersPage />} />
-          <Route path="/solutions/commerce/parties/vendors" element={<VendorsPage />} />
-          <Route path="/solutions/commerce/parties/partners" element={<PartnersPage />} />
-          <Route path="/solutions/commerce/parties/channels" element={<ChannelsPage />} />
-          <Route path="/solutions/commerce/parties/profiles" element={<ProfilesPage />} />
-          <Route path="/solutions/commerce/catalog" element={<CatalogModule />} />
-          <Route path="/solutions/commerce/catalog/items" element={<ItemsPage />} />
-          <Route path="/solutions/commerce/catalog/pricing" element={<PricingPage />} />
-          <Route path="/solutions/commerce/catalog/costing" element={<CostingPage />} />
-          <Route path="/solutions/commerce/catalog/packages" element={<PackagesPage />} />
-          <Route path="/solutions/commerce/catalog/rules" element={<RulesPage />} />
-          <Route path="/solutions/commerce/revenue" element={<RevenueModule />} />
-          <Route path="/solutions/commerce/revenue/lead" element={<LeadPage />} />
-          <Route path="/solutions/commerce/revenue/evaluate" element={<RevenueEvaluatePage />} />
-          <Route path="/solutions/commerce/revenue/commit" element={<RevenueCommitPage />} />
-          <Route path="/solutions/commerce/revenue/contract" element={<RevenueContractPage />} />
-          <Route path="/solutions/commerce/procurement" element={<ProcurementModule />} />
-          <Route path="/solutions/commerce/procurement/procure" element={<ProcurePage />} />
-          <Route path="/solutions/commerce/procurement/evaluate" element={<ProcurementEvaluatePage />} />
-          <Route path="/solutions/commerce/procurement/commit" element={<ProcurementCommitPage />} />
-          <Route path="/solutions/commerce/procurement/contract" element={<ProcurementContractPage />} />
-          <Route path="/solutions/commerce/governance" element={<GovernanceModule />} />
-          <Route path="/solutions/commerce/governance/policies" element={<PoliciesPage />} />
-          <Route path="/solutions/commerce/governance/authority" element={<AuthorityPage />} />
-          <Route path="/solutions/commerce/governance/limits" element={<LimitsPage />} />
-          <Route path="/solutions/commerce/governance/risk" element={<RiskPage />} />
-          <Route path="/solutions/commerce/governance/audit" element={<AuditPage />} />
-          <Route path="/solutions/workforce" element={<WorkforceSolution />} />
-          <Route path="/solutions/workforce/overview" element={<IBWorkforceOverview />} />
-          <Route path="/solutions/workforce/employees" element={<WorkforceEmployeesPage />} />
-          <Route path="/solutions/workforce/payroll" element={<WorkforcePayrollPage />} />
-          <Route path="/solutions/workforce/benefits" element={<WorkforceBenefitsPage />} />
-          <Route path="/solutions/workforce/performance" element={<WorkforcePerformancePage />} />
-          <Route path="/solutions/workforce/learning" element={<WorkforceLearningPage />} />
-          <Route path="/solutions/capital" element={<CapitalSolution />} />
-          <Route path="/solutions/capital/overview" element={<IBCapitalOverview />} />
-          <Route path="/solutions/capital/banks" element={<CapitalBanksPage />} />
-          <Route path="/solutions/capital/treasury" element={<CapitalTreasuryPage />} />
-          <Route path="/solutions/capital/credit" element={<CapitalCreditPage />} />
-          <Route path="/solutions/capital/forecasting" element={<CapitalForecastingPage />} />
-          <Route path="/solutions/capital/optimization" element={<CapitalOptimizationPage />} />
-          <Route path="/solutions/operations" element={<OperationsSolution />} />
-          <Route path="/solutions/operations/overview" element={<IBOperationsOverview />} />
-          <Route path="/solutions/operations/projects" element={<OperationsProjectsPage />} />
-          <Route path="/solutions/operations/assets" element={<OperationsAssetsPage />} />
-          <Route path="/solutions/operations/inventory" element={<OperationsInventoryPage />} />
-          <Route path="/solutions/operations/procurement" element={<OperationsProcurementPage />} />
-          <Route path="/solutions/operations/production" element={<OperationsProductionPage />} />
-          <Route path="/solutions/finance" element={<FinanceSolution />} />
-          <Route path="/solutions/finance/overview" element={<IBFinanceOverview />} />
-          <Route path="/solutions/finance/accounting" element={<FinanceAccountingPage />} />
-          <Route path="/solutions/finance/reporting" element={<FinanceReportingPage />} />
-          <Route path="/solutions/finance/budgeting" element={<FinanceBudgetingPage />} />
-          <Route path="/solutions/finance/reconciliation" element={<FinanceReconciliationPage />} />
-          <Route path="/solutions/finance/compliance" element={<FinanceCompliancePage />} />
-          <Route path="/insights" element={<InsightsIndex />} />
-          <Route path="/intelligence" element={<IntelligencePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          
-          {/* Workspace Routes - Premium UI */}
-          <Route
-            path="/workspace"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<Navigate to="/workspace/dashboard" replace />} />
-            <Route path="dashboard" element={<WorkspaceDashboard />} />
-            <Route path="chats" element={<WorkspaceChats />} />
-            <Route path="channels" element={<WorkspaceChannels />} />
-            <Route path="tasks" element={<WorkspaceTasks />} />
-            <Route path="approvals" element={<WorkspaceApprovals />} />
-            <Route path="notifications" element={<WorkspaceNotifications />} />
-            <Route path="chat" element={<IBChatPremium viewMode="chat" />} />
-            <Route path="settings" element={<WorkspaceSettings />} />
-          </Route>
+          <BrowserRouter>
+            <Routes>
+              {/* Public Website Routes */}
+              <Route path="/" element={<Home />} />
 
-          {/* Reports Routes */}
-          <Route
-            path="/reports"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<ReportsDashboard />} />
-          </Route>
-          
-          {/* IB Commerce Routes - Now within Workspace Layout */}
-          <Route
-            path="/commerce"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<CommerceDashboard />} />
-            <Route path="profile" element={<CommerceProfile />} />
-            <Route path="settings" element={<CommerceProfile />} />
-            {/* Parties Module */}
-            <Route path="parties" element={<PartiesDashboard />} />
-            <Route path="parties/dashboard" element={<PartiesDashboard />} />
-            <Route path="parties/customers" element={<CustomersList />} />
-            <Route path="parties/customers/create" element={<CustomersCreate />} />
-            <Route path="parties/customers/:customer_id" element={<CustomersDetail />} />
-            <Route path="parties/customers/:customer_id/edit" element={<CustomersEdit />} />
-            <Route path="parties/vendors" element={<VendorsList />} />
-            <Route path="parties/vendors/create" element={<VendorsCreate />} />
-            <Route path="parties/vendors/:vendor_id" element={<VendorsDetail />} />
-            <Route path="parties/vendors/:vendor_id/edit" element={<VendorsEdit />} />
-            <Route path="parties/partners" element={<PartnersList />} />
-            <Route path="parties/partners/create" element={<PartnersCreate />} />
-            <Route path="parties/partners/:partner_id" element={<PartnersDetail />} />
-            <Route path="parties/partners/:partner_id/edit" element={<PartnersEdit />} />
-            <Route path="parties/channels" element={<ChannelsList />} />
-            <Route path="parties/channels/create" element={<ChannelsCreate />} />
-            <Route path="parties/channels/:channel_id" element={<ChannelsDetail />} />
-            <Route path="parties/channels/:channel_id/edit" element={<ChannelsEdit />} />
-            <Route path="parties/profiles" element={<ProfilesList />} />
-            <Route path="parties/profiles/create" element={<ProfilesCreate />} />
-            <Route path="parties/profiles/:profile_id" element={<ProfilesDetail />} />
-            <Route path="parties/profiles/:profile_id/edit" element={<ProfilesEdit />} />
 
-            {/* Catalog Module */}
-            <Route path="catalog" element={<CatalogDashboard />} />
-            <Route path="catalog/items" element={<CatalogItemsList />} />
-            <Route path="catalog/items/create" element={<CatalogItemsCreate />} />
-            <Route path="catalog/items/:item_id" element={<CatalogItemsDetail />} />
-            <Route path="catalog/items/:item_id/edit" element={<CatalogItemsEdit />} />
-            <Route path="catalog/pricing" element={<CatalogPricingList />} />
-            <Route path="catalog/pricing/create" element={<CatalogPricingCreate />} />
-            <Route path="catalog/pricing/:pricing_id" element={<CatalogPricingDetail />} />
-            <Route path="catalog/pricing/:pricing_id/edit" element={<CatalogPricingEdit />} />
-            <Route path="catalog/costing" element={<CatalogCostingList />} />
-            <Route path="catalog/costing/create" element={<CatalogCostingCreate />} />
-            <Route path="catalog/costing/:costing_id" element={<CatalogCostingDetail />} />
-            <Route path="catalog/costing/:costing_id/edit" element={<CatalogCostingEdit />} />
-            <Route path="catalog/rules" element={<CatalogRulesList />} />
-            <Route path="catalog/rules/create" element={<CatalogRulesCreate />} />
-            <Route path="catalog/rules/:rule_id" element={<CatalogRulesDetail />} />
-            <Route path="catalog/rules/:rule_id/edit" element={<CatalogRulesEdit />} />
-            <Route path="catalog/packages" element={<CatalogPackagesList />} />
-            <Route path="catalog/packages/create" element={<CatalogPackagesCreate />} />
-            <Route path="catalog/packages/:package_id" element={<CatalogPackagesDetail />} />
-            <Route path="catalog/packages/:package_id/edit" element={<CatalogPackagesEdit />} />
 
-            {/* Revenue Module */}
-            <Route path="revenue" element={<RevenueDashboard />} />
-            <Route path="lead" element={<LeadList />} />
-            <Route path="lead/create" element={<LeadCreate />} />
-            <Route path="lead/:id" element={<LeadDetail />} />
-            <Route path="lead/:id/edit" element={<LeadEdit />} />
-            <Route path="masters" element={<MasterDataView />} />
-            {/* Revenue - Evaluations Sub-module */}
-            <Route path="revenue/evaluations" element={<RevenueEvaluationsList />} />
-            <Route path="revenue/evaluations/create" element={<RevenueEvaluationsCreate />} />
-            <Route path="revenue/evaluations/:evaluation_id" element={<RevenueEvaluationsDetail />} />
-            <Route path="revenue/evaluations/:evaluation_id/edit" element={<RevenueEvaluationsEdit />} />
-            {/* Revenue - Commits Sub-module */}
-            <Route path="revenue/commits" element={<RevenueCommitsList />} />
-            <Route path="revenue/commits/create" element={<RevenueCommitsCreate />} />
-            <Route path="revenue/commits/:commit_id" element={<RevenueCommitsDetail />} />
-            <Route path="revenue/commits/:commit_id/edit" element={<RevenueCommitsEdit />} />
-            {/* Revenue - Contracts Sub-module */}
-            <Route path="revenue/contracts" element={<RevenueContractsList />} />
-            <Route path="revenue/contracts/create" element={<RevenueContractsCreate />} />
-            <Route path="revenue/contracts/:contract_id" element={<RevenueContractsDetail />} />
-            <Route path="revenue/contracts/:contract_id/edit" element={<RevenueContractsEdit />} />
-            {/* Legacy Evaluate Routes */}
-            <Route path="evaluate" element={<EvaluateList />} />
-            <Route path="evaluate/create" element={<EvaluateCreate />} />
-            <Route path="evaluate/:evaluationId" element={<EvaluateDetail />} />
-            <Route path="evaluate/:evaluationId/edit" element={<EvaluateEdit />} />
-            <Route path="commit" element={<CommitList />} />
-            <Route path="commit/create" element={<CommitCreate />} />
-            <Route path="commit/:commitId" element={<CommitDetail />} />
-            <Route path="commit/:commitId/edit" element={<CommitEdit />} />
-            <Route path="execute" element={<ExecuteList />} />
-            <Route path="execute/create" element={<ExecuteCreate />} />
-            <Route path="execute/:executionId" element={<ExecuteDetail />} />
-            <Route path="execute/:executionId/edit" element={<ExecuteEdit />} />
-            <Route path="bill" element={<CommerceBillList />} />
-            <Route path="bill/create" element={<CommerceBillCreate />} />
-            <Route path="bill/:invoiceId" element={<CommerceBillDetail />} />
-            <Route path="bill/:invoiceId/edit" element={<CommerceBillEdit />} />
-            <Route path="collect" element={<CollectList />} />
-            <Route path="collect/create" element={<CollectCreate />} />
-            <Route path="collect/:collectionId" element={<CollectDetail />} />
-            <Route path="collect/:collectionId/edit" element={<CollectEdit />} />
-            <Route path="procure" element={<ProcurementDashboard />} />
-            <Route path="procure/requests" element={<ProcureList />} />
-            <Route path="procure/requests/create" element={<ProcurementCreate />} />
-            <Route path="procure/requests/:pr_id" element={<ProcurementDetail />} />
-            <Route path="procure/requests/:pr_id/edit" element={<ProcurementEdit />} />
-            {/* Procurement - Orders Sub-module */}
-            <Route path="procure/orders" element={<OrdersList />} />
-            <Route path="procure/orders/create" element={<OrdersCreate />} />
-            <Route path="procure/orders/:po_id" element={<OrdersDetail />} />
-            <Route path="procure/orders/:po_id/edit" element={<OrdersEdit />} />
-            {/* Procurement - Evaluations Sub-module */}
-            <Route path="procure/evaluate" element={<ProcureEvaluationsList />} />
-            <Route path="procure/evaluate/create" element={<ProcureEvaluationsCreate />} />
-            <Route path="procure/evaluate/:evaluation_id" element={<ProcureEvaluationsDetail />} />
-            <Route path="procure/evaluate/:evaluation_id/edit" element={<ProcureEvaluationsEdit />} />
-            {/* Procurement - Commits Sub-module */}
-            <Route path="procure/commit" element={<ProcureCommitsList />} />
-            <Route path="procure/commit/create" element={<ProcureCommitsCreate />} />
-            <Route path="procure/commit/:commit_id" element={<ProcureCommitsDetail />} />
-            <Route path="procure/commit/:commit_id/edit" element={<ProcureCommitsEdit />} />
-            {/* Procurement - Contracts Sub-module */}
-            <Route path="procure/contract" element={<ProcureContractsList />} />
-            <Route path="procure/contract/create" element={<ProcureContractsCreate />} />
-            <Route path="procure/contract/:contract_id" element={<ProcureContractsDetail />} />
-            <Route path="procure/contract/:contract_id/edit" element={<ProcureContractsEdit />} />
-            <Route path="pay" element={<PayList />} />
-            <Route path="pay/create" element={<PayCreate />} />
-            <Route path="pay/:paymentId" element={<PayDetail />} />
-            <Route path="pay/:paymentId/edit" element={<PayEdit />} />
-            <Route path="spend" element={<SpendList />} />
-            <Route path="spend/create" element={<SpendCreate />} />
-            <Route path="spend/:spendId" element={<SpendDetail />} />
-            <Route path="spend/:spendId/edit" element={<SpendEdit />} />
-            <Route path="tax" element={<TaxList />} />
-            <Route path="tax/create" element={<TaxCreate />} />
-            <Route path="tax/:taxId" element={<TaxDetail />} />
-            <Route path="tax/:taxId/edit" element={<TaxEdit />} />
-            <Route path="reconcile" element={<ReconcileList />} />
-            <Route path="reconcile/create" element={<ReconcileCreate />} />
-            <Route path="reconcile/:reconciliationId" element={<ReconcileDetail />} />
-            <Route path="reconcile/:reconciliationId/edit" element={<ReconcileEdit />} />
-            <Route path="govern" element={<GovernanceDashboard />} />
-            <Route path="govern/policies" element={<GovernPoliciesList />} />
-            <Route path="govern/policies/create" element={<GovernPoliciesCreate />} />
-            <Route path="govern/policies/:policy_id" element={<GovernPoliciesDetail />} />
-            <Route path="govern/policies/:policy_id/edit" element={<GovernPoliciesEdit />} />
-            <Route path="govern/limits" element={<GovernLimitsList />} />
-            <Route path="govern/limits/create" element={<GovernLimitsCreate />} />
-            <Route path="govern/limits/:limit_id" element={<GovernLimitsDetail />} />
-            <Route path="govern/limits/:limit_id/edit" element={<GovernLimitsEdit />} />
-            <Route path="govern/authority" element={<GovernAuthorityList />} />
-            <Route path="govern/authority/create" element={<GovernAuthorityCreate />} />
-            <Route path="govern/authority/:authority_id" element={<GovernAuthorityDetail />} />
-            <Route path="govern/authority/:authority_id/edit" element={<GovernAuthorityEdit />} />
-            <Route path="govern/risk" element={<GovernRiskList />} />
-            <Route path="govern/risk/create" element={<GovernRiskCreate />} />
-            <Route path="govern/risk/:risk_id" element={<GovernRiskDetail />} />
-            <Route path="govern/risk/:risk_id/edit" element={<GovernRiskEdit />} />
-            <Route path="govern/audit" element={<GovernAuditList />} />
-            <Route path="govern/audit/create" element={<GovernAuditCreate />} />
-            <Route path="govern/audit/:audit_id" element={<GovernAuditDetail />} />
-            <Route path="govern/audit/:audit_id/edit" element={<GovernAuditEdit />} />
+              {/* Auth Routes - New Login/Signup System */}
+              <Route path="/auth/login" element={<LoginPage />} />
+              <Route path="/auth/signup" element={<SignupPage />} />
+              <Route path="/accept-invite" element={<AcceptInvite />} />
 
-            {/* Revenue Workflow - 5-Stage Enterprise */}
-            <Route path="revenue-workflow/leads" element={<RevenueLeadsList />} />
-            <Route path="revenue-workflow/leads/create" element={<RevenueLeadCreate />} />
-            <Route path="revenue-workflow/leads/:lead_id" element={<RevenueLeadDetail />} />
-            <Route path="revenue-workflow/leads/:lead_id/edit" element={<RevenueLeadEdit />} />
-            <Route path="revenue-workflow/evaluations" element={<RevenueWorkflowEvaluationsList />} />
-            <Route path="revenue-workflow/evaluations/:evaluation_id" element={<RevenueEvaluationWorkspace />} />
-            <Route path="revenue-workflow/commits" element={<RevenueWorkflowCommitsList />} />
-            <Route path="revenue-workflow/commits/:commit_id" element={<RevenueCommitReview />} />
-            <Route path="revenue-workflow/contracts" element={<RevenueWorkflowContractsList />} />
-            <Route path="revenue-workflow/contracts/:contract_id" element={<RevenueContractDraft />} />
-            <Route path="revenue-workflow/handoffs" element={<RevenueWorkflowHandoffsList />} />
-            <Route path="revenue-workflow/handoffs/:handoff_id" element={<RevenueHandoff />} />
+              {/* Super Admin Routes */}
+              <Route path="/super-admin/login" element={<SuperAdminLoginNew />} />
+              <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
+              <Route path="/super-admin/organizations" element={<SuperAdminOrgsPage />} />
+              <Route path="/super-admin/users" element={<SuperAdminUsersPage />} />
 
-            {/* Procurement Workflow - 5-Stage Enterprise */}
-            <Route path="procure-workflow/requests" element={<ProcureRequestsList />} />
-            <Route path="procure-workflow/requests/create" element={<ProcureRequestCreate />} />
-            <Route path="procure-workflow/requests/:request_id" element={<ProcureRequestDetail />} />
-            <Route path="procure-workflow/requests/:request_id/edit" element={<ProcureRequestEdit />} />
-            <Route path="procure-workflow/evaluations" element={<ProcureWorkflowEvaluationsList />} />
-            <Route path="procure-workflow/evaluations/:evaluation_id" element={<ProcureEvaluationWorkspace />} />
-            <Route path="procure-workflow/commits" element={<ProcureWorkflowCommitsList />} />
-            <Route path="procure-workflow/commits/:commit_id" element={<ProcureCommitReview />} />
-            <Route path="procure-workflow/contracts" element={<ProcureWorkflowContractsList />} />
-            <Route path="procure-workflow/contracts/:contract_id" element={<ProcureContractDraft />} />
-            <Route path="procure-workflow/handoffs" element={<ProcureWorkflowHandoffsList />} />
-            <Route path="procure-workflow/handoffs/:handoff_id" element={<ProcureHandoff />} />
+              {/* Redirect old login routes to new auth pages */}
+              <Route path="/login" element={<Navigate to="/auth/login" replace />} />
+              <Route path="/commerce/login" element={<Navigate to="/auth/login" replace />} />
+              <Route path="/commerce-login" element={<Navigate to="/auth/login" replace />} />
 
-            {/* Parties Engine - Commercial Identity & Readiness */}
-            <Route path="parties-engine" element={<PartyEngineList />} />
-            <Route path="parties-engine/create" element={<PartyEngineCreate />} />
-            <Route path="parties-engine/:party_id" element={<PartyEngineDetail />} />
+              {/* Public Website Overview Pages */}
+              <Route path="/pricing" element={<MainPricingPage />} />
+              <Route path="/workspace-overview" element={<WorkspaceOverview />} />
+              <Route path="/intelligence-overview" element={<IntelligenceOverview />} />
 
-            {/* Governance Engine - Policies, Limits, Authority, Risk, Audit */}
-            <Route path="governance-engine" element={<GovernanceEngineDashboard />} />
-            <Route path="governance-engine/policies" element={<GovernancePoliciesList />} />
-            <Route path="governance-engine/limits" element={<GovernanceLimitsList />} />
-            <Route path="governance-engine/authority" element={<GovernanceAuthorityList />} />
-            <Route path="governance-engine/risk-rules" element={<GovernanceRiskRulesList />} />
+              <Route path="/solutions" element={<SolutionsIndex />} />
+              <Route path="/solutions/commerce" element={<IBCommerceSolution />} />
+              <Route path="/solutions/commerce/overview" element={<IBCommerceOverview />} />
+              <Route path="/solutions/commerce/parties" element={<PartiesModule />} />
+              <Route path="/solutions/commerce/parties/customers" element={<CustomersPage />} />
+              <Route path="/solutions/commerce/parties/vendors" element={<VendorsPage />} />
+              <Route path="/solutions/commerce/parties/partners" element={<PartnersPage />} />
+              <Route path="/solutions/commerce/parties/channels" element={<ChannelsPage />} />
+              <Route path="/solutions/commerce/parties/profiles" element={<ProfilesPage />} />
+              <Route path="/solutions/commerce/catalog" element={<CatalogModule />} />
+              <Route path="/solutions/commerce/catalog/items" element={<ItemsPage />} />
+              <Route path="/solutions/commerce/catalog/pricing" element={<PricingPage />} />
+              <Route path="/solutions/commerce/catalog/costing" element={<CostingPage />} />
+              <Route path="/solutions/commerce/catalog/packages" element={<PackagesPage />} />
+              <Route path="/solutions/commerce/catalog/rules" element={<RulesPage />} />
+              <Route path="/solutions/commerce/revenue" element={<RevenueModule />} />
+              <Route path="/solutions/commerce/revenue/lead" element={<LeadPage />} />
+              <Route path="/solutions/commerce/revenue/evaluate" element={<RevenueEvaluatePage />} />
+              <Route path="/solutions/commerce/revenue/commit" element={<RevenueCommitPage />} />
+              <Route path="/solutions/commerce/revenue/contract" element={<RevenueContractPage />} />
+              <Route path="/solutions/commerce/procurement" element={<ProcurementModule />} />
+              <Route path="/solutions/commerce/procurement/procure" element={<ProcurePage />} />
+              <Route path="/solutions/commerce/procurement/evaluate" element={<ProcurementEvaluatePage />} />
+              <Route path="/solutions/commerce/procurement/commit" element={<ProcurementCommitPage />} />
+              <Route path="/solutions/commerce/procurement/contract" element={<ProcurementContractPage />} />
+              <Route path="/solutions/commerce/governance" element={<GovernanceModule />} />
+              <Route path="/solutions/commerce/governance/policies" element={<PoliciesPage />} />
+              <Route path="/solutions/commerce/governance/authority" element={<AuthorityPage />} />
+              <Route path="/solutions/commerce/governance/limits" element={<LimitsPage />} />
+              <Route path="/solutions/commerce/governance/risk" element={<RiskPage />} />
+              <Route path="/solutions/commerce/governance/audit" element={<AuditPage />} />
+              <Route path="/solutions/workforce" element={<WorkforceSolution />} />
+              <Route path="/solutions/workforce/overview" element={<IBWorkforceOverview />} />
+              <Route path="/solutions/workforce/employees" element={<WorkforceEmployeesPage />} />
+              <Route path="/solutions/workforce/payroll" element={<WorkforcePayrollPage />} />
+              <Route path="/solutions/workforce/benefits" element={<WorkforceBenefitsPage />} />
+              <Route path="/solutions/workforce/performance" element={<WorkforcePerformancePage />} />
+              <Route path="/solutions/workforce/learning" element={<WorkforceLearningPage />} />
+              <Route path="/solutions/capital" element={<CapitalSolution />} />
+              <Route path="/solutions/capital/overview" element={<IBCapitalOverview />} />
+              <Route path="/solutions/capital/banks" element={<CapitalBanksPage />} />
+              <Route path="/solutions/capital/treasury" element={<CapitalTreasuryPage />} />
+              <Route path="/solutions/capital/credit" element={<CapitalCreditPage />} />
+              <Route path="/solutions/capital/forecasting" element={<CapitalForecastingPage />} />
+              <Route path="/solutions/capital/optimization" element={<CapitalOptimizationPage />} />
+              <Route path="/solutions/operations" element={<OperationsSolution />} />
+              <Route path="/solutions/operations/overview" element={<IBOperationsOverview />} />
+              <Route path="/solutions/operations/projects" element={<OperationsProjectsPage />} />
+              <Route path="/solutions/operations/assets" element={<OperationsAssetsPage />} />
+              <Route path="/solutions/operations/inventory" element={<OperationsInventoryPage />} />
+              <Route path="/solutions/operations/procurement" element={<OperationsProcurementPage />} />
+              <Route path="/solutions/operations/production" element={<OperationsProductionPage />} />
+              <Route path="/solutions/finance" element={<FinanceSolution />} />
+              <Route path="/solutions/finance/overview" element={<IBFinanceOverview />} />
+              <Route path="/solutions/finance/accounting" element={<FinanceAccountingPage />} />
+              <Route path="/solutions/finance/reporting" element={<FinanceReportingPage />} />
+              <Route path="/solutions/finance/budgeting" element={<FinanceBudgetingPage />} />
+              <Route path="/solutions/finance/reconciliation" element={<FinanceReconciliationPage />} />
+              <Route path="/solutions/finance/compliance" element={<FinanceCompliancePage />} />
+              <Route path="/insights" element={<InsightsIndex />} />
+              <Route path="/intelligence" element={<IntelligencePage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/contact" element={<ContactPage />} />
 
-            {/* Manufacturing Masters */}
-            <Route path="manufacturing/masters" element={<MasterDashboard />} />
-            <Route path="manufacturing/masters/:masterType" element={<MasterList />} />
-            <Route path="manufacturing/masters-view" element={<MasterDataView />} />
-            {/* Manufacturing Analytics */}
-            <Route path="manufacturing/analytics" element={<AnalyticsDashboard />} />
-          </Route>
+              {/* Workspace Routes - Premium UI */}
+              <Route
+                path="/workspace"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<Navigate to="/workspace/dashboard" replace />} />
+                <Route path="dashboard" element={<WorkspaceDashboard />} />
+                <Route path="chats" element={<WorkspaceChats />} />
+                <Route path="channels" element={<WorkspaceChannels />} />
+                <Route path="tasks" element={<WorkspaceTasks />} />
+                <Route path="approvals" element={<WorkspaceApprovals />} />
+                <Route path="notifications" element={<WorkspaceNotifications />} />
+                <Route path="chat" element={<IBChatPremium viewMode="chat" />} />
+                <Route path="settings" element={<WorkspaceSettings />} />
+              </Route>
 
-          {/* IB Intelligence Routes - Within Workspace Layout */}
-          <Route
-            path="/intelligence"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<IntelligenceDashboard />} />
-            {/* New Intelligence Modules */}
-            <Route path="signals" element={<IntelSignalsRealtimePage />} />
-            <Route path="signals/legacy" element={<IntelSignalsPage />} />
-            <Route path="metrics" element={<IntelMetricsPage />} />
-            <Route path="risk" element={<IntelRiskPage />} />
-            <Route path="forecast" element={<IntelAIForecastPage />} />
-            <Route path="forecast/legacy" element={<IntelForecastPage />} />
-            <Route path="recommendations" element={<IntelRecommendationsPage />} />
-            <Route path="learning" element={<IntelLearningPage />} />
-            <Route path="executive" element={<ExecutiveDashboard />} />
-            {/* Legacy routes */}
-            <Route path="analytics" element={<IntelligenceAnalytics />} />
-            <Route path="analytics/dashboard" element={<IntelligenceAnalytics />} />
-            <Route path="analytics/revenue" element={<IntelligenceAnalytics />} />
-            <Route path="analytics/procurement" element={<IntelligenceAnalytics />} />
-            <Route path="analytics/parties" element={<IntelligenceAnalytics />} />
-            <Route path="reports" element={<IntelligenceReports />} />
-            <Route path="reports/standard" element={<IntelligenceReports />} />
-            <Route path="reports/custom" element={<IntelligenceReports />} />
-            <Route path="reports/scheduled" element={<IntelligenceReports />} />
-            <Route path="insights" element={<IntelligenceInsights />} />
-            <Route path="insights/ai" element={<IntelligenceInsights />} />
-            <Route path="insights/recommendations" element={<IntelligenceInsights />} />
-            <Route path="insights/anomalies" element={<IntelligenceInsights />} />
-            <Route path="forecasts" element={<IntelligenceForecasts />} />
-            <Route path="forecasts/revenue" element={<IntelligenceForecasts />} />
-            <Route path="forecasts/spend" element={<IntelligenceForecasts />} />
-            <Route path="forecasts/cashflow" element={<IntelligenceForecasts />} />
-          </Route>
+              {/* Reports Routes */}
+              <Route
+                path="/reports"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<ReportsDashboard />} />
+              </Route>
 
-          {/* IB Operations Routes - Within Workspace Layout */}
-          <Route
-            path="/operations"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<OperationsDashboard />} />
-            {/* Intake */}
-            <Route path="intake" element={<IntakeQueue />} />
-            <Route path="intake/:work_order_id" element={<IntakeQueue />} />
-            {/* Projects */}
-            <Route path="projects" element={<ProjectsList />} />
-            <Route path="projects/:project_id" element={<ProjectDetail />} />
-            {/* Tasks */}
-            <Route path="tasks" element={<TasksList />} />
-            <Route path="tasks/my" element={<TasksList />} />
-            {/* Resources */}
-            <Route path="resources" element={<ResourcesPage />} />
-            <Route path="inventory" element={<ResourcesPage />} />
-            {/* Services */}
-            <Route path="services" element={<ServicesList />} />
-            <Route path="services/:service_instance_id" element={<ServiceDetail />} />
-            {/* Governance */}
-            <Route path="governance" element={<OpsGovernanceDashboard />} />
-            <Route path="governance/alerts" element={<OpsGovernanceDashboard />} />
-          </Route>
+              {/* IB Commerce Routes - Now within Workspace Layout */}
+              <Route
+                path="/commerce"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<CommerceDashboard />} />
+                <Route path="profile" element={<CommerceProfile />} />
+                <Route path="settings" element={<CommerceProfile />} />
+                {/* Parties Module */}
+                <Route path="parties" element={<PartiesDashboard />} />
+                <Route path="parties/dashboard" element={<PartiesDashboard />} />
+                <Route path="parties/customers" element={<CustomersList />} />
+                <Route path="parties/customers/create" element={<CustomersCreate />} />
+                <Route path="parties/customers/:customer_id" element={<CustomersDetail />} />
+                <Route path="parties/customers/:customer_id/edit" element={<CustomersEdit />} />
+                <Route path="parties/vendors" element={<VendorsList />} />
+                <Route path="parties/vendors/create" element={<VendorsCreate />} />
+                <Route path="parties/vendors/:vendor_id" element={<VendorsDetail />} />
+                <Route path="parties/vendors/:vendor_id/edit" element={<VendorsEdit />} />
+                <Route path="parties/partners" element={<PartnersList />} />
+                <Route path="parties/partners/create" element={<PartnersCreate />} />
+                <Route path="parties/partners/:partner_id" element={<PartnersDetail />} />
+                <Route path="parties/partners/:partner_id/edit" element={<PartnersEdit />} />
+                <Route path="parties/channels" element={<ChannelsList />} />
+                <Route path="parties/channels/create" element={<ChannelsCreate />} />
+                <Route path="parties/channels/:channel_id" element={<ChannelsDetail />} />
+                <Route path="parties/channels/:channel_id/edit" element={<ChannelsEdit />} />
+                <Route path="parties/profiles" element={<ProfilesList />} />
+                <Route path="parties/profiles/create" element={<ProfilesCreate />} />
+                <Route path="parties/profiles/:profile_id" element={<ProfilesDetail />} />
+                <Route path="parties/profiles/:profile_id/edit" element={<ProfilesEdit />} />
 
-          {/* Organization Admin Routes */}
-          <Route
-            path="/admin"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<OrgAdminDashboard />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="roles" element={<RolesPermissions />} />
-            <Route path="settings" element={<OrgSettings />} />
-            <Route path="billing" element={<OrgSettings />} />
-          </Route>
+                {/* Catalog Module */}
+                <Route path="catalog" element={<CatalogDashboard />} />
+                <Route path="catalog/items" element={<CatalogItemsList />} />
+                <Route path="catalog/items/create" element={<CatalogItemsCreate />} />
+                <Route path="catalog/items/:item_id" element={<CatalogItemsDetail />} />
+                <Route path="catalog/items/:item_id/edit" element={<CatalogItemsEdit />} />
+                <Route path="catalog/pricing" element={<CatalogPricingList />} />
+                <Route path="catalog/pricing/create" element={<CatalogPricingCreate />} />
+                <Route path="catalog/pricing/:pricing_id" element={<CatalogPricingDetail />} />
+                <Route path="catalog/pricing/:pricing_id/edit" element={<CatalogPricingEdit />} />
+                <Route path="catalog/costing" element={<CatalogCostingList />} />
+                <Route path="catalog/costing/create" element={<CatalogCostingCreate />} />
+                <Route path="catalog/costing/:costing_id" element={<CatalogCostingDetail />} />
+                <Route path="catalog/costing/:costing_id/edit" element={<CatalogCostingEdit />} />
+                <Route path="catalog/rules" element={<CatalogRulesList />} />
+                <Route path="catalog/rules/create" element={<CatalogRulesCreate />} />
+                <Route path="catalog/rules/:rule_id" element={<CatalogRulesDetail />} />
+                <Route path="catalog/rules/:rule_id/edit" element={<CatalogRulesEdit />} />
+                <Route path="catalog/packages" element={<CatalogPackagesList />} />
+                <Route path="catalog/packages/create" element={<CatalogPackagesCreate />} />
+                <Route path="catalog/packages/:package_id" element={<CatalogPackagesDetail />} />
+                <Route path="catalog/packages/:package_id/edit" element={<CatalogPackagesEdit />} />
 
-          {/* IB Finance Routes - Within Workspace Layout */}
-          <Route
-            path="/finance"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<FinanceDashboard />} />
-            {/* Bill & Collect (Receivables) */}
-            <Route path="bill" element={<CommerceBillList />} />
-            <Route path="bill/create" element={<CommerceBillCreate />} />
-            <Route path="bill/:invoiceId" element={<CommerceBillDetail />} />
-            <Route path="bill/:invoiceId/edit" element={<CommerceBillEdit />} />
-            <Route path="collect" element={<CollectList />} />
-            <Route path="collect/create" element={<CollectCreate />} />
-            <Route path="collect/:collectionId" element={<CollectDetail />} />
-            <Route path="collect/:collectionId/edit" element={<CollectEdit />} />
-            {/* Pay & Spend (Payables) */}
-            <Route path="pay" element={<PayList />} />
-            <Route path="pay/create" element={<PayCreate />} />
-            <Route path="pay/:paymentId" element={<PayDetail />} />
-            <Route path="pay/:paymentId/edit" element={<PayEdit />} />
-            <Route path="spend" element={<SpendList />} />
-            <Route path="spend/create" element={<SpendCreate />} />
-            <Route path="spend/:spendId" element={<SpendDetail />} />
-            <Route path="spend/:spendId/edit" element={<SpendEdit />} />
-            {/* Cash Flow Routes */}
-            <Route path="cashflow/actuals" element={<CashFlowActuals />} />
-            <Route path="cashflow/budgeting" element={<CashFlowBudgeting />} />
-            <Route path="cashflow/forecasting" element={<CashFlowForecasting />} />
-            <Route path="cashflow/variance" element={<CashFlowVariance />} />
-            {/* Financial Reporting Routes */}
-            <Route path="financial-reporting" element={<FinancialReporting />} />
-            <Route path="financial-reporting/profit-loss" element={<ProfitLossElite />} />
-            <Route path="financial-reporting/balance-sheet" element={<BalanceSheetElite />} />
-            <Route path="financial-reporting/cashflow" element={<CashFlowStatementReport />} />
-            <Route path="financial-reporting/trial-balance" element={<TrialBalance />} />
-            <Route path="financial-reporting/general-ledger" element={<GeneralLedger />} />
-            <Route path="financial-reporting/adjustment-entries" element={<AdjustmentEntries />} />
-            <Route path="financial-reporting/adjustment-entries/create" element={<CreateAdjustmentEntry />} />
-            <Route path="financial-reporting/adjustment-entries/:id" element={<AdjustmentEntryDetail />} />
-            {/* Accounting Routes */}
-            <Route path="invoices" element={<Invoices />} />
-            <Route path="invoices/create" element={<CreateInvoice />} />
-            <Route path="invoices/:id" element={<InvoiceDetail />} />
-            <Route path="aging-dso" element={<AgingDSO />} />
-            <Route path="bills" element={<Bills />} />
-            <Route path="bills/create" element={<CreateBill />} />
-            <Route path="bills/:id" element={<BillDetail />} />
-            <Route path="aging-dpo" element={<AgingDPO />} />
-            <Route path="collections" element={<Collections />} />
-            <Route path="payments" element={<Payments />} />
-            <Route path="customers" element={<Customers />} />
-            <Route path="customers/create" element={<AddCustomerPage />} />
-            <Route path="customers/:id" element={<CustomerDetail />} />
-            <Route path="customers/:id/edit" element={<EditCustomerPage />} />
-            <Route path="vendors" element={<Vendors />} />
-            <Route path="vendors/create" element={<AddVendorPage />} />
-            <Route path="vendors/add" element={<AddVendorPage />} />
-            <Route path="vendors/:id" element={<VendorDetail />} />
-            <Route path="vendors/:id/edit" element={<EditVendorPage />} />
-            <Route path="banking/accounts" element={<BankingAccounts />} />
-            <Route path="banking/transactions" element={<BankingTransactions />} />
-            <Route path="banking/matching" element={<BankingMatching />} />
-            <Route path="banking/manage" element={<ManageBanks />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
+                {/* Revenue Module */}
+                <Route path="revenue" element={<RevenueDashboard />} />
+                <Route path="lead" element={<LeadList />} />
+                <Route path="lead/create" element={<LeadCreate />} />
+                <Route path="lead/:id" element={<LeadDetail />} />
+                <Route path="lead/:id/edit" element={<LeadEdit />} />
+                <Route path="masters" element={<MasterDataView />} />
+                {/* Revenue - Evaluations Sub-module */}
+                <Route path="revenue/evaluations" element={<RevenueEvaluationsList />} />
+                <Route path="revenue/evaluations/create" element={<RevenueEvaluationsCreate />} />
+                <Route path="revenue/evaluations/:evaluation_id" element={<RevenueEvaluationsDetail />} />
+                <Route path="revenue/evaluations/:evaluation_id/edit" element={<RevenueEvaluationsEdit />} />
+                {/* Revenue - Commits Sub-module */}
+                <Route path="revenue/commits" element={<RevenueCommitsList />} />
+                <Route path="revenue/commits/create" element={<RevenueCommitsCreate />} />
+                <Route path="revenue/commits/:commit_id" element={<RevenueCommitsDetail />} />
+                <Route path="revenue/commits/:commit_id/edit" element={<RevenueCommitsEdit />} />
+                {/* Revenue - Contracts Sub-module */}
+                <Route path="revenue/contracts" element={<RevenueContractsList />} />
+                <Route path="revenue/contracts/create" element={<RevenueContractsCreate />} />
+                <Route path="revenue/contracts/:contract_id" element={<RevenueContractsDetail />} />
+                <Route path="revenue/contracts/:contract_id/edit" element={<RevenueContractsEdit />} />
+                {/* Legacy Evaluate Routes */}
+                <Route path="evaluate" element={<EvaluateList />} />
+                <Route path="evaluate/create" element={<EvaluateCreate />} />
+                <Route path="evaluate/:evaluationId" element={<EvaluateDetail />} />
+                <Route path="evaluate/:evaluationId/edit" element={<EvaluateEdit />} />
+                <Route path="commit" element={<CommitList />} />
+                <Route path="commit/create" element={<CommitCreate />} />
+                <Route path="commit/:commitId" element={<CommitDetail />} />
+                <Route path="commit/:commitId/edit" element={<CommitEdit />} />
+                <Route path="execute" element={<ExecuteList />} />
+                <Route path="execute/create" element={<ExecuteCreate />} />
+                <Route path="execute/:executionId" element={<ExecuteDetail />} />
+                <Route path="execute/:executionId/edit" element={<ExecuteEdit />} />
+                <Route path="bill" element={<CommerceBillList />} />
+                <Route path="bill/create" element={<CommerceBillCreate />} />
+                <Route path="bill/:invoiceId" element={<CommerceBillDetail />} />
+                <Route path="bill/:invoiceId/edit" element={<CommerceBillEdit />} />
+                <Route path="collect" element={<CollectList />} />
+                <Route path="collect/create" element={<CollectCreate />} />
+                <Route path="collect/:collectionId" element={<CollectDetail />} />
+                <Route path="collect/:collectionId/edit" element={<CollectEdit />} />
+                <Route path="procure" element={<ProcurementDashboard />} />
+                <Route path="procure/requests" element={<ProcureList />} />
+                <Route path="procure/requests/create" element={<ProcurementCreate />} />
+                <Route path="procure/requests/:pr_id" element={<ProcurementDetail />} />
+                <Route path="procure/requests/:pr_id/edit" element={<ProcurementEdit />} />
+                {/* Procurement - Orders Sub-module */}
+                <Route path="procure/orders" element={<OrdersList />} />
+                <Route path="procure/orders/create" element={<OrdersCreate />} />
+                <Route path="procure/orders/:po_id" element={<OrdersDetail />} />
+                <Route path="procure/orders/:po_id/edit" element={<OrdersEdit />} />
+                {/* Procurement - Evaluations Sub-module */}
+                <Route path="procure/evaluate" element={<ProcureEvaluationsList />} />
+                <Route path="procure/evaluate/create" element={<ProcureEvaluationsCreate />} />
+                <Route path="procure/evaluate/:evaluation_id" element={<ProcureEvaluationsDetail />} />
+                <Route path="procure/evaluate/:evaluation_id/edit" element={<ProcureEvaluationsEdit />} />
+                {/* Procurement - Commits Sub-module */}
+                <Route path="procure/commit" element={<ProcureCommitsList />} />
+                <Route path="procure/commit/create" element={<ProcureCommitsCreate />} />
+                <Route path="procure/commit/:commit_id" element={<ProcureCommitsDetail />} />
+                <Route path="procure/commit/:commit_id/edit" element={<ProcureCommitsEdit />} />
+                {/* Procurement - Contracts Sub-module */}
+                <Route path="procure/contract" element={<ProcureContractsList />} />
+                <Route path="procure/contract/create" element={<ProcureContractsCreate />} />
+                <Route path="procure/contract/:contract_id" element={<ProcureContractsDetail />} />
+                <Route path="procure/contract/:contract_id/edit" element={<ProcureContractsEdit />} />
+                <Route path="pay" element={<PayList />} />
+                <Route path="pay/create" element={<PayCreate />} />
+                <Route path="pay/:paymentId" element={<PayDetail />} />
+                <Route path="pay/:paymentId/edit" element={<PayEdit />} />
+                <Route path="spend" element={<SpendList />} />
+                <Route path="spend/create" element={<SpendCreate />} />
+                <Route path="spend/:spendId" element={<SpendDetail />} />
+                <Route path="spend/:spendId/edit" element={<SpendEdit />} />
+                <Route path="tax" element={<TaxList />} />
+                <Route path="tax/create" element={<TaxCreate />} />
+                <Route path="tax/:taxId" element={<TaxDetail />} />
+                <Route path="tax/:taxId/edit" element={<TaxEdit />} />
+                <Route path="reconcile" element={<ReconcileList />} />
+                <Route path="reconcile/create" element={<ReconcileCreate />} />
+                <Route path="reconcile/:reconciliationId" element={<ReconcileDetail />} />
+                <Route path="reconcile/:reconciliationId/edit" element={<ReconcileEdit />} />
+                <Route path="govern" element={<GovernanceDashboard />} />
+                <Route path="govern/policies" element={<GovernPoliciesList />} />
+                <Route path="govern/policies/create" element={<GovernPoliciesCreate />} />
+                <Route path="govern/policies/:policy_id" element={<GovernPoliciesDetail />} />
+                <Route path="govern/policies/:policy_id/edit" element={<GovernPoliciesEdit />} />
+                <Route path="govern/limits" element={<GovernLimitsList />} />
+                <Route path="govern/limits/create" element={<GovernLimitsCreate />} />
+                <Route path="govern/limits/:limit_id" element={<GovernLimitsDetail />} />
+                <Route path="govern/limits/:limit_id/edit" element={<GovernLimitsEdit />} />
+                <Route path="govern/authority" element={<GovernAuthorityList />} />
+                <Route path="govern/authority/create" element={<GovernAuthorityCreate />} />
+                <Route path="govern/authority/:authority_id" element={<GovernAuthorityDetail />} />
+                <Route path="govern/authority/:authority_id/edit" element={<GovernAuthorityEdit />} />
+                <Route path="govern/risk" element={<GovernRiskList />} />
+                <Route path="govern/risk/create" element={<GovernRiskCreate />} />
+                <Route path="govern/risk/:risk_id" element={<GovernRiskDetail />} />
+                <Route path="govern/risk/:risk_id/edit" element={<GovernRiskEdit />} />
+                <Route path="govern/audit" element={<GovernAuditList />} />
+                <Route path="govern/audit/create" element={<GovernAuditCreate />} />
+                <Route path="govern/audit/:audit_id" element={<GovernAuditDetail />} />
+                <Route path="govern/audit/:audit_id/edit" element={<GovernAuditEdit />} />
 
-          {/* IB Workforce Routes - Within Workspace Layout */}
-          <Route
-            path="/workforce"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<EmployeesElite />} />
-            <Route path="employees" element={<EmployeesElite />} />
-          </Route>
+                {/* Revenue Workflow - 5-Stage Enterprise */}
+                <Route path="revenue-workflow/leads" element={<RevenueLeadsList />} />
+                <Route path="revenue-workflow/leads/create" element={<RevenueLeadCreate />} />
+                <Route path="revenue-workflow/leads/:lead_id" element={<RevenueLeadDetail />} />
+                <Route path="revenue-workflow/leads/:lead_id/edit" element={<RevenueLeadEdit />} />
+                <Route path="revenue-workflow/evaluations" element={<RevenueWorkflowEvaluationsList />} />
+                <Route path="revenue-workflow/evaluations/:evaluation_id" element={<RevenueEvaluationWorkspace />} />
+                <Route path="revenue-workflow/commits" element={<RevenueWorkflowCommitsList />} />
+                <Route path="revenue-workflow/commits/:commit_id" element={<RevenueCommitReview />} />
+                <Route path="revenue-workflow/contracts" element={<RevenueWorkflowContractsList />} />
+                <Route path="revenue-workflow/contracts/:contract_id" element={<RevenueContractDraft />} />
+                <Route path="revenue-workflow/handoffs" element={<RevenueWorkflowHandoffsList />} />
+                <Route path="revenue-workflow/handoffs/:handoff_id" element={<RevenueHandoff />} />
 
-          {/* IB Capital Routes - Within Workspace Layout */}
-          <Route
-            path="/capital"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<PortfolioElite />} />
-            <Route path="portfolio" element={<PortfolioElite />} />
-          </Route>
+                {/* Procurement Workflow - 5-Stage Enterprise */}
+                <Route path="procure-workflow/requests" element={<ProcureRequestsList />} />
+                <Route path="procure-workflow/requests/create" element={<ProcureRequestCreate />} />
+                <Route path="procure-workflow/requests/:request_id" element={<ProcureRequestDetail />} />
+                <Route path="procure-workflow/requests/:request_id/edit" element={<ProcureRequestEdit />} />
+                <Route path="procure-workflow/evaluations" element={<ProcureWorkflowEvaluationsList />} />
+                <Route path="procure-workflow/evaluations/:evaluation_id" element={<ProcureEvaluationWorkspace />} />
+                <Route path="procure-workflow/commits" element={<ProcureWorkflowCommitsList />} />
+                <Route path="procure-workflow/commits/:commit_id" element={<ProcureCommitReview />} />
+                <Route path="procure-workflow/contracts" element={<ProcureWorkflowContractsList />} />
+                <Route path="procure-workflow/contracts/:contract_id" element={<ProcureContractDraft />} />
+                <Route path="procure-workflow/handoffs" element={<ProcureWorkflowHandoffsList />} />
+                <Route path="procure-workflow/handoffs/:handoff_id" element={<ProcureHandoff />} />
 
-          {/* IB Finance Routes (Enterprise Finance Engine) - Within Workspace Layout */}
-          <Route
-            path="/ib-finance"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<IBFinanceDashboard />} />
-            {/* Billing Module */}
-            <Route path="billing" element={<BillingQueue />} />
-            <Route path="billing/create" element={<BillingCreate />} />
-            <Route path="billing/:id" element={<BillingDetail />} />
-            <Route path="billing/:id/edit" element={<BillingEdit />} />
-            {/* Receivables Module */}
-            <Route path="receivables" element={<ReceivablesDashboard />} />
-            <Route path="receivables/payment" element={<ReceivablesDashboard />} />
-            <Route path="receivables/apply" element={<ReceivablesDashboard />} />
-            <Route path="receivables/:id/edit" element={<ReceivableEdit />} />
-            <Route path="receivables/:id" element={<ReceivablesDashboard />} />
-            {/* Payables Module */}
-            <Route path="payables" element={<PayablesDashboard />} />
-            <Route path="payables/create" element={<PayablesDashboard />} />
-            <Route path="payables/:id/edit" element={<PayableEdit />} />
-            <Route path="payables/:id" element={<PayablesDashboard />} />
-            <Route path="payables/:id/pay" element={<PayablesDashboard />} />
-            {/* Ledger Module */}
-            <Route path="ledger" element={<LedgerDashboard />} />
-            <Route path="ledger/accounts" element={<LedgerDashboard />} />
-            <Route path="ledger/journals" element={<LedgerDashboard />} />
-            <Route path="ledger/journal/create" element={<JournalCreate />} />
-            <Route path="ledger/journal/:id" element={<LedgerDashboard />} />
-            <Route path="ledger/journal/:id/edit" element={<JournalEdit />} />
-            <Route path="ledger/trial-balance" element={<LedgerDashboard />} />
-            {/* Assets Module */}
-            <Route path="assets" element={<AssetsDashboard />} />
-            <Route path="assets/create" element={<AssetCreate />} />
-            <Route path="assets/:id" element={<AssetDetail />} />
-            <Route path="assets/:id/edit" element={<AssetEdit />} />
-            <Route path="assets/:id/dispose" element={<AssetDetail />} />
-            {/* Tax Module */}
-            <Route path="tax" element={<TaxDashboard />} />
-            <Route path="tax/reports" element={<TaxDashboard />} />
-            <Route path="tax/gst" element={<GSTReports />} />
-            <Route path="tax/registrations" element={<TaxDashboard />} />
-            <Route path="tax/:id/edit" element={<IBFinanceTaxEdit />} />
-            {/* Close Module */}
-            <Route path="close" element={<CloseDashboard />} />
-            <Route path="close/reconciliations" element={<CloseDashboard />} />
-            <Route path="close/statements/:period" element={<FinancialStatements />} />
-            <Route path="close/statements" element={<FinancialStatements />} />
-            {/* Bank Reconciliation Module */}
-            <Route path="bank" element={<BankReconciliation />} />
-            <Route path="bank/reconciliation" element={<BankReconciliation />} />
-            {/* Settings Module */}
-            <Route path="settings/currencies" element={<CurrencySettings />} />
-          </Route>
+                {/* Parties Engine - Commercial Identity & Readiness */}
+                <Route path="parties-engine" element={<PartyEngineList />} />
+                <Route path="parties-engine/create" element={<PartyEngineCreate />} />
+                <Route path="parties-engine/:party_id" element={<PartyEngineDetail />} />
 
-          {/* IB Workforce Routes (Human Capacity, Accountability & Compliance Engine) - Within Workspace Layout */}
-          <Route
-            path="/ib-workforce"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<IBWorkforceDashboard />} />
-            {/* People Module */}
-            <Route path="people" element={<PeopleList />} />
-            <Route path="people/create" element={<PersonCreate />} />
-            <Route path="people/:person_id" element={<PersonDetail />} />
-            <Route path="people/:person_id/edit" element={<PersonEdit />} />
-            {/* Roles Module */}
-            <Route path="roles" element={<RolesList />} />
-            <Route path="roles/create" element={<RoleCreate />} />
-            <Route path="roles/:role_id" element={<RoleDetail />} />
-            <Route path="roles/:role_id/edit" element={<RoleEdit />} />
-            {/* Capacity Module */}
-            <Route path="capacity" element={<CapacityDashboard />} />
-            {/* Time Module */}
-            <Route path="time" element={<TimeDashboard />} />
-            {/* Payroll Module */}
-            <Route path="payroll" element={<PayrollDashboard />} />
-            {/* Compliance Module */}
-            <Route path="compliance" element={<ComplianceDashboard />} />
-          </Route>
+                {/* Governance Engine - Policies, Limits, Authority, Risk, Audit */}
+                <Route path="governance-engine" element={<GovernanceEngineDashboard />} />
+                <Route path="governance-engine/policies" element={<GovernancePoliciesList />} />
+                <Route path="governance-engine/limits" element={<GovernanceLimitsList />} />
+                <Route path="governance-engine/authority" element={<GovernanceAuthorityList />} />
+                <Route path="governance-engine/risk-rules" element={<GovernanceRiskRulesList />} />
 
-          {/* IB Capital Routes (Ownership, Funding & Capital Governance Engine) - Within Workspace Layout */}
-          <Route
-            path="/ib-capital"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<IBCapitalDashboard />} />
-            {/* Ownership Module */}
-            <Route path="ownership" element={<OwnershipDashboard />} />
-            <Route path="ownership/:owner_id" element={<OwnerDetail />} />
-            {/* Equity Module */}
-            <Route path="equity" element={<EquityDashboard />} />
-            <Route path="equity/:round_id" element={<RoundDetail />} />
-            {/* Debt Module */}
-            <Route path="debt" element={<DebtDashboard />} />
-            <Route path="debt/:debt_id" element={<DebtDetail />} />
-            <Route path="debt/:debt_id/convert" element={<ConvertibleConversion />} />
-            {/* ESOP Module */}
-            <Route path="esop" element={<ESOPDashboard />} />
-            <Route path="esop/grants/:grant_id" element={<GrantDetail />} />
-            {/* Treasury Module */}
-            <Route path="treasury" element={<TreasuryDashboard />} />
-            <Route path="treasury/:account_id" element={<TreasuryAccountDetail />} />
-            {/* Returns Module */}
-            <Route path="returns" element={<ReturnsDashboard />} />
-            <Route path="returns/:return_id" element={<ReturnDetail />} />
-            {/* Governance Module */}
-            <Route path="governance" element={<CapitalGovernanceDashboard />} />
-            <Route path="governance/approvals/:approval_id" element={<ApprovalDetail />} />
-            <Route path="governance/rules/:rule_id" element={<RuleDetail />} />
-            {/* Scenario Modeling */}
-            <Route path="scenarios" element={<ScenarioModeling />} />
-          </Route>
-          
-          {/* Email Campaigns */}
-          <Route
-            path="/email-campaigns"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<EmailCampaigns />} />
-          </Route>
+                {/* Manufacturing Masters */}
+                <Route path="manufacturing/masters" element={<MasterDashboard />} />
+                <Route path="manufacturing/masters/:masterType" element={<MasterList />} />
+                <Route path="manufacturing/masters-view" element={<MasterDataView />} />
+                {/* Manufacturing Analytics */}
+                <Route path="manufacturing/analytics" element={<AnalyticsDashboard />} />
+              </Route>
 
-          {/* Workflow Builder */}
-          <Route
-            path="/workflows"
-            element={
-              <PrivateRoute>
-                <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<WorkflowBuilder />} />
-          </Route>
-          
-          {/* Redirect old routes to new workspace routes */}
-          <Route path="/dashboard" element={<Navigate to="/workspace" replace />} />
-          <Route path="/cashflow/*" element={<Navigate to="/finance" replace />} />
-          <Route path="/customers" element={<Navigate to="/finance/customers" replace />} />
-          <Route path="/vendors" element={<Navigate to="/finance/vendors" replace />} />
-          <Route path="/invoices" element={<Navigate to="/finance/invoices" replace />} />
-          <Route path="/bills" element={<Navigate to="/finance/bills" replace />} />
-          <Route path="/financial-reporting/*" element={<Navigate to="/finance" replace />} />
-        </Routes>
-      </BrowserRouter>
-      <Toaster position="top-right" richColors />
-      </FinanceNotificationProvider>
+              {/* IB Intelligence Routes - Within Workspace Layout */}
+              <Route
+                path="/intelligence"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<IntelligenceDashboard />} />
+                {/* New Intelligence Modules */}
+                <Route path="signals" element={<IntelSignalsRealtimePage />} />
+                <Route path="signals/legacy" element={<IntelSignalsPage />} />
+                <Route path="metrics" element={<IntelMetricsPage />} />
+                <Route path="risk" element={<IntelRiskPage />} />
+                <Route path="forecast" element={<IntelAIForecastPage />} />
+                <Route path="forecast/legacy" element={<IntelForecastPage />} />
+                <Route path="recommendations" element={<IntelRecommendationsPage />} />
+                <Route path="learning" element={<IntelLearningPage />} />
+                <Route path="executive" element={<ExecutiveDashboard />} />
+                {/* Legacy routes */}
+                <Route path="analytics" element={<IntelligenceAnalytics />} />
+                <Route path="analytics/dashboard" element={<IntelligenceAnalytics />} />
+                <Route path="analytics/revenue" element={<IntelligenceAnalytics />} />
+                <Route path="analytics/procurement" element={<IntelligenceAnalytics />} />
+                <Route path="analytics/parties" element={<IntelligenceAnalytics />} />
+                <Route path="reports" element={<IntelligenceReports />} />
+                <Route path="reports/standard" element={<IntelligenceReports />} />
+                <Route path="reports/custom" element={<IntelligenceReports />} />
+                <Route path="reports/scheduled" element={<IntelligenceReports />} />
+                <Route path="insights" element={<IntelligenceInsights />} />
+                <Route path="insights/ai" element={<IntelligenceInsights />} />
+                <Route path="insights/recommendations" element={<IntelligenceInsights />} />
+                <Route path="insights/anomalies" element={<IntelligenceInsights />} />
+                <Route path="forecasts" element={<IntelligenceForecasts />} />
+                <Route path="forecasts/revenue" element={<IntelligenceForecasts />} />
+                <Route path="forecasts/spend" element={<IntelligenceForecasts />} />
+                <Route path="forecasts/cashflow" element={<IntelligenceForecasts />} />
+              </Route>
+
+              {/* IB Operations Routes - Within Workspace Layout */}
+              <Route
+                path="/operations"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<OperationsDashboard />} />
+                {/* Intake */}
+                <Route path="intake" element={<IntakeQueue />} />
+                <Route path="intake/:work_order_id" element={<IntakeQueue />} />
+                {/* Projects */}
+                <Route path="projects" element={<ProjectsList />} />
+                <Route path="projects/:project_id" element={<ProjectDetail />} />
+                {/* Tasks */}
+                <Route path="tasks" element={<TasksList />} />
+                <Route path="tasks/my" element={<TasksList />} />
+                {/* Resources */}
+                <Route path="resources" element={<ResourcesPage />} />
+                <Route path="inventory" element={<ResourcesPage />} />
+                {/* Services */}
+                <Route path="services" element={<ServicesList />} />
+                <Route path="services/:service_instance_id" element={<ServiceDetail />} />
+                {/* Governance */}
+                <Route path="governance" element={<OpsGovernanceDashboard />} />
+                <Route path="governance/alerts" element={<OpsGovernanceDashboard />} />
+              </Route>
+
+              {/* Organization Admin Routes */}
+              <Route
+                path="/admin"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<OrgAdminDashboard />} />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="roles" element={<RolesPermissions />} />
+                <Route path="settings" element={<OrgSettings />} />
+                <Route path="billing" element={<OrgSettings />} />
+              </Route>
+
+              {/* IB Finance Routes - Within Workspace Layout */}
+              <Route
+                path="/finance"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<FinanceDashboard />} />
+                {/* Bill & Collect (Receivables) */}
+                <Route path="bill" element={<CommerceBillList />} />
+                <Route path="bill/create" element={<CommerceBillCreate />} />
+                <Route path="bill/:invoiceId" element={<CommerceBillDetail />} />
+                <Route path="bill/:invoiceId/edit" element={<CommerceBillEdit />} />
+                <Route path="collect" element={<CollectList />} />
+                <Route path="collect/create" element={<CollectCreate />} />
+                <Route path="collect/:collectionId" element={<CollectDetail />} />
+                <Route path="collect/:collectionId/edit" element={<CollectEdit />} />
+                {/* Pay & Spend (Payables) */}
+                <Route path="pay" element={<PayList />} />
+                <Route path="pay/create" element={<PayCreate />} />
+                <Route path="pay/:paymentId" element={<PayDetail />} />
+                <Route path="pay/:paymentId/edit" element={<PayEdit />} />
+                <Route path="spend" element={<SpendList />} />
+                <Route path="spend/create" element={<SpendCreate />} />
+                <Route path="spend/:spendId" element={<SpendDetail />} />
+                <Route path="spend/:spendId/edit" element={<SpendEdit />} />
+                {/* Cash Flow Routes */}
+                <Route path="cashflow/actuals" element={<CashFlowActuals />} />
+                <Route path="cashflow/budgeting" element={<CashFlowBudgeting />} />
+                <Route path="cashflow/forecasting" element={<CashFlowForecasting />} />
+                <Route path="cashflow/variance" element={<CashFlowVariance />} />
+                {/* Financial Reporting Routes */}
+                <Route path="financial-reporting" element={<FinancialReporting />} />
+                <Route path="financial-reporting/profit-loss" element={<ProfitLossElite />} />
+                <Route path="financial-reporting/balance-sheet" element={<BalanceSheetElite />} />
+                <Route path="financial-reporting/cashflow" element={<CashFlowStatementReport />} />
+                <Route path="financial-reporting/trial-balance" element={<TrialBalance />} />
+                <Route path="financial-reporting/general-ledger" element={<GeneralLedger />} />
+                <Route path="financial-reporting/adjustment-entries" element={<AdjustmentEntries />} />
+                <Route path="financial-reporting/adjustment-entries/create" element={<CreateAdjustmentEntry />} />
+                <Route path="financial-reporting/adjustment-entries/:id" element={<AdjustmentEntryDetail />} />
+                {/* Accounting Routes */}
+                <Route path="invoices" element={<Invoices />} />
+                <Route path="invoices/create" element={<CreateInvoice />} />
+                <Route path="invoices/:id" element={<InvoiceDetail />} />
+                <Route path="aging-dso" element={<AgingDSO />} />
+                <Route path="bills" element={<Bills />} />
+                <Route path="bills/create" element={<CreateBill />} />
+                <Route path="bills/:id" element={<BillDetail />} />
+                <Route path="aging-dpo" element={<AgingDPO />} />
+                <Route path="collections" element={<Collections />} />
+                <Route path="payments" element={<Payments />} />
+                <Route path="customers" element={<Customers />} />
+                <Route path="customers/create" element={<AddCustomerPage />} />
+                <Route path="customers/:id" element={<CustomerDetail />} />
+                <Route path="customers/:id/edit" element={<EditCustomerPage />} />
+                <Route path="vendors" element={<Vendors />} />
+                <Route path="vendors/create" element={<AddVendorPage />} />
+                <Route path="vendors/add" element={<AddVendorPage />} />
+                <Route path="vendors/:id" element={<VendorDetail />} />
+                <Route path="vendors/:id/edit" element={<EditVendorPage />} />
+                <Route path="banking/accounts" element={<BankingAccounts />} />
+                <Route path="banking/transactions" element={<BankingTransactions />} />
+                <Route path="banking/matching" element={<BankingMatching />} />
+                <Route path="banking/manage" element={<ManageBanks />} />
+                <Route path="settings" element={<Settings />} />
+              </Route>
+
+              {/* IB Workforce Routes - Within Workspace Layout */}
+              <Route
+                path="/workforce"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<EmployeesElite />} />
+                <Route path="employees" element={<EmployeesElite />} />
+              </Route>
+
+              {/* IB Capital Routes - Within Workspace Layout */}
+              <Route
+                path="/capital"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<PortfolioElite />} />
+                <Route path="portfolio" element={<PortfolioElite />} />
+              </Route>
+
+              {/* IB Finance Routes (Enterprise Finance Engine) - Within Workspace Layout */}
+              <Route
+                path="/ib-finance"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<IBFinanceDashboard />} />
+                {/* Billing Module */}
+                <Route path="billing" element={<BillingQueue />} />
+                <Route path="billing/create" element={<BillingCreate />} />
+                <Route path="billing/:id" element={<BillingDetail />} />
+                <Route path="billing/:id/edit" element={<BillingEdit />} />
+                {/* Receivables Module */}
+                <Route path="receivables" element={<ReceivablesDashboard />} />
+                <Route path="receivables/payment" element={<ReceivablesDashboard />} />
+                <Route path="receivables/apply" element={<ReceivablesDashboard />} />
+                <Route path="receivables/:id/edit" element={<ReceivableEdit />} />
+                <Route path="receivables/:id" element={<ReceivablesDashboard />} />
+                {/* Payables Module */}
+                <Route path="payables" element={<PayablesDashboard />} />
+                <Route path="payables/create" element={<PayablesDashboard />} />
+                <Route path="payables/:id/edit" element={<PayableEdit />} />
+                <Route path="payables/:id" element={<PayablesDashboard />} />
+                <Route path="payables/:id/pay" element={<PayablesDashboard />} />
+                {/* Ledger Module */}
+                <Route path="ledger" element={<LedgerDashboard />} />
+                <Route path="ledger/accounts" element={<LedgerDashboard />} />
+                <Route path="ledger/journals" element={<LedgerDashboard />} />
+                <Route path="ledger/journal/create" element={<JournalCreate />} />
+                <Route path="ledger/journal/:id" element={<LedgerDashboard />} />
+                <Route path="ledger/journal/:id/edit" element={<JournalEdit />} />
+                <Route path="ledger/trial-balance" element={<LedgerDashboard />} />
+                {/* Assets Module */}
+                <Route path="assets" element={<AssetsDashboard />} />
+                <Route path="assets/create" element={<AssetCreate />} />
+                <Route path="assets/:id" element={<AssetDetail />} />
+                <Route path="assets/:id/edit" element={<AssetEdit />} />
+                <Route path="assets/:id/dispose" element={<AssetDetail />} />
+                {/* Tax Module */}
+                <Route path="tax" element={<TaxDashboard />} />
+                <Route path="tax/reports" element={<TaxDashboard />} />
+                <Route path="tax/gst" element={<GSTReports />} />
+                <Route path="tax/registrations" element={<TaxDashboard />} />
+                <Route path="tax/:id/edit" element={<IBFinanceTaxEdit />} />
+                {/* Close Module */}
+                <Route path="close" element={<CloseDashboard />} />
+                <Route path="close/reconciliations" element={<CloseDashboard />} />
+                <Route path="close/statements/:period" element={<FinancialStatements />} />
+                <Route path="close/statements" element={<FinancialStatements />} />
+                {/* Bank Reconciliation Module */}
+                <Route path="bank" element={<BankReconciliation />} />
+                <Route path="bank/reconciliation" element={<BankReconciliation />} />
+                {/* Settings Module */}
+                <Route path="settings/currencies" element={<CurrencySettings />} />
+              </Route>
+
+              {/* IB Workforce Routes (Human Capacity, Accountability & Compliance Engine) - Within Workspace Layout */}
+              <Route
+                path="/ib-workforce"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<IBWorkforceDashboard />} />
+                {/* People Module */}
+                <Route path="people" element={<PeopleList />} />
+                <Route path="people/create" element={<PersonCreate />} />
+                <Route path="people/:person_id" element={<PersonDetail />} />
+                <Route path="people/:person_id/edit" element={<PersonEdit />} />
+                {/* Roles Module */}
+                <Route path="roles" element={<RolesList />} />
+                <Route path="roles/create" element={<RoleCreate />} />
+                <Route path="roles/:role_id" element={<RoleDetail />} />
+                <Route path="roles/:role_id/edit" element={<RoleEdit />} />
+                {/* Capacity Module */}
+                <Route path="capacity" element={<CapacityDashboard />} />
+                {/* Time Module */}
+                <Route path="time" element={<TimeDashboard />} />
+                {/* Payroll Module */}
+                <Route path="payroll" element={<PayrollDashboard />} />
+                {/* Compliance Module */}
+                <Route path="compliance" element={<ComplianceDashboard />} />
+              </Route>
+
+              {/* IB Capital Routes (Ownership, Funding & Capital Governance Engine) - Within Workspace Layout */}
+              <Route
+                path="/ib-capital"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<IBCapitalDashboard />} />
+                {/* Ownership Module */}
+                <Route path="ownership" element={<OwnershipDashboard />} />
+                <Route path="ownership/:owner_id" element={<OwnerDetail />} />
+                {/* Equity Module */}
+                <Route path="equity" element={<EquityDashboard />} />
+                <Route path="equity/:round_id" element={<RoundDetail />} />
+                {/* Debt Module */}
+                <Route path="debt" element={<DebtDashboard />} />
+                <Route path="debt/:debt_id" element={<DebtDetail />} />
+                <Route path="debt/:debt_id/convert" element={<ConvertibleConversion />} />
+                {/* ESOP Module */}
+                <Route path="esop" element={<ESOPDashboard />} />
+                <Route path="esop/grants/:grant_id" element={<GrantDetail />} />
+                {/* Treasury Module */}
+                <Route path="treasury" element={<TreasuryDashboard />} />
+                <Route path="treasury/:account_id" element={<TreasuryAccountDetail />} />
+                {/* Returns Module */}
+                <Route path="returns" element={<ReturnsDashboard />} />
+                <Route path="returns/:return_id" element={<ReturnDetail />} />
+                {/* Governance Module */}
+                <Route path="governance" element={<CapitalGovernanceDashboard />} />
+                <Route path="governance/approvals/:approval_id" element={<ApprovalDetail />} />
+                <Route path="governance/rules/:rule_id" element={<RuleDetail />} />
+                {/* Scenario Modeling */}
+                <Route path="scenarios" element={<ScenarioModeling />} />
+              </Route>
+
+              {/* Email Campaigns */}
+              <Route
+                path="/email-campaigns"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<EmailCampaigns />} />
+              </Route>
+
+              {/* Workflow Builder */}
+              <Route
+                path="/workflows"
+                element={
+                  <PrivateRoute>
+                    <WorkspaceLayoutNew setIsAuthenticated={setIsAuthenticated} />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<WorkflowBuilder />} />
+              </Route>
+
+              {/* Redirect old routes to new workspace routes */}
+              <Route path="/dashboard" element={<Navigate to="/workspace" replace />} />
+              <Route path="/cashflow/*" element={<Navigate to="/finance" replace />} />
+              <Route path="/customers" element={<Navigate to="/finance/customers" replace />} />
+              <Route path="/vendors" element={<Navigate to="/finance/vendors" replace />} />
+              <Route path="/invoices" element={<Navigate to="/finance/invoices" replace />} />
+              <Route path="/bills" element={<Navigate to="/finance/bills" replace />} />
+              <Route path="/financial-reporting/*" element={<Navigate to="/finance" replace />} />
+            </Routes>
+          </BrowserRouter>
+          <Toaster position="top-right" richColors />
+        </FinanceNotificationProvider>
       </WebRTCProvider>
     </div>
   );

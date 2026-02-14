@@ -193,31 +193,28 @@ const UserManagement = () => {
         <div className="px-8 flex gap-1 border-t border-gray-100">
           <button
             onClick={() => setActiveTab("users")}
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "users"
+            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "users"
                 ? "border-[#3A4E63] text-[#3A4E63]"
                 : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
+              }`}
           >
             Active Users ({users.filter((u) => u.is_active).length})
           </button>
           <button
             onClick={() => setActiveTab("invites")}
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "invites"
+            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "invites"
                 ? "border-[#3A4E63] text-[#3A4E63]"
                 : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
+              }`}
           >
             Pending Invites ({invites.length})
           </button>
           <button
             onClick={() => setActiveTab("deactivated")}
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "deactivated"
+            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "deactivated"
                 ? "border-[#3A4E63] text-[#3A4E63]"
                 : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
+              }`}
           >
             Deactivated ({users.filter((u) => !u.is_active).length})
           </button>

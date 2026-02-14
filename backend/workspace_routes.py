@@ -3,7 +3,9 @@ INNOVATE BOOKS - WORKSPACE LAYER API ROUTES
 5 Module Model: Chats, Channels, Tasks, Approvals, Notifications
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, UploadFile, File, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse
+import shutil
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
@@ -48,6 +50,57 @@ security = HTTPBearer()
 
 JWT_SECRET = os.environ.get('JWT_SECRET_KEY', 'fallback-secret-key')
 JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
+
+# ============= WEBSOCKET MANAGER =============
+
+class WorkspaceConnectionManager:
+    def __init__(self):
+        # chat_id -> List of WebSockets
+        self.active_connections: dict[str, List[WebSocket]] = {}
+        # user_id -> Set of WebSockets (for presence)
+        self.user_connections: dict[str, set[WebSocket]] = {}
+
+    async def connect(self, websocket: WebSocket, chat_id: str, user_id: str):
+        await websocket.accept()
+        if chat_id not in self.active_connections:
+            self.active_connections[chat_id] = []
+        self.active_connections[chat_id].append(websocket)
+        
+        if user_id not in self.user_connections:
+            self.user_connections[user_id] = set()
+        self.user_connections[user_id].add(websocket)
+
+    def disconnect(self, websocket: WebSocket, chat_id: str, user_id: str):
+        if chat_id in self.active_connections:
+            if websocket in self.active_connections[chat_id]:
+                self.active_connections[chat_id].remove(websocket)
+            if not self.active_connections[chat_id]:
+                del self.active_connections[chat_id]
+        
+        if user_id in self.user_connections:
+            self.user_connections[user_id].discard(websocket)
+            if not self.user_connections[user_id]:
+                del self.user_connections[user_id]
+
+    async def broadcast(self, chat_id: str, message: dict):
+        if chat_id in self.active_connections:
+            for connection in self.active_connections[chat_id]:
+                try:
+                    await connection.send_json(message)
+                except Exception:
+                    pass
+
+    async def broadcast_presence(self, user_id: str, is_online: bool, chat_id: str):
+        """Broadcast user presence to a specific chat"""
+        event = {
+            "event": "user_online" if is_online else "user_offline",
+            "user_id": user_id,
+            "chat_id": chat_id
+        }
+        await self.broadcast(chat_id, event)
+
+manager = WorkspaceConnectionManager()
+
 
 
 # Get database dependency to avoid circular imports
@@ -720,7 +773,26 @@ async def create_chat(
     chat_id = f"CHAT-{str(uuid.uuid4())[:8].upper()}"
     now = datetime.now(timezone.utc)
     
+    # Ensure creator is in participants
     participants = list(set([current_user.id] + data.participants))
+    
+    # Validate participants exist
+    if participants:
+        found_ids = set()
+        # Check standard users
+        async for u in db.users.find({"_id": {"$in": participants}}, {"_id": 1}):
+            found_ids.add(u["_id"])
+        
+        # Check enterprise users
+        async for u in db.enterprise_users.find({"user_id": {"$in": participants}}, {"user_id": 1}):
+            found_ids.add(u["user_id"])
+            
+        # Ensure all participants were found
+        if len(found_ids) != len(set(participants)):
+            missing = set(participants) - found_ids
+            raise HTTPException(status_code=400, detail=f"Invalid participants: {', '.join(missing)}")
+            
+        # Optional: Check org strictness if needed, but existence is a good baseline
     
     chat_doc = {
         "chat_id": chat_id,
@@ -827,7 +899,14 @@ async def send_chat_message(
         {"chat_id": chat_id},
         {"$set": {"last_message_at": now.isoformat()}}
     )
-    
+
+    # Broadcast to WebSocket
+    await manager.broadcast(chat_id, {
+        "event": "new_message",
+        "chat_id": chat_id,
+        "message": message_doc
+    })
+
     message_doc["created_at"] = now
     return ChatMessage(**message_doc)
 
@@ -1144,3 +1223,233 @@ async def seed_workspace_data(
         })
     
     return {"success": True, "message": "Workspace data seeded successfully"}
+
+
+# ============= ATTACHMENT ROUTES =============
+
+@router.post("/chats/{chat_id}/attachments", response_model=ChatMessage)
+async def upload_chat_attachment(
+    chat_id: str,
+    file: UploadFile = File(...),
+    current_user: WorkspaceUser = Depends(get_current_user)
+):
+    """Upload a file attachment to a chat"""
+    db = get_db()
+    chat = await db.workspace_chats.find_one({"chat_id": chat_id})
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    
+    if current_user.id not in chat["participants"]:
+        raise HTTPException(status_code=403, detail="Not a participant")
+        
+    # Create upload directory
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    base_upload_dir = os.path.join(BASE_DIR, "uploads", "workspace", chat_id)
+    os.makedirs(base_upload_dir, exist_ok=True)
+    
+    # Generate unique filename to prevent overwrites
+    file_ext = os.path.splitext(file.filename)[1]
+    unique_filename = f"{uuid.uuid4()}{file_ext}"
+    file_path = os.path.join(base_upload_dir, unique_filename)
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+        
+    # Create message
+    message_id = f"MSG-{str(uuid.uuid4())[:8].upper()}"
+    now = datetime.now(timezone.utc)
+    
+    # Construct relative URL for the frontend to access via the serve endpoint
+    # The serve endpoint will be: /api/workspace/chats/{chat_id}/attachments/{filename}
+    file_url = f"/api/workspace/chats/{chat_id}/attachments/{unique_filename}"
+    
+    message_doc = {
+        "message_id": message_id,
+        "chat_id": chat_id,
+        "sender_id": current_user.id,
+        "sender_type": SenderType.INTERNAL,
+        "sender_name": current_user.full_name,
+        "content_type": ContentType.FILE,
+        "payload": f"Uploaded file: {file.filename}",
+        "file_url": file_url,
+        "file_name": file.filename,
+        "created_at": now.isoformat(),
+        "edited": False
+    }
+    
+    await db.workspace_chat_messages.insert_one(message_doc)
+    
+    # Update chat's last_message_at
+    await db.workspace_chats.update_one(
+        {"chat_id": chat_id},
+        {"$set": {"last_message_at": now.isoformat()}}
+    )
+
+    # Broadcast to WebSocket
+    await manager.broadcast(chat_id, {
+        "event": "new_message",
+        "chat_id": chat_id,
+        "message": message_doc
+    })
+
+    message_doc["created_at"] = now
+    return ChatMessage(**message_doc)
+
+
+@router.websocket("/ws/{chat_id}")
+async def websocket_endpoint(websocket: WebSocket, chat_id: str, token: str = Query(...)):
+    db = get_db()
+    
+    # Authenticate via token
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        user_id = payload.get("sub") or payload.get("sub")
+        if not user_id:
+            await websocket.close(code=4003)
+            return
+            
+        # Verify user is participant
+        chat = await db.workspace_chats.find_one({"chat_id": chat_id})
+        if not chat or user_id not in chat.get("participants", []):
+            await websocket.close(code=4003)
+            return
+            
+        await manager.connect(websocket, chat_id, user_id)
+        
+        # Broadcast online status
+        await manager.broadcast_presence(user_id, True, chat_id)
+        
+        try:
+            while True:
+                # Handle incoming messages (e.g., typing indicators)
+                data = await websocket.receive_json()
+                
+                if data.get("type") in ["typing_start", "typing_stop"]:
+                    # Broadcast typing event to valid participants
+                    await manager.broadcast(chat_id, {
+                        "event": data["type"],
+                        "user_id": user_id,
+                        "chat_id": chat_id
+                    })
+                
+                elif data.get("type") == "message_delivered":
+                    message_id = data.get("message_id")
+                    if message_id:
+                        # Update DB
+                        await db.workspace_chat_messages.update_one(
+                            {"message_id": message_id},
+                            {"$addToSet": {"delivered_to": user_id}}
+                        )
+                        # Broadcast update
+                        await manager.broadcast(chat_id, {
+                            "event": "message_status_update",
+                            "chat_id": chat_id,
+                            "message_id": message_id,
+                            "status_type": "delivered",
+                            "user_id": user_id
+                        })
+
+                elif data.get("type") == "chat_read":
+                    # Mark all messages as read for this user in this chat
+                    # Optimization: only update messages that don't have this user in read_by
+                    # and were NOT sent by this user
+                    await db.workspace_chat_messages.update_many(
+                        {
+                            "chat_id": chat_id,
+                            "sender_id": {"$ne": user_id},
+                            "read_by": {"$ne": user_id}
+                        },
+                        {"$addToSet": {"read_by": user_id}}
+                    )
+                    
+                    # Broadcast that this user read the chat
+                    # Frontend can then mark all messages visible as read by this user
+                    await manager.broadcast(chat_id, {
+                        "event": "message_status_update",
+                        "chat_id": chat_id,
+                        "status_type": "read",
+                        "user_id": user_id
+                    })
+                
+                # WebRTC Signaling
+                elif data.get("type") == "call_offer":
+                    # Target specific user or broadcast to room (mesh)
+                    target_user_id = data.get("to_user_id")
+                    payload = {
+                        "event": "call_offer",
+                        "chat_id": chat_id,
+                        "from_user_id": user_id,
+                        "offer": data.get("offer")
+                    }
+                    if target_user_id:
+                        # Find socket for target user in this chat
+                        # We need a way to send to specific socket. 
+                        # Current manager structure is chat_id -> list[ws] & user_id -> set[ws]
+                        # We can use user_connections if we check chat_context, 
+                        # OR just broadcast to chat and let frontend filter by `to_user_id`
+                        # Broadcasting to chat is safer for sync across multiple devices of same user
+                        await manager.broadcast(chat_id, payload)
+                    else:
+                        await manager.broadcast(chat_id, payload)
+
+                elif data.get("type") == "call_answer":
+                    payload = {
+                        "event": "call_answer",
+                        "chat_id": chat_id,
+                        "from_user_id": user_id,
+                        "to_user_id": data.get("to_user_id"),
+                        "answer": data.get("answer")
+                    }
+                    await manager.broadcast(chat_id, payload)
+                
+                elif data.get("type") == "ice_candidate":
+                    payload = {
+                        "event": "ice_candidate",
+                        "chat_id": chat_id,
+                        "from_user_id": user_id,
+                        "to_user_id": data.get("to_user_id"),
+                        "candidate": data.get("candidate")
+                    }
+                    await manager.broadcast(chat_id, payload)
+                
+                elif data.get("type") == "call_end":
+                    await manager.broadcast(chat_id, {
+                        "event": "call_end",
+                        "chat_id": chat_id,
+                        "from_user_id": user_id
+                    })
+                    
+        except WebSocketDisconnect:
+            manager.disconnect(websocket, chat_id, user_id)
+            # Broadcast offline status
+            await manager.broadcast_presence(user_id, False, chat_id)
+        except Exception:
+            manager.disconnect(websocket, chat_id, user_id)
+            
+    except jwt.PyJWTError:
+        await websocket.close(code=4003)
+
+
+@router.get("/chats/{chat_id}/attachments/{filename}")
+async def get_chat_attachment(
+    chat_id: str,
+    filename: str,
+    current_user: WorkspaceUser = Depends(get_current_user)
+):
+    """Serve a chat attachment"""
+    db = get_db()
+    chat = await db.workspace_chats.find_one({"chat_id": chat_id})
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    
+    if current_user.id not in chat["participants"]:
+        raise HTTPException(status_code=403, detail="Not a participant")
+        
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(BASE_DIR, "uploads", "workspace", chat_id, filename)
+    
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+        
+    return FileResponse(file_path)

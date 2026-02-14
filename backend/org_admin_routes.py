@@ -293,37 +293,123 @@ async def invite_user(
         logger.error(f"❌ User invite failed: {e}")
         raise HTTPException(status_code=500, detail="User invite failed")
 
+# @router.get("/users")
+# async def list_org_users(
+#     token_payload: dict = Depends(require_org_admin),
+#     db = Depends(get_db)
+# ):
+#     """List all users in organization"""
+#     try:
+#         org_id = token_payload.get("org_id")
+        
+#         users = await db.enterprise_users.find(
+#             {"org_id": org_id},
+#             {"_id": 0, "password_hash": 0}
+#         ).to_list(None)
+        
+#         # Get role names
+#         for user in users:
+#             if user.get("role_id"):
+#                 role = await db.roles.find_one(
+#                     {"role_id": user["role_id"]},
+#                     {"_id": 0}
+#                 )
+#                 user["role_name"] = role["role_name"] if role else None
+        
+#         return {
+#             "success": True,
+#             "users": users
+#         }
+        
+#     except Exception as e:
+#         logger.error(f"❌ List users failed: {e}")
+#         raise HTTPException(status_code=500, detail="Failed to list users")
+
+from datetime import datetime, timezone
+
+def _to_dt(value):
+    """Convert Mongo Date or ISO string -> datetime (UTC)."""
+    if not value:
+        return None
+    if isinstance(value, datetime):
+        # ensure timezone-aware
+        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+    if isinstance(value, str):
+        try:
+            # handle 'Z' and '+00:00' formats
+            return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except Exception:
+            return None
+    return None
+
+def _last_login_label(dt: datetime) -> str:
+    """Return Today/Yesterday/N days ago based on UTC date."""
+    if not dt:
+        return "-"
+    now_date = datetime.now(timezone.utc).date()
+    d = dt.date()
+    diff = (now_date - d).days
+    if diff <= 0:
+        return "Today"
+    if diff == 1:
+        return "Yesterday"
+    return f"{diff} days ago"
+
+
 @router.get("/users")
 async def list_org_users(
     token_payload: dict = Depends(require_org_admin),
-    db = Depends(get_db)
+    db=Depends(get_db),
 ):
-    """List all users in organization"""
+    """List all users in organization (UI-friendly shape like demo)."""
     try:
         org_id = token_payload.get("org_id")
-        
+        if not org_id:
+            raise HTTPException(status_code=401, detail="Missing org context")
+
         users = await db.enterprise_users.find(
             {"org_id": org_id},
             {"_id": 0, "password_hash": 0}
-        ).to_list(None)
-        
-        # Get role names
-        for user in users:
-            if user.get("role_id"):
-                role = await db.roles.find_one(
-                    {"role_id": user["role_id"]},
-                    {"_id": 0}
-                )
-                user["role_name"] = role["role_name"] if role else None
-        
-        return {
-            "success": True,
-            "users": users
-        }
-        
+        ).to_list(length=200)
+
+        # Fetch roles once (org + system)
+        role_docs = await db.roles.find(
+            {"$or": [{"org_id": org_id}, {"is_system": True}]},
+            {"_id": 0, "role_id": 1, "role_name": 1}
+        ).to_list(length=200)
+        role_map = {r["role_id"]: r.get("role_name") for r in role_docs}
+
+        enriched = []
+        for u in users:
+            # Determine last activity
+            last_dt = _to_dt(u.get("last_active_at")) or _to_dt(u.get("last_login_at")) or _to_dt(u.get("created_at"))
+            role_id = u.get("role_id")
+
+            # Build UI-friendly user shape (demo-compatible)
+            enriched.append({
+                "user_id": u.get("user_id"),
+                "email": (u.get("email") or "").strip().lower(),
+                "full_name": (
+                    u.get("full_name")
+                    or f"{u.get('first_name','')} {u.get('last_name','')}".strip()
+                    or u.get("user_id")
+                    or ""
+                ),
+                "role_id": role_id,
+                "role_name": role_map.get(role_id) or role_id or "",
+                "is_active": u.get("is_active", True),
+                "last_login": _last_login_label(last_dt),
+            })
+
+        return {"success": True, "users": enriched}
+
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"❌ List users failed: {e}")
+        logger.exception(f" List users failed: {e}")
         raise HTTPException(status_code=500, detail="Failed to list users")
+
+
 
 @router.put("/users/{user_id}/role")
 async def update_user_role(

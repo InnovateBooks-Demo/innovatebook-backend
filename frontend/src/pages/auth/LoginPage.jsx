@@ -18,7 +18,7 @@ import {
 import axios from "axios";
 
 const BACKEND_URL =
-  process.env.REACT_APP_BACKEND_URL || "http://localhost:8001";
+  process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
 
 const LoginPage = () => {
   const navigate = useNavigate();
