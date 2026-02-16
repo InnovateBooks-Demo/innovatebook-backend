@@ -4,8 +4,8 @@ import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import axios from 'axios';
 import { getAuthHeaders } from '../utils/auth';
-import { 
-  LayoutDashboard, Users, Building2, FileText, Receipt, 
+import {
+  LayoutDashboard, Users, Building2, FileText, Receipt,
   TrendingUp, DollarSign, AlertCircle, Clock, ArrowUpRight,
   BarChart3, PieChart, Activity, Loader2
 } from 'lucide-react';
@@ -32,15 +32,15 @@ const DashboardRedesigned = () => {
       const response = await axios.get(`${backendUrl}/api/dashboard/metrics`, {
         headers: getAuthHeaders()
       });
-      
+
       // Get backend response data
       const backendData = response.data;
-      
+
       // Get customers and vendors count
-      const customersResponse = await axios.get(`${backendUrl}/api/customers`, {
+      const customersResponse = await axios.get(`${backendUrl}/api/commerce/parties/customers`, {
         headers: getAuthHeaders()
       });
-      const vendorsResponse = await axios.get(`${backendUrl}/api/vendors`, {
+      const vendorsResponse = await axios.get(`${backendUrl}/api/commerce/parties/vendors`, {
         headers: getAuthHeaders()
       });
       const invoicesResponse = await axios.get(`${backendUrl}/api/invoices`, {
@@ -49,7 +49,7 @@ const DashboardRedesigned = () => {
       const billsResponse = await axios.get(`${backendUrl}/api/bills`, {
         headers: getAuthHeaders()
       });
-      
+
       // Map backend response to frontend structure
       setMetrics({
         customers: {
@@ -132,7 +132,7 @@ const DashboardRedesigned = () => {
               <h2 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>Quick Actions</h2>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {quickActions.map((action, idx) => (
-                  <Card 
+                  <Card
                     key={idx}
                     className="p-6 bg-white border-0 shadow-md hover:shadow-xl transition-all cursor-pointer group"
                     onClick={() => navigate(action.path)}
@@ -286,32 +286,32 @@ const DashboardRedesigned = () => {
                   <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>Reports & Analytics</h3>
                 </div>
                 <div className="space-y-2">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start gap-3"
                     onClick={() => navigate('/financial-reporting/profit-loss')}
                   >
                     <PieChart className="h-5 w-5 text-green-600" />
                     Profit & Loss Statement
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start gap-3"
                     onClick={() => navigate('/financial-reporting/balance-sheet')}
                   >
                     <BarChart3 className="h-5 w-5 text-blue-600" />
                     Balance Sheet
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start gap-3"
                     onClick={() => navigate('/cash-flow/actuals')}
                   >
                     <Activity className="h-5 w-5 text-purple-600" />
                     Cash Flow Analysis
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start gap-3"
                     onClick={() => navigate('/collections')}
                   >

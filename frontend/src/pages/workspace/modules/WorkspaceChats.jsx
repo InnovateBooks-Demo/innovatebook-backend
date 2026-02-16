@@ -197,15 +197,42 @@ const WorkspaceChats = () => {
       try {
         const data = JSON.parse(event.data);
 
-        if (data.event === "new_message" && data.chat_id === chatId) {
+        if ((data.event === "new_message" || data.event === "message:new") && data.chat_id === chatId) {
+          const incomingMessage = data.message || {
+            message_id: data.message_id,
+            chat_id: data.chat_id,
+            sender_id: data.sender_id,
+            sender_name: data.sender_name || "User",
+            sender_type: data.sender_type || "internal",
+            content_type: data.content_type || "text",
+            payload: data.text || data.payload,
+            created_at: data.created_at,
+            edited: false
+          };
+
           setMessages((prev) => {
-            if (prev.some(m => m.message_id === data.message.message_id)) return prev;
-            return [...prev, data.message];
+            if (prev.some(m => m.message_id === incomingMessage.message_id)) return prev;
+            return [...prev, incomingMessage];
           });
+
+          // Update chat list with new last_message_at
+          setChats((prev) => {
+            return prev.map(chat => {
+              if (chat.chat_id === data.chat_id) {
+                return { ...chat, last_message_at: data.created_at };
+              }
+              return chat;
+            }).sort((a, b) => {
+              const timeA = a.last_message_at ? new Date(a.last_message_at).getTime() : 0;
+              const timeB = b.last_message_at ? new Date(b.last_message_at).getTime() : 0;
+              return timeB - timeA;
+            });
+          });
+
           // Remove from typing if they sent a message
           setTypingUsers(prev => {
             const next = { ...prev };
-            delete next[data.message.sender_id];
+            delete next[incomingMessage.sender_id];
             return next;
           });
         }
@@ -379,7 +406,7 @@ const WorkspaceChats = () => {
       }
 
       setNewMessage("");
-      fetchMessages(selectedChat.chat_id);
+      // fetchMessages(selectedChat.chat_id); // No longer needed as much due to real-time, but keep as fallback if desired
     } catch (error) {
       console.error("Error sending message:", error);
     }

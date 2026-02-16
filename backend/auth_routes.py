@@ -33,7 +33,7 @@ from auth_masters import (
     USER_ROLES, INDUSTRIES, COMPANY_SIZES, BUSINESS_TYPES,
     COUNTRIES, LANGUAGES, TIMEZONES, SOLUTIONS, INSIGHTS_MODULE
 )
-from auth_utils import create_access_token, verify_token
+from auth_utils import create_access_token, verify_token, DEBUG
 from log_utils import get_logger
 
 logger = logging.getLogger(__name__)
@@ -517,9 +517,11 @@ auth_logger = get_logger(__name__)
 @router.post("/login", response_model=LoginResponse)
 async def login(request: LoginRequest, db=Depends(get_db)):
     try:
-        auth_logger.login_attempt(request.email)
+        # Normalize email
+        email = request.email.strip().lower()
+        auth_logger.login_attempt(email)
 
-        user = await db.users.find_one({"email": request.email})
+        user = await db.users.find_one({"email": email})
         
         auth_logger.info("login_lookup", 
             email=repr(request.email), 
@@ -984,3 +986,36 @@ async def accept_invite(request: AcceptInviteRequest, db=Depends(get_db)):
     except Exception as e:
         logger.error(f"Invitation accept error: {e}")
         raise HTTPException(status_code=500, detail="Failed to accept invitation")
+@router.get("/token-debug")
+async def token_debug(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """
+    Protected debug endpoint to verify token lifecycle and payload.
+    Only enabled when DEBUG=true in environment.
+    """
+    if not DEBUG:
+        raise HTTPException(
+            status_code=404, 
+            detail="Debug endpoint disabled"
+        )
+    
+    token = credentials.credentials
+    # verify_token handles native PyJWT verification
+    payload = verify_token(token, verify_type="access")
+    
+    now = datetime.now(timezone.utc)
+    exp_ts = payload.get("exp")
+    remaining = (exp_ts - int(now.timestamp())) if exp_ts else 0
+    
+    return {
+        "server_utc_now": now.isoformat(),
+        "token_exp_utc": datetime.fromtimestamp(exp_ts, tz=timezone.utc).isoformat() if exp_ts else None,
+        "remaining_seconds": remaining,
+        "payload": {
+            "user_id": payload.get("user_id"),
+            "org_id": payload.get("org_id"),
+            "role_id": payload.get("role_id"),
+            "sub": payload.get("sub")
+        }
+    }

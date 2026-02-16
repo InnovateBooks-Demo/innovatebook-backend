@@ -2,7 +2,7 @@ import api from "./api";
 
 export const authService = {
   async register(userData) {
-    const response = await api.post(`/auth/register`, userData);
+    const response = await api.post(`/api/auth/register`, userData);
     if (response.data.access_token) {
       localStorage.setItem('access_token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -12,10 +12,10 @@ export const authService = {
 
   async login(credentials) {
     try {
-      const standardUrl = `${api.defaults.baseURL}/auth/login`;
+      const standardUrl = `${api.defaults.baseURL}/api/auth/login`;
       console.log(`[Auth] Attempting standard login to: ${standardUrl}`);
 
-      const response = await api.post(`/auth/login`, credentials);
+      const response = await api.post(`/api/auth/login`, credentials);
       if (response.data.access_token) {
         localStorage.setItem('access_token', response.data.access_token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -26,11 +26,11 @@ export const authService = {
 
       // Fallback condition: ANY 401 Unauthorized
       if (error.response?.status === 401) {
-        const enterpriseUrl = `${api.defaults.baseURL}/enterprise/auth/login`;
+        const enterpriseUrl = `${api.defaults.baseURL}/api/enterprise/auth/login`;
         console.log(`[Auth] 401 detected. Entering fallback. Attempting enterprise login to: ${enterpriseUrl}`);
 
         try {
-          const entResponse = await api.post(`/enterprise/auth/login`, credentials);
+          const entResponse = await api.post(`/api/enterprise/auth/login`, credentials);
           console.log(`[Auth] Enterprise login status: ${entResponse.status}`);
 
           if (entResponse.data.access_token) {

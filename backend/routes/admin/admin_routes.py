@@ -844,7 +844,28 @@ async def create_invite(
 ):
     org_id = current_user["org_id"]
     email = payload.email.strip().lower()
-    role_id = payload.role_id.strip()
+    role_id = (payload.role_id or "member").strip()
+
+    # 1. Validate Allowed Roles Semantics
+    allowed_roles = ["member", "manager", "admin"]
+    if role_id not in allowed_roles:
+         raise HTTPException(status_code=400, detail=f"Role must be one of {allowed_roles}")
+
+    # 2. Privileged Role Check
+    if role_id == "admin":
+        inviter_role = current_user.get("role_id")
+        is_super = current_user.get("is_super_admin", False)
+        # Only Owner/Super Admin can invite Admins
+        # (Assuming 'admin' in current_user means org admin, but checking for 'owner'/'super_admin' as requested)
+        # Verify if 'admin' key is sufficient based on user request "OR org_role == 'owner/super_admin'"
+        # If the inviter is just an 'admin', they might NOT be allowed to invite other admins?
+        # User said: "only allow if inviter is super_admin (global) OR org_role == 'owner/super_admin'"
+        # So 'admin' cannot invite 'admin'. Correct.
+        if not is_super and inviter_role not in ["owner", "super_admin"]:
+             raise HTTPException(
+                 status_code=403, 
+                 detail="Only Owners or Super Admins can invite Admins."
+             )
 
     # validate role exists (org role or system role)
     role = await db.roles.find_one(

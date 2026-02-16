@@ -11,8 +11,9 @@ if not JWT_SECRET:
     raise RuntimeError("JWT_SECRET_KEY is missing in environment variables")
 
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
-REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", 7))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
+DEBUG = os.getenv("DEBUG", "false").lower() == "true" or os.getenv("ENVIRONMENT") == "development"
 
 def create_access_token(
     user_id: str,
@@ -28,26 +29,25 @@ def create_access_token(
     - sub: user_id
     - user_id: user_id (explicit)
     - org_id: org_id
-    - role: role_id
+    - role_id: role_id
     - type: "access"
-    - exp: expiration
-    - iat: issued at
+    - exp: expiration (unix timestamp)
+    - iat: issued at (unix timestamp)
     """
+    now = datetime.now(timezone.utc)
     if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
+        expire = now + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = now + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     
     to_encode = {
         "sub": user_id,
         "user_id": user_id,
         "org_id": org_id,
-        "role": role_id, # Standardized key 'role' vs 'role_id' - user requested 'role'
-        "role_id": role_id, # Keeping both for backward compat if needed, or strictly following requirement?
-                            # User said: "role", so I will include "role"
+        "role_id": role_id,
         "type": "access",
-        "exp": expire,
-        "iat": datetime.now(timezone.utc),
+        "exp": int(expire.timestamp()),
+        "iat": int(now.timestamp()),
         "subscription_status": subscription_status,
         "is_super_admin": is_super_admin
     }
@@ -72,10 +72,11 @@ def create_refresh_token(
     - iat: issued at
     - jti: unique identifier
     """
+    now = datetime.now(timezone.utc)
     if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
+        expire = now + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+        expire = now + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     
     jti = secrets.token_urlsafe(16)
     
@@ -84,8 +85,8 @@ def create_refresh_token(
         "user_id": user_id,
         "org_id": org_id,
         "type": "refresh",
-        "exp": expire,
-        "iat": datetime.now(timezone.utc),
+        "exp": int(expire.timestamp()),
+        "iat": int(now.timestamp()),
         "jti": jti
     }
     
@@ -95,14 +96,21 @@ def create_refresh_token(
 def verify_token(token: str, verify_type: str = "access") -> Dict[str, Any]:
     """
     Verify and decode a JWT token.
-    - Checks signature
-    - Checks expiration
+    - Checks signature and expiration using PyJWT's built-in validation
     - Checks 'type' claim (if present in token) matches verify_type
     - Normalizes payload (ensures user_id exists if sub exists)
     """
     try:
+        # PyJWT's decode verifies the signature and 'exp' claim by default
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         
+        # Debug logging for development
+        now_ts = int(datetime.now(timezone.utc).timestamp())
+        exp_ts = payload.get("exp")
+        if exp_ts:
+            remaining = exp_ts - now_ts
+            print(f"DEBUG: Token verified. now={now_ts}, exp={exp_ts}, remaining={remaining}s")
+
         # Verify type if the token has it
         token_type = payload.get("type")
         if token_type and token_type != verify_type:
@@ -124,11 +132,13 @@ def verify_token(token: str, verify_type: str = "access") -> Dict[str, Any]:
         return payload
         
     except jwt.ExpiredSignatureError:
+        print(f"DEBUG: Token expired. now={int(datetime.now(timezone.utc).timestamp())}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token has expired"
         )
-    except jwt.InvalidTokenError:
+    except jwt.InvalidTokenError as e:
+        print(f"DEBUG: InvalidTokenError: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token"

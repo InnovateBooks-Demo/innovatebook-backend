@@ -34,7 +34,8 @@ def require_org_admin(token_payload: dict = Depends(validate_tenant)):
         return token_payload  # Super admin bypass
     
     role_id = token_payload.get("role_id")
-    if role_id != "role_org_admin":
+    # Allow legacy 'role_org_admin' and new 'admin'
+    if role_id not in ["role_org_admin", "admin"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Organization admin access required"
@@ -358,55 +359,146 @@ def _last_login_label(dt: datetime) -> str:
 
 @router.get("/users")
 async def list_org_users(
+    page: int = 1,
+    limit: int = 50,
+    search: str = None,
     token_payload: dict = Depends(require_org_admin),
     db=Depends(get_db),
 ):
-    """List all users in organization (UI-friendly shape like demo)."""
+    """
+    List all users in organization with pagination and sorting.
+    Source: org_users (membership) + users (identity).
+    RBAC: Requester must be 'admin' or 'manager' in this org.
+    """
     try:
         org_id = token_payload.get("org_id")
-        if not org_id:
-            raise HTTPException(status_code=401, detail="Missing org context")
+        requester_id = token_payload.get("user_id") or token_payload.get("sub")
+        
+        if not org_id or not requester_id:
+            raise HTTPException(status_code=401, detail="Missing context")
 
-        users = await db.enterprise_users.find(
-            {"org_id": org_id},
-            {"_id": 0, "password_hash": 0}
-        ).to_list(length=200)
+        # 1. Access Control (RBAC) via org_users
+        requester_membership = await db.org_users.find_one(
+            {"user_id": requester_id, "org_id": org_id, "status": "active"}
+        )
+        
+        # Allow 'admin', 'manager', or legacy 'role_org_admin'
+        allowed_roles = ["admin", "manager", "role_org_admin"]
+        if not requester_membership or requester_membership.get("role") not in allowed_roles:
+            # Fallback: check if super admin (from token)
+            if not token_payload.get("is_super_admin"):
+                 raise HTTPException(status_code=403, detail="Insufficient permissions")
 
-        # Fetch roles once (org + system)
-        role_docs = await db.roles.find(
-            {"$or": [{"org_id": org_id}, {"is_system": True}]},
-            {"_id": 0, "role_id": 1, "role_name": 1}
-        ).to_list(length=200)
-        role_map = {r["role_id"]: r.get("role_name") for r in role_docs}
-
-        enriched = []
-        for u in users:
-            # Determine last activity
-            last_dt = _to_dt(u.get("last_active_at")) or _to_dt(u.get("last_login_at")) or _to_dt(u.get("created_at"))
-            role_id = u.get("role_id")
-
-            # Build UI-friendly user shape (demo-compatible)
-            enriched.append({
-                "user_id": u.get("user_id"),
-                "email": (u.get("email") or "").strip().lower(),
-                "full_name": (
-                    u.get("full_name")
-                    or f"{u.get('first_name','')} {u.get('last_name','')}".strip()
-                    or u.get("user_id")
-                    or ""
-                ),
-                "role_id": role_id,
-                "role_name": role_map.get(role_id) or role_id or "",
-                "is_active": u.get("is_active", True),
-                "last_login": _last_login_label(last_dt),
+        # 2. Build Aggregation Pipeline
+        skip = (page - 1) * limit
+        
+        pipeline = [
+            # Match active members of this org
+            {"$match": {
+                "org_id": org_id, 
+                "status": "active",
+                "is_active": True
+            }},
+            
+            # Lookup User Details
+            {"$lookup": {
+                "from": "users",
+                "localField": "user_id",
+                "foreignField": "user_id",
+                "as": "user_info"
+            }},
+            {"$unwind": {"path": "$user_info", "preserveNullAndEmptyArrays": True}},
+            
+            # Lookup Session for Last Active (Fallback)
+            {"$lookup": {
+                "from": "user_sessions",
+                "let": {"uid": "$user_id"},
+                "pipeline": [
+                    {"$match": {"$expr": {"$eq": ["$user_id", "$$uid"]}}},
+                    {"$sort": {"created_at": -1}},
+                    {"$limit": 1}
+                ],
+                "as": "last_session"
+            }},
+            {"$unwind": {"path": "$last_session", "preserveNullAndEmptyArrays": True}},
+            
+            # Project / Calculate Fields
+            {"$project": {
+                "user_id": 1,
+                "role": 1, # org role
+                "email": {"$ifNull": ["$user_info.email", ""]},
+                "full_name": {"$ifNull": ["$user_info.full_name", ""]},
+                "status": {"$ifNull": ["$user_info.status", "active"]},
+                # Determine last_active: users.last_login > user_sessions.created_at
+                "last_active": {
+                    "$ifNull": [
+                        "$user_info.last_login", 
+                        "$last_session.created_at",
+                        None
+                    ]
+                }
+            }},
+        ]
+        
+        # Search Filter (Optional)
+        if search:
+            search_term = search.strip().lower()
+            pipeline.append({
+                "$match": {
+                    "$or": [
+                        {"email": {"$regex": search_term, "$options": "i"}},
+                        {"full_name": {"$regex": search_term, "$options": "i"}}
+                    ]
+                }
             })
 
-        return {"success": True, "users": enriched}
+        # Sort, Pagination Facet
+        pipeline.append({
+            "$facet": {
+                "metadata": [{"$count": "total"}],
+                "data": [
+                    {"$sort": {"last_active": -1, "full_name": 1}},
+                    {"$skip": skip},
+                    {"$limit": limit}
+                ]
+            }
+        })
+        
+        results = await db.org_users.aggregate(pipeline).to_list(length=1)
+        
+        metadata = results[0]["metadata"]
+        data = results[0]["data"]
+        total = metadata[0]["total"] if metadata else 0
+        
+        # Formatting for UI
+        formatted_users = []
+        for u in data:
+            last_active_dt = _to_dt(u.get("last_active"))
+            formatted_users.append({
+                "user_id": u["user_id"],
+                "email": u["email"],
+                "full_name": u["full_name"],
+                "role": u.get("role"), # Org Role
+                "status": u.get("status"),
+                "last_active": _last_login_label(last_active_dt),
+                "last_active_raw": last_active_dt.isoformat() if last_active_dt else None
+            })
+
+        return {
+            "success": True,
+            "users": formatted_users,
+            "pagination": {
+                "total": total,
+                "page": page,
+                "limit": limit,
+                "pages": (total + limit - 1) // limit
+            }
+        }
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.exception(f" List users failed: {e}")
+        logger.exception(f"List users failed: {e}")
         raise HTTPException(status_code=500, detail="Failed to list users")
 
 

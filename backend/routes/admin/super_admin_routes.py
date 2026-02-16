@@ -10,30 +10,26 @@ from passlib.context import CryptContext
 import uuid
 import json
 import asyncio
-import jwt
 import os
+# import jwt # Removed
+from auth_utils import verify_token
 
 router = APIRouter(prefix="/super-admin", tags=["Super Admin"])
 
 # Import shared dependencies
 from server import db, pwd_context
 
-# JWT configuration (same as enterprise auth)
-JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
-JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
+# JWT configuration managed by auth_utils
 security = HTTPBearer()
 
 async def get_current_user_enterprise(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Get current user from enterprise auth token"""
     try:
         token = credentials.credentials
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id = payload.get("sub")  # Enterprise auth uses user_id
-        if user_id is None:
-            # Fallback to sub for standard auth
-            user_id = payload.get("sub")
-        if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
+        # Use auth_utils.verify_token
+        payload = verify_token(token, verify_type="access")
+        
+        user_id = payload.get("user_id")
         
         # Check enterprise_users first
         user = await db.enterprise_users.find_one({"user_id": user_id}, {"_id": 0})
@@ -50,10 +46,10 @@ async def get_current_user_enterprise(credentials: HTTPAuthorizationCredentials 
             user["is_super_admin"] = True
             
         return user
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=401, detail=f"Authentication failed: {str(e)}")
 
 # ==================== MODELS ====================
 

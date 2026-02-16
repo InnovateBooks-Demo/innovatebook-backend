@@ -12,6 +12,8 @@ from datetime import datetime, timezone, timedelta
 import uuid
 import jwt
 import os
+from typing import List, Optional, Dict, Set, Any
+from auth_utils import verify_token
 
 from workspace_models import (
     # Enums
@@ -55,49 +57,39 @@ JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
 
 class WorkspaceConnectionManager:
     def __init__(self):
-        # chat_id -> List of WebSockets
-        self.active_connections: dict[str, List[WebSocket]] = {}
-        # user_id -> Set of WebSockets (for presence)
-        self.user_connections: dict[str, set[WebSocket]] = {}
+        # room_id -> List of WebSockets
+        # Room format: org:{org_id}:user:{user_id}
+        self.rooms: Dict[str, List[WebSocket]] = {}
 
-    async def connect(self, websocket: WebSocket, chat_id: str, user_id: str):
+    async def connect(self, websocket: WebSocket, room_id: str):
         await websocket.accept()
-        if chat_id not in self.active_connections:
-            self.active_connections[chat_id] = []
-        self.active_connections[chat_id].append(websocket)
-        
-        if user_id not in self.user_connections:
-            self.user_connections[user_id] = set()
-        self.user_connections[user_id].add(websocket)
+        if room_id not in self.rooms:
+            self.rooms[room_id] = []
+        self.rooms[room_id].append(websocket)
+        print(f"DEBUG: WebSocket joined room: {room_id}")
 
-    def disconnect(self, websocket: WebSocket, chat_id: str, user_id: str):
-        if chat_id in self.active_connections:
-            if websocket in self.active_connections[chat_id]:
-                self.active_connections[chat_id].remove(websocket)
-            if not self.active_connections[chat_id]:
-                del self.active_connections[chat_id]
-        
-        if user_id in self.user_connections:
-            self.user_connections[user_id].discard(websocket)
-            if not self.user_connections[user_id]:
-                del self.user_connections[user_id]
+    def disconnect(self, websocket: WebSocket, room_id: str):
+        if room_id in self.rooms:
+            if websocket in self.rooms[room_id]:
+                self.rooms[room_id].remove(websocket)
+            if not self.rooms[room_id]:
+                del self.rooms[room_id]
+        print(f"DEBUG: WebSocket left room: {room_id}")
 
-    async def broadcast(self, chat_id: str, message: dict):
-        if chat_id in self.active_connections:
-            for connection in self.active_connections[chat_id]:
+    async def broadcast(self, room_id: str, message: dict):
+        if room_id in self.rooms:
+            for connection in self.rooms[room_id]:
                 try:
                     await connection.send_json(message)
-                except Exception:
+                except Exception as e:
+                    print(f"DEBUG: Broadcast error in room {room_id}: {e}")
                     pass
 
-    async def broadcast_presence(self, user_id: str, is_online: bool, chat_id: str):
-        """Broadcast user presence to a specific chat"""
-        event = {
-            "event": "user_online" if is_online else "user_offline",
-            "user_id": user_id,
-            "chat_id": chat_id
-        }
-        await self.broadcast(chat_id, event)
+    async def broadcast_to_participants(self, participants: List[str], org_id: str, message: dict):
+        """Broadcast to all participants in their respective rooms"""
+        for user_id in participants:
+            room_id = f"org:{org_id}:user:{user_id}"
+            await self.broadcast(room_id, message)
 
 manager = WorkspaceConnectionManager()
 
@@ -900,12 +892,23 @@ async def send_chat_message(
         {"$set": {"last_message_at": now.isoformat()}}
     )
 
-    # Broadcast to WebSocket
-    await manager.broadcast(chat_id, {
-        "event": "new_message",
-        "chat_id": chat_id,
-        "message": message_doc
-    })
+    # Broadcast to WebSocket - chat-based room
+    try:
+        room_id = f"chat:{chat_id}"
+        await manager.broadcast(room_id, {
+            "event": "message:new",
+            "chat_id": chat_id,
+            "message_id": message_id,
+            "text": data.payload,
+            "sender_id": current_user.id,
+            "sender_name": current_user.full_name,
+            "sender_type": SenderType.INTERNAL,
+            "content_type": data.content_type,
+            "created_at": now.isoformat()
+        })
+        print(f"DEBUG: Broadcasted message:new to room {room_id}")
+    except Exception as e:
+        print(f"DEBUG: Message broadcast failed: {e}")
 
     message_doc["created_at"] = now
     return ChatMessage(**message_doc)
@@ -1303,23 +1306,59 @@ async def websocket_endpoint(websocket: WebSocket, chat_id: str, token: str = Qu
     
     # Authenticate via token
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id = payload.get("sub") or payload.get("sub")
+        # Use auth_utils.verify_token for consistent validation
+        payload = verify_token(token, verify_type="access")
+        user_id = payload.get("user_id") or payload.get("sub")
+        org_id = (payload.get("org_id") or "").strip()
+        
+        print(f"DEBUG: WebSocket connection attempt - user_id={user_id}, org_id={org_id}, chat_id={chat_id}")
+        
         if not user_id:
-            await websocket.close(code=4003)
+            print(f"DEBUG: WebSocket auth failed: No user_id in token")
+            await websocket.close(code=1008)
+            return
+
+        # Verify user is at least active in org (Authorization)
+        membership_query = {
+            "user_id": user_id,
+            "org_id": org_id,
+            "is_active": True,
+            "$or": [{"status": "active"}, {"status": {"$exists": False}}],
+        }
+        
+        print(f"DEBUG: WebSocket membership query: {membership_query}")
+        org_user = await db.org_users.find_one(membership_query)
+        print(f"DEBUG: WebSocket membership result: {org_user is not None}")
+        
+        if not org_user:
+            print(f"DEBUG: WebSocket deny reason: no_membership - User {user_id} not active in org {org_id}")
+            await websocket.close(code=1008)
             return
             
-        # Verify user is participant
-        chat = await db.workspace_chats.find_one({"chat_id": chat_id})
-        if not chat or user_id not in chat.get("participants", []):
-            await websocket.close(code=4003)
+        # STRICT chat access validation
+        chat_query = {"chat_id": chat_id, "org_id": org_id, "is_archived": False}
+        
+        print(f"DEBUG: WebSocket chat check query: {chat_query}")
+        chat = await db.workspace_chats.find_one(chat_query)
+        print(f"DEBUG: WebSocket chat found: {chat is not None}")
+        
+        if not chat:
+            print(f"DEBUG: WebSocket deny reason: chat_not_found - Chat {chat_id} not found in org {org_id} or is archived")
+            await websocket.close(code=1008)
+            return
+        
+        if user_id not in chat.get("participants", []):
+            print(f"DEBUG: WebSocket deny reason: not_participant - User {user_id} not in participants for chat {chat_id}")
+            await websocket.close(code=1008)
             return
             
-        await manager.connect(websocket, chat_id, user_id)
+        # Join chat-specific room
+        room_id = f"chat:{chat_id}"
+        await manager.connect(websocket, room_id)
         
-        # Broadcast online status
-        await manager.broadcast_presence(user_id, True, chat_id)
-        
+        # Get participants list for broadcasting events in the loop
+        participants = chat.get("participants", [])
+
         try:
             while True:
                 # Handle incoming messages (e.g., typing indicators)
@@ -1327,7 +1366,7 @@ async def websocket_endpoint(websocket: WebSocket, chat_id: str, token: str = Qu
                 
                 if data.get("type") in ["typing_start", "typing_stop"]:
                     # Broadcast typing event to valid participants
-                    await manager.broadcast(chat_id, {
+                    await manager.broadcast_to_participants(participants, org_id, {
                         "event": data["type"],
                         "user_id": user_id,
                         "chat_id": chat_id
@@ -1342,7 +1381,7 @@ async def websocket_endpoint(websocket: WebSocket, chat_id: str, token: str = Qu
                             {"$addToSet": {"delivered_to": user_id}}
                         )
                         # Broadcast update
-                        await manager.broadcast(chat_id, {
+                        await manager.broadcast_to_participants(participants, org_id, {
                             "event": "message_status_update",
                             "chat_id": chat_id,
                             "message_id": message_id,
@@ -1352,8 +1391,6 @@ async def websocket_endpoint(websocket: WebSocket, chat_id: str, token: str = Qu
 
                 elif data.get("type") == "chat_read":
                     # Mark all messages as read for this user in this chat
-                    # Optimization: only update messages that don't have this user in read_by
-                    # and were NOT sent by this user
                     await db.workspace_chat_messages.update_many(
                         {
                             "chat_id": chat_id,
@@ -1364,8 +1401,7 @@ async def websocket_endpoint(websocket: WebSocket, chat_id: str, token: str = Qu
                     )
                     
                     # Broadcast that this user read the chat
-                    # Frontend can then mark all messages visible as read by this user
-                    await manager.broadcast(chat_id, {
+                    await manager.broadcast_to_participants(participants, org_id, {
                         "event": "message_status_update",
                         "chat_id": chat_id,
                         "status_type": "read",
@@ -1373,59 +1409,21 @@ async def websocket_endpoint(websocket: WebSocket, chat_id: str, token: str = Qu
                     })
                 
                 # WebRTC Signaling
-                elif data.get("type") == "call_offer":
-                    # Target specific user or broadcast to room (mesh)
-                    target_user_id = data.get("to_user_id")
-                    payload = {
-                        "event": "call_offer",
+                elif data.get("type") in ["call_offer", "call_answer", "ice_candidate", "call_end"]:
+                    # Broadcast to all participants (frontend filters if needed)
+                    event_payload = {
+                        "event": data["type"],
                         "chat_id": chat_id,
                         "from_user_id": user_id,
-                        "offer": data.get("offer")
+                        **{k: v for k, v in data.items() if k not in ["type"]}
                     }
-                    if target_user_id:
-                        # Find socket for target user in this chat
-                        # We need a way to send to specific socket. 
-                        # Current manager structure is chat_id -> list[ws] & user_id -> set[ws]
-                        # We can use user_connections if we check chat_context, 
-                        # OR just broadcast to chat and let frontend filter by `to_user_id`
-                        # Broadcasting to chat is safer for sync across multiple devices of same user
-                        await manager.broadcast(chat_id, payload)
-                    else:
-                        await manager.broadcast(chat_id, payload)
-
-                elif data.get("type") == "call_answer":
-                    payload = {
-                        "event": "call_answer",
-                        "chat_id": chat_id,
-                        "from_user_id": user_id,
-                        "to_user_id": data.get("to_user_id"),
-                        "answer": data.get("answer")
-                    }
-                    await manager.broadcast(chat_id, payload)
-                
-                elif data.get("type") == "ice_candidate":
-                    payload = {
-                        "event": "ice_candidate",
-                        "chat_id": chat_id,
-                        "from_user_id": user_id,
-                        "to_user_id": data.get("to_user_id"),
-                        "candidate": data.get("candidate")
-                    }
-                    await manager.broadcast(chat_id, payload)
-                
-                elif data.get("type") == "call_end":
-                    await manager.broadcast(chat_id, {
-                        "event": "call_end",
-                        "chat_id": chat_id,
-                        "from_user_id": user_id
-                    })
+                    await manager.broadcast_to_participants(participants, org_id, event_payload)
                     
         except WebSocketDisconnect:
-            manager.disconnect(websocket, chat_id, user_id)
-            # Broadcast offline status
-            await manager.broadcast_presence(user_id, False, chat_id)
-        except Exception:
-            manager.disconnect(websocket, chat_id, user_id)
+            manager.disconnect(websocket, room_id)
+        except Exception as e:
+            print(f"DEBUG: WebSocket error: {e}")
+            manager.disconnect(websocket, room_id)
             
     except jwt.PyJWTError:
         await websocket.close(code=4003)

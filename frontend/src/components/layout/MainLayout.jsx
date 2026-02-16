@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { authService } from '../../utils/auth';
 import { Button } from '../ui/button';
-import { 
-  LayoutDashboard, 
-  TrendingUp, 
-  Users, 
-  FileText, 
-  Clock, 
+import {
+  LayoutDashboard,
+  TrendingUp,
+  Users,
+  FileText,
+  Clock,
   PhoneCall,
   Building2,
   Receipt,
@@ -35,8 +35,8 @@ const MainLayout = ({ children }) => {
   const menuItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/financial-reporting', label: 'Financial Reporting', icon: FileText },
-    { 
-      label: 'Cash Flow Analysis', 
+    {
+      label: 'Cash Flow Analysis',
       icon: TrendingUp,
       expanded: cashFlowExpanded,
       setExpanded: setCashFlowExpanded,
@@ -47,8 +47,8 @@ const MainLayout = ({ children }) => {
         { path: '/cashflow/variance', label: 'Variance' },
       ]
     },
-    { 
-      label: 'Receivable', 
+    {
+      label: 'Receivable',
       icon: Users,
       expanded: arExpanded,
       setExpanded: setArExpanded,
@@ -59,8 +59,8 @@ const MainLayout = ({ children }) => {
         { path: '/collections', label: 'Collections' },
       ]
     },
-    { 
-      label: 'Payable', 
+    {
+      label: 'Payable',
       icon: Building2,
       expanded: apExpanded,
       setExpanded: setApExpanded,
@@ -84,9 +84,9 @@ const MainLayout = ({ children }) => {
         {/* Logo */}
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
-            <img 
-              src="/innovate-books-logo.png" 
-              alt="Innovate Books" 
+            <img
+              src="/innovate-books-logo.png"
+              alt="Innovate Books"
               className="w-10 h-10 object-contain"
             />
             <div>
@@ -130,7 +130,7 @@ const MainLayout = ({ children }) => {
                 </div>
               );
             }
-            
+
             return (
               <Link
                 key={`item-${index}`}
