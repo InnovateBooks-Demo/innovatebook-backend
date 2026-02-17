@@ -4549,7 +4549,7 @@ from auth_routes import router as auth_router
 # from routes.auth.auth_routes import router as auth_router
 
 from test_helpers import router as test_helpers_router
-from chat_routes import router as chat_router
+# from chat_routes import router as chat_router  # Legacy - using workspace_router instead
 from user_management_routes import router as user_management_router
 from webrtc_routes import router as webrtc_router
 from manufacturing_routes import router as manufacturing_router
@@ -4582,7 +4582,7 @@ app.include_router(test_helpers_router, prefix="/api")
 app.include_router(commerce_router, prefix="/api")
 app.include_router(lead_router, prefix="/api")
 app.include_router(engagement_router)
-app.include_router(chat_router)
+# app.include_router(chat_router)  # Legacy - using workspace_router instead
 app.include_router(user_management_router)
 app.include_router(webrtc_router)
 app.include_router(manufacturing_router)
@@ -4622,7 +4622,7 @@ app.include_router(intelligence_router, prefix="/api")
 
 # Import Workspace routes
 from workspace_routes import router as workspace_router
-app.include_router(workspace_router)
+app.include_router(workspace_router, prefix="/api/workspace")
 
 # Import Comprehensive Seed routes
 from comprehensive_seed import router as seed_router
@@ -4737,6 +4737,17 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def auto_seed_on_startup():
     """Auto-seed database if empty on startup"""
+    
+    # DEBUG: Print all registered routes
+    print("\n" + "="*80)
+    print("REGISTERED ROUTES:")
+    print("="*80)
+    for route in app.routes:
+        if hasattr(route, 'path') and hasattr(route, 'methods'):
+            methods = ','.join(route.methods) if route.methods else 'WS'
+            print(f"{methods:15} {route.path}")
+    print("="*80 + "\n")
+    
     try:
         logger.info("Checking if seed data is needed...")
         

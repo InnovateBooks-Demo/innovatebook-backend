@@ -193,8 +193,11 @@ const IBChatComplete = () => {
       "https://",
       "wss://",
     );
-    const wsUrl = `${backendWsUrl}/api/chat/ws/${user.id}`;
-    const websocket = new WebSocket(wsUrl);
+    // const wsUrl = `${backendWsUrl}/api/chat/ws/${user.id}`;
+    // const websocket = new WebSocket(wsUrl);
+    const token = localStorage.getItem("access_token") || "";
+    const wsUrl = `${backendWsUrl}/api/chat/ws/${user.id}?token=${encodeURIComponent(token)}`;
+
 
     websocket.onopen = () => {
       console.log("WebSocket connected");
@@ -811,9 +814,8 @@ const IBChatComplete = () => {
           <div className="h-24 bg-slate-900 flex items-center justify-center gap-4">
             <button
               onClick={toggleAudio}
-              className={`p-4 rounded-full transition-all ${
-                audioMuted ? "bg-red-600" : "bg-slate-700 hover:bg-slate-600"
-              }`}
+              className={`p-4 rounded-full transition-all ${audioMuted ? "bg-red-600" : "bg-slate-700 hover:bg-slate-600"
+                }`}
             >
               {audioMuted ? (
                 <MicOff className="h-6 w-6 text-white" />
@@ -825,9 +827,8 @@ const IBChatComplete = () => {
             {callType === "video" && (
               <button
                 onClick={toggleVideo}
-                className={`p-4 rounded-full transition-all ${
-                  videoMuted ? "bg-red-600" : "bg-slate-700 hover:bg-slate-600"
-                }`}
+                className={`p-4 rounded-full transition-all ${videoMuted ? "bg-red-600" : "bg-slate-700 hover:bg-slate-600"
+                  }`}
               >
                 {videoMuted ? (
                   <VideoOff className="h-6 w-6 text-white" />
@@ -891,11 +892,10 @@ const IBChatComplete = () => {
                 <button
                   key={channel.id}
                   onClick={() => setActiveChannel(channel)}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${
-                    activeChannel?.id === channel.id
-                      ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-lg"
-                      : "hover:bg-[#3A4E63]/10 text-slate-700"
-                  }`}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${activeChannel?.id === channel.id
+                    ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-lg"
+                    : "hover:bg-[#3A4E63]/10 text-slate-700"
+                    }`}
                 >
                   {channel.type === "private" ? (
                     <Lock className="h-4 w-4" />
@@ -926,11 +926,10 @@ const IBChatComplete = () => {
                 <button
                   key={channel.id}
                   onClick={() => setActiveChannel(channel)}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${
-                    activeChannel?.id === channel.id
-                      ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-lg"
-                      : "hover:bg-[#3A4E63]/10 text-slate-700"
-                  }`}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${activeChannel?.id === channel.id
+                    ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-lg"
+                    : "hover:bg-[#3A4E63]/10 text-slate-700"
+                    }`}
                 >
                   <div className="w-8 h-8 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center">
                     <span className="text-white font-bold text-xs">

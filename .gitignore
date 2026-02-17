@@ -107,8 +107,23 @@ Thumbs.db
 gitignore.txt
 gitconfig.txt
 
+# ===============================
+# Debug / Verification Scripts
+# ===============================
+debug_*.py
+verify_*.py
+quick_*.py
+load_categories.py
 
-# local cleanup repos / temp copies
+# ===============================
+# Cache Directories
+# ===============================
+.ruff_cache/
+.emergent/
+
+# ===============================
+# Local cleanup repos / temp copies
+# ===============================
 cleaned-repo*/
 cleaned-repo
 cleaned-repo-final

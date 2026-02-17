@@ -190,36 +190,41 @@ const WorkspaceChats = () => {
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
-      console.log("Connected to chat WS");
+      console.log("[WS] Connected to chat:", chatId);
     };
 
     ws.onmessage = (event) => {
+      // Log raw event data for debugging
+      console.log("[WS] Raw event.data:", event.data);
+
       try {
         const data = JSON.parse(event.data);
 
-        if ((data.event === "new_message" || data.event === "message:new") && data.chat_id === chatId) {
-          const incomingMessage = data.message || {
-            message_id: data.message_id,
-            chat_id: data.chat_id,
-            sender_id: data.sender_id,
-            sender_name: data.sender_name || "User",
-            sender_type: data.sender_type || "internal",
-            content_type: data.content_type || "text",
-            payload: data.text || data.payload,
-            created_at: data.created_at,
-            edited: false
-          };
+        if (data.event === "message_created" && data.message?.chat_id === chatId) {
+          console.log("[WS] Received message_created:", data);
+
+          const incomingMessage = data.message;
+
+          // Validate message shape
+          if (!incomingMessage || !incomingMessage.message_id) {
+            console.warn("[WS] Invalid message shape:", data);
+            return;
+          }
 
           setMessages((prev) => {
-            if (prev.some(m => m.message_id === incomingMessage.message_id)) return prev;
+            if (prev.some(m => m.message_id === incomingMessage.message_id)) {
+              console.log("[WS] Duplicate message ignored:", incomingMessage.message_id);
+              return prev;
+            }
+            console.log("[WS] Appending message:", incomingMessage.message_id);
             return [...prev, incomingMessage];
           });
 
           // Update chat list with new last_message_at
           setChats((prev) => {
             return prev.map(chat => {
-              if (chat.chat_id === data.chat_id) {
-                return { ...chat, last_message_at: data.created_at };
+              if (chat.chat_id === incomingMessage.chat_id) {
+                return { ...chat, last_message_at: incomingMessage.created_at };
               }
               return chat;
             }).sort((a, b) => {
@@ -342,7 +347,7 @@ const WorkspaceChats = () => {
     };
 
     ws.onclose = () => {
-      console.log("Disconnected from chat WS");
+      console.log("[WS] Disconnected from chat:", chatId);
     };
 
     wsRef.current = ws;

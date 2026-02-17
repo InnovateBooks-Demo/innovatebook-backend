@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { 
-  Send, Hash, Lock, Users, Plus, Search, Smile, Paperclip, MoreVertical, 
+import {
+  Send, Hash, Lock, Users, Plus, Search, Smile, Paperclip, MoreVertical,
   X, Edit2, Trash2, Image, File, Video, Download, Phone, Video as VideoIcon,
   Pin, Star, Reply, ChevronDown, AtSign, Bold, Italic, Code, Link as LinkIcon
 } from 'lucide-react';
@@ -27,7 +27,7 @@ const IBChatEnhanced = () => {
   const [editingMessage, setEditingMessage] = useState(null);
   const [uploadingFiles, setUploadingFiles] = useState([]);
   const [userStatuses, setUserStatuses] = useState({});
-  
+
   const messagesEndRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const token = localStorage.getItem('access_token');
@@ -93,8 +93,11 @@ const IBChatEnhanced = () => {
 
     // Convert http/https to ws/wss
     const backendWsUrl = BACKEND_URL.replace('http://', 'ws://').replace('https://', 'wss://');
-    const wsUrl = `${backendWsUrl}/api/chat/ws/${user.id}`;
-    const websocket = new WebSocket(wsUrl);
+    // const wsUrl = `${backendWsUrl}/api/chat/ws/${user.id}`;
+    // const websocket = new WebSocket(wsUrl);
+    const token = localStorage.getItem("access_token") || "";
+    const wsUrl = `${backendWsUrl}/api/chat/ws/${user.id}?token=${encodeURIComponent(token)}`;
+
 
     websocket.onopen = () => {
       console.log('WebSocket connected');
@@ -137,8 +140,8 @@ const IBChatEnhanced = () => {
         }
         break;
       case 'message_updated':
-        setMessages(prev => prev.map(msg => 
-          msg.id === data.data.message_id 
+        setMessages(prev => prev.map(msg =>
+          msg.id === data.data.message_id
             ? { ...msg, content: data.data.content, edited: true }
             : msg
         ));
@@ -164,25 +167,25 @@ const IBChatEnhanced = () => {
   const onDrop = useCallback(async (acceptedFiles) => {
     for (const file of acceptedFiles) {
       setUploadingFiles(prev => [...prev, { name: file.name, progress: 0 }]);
-      
+
       try {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('channel_id', activeChannel.id);
-        
+
         const response = await axios.post(`${BACKEND_URL}/api/chat/upload`, formData, {
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           },
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setUploadingFiles(prev => 
+            setUploadingFiles(prev =>
               prev.map(f => f.name === file.name ? { ...f, progress: percentCompleted } : f)
             );
           }
         });
-        
+
         // Send message with file
         await axios.post(`${BACKEND_URL}/api/chat/messages`, {
           channel_id: activeChannel.id,
@@ -193,7 +196,7 @@ const IBChatEnhanced = () => {
         }, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        
+
         setUploadingFiles(prev => prev.filter(f => f.name !== file.name));
       } catch (error) {
         console.error('Error uploading file:', error);
@@ -202,9 +205,9 @@ const IBChatEnhanced = () => {
     }
   }, [activeChannel, token]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    noClick: true 
+    noClick: true
   });
 
   // Send message
@@ -305,9 +308,9 @@ const IBChatEnhanced = () => {
 
   // Format time
   const formatTime = (date) => {
-    return new Date(date).toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(date).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -325,7 +328,7 @@ const IBChatEnhanced = () => {
   return (
     <div className="h-full flex bg-white" style={{ fontFamily: 'Poppins' }} {...getRootProps()}>
       <input {...getInputProps()} />
-      
+
       {/* Drag & Drop Overlay */}
       {isDragActive && (
         <div className="fixed inset-0 bg-[#06B6D4]/20 backdrop-blur-sm flex items-center justify-center z-50">
@@ -368,7 +371,7 @@ const IBChatEnhanced = () => {
           <div className="p-2">
             <div className="flex items-center justify-between px-3 py-2">
               <span className="text-xs font-bold text-slate-600 uppercase">Channels</span>
-              <button 
+              <button
                 onClick={() => setShowNewChannelModal(true)}
                 className="p-1 hover:bg-[#06B6D4]/10 rounded"
               >
@@ -380,11 +383,10 @@ const IBChatEnhanced = () => {
               <button
                 key={channel.id}
                 onClick={() => setActiveChannel(channel)}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${
-                  activeChannel?.id === channel.id
-                    ? 'bg-gradient-to-r from-[#06B6D4] to-[#0891B2] text-white shadow-lg'
-                    : 'hover:bg-[#06B6D4]/10 text-slate-700'
-                }`}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${activeChannel?.id === channel.id
+                  ? 'bg-gradient-to-r from-[#06B6D4] to-[#0891B2] text-white shadow-lg'
+                  : 'hover:bg-[#06B6D4]/10 text-slate-700'
+                  }`}
               >
                 {channel.type === 'private' ? (
                   <Lock className="h-4 w-4 flex-shrink-0" />
@@ -397,7 +399,7 @@ const IBChatEnhanced = () => {
 
             <div className="flex items-center justify-between px-3 py-2 mt-4">
               <span className="text-xs font-bold text-slate-600 uppercase">Direct Messages</span>
-              <button 
+              <button
                 onClick={() => setShowNewDMModal(true)}
                 className="p-1 hover:bg-[#06B6D4]/10 rounded"
               >
@@ -409,11 +411,10 @@ const IBChatEnhanced = () => {
               <button
                 key={channel.id}
                 onClick={() => setActiveChannel(channel)}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${
-                  activeChannel?.id === channel.id
-                    ? 'bg-gradient-to-r from-[#06B6D4] to-[#0891B2] text-white shadow-lg'
-                    : 'hover:bg-[#06B6D4]/10 text-slate-700'
-                }`}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${activeChannel?.id === channel.id
+                  ? 'bg-gradient-to-r from-[#06B6D4] to-[#0891B2] text-white shadow-lg'
+                  : 'hover:bg-[#06B6D4]/10 text-slate-700'
+                  }`}
               >
                 <div className="w-8 h-8 bg-gradient-to-br from-[#06B6D4] to-[#0891B2] rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-white font-bold text-xs">{channel.name?.charAt(0) || 'U'}</span>
@@ -482,12 +483,12 @@ const IBChatEnhanced = () => {
                         <span className="text-xs text-slate-400 italic">(edited)</span>
                       )}
                     </div>
-                    
+
                     {/* Message Content */}
                     {message.type === 'image' && message.file_url && (
                       <div className="mt-2">
-                        <img 
-                          src={`${BACKEND_URL}${message.file_url}`} 
+                        <img
+                          src={`${BACKEND_URL}${message.file_url}`}
                           alt={message.file_name}
                           className="max-w-md rounded-xl shadow-lg"
                         />
@@ -499,7 +500,7 @@ const IBChatEnhanced = () => {
                         <div className="flex-1">
                           <p className="text-sm font-bold text-slate-900">{message.file_name}</p>
                         </div>
-                        <a 
+                        <a
                           href={`${BACKEND_URL}${message.file_url}`}
                           download
                           className="p-2 hover:bg-white rounded-lg transition-colors"
@@ -509,7 +510,7 @@ const IBChatEnhanced = () => {
                       </div>
                     )}
                     <p className="text-slate-700 mt-1">{message.content}</p>
-                    
+
                     {/* Reactions */}
                     {message.reactions && message.reactions.length > 0 && (
                       <div className="flex gap-2 mt-2">
@@ -525,7 +526,7 @@ const IBChatEnhanced = () => {
                         ))}
                       </div>
                     )}
-                    
+
                     {/* Message Actions */}
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 mt-2">
                       <button
@@ -563,7 +564,7 @@ const IBChatEnhanced = () => {
                   </div>
                 </div>
               ))}
-              
+
               {/* Uploading Files */}
               {uploadingFiles.map((file, idx) => (
                 <div key={idx} className="flex items-center gap-3 p-3 bg-[#06B6D4]/10 rounded-xl">
@@ -571,7 +572,7 @@ const IBChatEnhanced = () => {
                   <div className="flex-1">
                     <p className="text-sm font-bold text-slate-900">{file.name}</p>
                     <div className="w-full bg-slate-200 rounded-full h-2 mt-1">
-                      <div 
+                      <div
                         className="bg-gradient-to-r from-[#06B6D4] to-[#0891B2] h-2 rounded-full transition-all"
                         style={{ width: `${file.progress}%` }}
                       ></div>
@@ -579,7 +580,7 @@ const IBChatEnhanced = () => {
                   </div>
                 </div>
               ))}
-              
+
               <div ref={messagesEndRef} />
             </div>
 
@@ -623,7 +624,7 @@ const IBChatEnhanced = () => {
             {/* Message Input */}
             <div className="border-t-2 border-[#06B6D4]/20 p-4">
               <div className="flex gap-3">
-                <button 
+                <button
                   onClick={() => document.querySelector('input[type="file"]').click()}
                   className="p-3 hover:bg-[#06B6D4]/10 rounded-xl transition-colors"
                 >
@@ -643,7 +644,7 @@ const IBChatEnhanced = () => {
                   className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#06B6D4] focus:outline-none font-medium"
                 />
                 <div className="relative" ref={emojiPickerRef}>
-                  <button 
+                  <button
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                     className="p-3 hover:bg-[#06B6D4]/10 rounded-xl transition-colors"
                   >
@@ -651,7 +652,7 @@ const IBChatEnhanced = () => {
                   </button>
                   {showEmojiPicker && (
                     <div className="absolute bottom-full right-0 mb-2">
-                      <EmojiPicker 
+                      <EmojiPicker
                         onEmojiClick={(emojiData) => {
                           if (typeof showEmojiPicker === 'string') {
                             addReaction(showEmojiPicker, emojiData.emoji);
@@ -758,11 +759,10 @@ const NewChannelModal = ({ onClose, onCreate }) => {
             <div className="space-y-2">
               <button
                 onClick={() => setType('public')}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
-                  type === 'public'
-                    ? 'border-[#06B6D4] bg-[#06B6D4]/5'
-                    : 'border-slate-200 hover:border-[#06B6D4]/50'
-                }`}
+                className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${type === 'public'
+                  ? 'border-[#06B6D4] bg-[#06B6D4]/5'
+                  : 'border-slate-200 hover:border-[#06B6D4]/50'
+                  }`}
               >
                 <Hash className="h-5 w-5 text-[#06B6D4]" />
                 <div className="text-left">
@@ -772,11 +772,10 @@ const NewChannelModal = ({ onClose, onCreate }) => {
               </button>
               <button
                 onClick={() => setType('private')}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
-                  type === 'private'
-                    ? 'border-[#06B6D4] bg-[#06B6D4]/5'
-                    : 'border-slate-200 hover:border-[#06B6D4]/50'
-                }`}
+                className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${type === 'private'
+                  ? 'border-[#06B6D4] bg-[#06B6D4]/5'
+                  : 'border-slate-200 hover:border-[#06B6D4]/50'
+                  }`}
               >
                 <Lock className="h-5 w-5 text-[#06B6D4]" />
                 <div className="text-left">
