@@ -322,9 +322,9 @@ const HomeNew = () => {
             </div>
 
             {/* Headline */}
-            <h1 className="text-3xl xs:text-4xl sm:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight tracking-tight text-white px-2"> // RESPONSIVE CHANGE
+            <h1 className="text-3xl xs:text-4xl sm:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight tracking-tight text-white px-2">
               Financial Intelligence
-              <br className="hidden sm:block" /> // RESPONSIVE CHANGE
+              <br className="hidden sm:block" />
               <span className="font-light italic ml-2 sm:ml-0">That Works for You.</span>
             </h1>
 
@@ -334,10 +334,10 @@ const HomeNew = () => {
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mb-12 sm:mb-16 px-4"> // RESPONSIVE CHANGE
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mb-12 sm:mb-16 px-4">
               <Link
                 to="/auth/signup"
-                className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-white text-[#033F99] px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1" // RESPONSIVE CHANGE
+                className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-white text-[#033F99] px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
               >
                 <Sparkles className="h-5 w-5" />
                 Sign Up Free
@@ -353,7 +353,7 @@ const HomeNew = () => {
             </div>
 
             {/* Stats Row - On Dark Background */}
-            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto px-4"> // RESPONSIVE CHANGE
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto px-4">
               {stats.map((stat, index) => {
                 const Icon = stat.icon;
                 return (
@@ -408,7 +408,7 @@ const HomeNew = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 sm:px-0"> // RESPONSIVE CHANGE
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 sm:px-0">
             {problems.map((problem, index) => {
               const Icon = problem.icon;
               return (
@@ -470,7 +470,7 @@ const HomeNew = () => {
           </div>
 
           {/* Solution Tabs - Horizontal scroll on mobile */}
-          <div className="flex overflow-x-auto sm:flex-wrap justify-start sm:justify-center gap-2 mb-8 sm:mb-12 px-4 sm:px-0 pb-4 sm:pb-0 no-scrollbar"> // RESPONSIVE CHANGE
+          <div className="flex overflow-x-auto sm:flex-wrap justify-start sm:justify-center gap-2 mb-8 sm:mb-12 px-4 sm:px-0 pb-4 sm:pb-0 no-scrollbar">
             {solutions.map((solution, index) => {
               const Icon = solution.icon;
               return (
@@ -534,7 +534,7 @@ const HomeNew = () => {
               </div>
 
               {/* Live Interactive Dashboard Preview */}
-              <div className="order-1 lg:order-2 bg-white rounded-2xl overflow-hidden shadow-2xl transform lg:rotate-2 hover:rotate-0 transition-transform duration-500 max-w-full"> // RESPONSIVE CHANGE
+              <div className="order-1 lg:order-2 bg-white rounded-2xl overflow-hidden shadow-2xl transform lg:rotate-2 hover:rotate-0 transition-transform duration-500 max-w-full">
                 {/* Dashboard Header */}
                 <div className="bg-slate-900 px-4 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">

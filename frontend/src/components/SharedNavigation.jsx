@@ -41,7 +41,7 @@ const SharedNavigation = () => {
     <nav className="fixed top-0 w-full bg-[#033F99] z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <Link to="/" className="flex items-center gap-2 sm:gap-3" onClick={handleNavClick}> // RESPONSIVE CHANGE
+          <Link to="/" className="flex items-center gap-2 sm:gap-3" onClick={handleNavClick}>
             <img
               src="/innovate-books-logo-new.png"
               alt="Innovate Books"
@@ -55,7 +55,7 @@ const SharedNavigation = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-2"> // RESPONSIVE CHANGE
+          <div className="hidden md:flex items-center gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
@@ -115,7 +115,7 @@ const SharedNavigation = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center"> // RESPONSIVE CHANGE
+          <div className="flex md:hidden items-center">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
@@ -129,7 +129,7 @@ const SharedNavigation = () => {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="md:hidden bg-[#033F99] border-t border-white/10 shadow-2xl animate-in slide-in-from-top duration-300"> // RESPONSIVE CHANGE
+        <div className="md:hidden bg-[#033F99] border-t border-white/10 shadow-2xl animate-in slide-in-from-top duration-300">
           <div className="px-4 pt-2 pb-6 space-y-1">
             {navLinks.map((link) => (
               <Link

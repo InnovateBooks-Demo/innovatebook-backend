@@ -20,7 +20,7 @@ import {
   Video as VideoIcon,
   VideoOff,
   PhoneOff,
-  ChevronLeft, // RESPONSIVE CHANGE
+  ChevronLeft,
 } from "lucide-react";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -65,7 +65,7 @@ const SecureImage = ({ src, alt, className }) => {
 const WorkspaceChats = () => {
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
-  const [showChatMobile, setShowChatMobile] = useState(false); // RESPONSIVE CHANGE
+  const [showChatMobile, setShowChatMobile] = useState(false);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -724,7 +724,7 @@ const WorkspaceChats = () => {
                 key={chat.chat_id}
                 onClick={() => {
                   setSelectedChat(chat);
-                  setShowChatMobile(true); // RESPONSIVE CHANGE
+                  setShowChatMobile(true);
                 }}
                 className={`w-full flex items-center gap-3 p-4 text-left border-b border-gray-100 transition-colors ${selectedChat?.chat_id === chat.chat_id
                   ? "bg-[#033F99]/5"

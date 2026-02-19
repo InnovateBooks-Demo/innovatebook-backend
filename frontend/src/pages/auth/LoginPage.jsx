@@ -61,10 +61,12 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-[#F8FAFC]"> // RESPONSIVE CHANGE
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[#F8FAFC]">
       {/* Left Side: Form */}
-      <div className="w-full lg:w-[55%] flex flex-col justify-center px-4 sm:px-6 md:px-8 py-12 relative overflow-hidden"> // RESPONSIVE CHANGE
-        <div className="w-full max-w-md min-w-0"> // RESPONSIVE CHANGE
+      {/* <div className="w-full lg:w-[55%] flex flex-col justify-center px-4 sm:px-6 md:px-8 py-12 relative overflow-hidden"> */}
+      <div className="w-full lg:w-[55%] flex flex-col justify-center items-center px-4 sm:px-6 md:px-8 py-12 relative overflow-hidden">
+        {/* <div className="w-full max-w-md min-w-0"> */}
+        <div className="w-full max-w-md min-w-0 mx-auto">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 mb-6">
             <img
@@ -155,7 +157,7 @@ const LoginPage = () => {
                   />
                   <label
                     htmlFor="remember-me"
-                    className="ml-2 block text-sm text-slate-600 break-words" // RESPONSIVE CHANGE
+                    className="ml-2 block text-sm text-slate-600 break-words"
                   >
                     Remember me
                   </label>
@@ -214,7 +216,7 @@ const LoginPage = () => {
       </div>
 
       {/* Right Side - Info Panel */}
-      <div className="hidden lg:flex w-[55%] bg-gradient-to-br from-[#033F99] to-[#033F99] p-8 items-center justify-center relative overflow-hidden">
+      <div className="hidden lg:flex w-[45%] bg-gradient-to-br from-[#033F99] to-[#033F99] p-8 items-center justify-center relative overflow-hidden">
         <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-3xl" />
 

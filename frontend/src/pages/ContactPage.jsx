@@ -145,7 +145,7 @@ const ContactPage = () => {
             Contact Us
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6"> // RESPONSIVE CHANGE
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6">
             Let's <span className="italic font-light">Talk.</span>
           </h1>
 
@@ -163,11 +163,11 @@ const ContactPage = () => {
       </section>
 
       {/* Main Content */}
-      <section className="py-12 px-4 sm:px-6 md:px-8"> // RESPONSIVE CHANGE
+      <section className="py-12 px-4 sm:px-6 md:px-8">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12"> // RESPONSIVE CHANGE
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
-            <div className="bg-white rounded-3xl border-2 border-slate-200 p-6 sm:p-8 shadow-lg"> // RESPONSIVE CHANGE
+            <div className="bg-white rounded-3xl border-2 border-slate-200 p-6 sm:p-8 shadow-lg">
               <h2 className="text-2xl font-bold text-slate-900 mb-2">
                 Request a Demo
               </h2>
@@ -177,9 +177,9 @@ const ContactPage = () => {
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> // RESPONSIVE CHANGE
-                  <div className="min-w-0"> // RESPONSIVE CHANGE
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="min-w-0">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words">
                       Your Name *
                     </label>
                     <input
@@ -192,8 +192,8 @@ const ContactPage = () => {
                       placeholder="John Doe"
                     />
                   </div>
-                  <div className="min-w-0"> // RESPONSIVE CHANGE
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                  <div className="min-w-0">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words">
                       Work Email *
                     </label>
                     <input
@@ -208,9 +208,9 @@ const ContactPage = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> // RESPONSIVE CHANGE
-                  <div className="min-w-0"> // RESPONSIVE CHANGE
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="min-w-0">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words">
                       Company Name *
                     </label>
                     <input
@@ -223,8 +223,8 @@ const ContactPage = () => {
                       placeholder="Acme Inc."
                     />
                   </div>
-                  <div className="min-w-0"> // RESPONSIVE CHANGE
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                  <div className="min-w-0">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words">
                       Company Size
                     </label>
                     <select
@@ -243,9 +243,9 @@ const ContactPage = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> // RESPONSIVE CHANGE
-                  <div className="min-w-0"> // RESPONSIVE CHANGE
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="min-w-0">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words">
                       Industry
                     </label>
                     <input
@@ -257,8 +257,8 @@ const ContactPage = () => {
                       placeholder="e.g., Technology, Manufacturing"
                     />
                   </div>
-                  <div className="min-w-0"> // RESPONSIVE CHANGE
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                  <div className="min-w-0">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words">
                       Current Tools
                     </label>
                     <input
@@ -300,7 +300,7 @@ const ContactPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                  <label className="block text-sm font-semibold text-slate-700 mb-2 break-words">
                     How can we help? *
                   </label>
                   <textarea
@@ -429,7 +429,7 @@ const ContactPage = () => {
               <div className="bg-slate-900 rounded-3xl p-8 text-white">
                 <h2 className="text-2xl font-bold mb-6">Security & Trust</h2>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6"> // RESPONSIVE CHANGE
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                   {trustBadges.map((badge, index) => {
                     const Icon = badge.icon;
                     return (

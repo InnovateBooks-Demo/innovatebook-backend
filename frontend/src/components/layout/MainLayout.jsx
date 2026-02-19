@@ -18,7 +18,7 @@ import {
   LogOut,
   ChevronDown,
   ChevronRight,
-  Menu // RESPONSIVE CHANGE
+  Menu
 } from 'lucide-react';
 
 const MainLayout = ({ children }) => {
@@ -86,15 +86,15 @@ const MainLayout = ({ children }) => {
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden" // RESPONSIVE CHANGE
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <div className={`
-        fixed inset-y-0 left-0 bg-[#033F99] z-50 w-72 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 flex flex-col // RESPONSIVE CHANGE
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} // RESPONSIVE CHANGE
+        fixed inset-y-0 left-0 bg-[#033F99] z-50 w-72 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 flex flex-col 
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
       `}>
         {/* Logo */}
         <div className="p-6 border-b border-white/10 flex items-center justify-between">
@@ -112,7 +112,7 @@ const MainLayout = ({ children }) => {
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden text-white hover:bg-white/10" // RESPONSIVE CHANGE
+            className="lg:hidden text-white hover:bg-white/10"
             onClick={() => setIsSidebarOpen(false)}
           >
             <ChevronRight className="h-5 w-5 transform rotate-180" />
@@ -206,9 +206,9 @@ const MainLayout = ({ children }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 bg-white min-w-0"> // RESPONSIVE CHANGE
+      <div className="flex-1 flex flex-col min-w-0 bg-white min-w-0">
         {/* Mobile Header */}
-        <header className="lg:hidden h-16 flex items-center justify-between px-4 border-b border-gray-200 bg-white"> // RESPONSIVE CHANGE
+        <header className="lg:hidden h-16 flex items-center justify-between px-4 border-b border-gray-200 bg-white">
           <Button
             variant="ghost"
             size="icon"

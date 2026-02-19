@@ -174,7 +174,7 @@ const SignupPage = () => {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-[55%] flex items-center justify-center px-4 sm:px-6 md:px-8 py-12 lg:py-0"> // RESPONSIVE CHANGE
+      <div className="w-full lg:w-[55%] flex items-center justify-center px-4 sm:px-6 md:px-8 py-12 lg:py-0">
         <div className="w-full max-w-md min-w-0">
           <Link to="/" className="flex items-center gap-2 mb-4">
             <img
@@ -236,9 +236,9 @@ const SignupPage = () => {
             <form onSubmit={handleSubmit} className="space-y-3">
               {step === 1 && (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> // RESPONSIVE CHANGE
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                      <label className="block text-sm font-semibold text-slate-700 mb-2 break-words">
                         First Name *
                       </label>
                       <input
@@ -252,7 +252,7 @@ const SignupPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                      <label className="block text-sm font-semibold text-slate-700 mb-2 break-words">
                         Last Name *
                       </label>
                       <input
@@ -267,7 +267,7 @@ const SignupPage = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words">
                       Work Email *
                     </label>
                     <div className="relative">
@@ -285,7 +285,7 @@ const SignupPage = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words">
                       Password *
                     </label>
                     <div className="relative">
@@ -320,7 +320,7 @@ const SignupPage = () => {
               {step === 2 && (
                 <>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words">
                       Official Company Name *
                     </label>
                     <div className="relative">

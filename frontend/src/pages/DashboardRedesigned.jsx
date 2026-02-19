@@ -103,7 +103,7 @@ const DashboardRedesigned = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6"> // RESPONSIVE CHANGE
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
               <LayoutDashboard className="h-6 w-6 text-white" />
@@ -120,7 +120,7 @@ const DashboardRedesigned = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8"> // RESPONSIVE CHANGE
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
@@ -130,19 +130,19 @@ const DashboardRedesigned = () => {
             {/* Quick Actions */}
             <div className="mb-8">
               <h2 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>Quick Actions</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"> // RESPONSIVE CHANGE
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 {quickActions.map((action, idx) => (
                   <Card
                     key={idx}
-                    className="w-full p-6 bg-white border-0 shadow-md hover:shadow-xl transition-all cursor-pointer group" // RESPONSIVE CHANGE
+                    className="w-full p-6 bg-white border-0 shadow-md hover:shadow-xl transition-all cursor-pointer group"
                     onClick={() => navigate(action.path)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center shrink-0`}> // RESPONSIVE CHANGE
+                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center shrink-0`}>
                           <action.icon className="h-6 w-6 text-white" />
                         </div>
-                        <span className="font-semibold text-gray-900 break-words" style={{ fontFamily: 'Inter, sans-serif' }}> // RESPONSIVE CHANGE
+                        <span className="font-semibold text-gray-900 break-words" style={{ fontFamily: 'Inter, sans-serif' }}>
                           {action.label}
                         </span>
                       </div>
@@ -156,11 +156,11 @@ const DashboardRedesigned = () => {
             {/* Key Metrics */}
             <div className="mb-8">
               <h2 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>Key Metrics</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"> // RESPONSIVE CHANGE
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {/* Customers */}
-                <Card className="w-full p-6 bg-white border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/customers')}> // RESPONSIVE CHANGE
+                <Card className="w-full p-6 bg-white border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/customers')}>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0"> // RESPONSIVE CHANGE
+                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
                       <Users className="h-6 w-6 text-blue-600" />
                     </div>
                     <ArrowUpRight className="h-5 w-5 text-gray-400" />
@@ -174,9 +174,9 @@ const DashboardRedesigned = () => {
                 </Card>
 
                 {/* Vendors */}
-                <Card className="w-full p-6 bg-white border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/vendors')}> // RESPONSIVE CHANGE
+                <Card className="w-full p-6 bg-white border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/vendors')}>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center shrink-0"> // RESPONSIVE CHANGE
+                    <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
                       <Building2 className="h-6 w-6 text-orange-600" />
                     </div>
                     <ArrowUpRight className="h-5 w-5 text-gray-400" />
@@ -190,9 +190,9 @@ const DashboardRedesigned = () => {
                 </Card>
 
                 {/* Invoices */}
-                <Card className="w-full p-6 bg-white border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/invoices')}> // RESPONSIVE CHANGE
+                <Card className="w-full p-6 bg-white border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/invoices')}>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0"> // RESPONSIVE CHANGE
+                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                       <FileText className="h-6 w-6 text-green-600" />
                     </div>
                     <ArrowUpRight className="h-5 w-5 text-gray-400" />
@@ -206,9 +206,9 @@ const DashboardRedesigned = () => {
                 </Card>
 
                 {/* Bills */}
-                <Card className="w-full p-6 bg-white border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/bills')}> // RESPONSIVE CHANGE
+                <Card className="w-full p-6 bg-white border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/bills')}>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center shrink-0"> // RESPONSIVE CHANGE
+                    <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center shrink-0">
                       <Receipt className="h-6 w-6 text-red-600" />
                     </div>
                     <ArrowUpRight className="h-5 w-5 text-gray-400" />
@@ -226,8 +226,8 @@ const DashboardRedesigned = () => {
             {/* Cash Flow Summary */}
             <div className="mb-8">
               <h2 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>Cash Flow Summary</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"> // RESPONSIVE CHANGE
-                <Card className="w-full p-6 bg-gradient-to-br from-green-500 to-green-600 text-white border-0 shadow-md"> // RESPONSIVE CHANGE
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                <Card className="w-full p-6 bg-gradient-to-br from-green-500 to-green-600 text-white border-0 shadow-md">
                   <div className="flex items-center justify-between mb-4">
                     <TrendingUp className="h-8 w-8" />
                   </div>
@@ -235,7 +235,7 @@ const DashboardRedesigned = () => {
                   <p className="text-3xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>{formatCurrency(metrics?.cashFlow?.inflow || 0)}</p>
                 </Card>
 
-                <Card className="w-full p-6 bg-gradient-to-br from-red-500 to-red-600 text-white border-0 shadow-md"> // RESPONSIVE CHANGE
+                <Card className="w-full p-6 bg-gradient-to-br from-red-500 to-red-600 text-white border-0 shadow-md">
                   <div className="flex items-center justify-between mb-4">
                     <Activity className="h-8 w-8" />
                   </div>
@@ -243,7 +243,7 @@ const DashboardRedesigned = () => {
                   <p className="text-3xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>{formatCurrency(metrics?.cashFlow?.outflow || 0)}</p>
                 </Card>
 
-                <Card className="w-full p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-md"> // RESPONSIVE CHANGE
+                <Card className="w-full p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-md">
                   <div className="flex items-center justify-between mb-4">
                     <DollarSign className="h-8 w-8" />
                   </div>
@@ -262,17 +262,17 @@ const DashboardRedesigned = () => {
                   <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>Attention Required</h3>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100 transition-colors gap-3" onClick={() => navigate('/invoices')}> // RESPONSIVE CHANGE
-                    <div className="flex items-center gap-3 min-w-0"> // RESPONSIVE CHANGE
-                      <Clock className="h-5 w-5 text-red-600 shrink-0" /> // RESPONSIVE CHANGE
-                      <span className="text-sm font-medium text-gray-900 break-words" style={{ fontFamily: 'Inter, sans-serif' }}>Overdue Invoices</span> // RESPONSIVE CHANGE
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100 transition-colors gap-3" onClick={() => navigate('/invoices')}>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Clock className="h-5 w-5 text-red-600 shrink-0" />
+                      <span className="text-sm font-medium text-gray-900 break-words" style={{ fontFamily: 'Inter, sans-serif' }}>Overdue Invoices</span>
                     </div>
                     <span className="text-2xl font-bold text-red-600" style={{ fontFamily: 'Poppins, sans-serif' }}>{metrics?.invoices?.overdue || 0}</span>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-orange-50 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors gap-3" onClick={() => navigate('/bills')}> // RESPONSIVE CHANGE
-                    <div className="flex items-center gap-3 min-w-0"> // RESPONSIVE CHANGE
-                      <Clock className="h-5 w-5 text-orange-600 shrink-0" /> // RESPONSIVE CHANGE
-                      <span className="text-sm font-medium text-gray-900 break-words" style={{ fontFamily: 'Inter, sans-serif' }}>Overdue Bills</span> // RESPONSIVE CHANGE
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-orange-50 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors gap-3" onClick={() => navigate('/bills')}>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Clock className="h-5 w-5 text-orange-600 shrink-0" />
+                      <span className="text-sm font-medium text-gray-900 break-words" style={{ fontFamily: 'Inter, sans-serif' }}>Overdue Bills</span>
                     </div>
                     <span className="text-2xl font-bold text-orange-600" style={{ fontFamily: 'Poppins, sans-serif' }}>{metrics?.bills?.overdue || 0}</span>
                   </div>
