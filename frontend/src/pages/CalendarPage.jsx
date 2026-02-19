@@ -158,7 +158,7 @@ const CalendarPage = () => {
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#3A4E63] to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#033F99] to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                 <CalendarIcon className="h-6 w-6 text-white" />
               </div>
               <div>
@@ -171,7 +171,7 @@ const CalendarPage = () => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm font-medium"
               >
                 <Plus className="w-4 h-4" />
                 New Event
@@ -291,9 +291,8 @@ const CalendarPage = () => {
                 return (
                   <div
                     key={`item-${index}`}
-                    className={`min-h-[100px] p-2 border border-slate-100 rounded-lg ${
-                      day ? "hover:bg-slate-50 cursor-pointer" : ""
-                    } ${isToday ? "bg-blue-50 border-blue-200" : ""}`}
+                    className={`min-h-[100px] p-2 border border-slate-100 rounded-lg ${day ? "hover:bg-slate-50 cursor-pointer" : ""
+                      } ${isToday ? "bg-blue-50 border-blue-200" : ""}`}
                     onClick={() => day && setSelectedDate(day)}
                   >
                     {day && (
@@ -388,7 +387,7 @@ const CreateEventModal = ({ onClose, onCreate, selectedDate, currentDate }) => {
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               placeholder="Event title..."
             />
           </div>
@@ -404,7 +403,7 @@ const CreateEventModal = ({ onClose, onCreate, selectedDate, currentDate }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, start_time: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               />
             </div>
             <div>
@@ -417,7 +416,7 @@ const CreateEventModal = ({ onClose, onCreate, selectedDate, currentDate }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, end_time: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               />
             </div>
           </div>
@@ -431,7 +430,7 @@ const CreateEventModal = ({ onClose, onCreate, selectedDate, currentDate }) => {
               onChange={(e) =>
                 setFormData({ ...formData, event_type: e.target.value })
               }
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
             >
               <option value="meeting">Meeting</option>
               <option value="task">Task</option>
@@ -451,7 +450,7 @@ const CreateEventModal = ({ onClose, onCreate, selectedDate, currentDate }) => {
                 setFormData({ ...formData, description: e.target.value })
               }
               rows={3}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               placeholder="Event details..."
             />
           </div>
@@ -466,7 +465,7 @@ const CreateEventModal = ({ onClose, onCreate, selectedDate, currentDate }) => {
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] transition-colors"
+              className="flex-1 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] transition-colors"
             >
               Create Event
             </button>

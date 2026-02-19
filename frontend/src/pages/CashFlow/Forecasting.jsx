@@ -69,7 +69,7 @@ const CashFlowForecasting = () => {
           <div>
             <h2
               className="text-2xl font-semibold"
-              style={{ fontFamily: "Inter", color: "#3A4E63" }}
+              style={{ fontFamily: "Inter", color: "#033F99" }}
             >
               Cash Flow Forecasting
             </h2>
@@ -101,7 +101,7 @@ const CashFlowForecasting = () => {
                 <CardContent>
                   <p
                     className="text-2xl font-semibold"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     {formatCurrency(forecast.month_1?.net_flow)}
                   </p>
@@ -124,7 +124,7 @@ const CashFlowForecasting = () => {
                 <CardContent>
                   <p
                     className="text-2xl font-semibold"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     {formatCurrency(forecast.month_2?.net_flow)}
                   </p>
@@ -147,7 +147,7 @@ const CashFlowForecasting = () => {
                 <CardContent>
                   <p
                     className="text-2xl font-semibold"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     {formatCurrency(forecast.month_3?.net_flow)}
                   </p>
@@ -179,7 +179,7 @@ const CashFlowForecasting = () => {
             {/* Detailed Forecast Table */}
             <Card className="chart-container">
               <CardHeader>
-                <CardTitle style={{ color: "#3A4E63" }}>
+                <CardTitle style={{ color: "#033F99" }}>
                   Detailed 3-Month Forecast
                 </CardTitle>
               </CardHeader>
@@ -220,7 +220,7 @@ const CashFlowForecasting = () => {
                         </td>
                         <td
                           className="font-semibold"
-                          style={{ color: "#3A4E63" }}
+                          style={{ color: "#033F99" }}
                         >
                           {formatCurrency(forecast.month_1?.closing_balance)}
                         </td>
@@ -255,7 +255,7 @@ const CashFlowForecasting = () => {
                         </td>
                         <td
                           className="font-semibold"
-                          style={{ color: "#3A4E63" }}
+                          style={{ color: "#033F99" }}
                         >
                           {formatCurrency(forecast.month_2?.closing_balance)}
                         </td>
@@ -290,7 +290,7 @@ const CashFlowForecasting = () => {
                         </td>
                         <td
                           className="font-semibold"
-                          style={{ color: "#3A4E63" }}
+                          style={{ color: "#033F99" }}
                         >
                           {formatCurrency(forecast.month_3?.closing_balance)}
                         </td>
@@ -318,7 +318,7 @@ const CashFlowForecasting = () => {
                 <CardHeader>
                   <CardTitle
                     className="flex items-center gap-2"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     <Sparkles className="h-5 w-5" />
                     AI-Powered Insights
@@ -330,7 +330,7 @@ const CashFlowForecasting = () => {
                       <div
                         key={`item-${index}`}
                         className="p-4 bg-white rounded-lg border-l-4"
-                        style={{ borderLeftColor: "#3A4E63" }}
+                        style={{ borderLeftColor: "#033F99" }}
                       >
                         <p className="text-gray-700 leading-relaxed">
                           {insight}
@@ -345,7 +345,7 @@ const CashFlowForecasting = () => {
             {/* Assumptions */}
             <Card className="chart-container">
               <CardHeader>
-                <CardTitle style={{ color: "#3A4E63" }}>
+                <CardTitle style={{ color: "#033F99" }}>
                   Forecast Assumptions
                 </CardTitle>
               </CardHeader>

@@ -66,7 +66,7 @@ const BillDetail = () => {
     const config = {
       Draft: { bg: "bg-slate-100", text: "text-slate-700", icon: Clock },
       Approved: { bg: "bg-blue-100", text: "text-blue-700", icon: CheckCircle },
-      Issued: { bg: "bg-[#C4D9F4]", text: "text-[#3A4E63]", icon: Send },
+      Issued: { bg: "bg-[#C4D9F4]", text: "text-[#033F99]", icon: Send },
       Paid: {
         bg: "bg-emerald-100",
         text: "text-emerald-700",
@@ -96,8 +96,8 @@ const BillDetail = () => {
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-screen">
-        <div className="flex items-center gap-3 text-[#3A4E63]">
-          <div className="w-6 h-6 border-3 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+        <div className="flex items-center gap-3 text-[#033F99]">
+          <div className="w-6 h-6 border-3 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
           <span className="text-lg font-medium">Loading bill details...</span>
         </div>
       </div>
@@ -154,7 +154,7 @@ const BillDetail = () => {
               Edit
             </Button>
           </Link>
-          <Button className="gap-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63]">
+          <Button className="gap-2 bg-gradient-to-r from-[#033F99] to-[#033F99]">
             <Download className="h-4 w-4" />
             Download PDF
           </Button>
@@ -163,10 +163,10 @@ const BillDetail = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4 bg-white border-l-4 border-[#3A4E63]">
+        <Card className="p-4 bg-white border-l-4 border-[#033F99]">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-slate-600">Invoice Amount</p>
-            <DollarSign className="h-5 w-5 text-[#3A4E63]" />
+            <DollarSign className="h-5 w-5 text-[#033F99]" />
           </div>
           <p className="text-2xl font-bold text-slate-900">
             ₹{(bill.invoice_amount / 100000).toFixed(2)}L
@@ -190,7 +190,7 @@ const BillDetail = () => {
             ₹{(bill.net_amount / 100000).toFixed(2)}L
           </p>
         </Card>
-        <Card className="p-4 bg-white border-l-4 border-[#3A4E63]">
+        <Card className="p-4 bg-white border-l-4 border-[#033F99]">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-slate-600">Payment Terms</p>
             <Clock className="h-5 w-5 text-[#0147CC]" />
@@ -206,7 +206,7 @@ const BillDetail = () => {
         {/* Customer Information */}
         <Card className="p-6 bg-white">
           <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Building className="h-5 w-5 text-[#3A4E63]" />
+            <Building className="h-5 w-5 text-[#033F99]" />
             Customer Information
           </h3>
           <div className="space-y-3">
@@ -234,7 +234,7 @@ const BillDetail = () => {
         {/* Invoice Details */}
         <Card className="p-6 bg-white">
           <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <FileText className="h-5 w-5 text-[#3A4E63]" />
+            <FileText className="h-5 w-5 text-[#033F99]" />
             Invoice Details
           </h3>
           <div className="space-y-3">
@@ -271,7 +271,7 @@ const BillDetail = () => {
           <div className="flex items-center gap-3">
             <Button
               onClick={() => handleStatusUpdate("Approved")}
-              className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63]"
+              className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99]"
             >
               <CheckCircle className="h-4 w-4 mr-2" />
               Approve Invoice
@@ -294,7 +294,7 @@ const BillDetail = () => {
           <div className="flex items-center gap-3">
             <Button
               onClick={() => handleStatusUpdate("Issued")}
-              className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63]"
+              className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99]"
             >
               <Send className="h-4 w-4 mr-2" />
               Issue Invoice

@@ -66,7 +66,7 @@ const ProcurementCreate = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-white rounded-xl border p-6">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <ShoppingCart className="w-5 h-5 text-[#3A4E63]" /> Request
+            <ShoppingCart className="w-5 h-5 text-[#033F99]" /> Request
             Information
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -196,7 +196,7 @@ const ProcurementCreate = () => {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-2.5 bg-[#3A4E63] text-white rounded-xl font-semibold disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-2.5 bg-[#033F99] text-white rounded-xl font-semibold disabled:opacity-50"
           >
             <Save className="w-4 h-4" /> {loading ? "Creating..." : "Create"}
           </button>

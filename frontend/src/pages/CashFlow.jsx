@@ -45,7 +45,7 @@ const CashFlow = () => {
       <div className="mb-8">
         <h1
           className="text-3xl font-semibold mb-2"
-          style={{ fontFamily: "Inter", color: "#3A4E63" }}
+          style={{ fontFamily: "Inter", color: "#033F99" }}
         >
           Cash Flow
         </h1>
@@ -63,7 +63,7 @@ const CashFlow = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold" style={{ color: "#3A4E63" }}>
+            <p className="text-2xl font-semibold" style={{ color: "#033F99" }}>
               {formatCurrency(summary?.opening_balance)}
             </p>
           </CardContent>
@@ -107,7 +107,7 @@ const CashFlow = () => {
         <CardHeader>
           <CardTitle
             className="text-xl font-semibold"
-            style={{ color: "#3A4E63" }}
+            style={{ color: "#033F99" }}
           >
             Net Cash Position
           </CardTitle>
@@ -145,12 +145,12 @@ const CashFlow = () => {
               </span>
             </div>
             <div className="flex justify-between items-center py-3 bg-blue-50 rounded-lg px-4 mt-4">
-              <span className="font-semibold" style={{ color: "#3A4E63" }}>
+              <span className="font-semibold" style={{ color: "#033F99" }}>
                 Projected Closing Balance
               </span>
               <span
                 className="text-2xl font-semibold"
-                style={{ color: "#3A4E63" }}
+                style={{ color: "#033F99" }}
               >
                 {formatCurrency(summary?.projected_closing_balance)}
               </span>
@@ -165,7 +165,7 @@ const CashFlow = () => {
           <CardHeader>
             <CardTitle
               className="text-xl font-semibold"
-              style={{ color: "#3A4E63" }}
+              style={{ color: "#033F99" }}
             >
               Expected Inflows
             </CardTitle>
@@ -199,7 +199,7 @@ const CashFlow = () => {
           <CardHeader>
             <CardTitle
               className="text-xl font-semibold"
-              style={{ color: "#3A4E63" }}
+              style={{ color: "#033F99" }}
             >
               Expected Outflows
             </CardTitle>

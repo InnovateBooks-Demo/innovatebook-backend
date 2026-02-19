@@ -164,7 +164,7 @@ const AdjustmentEntryDetail = () => {
     return (
       <div className="p-8 bg-gray-50 min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99] mx-auto"></div>
           <p
             className="text-gray-600 mt-4"
             style={{ fontFamily: "Inter, sans-serif" }}
@@ -189,7 +189,7 @@ const AdjustmentEntryDetail = () => {
           </p>
           <Button
             onClick={() => navigate("/adjustment-entries")}
-            className="mt-4 bg-[#3A4E63] hover:bg-[#022b6b] text-white"
+            className="mt-4 bg-[#033F99] hover:bg-[#022b6b] text-white"
           >
             Back to Entries
           </Button>
@@ -270,7 +270,7 @@ const AdjustmentEntryDetail = () => {
                 onClick={() =>
                   navigate(`/journal-entries/${entry.journal_entry_id}`)
                 }
-                className="bg-[#3A4E63] hover:bg-[#022b6b] text-white"
+                className="bg-[#033F99] hover:bg-[#022b6b] text-white"
               >
                 <Eye className="h-4 w-4 mr-2" />
                 View Journal Entry

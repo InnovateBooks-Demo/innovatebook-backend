@@ -116,7 +116,7 @@ const WorkspaceApprovals = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   }
@@ -189,11 +189,10 @@ const WorkspaceApprovals = () => {
             <button
               key={tab.key}
               onClick={() => setFilter(tab.key)}
-              className={`px-6 py-3 text-sm font-medium transition-colors ${
-                filter === tab.key
-                  ? "text-[#3A4E63] border-b-2 border-[#3A4E63]"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className={`px-6 py-3 text-sm font-medium transition-colors ${filter === tab.key
+                ? "text-[#033F99] border-b-2 border-[#033F99]"
+                : "text-gray-500 hover:text-gray-700"
+                }`}
             >
               {tab.label}
             </button>
@@ -258,7 +257,7 @@ const WorkspaceApprovals = () => {
                           setSelectedApproval(approval);
                           setShowDecisionModal(true);
                         }}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#3A4E63] text-sm"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-[#033F99] text-white rounded-lg hover:bg-[#033F99] text-sm"
                       >
                         <Eye className="h-4 w-4" />
                         Review
@@ -283,8 +282,8 @@ const WorkspaceApprovals = () => {
 
       {/* Decision Modal */}
       {showDecisionModal && selectedApproval && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-full max-w-lg mx-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"> {/* RESPONSIVE CHANGE */}
+          <div className="bg-white rounded-xl w-[95vw] sm:w-[90vw] md:w-[700px] max-w-full max-h-[85vh] overflow-y-auto"> {/* RESPONSIVE CHANGE */}
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-900">
@@ -324,13 +323,13 @@ const WorkspaceApprovals = () => {
                 <textarea
                   value={decisionReason}
                   onChange={(e) => setDecisionReason(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                   rows={3}
                   placeholder="Add a reason for your decision..."
                 />
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+            <div className="p-6 border-t border-gray-200 flex flex-col sm:flex-row justify-end gap-3"> {/* RESPONSIVE CHANGE */}
               <button
                 onClick={() => makeDecision("rejected")}
                 className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"

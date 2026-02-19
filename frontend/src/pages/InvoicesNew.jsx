@@ -227,7 +227,7 @@ const InvoicesNew = () => {
               <Button
                 onClick={() => navigate("/invoices/create")}
                 style={{
-                  backgroundColor: "#3A4E63",
+                  backgroundColor: "#033F99",
                   fontFamily: "Inter, sans-serif",
                 }}
                 className="text-white hover:opacity-90"
@@ -266,7 +266,7 @@ const InvoicesNew = () => {
                     checked={selectAll}
                     onChange={handleSelectAll}
                     className="w-4 h-4 cursor-pointer rounded border-gray-300"
-                    style={{ accentColor: "#3A4E63" }}
+                    style={{ accentColor: "#033F99" }}
                   />
                 </th>
                 <th
@@ -328,7 +328,7 @@ const InvoicesNew = () => {
                       checked={selectedInvoices.includes(invoice.id)}
                       onChange={() => handleSelectInvoice(invoice.id)}
                       className="w-4 h-4 cursor-pointer rounded border-gray-300"
-                      style={{ accentColor: "#3A4E63" }}
+                      style={{ accentColor: "#033F99" }}
                     />
                   </td>
                   <td
@@ -342,7 +342,7 @@ const InvoicesNew = () => {
                       >
                         <FileText
                           className="h-5 w-5"
-                          style={{ color: "#3A4E63" }}
+                          style={{ color: "#033F99" }}
                         />
                       </div>
                       <div>
@@ -407,7 +407,7 @@ const InvoicesNew = () => {
                     >
                       {formatCurrency(
                         invoice.net_receivable ||
-                          invoice.total_amount - (invoice.tds_amount || 0),
+                        invoice.total_amount - (invoice.tds_amount || 0),
                       )}
                     </p>
                     <p
@@ -427,12 +427,12 @@ const InvoicesNew = () => {
                     >
                       {formatCurrency(
                         invoice.balance_due ||
-                          Math.max(
-                            0,
-                            invoice.total_amount -
-                              (invoice.tds_amount || 0) -
-                              (invoice.amount_received || 0),
-                          ),
+                        Math.max(
+                          0,
+                          invoice.total_amount -
+                          (invoice.tds_amount || 0) -
+                          (invoice.amount_received || 0),
+                        ),
                       )}
                     </p>
                     <p
@@ -447,15 +447,14 @@ const InvoicesNew = () => {
                     onClick={() => navigate(`/invoices/${invoice.id}`)}
                   >
                     <span
-                      className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        invoice.status === "Paid"
+                      className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${invoice.status === "Paid"
                           ? "bg-green-50 text-green-700 border border-green-200"
                           : invoice.status === "Partially Paid"
                             ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
                             : invoice.status === "Overdue"
                               ? "bg-red-50 text-red-700 border border-red-200"
                               : "bg-gray-50 text-gray-700 border border-gray-200"
-                      }`}
+                        }`}
                     >
                       {invoice.status}
                     </span>

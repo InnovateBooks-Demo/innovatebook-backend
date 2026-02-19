@@ -204,7 +204,7 @@ const WorkspaceTasks = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   }
@@ -221,7 +221,7 @@ const WorkspaceTasks = () => {
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#3A4E63] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#033F99] transition-colors"
         >
           <Plus className="h-4 w-4" />
           New Task
@@ -290,13 +290,13 @@ const WorkspaceTasks = () => {
               placeholder="Search tasks..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
           >
             <option value="all">All Status</option>
             <option value="open">Open</option>
@@ -307,7 +307,7 @@ const WorkspaceTasks = () => {
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
           >
             <option value="all">All Priority</option>
             <option value="urgent">Urgent</option>
@@ -327,7 +327,7 @@ const WorkspaceTasks = () => {
               <p>No tasks found</p>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="mt-4 text-[#3A4E63] hover:underline"
+                className="mt-4 text-[#033F99] hover:underline"
               >
                 Create your first task
               </button>
@@ -343,11 +343,10 @@ const WorkspaceTasks = () => {
                     onClick={() =>
                       task.status !== "completed" && completeTask(task.task_id)
                     }
-                    className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                      task.status === "completed"
-                        ? "bg-green-500 border-green-500 text-white"
-                        : "border-gray-300 hover:border-[#3A4E63]"
-                    }`}
+                    className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${task.status === "completed"
+                      ? "bg-green-500 border-green-500 text-white"
+                      : "border-gray-300 hover:border-[#033F99]"
+                      }`}
                   >
                     {task.status === "completed" && (
                       <Check className="h-3 w-3" />
@@ -399,8 +398,8 @@ const WorkspaceTasks = () => {
 
       {/* Create Task Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"> {/* RESPONSIVE CHANGE */}
+          <div className="bg-white rounded-xl w-[95vw] sm:w-[90vw] md:w-[700px] max-w-full max-h-[85vh] overflow-y-auto"> {/* RESPONSIVE CHANGE */}
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-900">
@@ -425,7 +424,7 @@ const WorkspaceTasks = () => {
                   onChange={(e) =>
                     setNewTask({ ...newTask, title: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                   placeholder="Enter task title"
                 />
               </div>
@@ -438,7 +437,7 @@ const WorkspaceTasks = () => {
                   onChange={(e) =>
                     setNewTask({ ...newTask, description: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                   rows={3}
                   placeholder="Enter task description"
                 />
@@ -453,7 +452,7 @@ const WorkspaceTasks = () => {
                     onChange={(e) =>
                       setNewTask({ ...newTask, task_type: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                   >
                     <option value="action">Action</option>
                     <option value="review">Review</option>
@@ -471,7 +470,7 @@ const WorkspaceTasks = () => {
                     onChange={(e) =>
                       setNewTask({ ...newTask, priority: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -490,7 +489,7 @@ const WorkspaceTasks = () => {
                   onChange={(e) =>
                     setNewTask({ ...newTask, due_at: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                 />
               </div>
               <div>
@@ -503,12 +502,12 @@ const WorkspaceTasks = () => {
                   onChange={(e) =>
                     setNewTask({ ...newTask, context_id: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                   placeholder="e.g., CTX-XXXXXXXX or enter deal/project ID"
                 />
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+            <div className="p-6 border-t border-gray-200 flex flex-col sm:flex-row justify-end gap-3"> {/* RESPONSIVE CHANGE */}
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -518,7 +517,7 @@ const WorkspaceTasks = () => {
               <button
                 onClick={createTask}
                 disabled={!newTask.title || !newTask.context_id}
-                className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#3A4E63] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#033F99] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Create Task
               </button>

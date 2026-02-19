@@ -175,7 +175,7 @@ const IBWorkforceDashboard = () => {
             </div>
             <button
               onClick={() => navigate("/ib-workforce/people/create")}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] transition-colors"
               data-testid="add-person-btn"
             >
               <UserPlus className="h-4 w-4" />
@@ -237,7 +237,7 @@ const IBWorkforceDashboard = () => {
                   >
                     <Icon className="h-6 w-6 text-white" />
                   </div>
-                  <ArrowUpRight className="h-5 w-5 text-gray-400 group-hover:text-[#3A4E63] transition-colors" />
+                  <ArrowUpRight className="h-5 w-5 text-gray-400 group-hover:text-[#033F99] transition-colors" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">
                   {module.title}

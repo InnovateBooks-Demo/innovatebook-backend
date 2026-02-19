@@ -217,7 +217,7 @@ const CreateBill = () => {
                 onClick={() => handleSubmit("Approved")}
                 disabled={loading}
                 style={{
-                  backgroundColor: "#3A4E63",
+                  backgroundColor: "#033F99",
                   fontFamily: "Inter, sans-serif",
                 }}
                 className="text-white hover:opacity-90"

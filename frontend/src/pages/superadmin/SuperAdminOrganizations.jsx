@@ -179,8 +179,8 @@ const SuperAdminOrganizations = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#3A4E63] border-r-transparent"></div>
-          <p className="mt-4 text-[#3A4E63] font-bold text-lg">
+          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#033F99] border-r-transparent"></div>
+          <p className="mt-4 text-[#033F99] font-bold text-lg">
             Loading platform data...
           </p>
         </div>
@@ -195,18 +195,18 @@ const SuperAdminOrganizations = () => {
         <div className="flex items-center justify-between mb-2">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-3 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] rounded-2xl shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-[#033F99] to-[#0147CC] rounded-2xl shadow-lg">
                 <Shield className="w-8 h-8 text-white" />
               </div>
               <h1
-                className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+                className="text-4xl font-bold bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
                 style={{ fontFamily: "Poppins" }}
               >
                 Platform Organizations
               </h1>
             </div>
             <div className="flex items-center gap-4 ml-16">
-              <p className="text-[#3A4E63] font-semibold text-lg">
+              <p className="text-[#033F99] font-semibold text-lg">
                 Monitor all organizations using InnovateBooks
               </p>
               <div className="flex items-center gap-2 px-3 py-1 bg-emerald-100 border-2 border-emerald-200 rounded-lg">
@@ -228,7 +228,7 @@ const SuperAdminOrganizations = () => {
             </button>
             <button
               onClick={() => navigate("/")}
-              className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#3A4E63] text-[#3A4E63] font-bold rounded-xl hover:bg-[#C4D9F4] hover:border-[#3A4E63] transition-all duration-200 shadow-lg"
+              className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#033F99] text-[#033F99] font-bold rounded-xl hover:bg-[#C4D9F4] hover:border-[#033F99] transition-all duration-200 shadow-lg"
             >
               <ArrowLeft className="w-5 h-5" />
               Back to Platform
@@ -241,18 +241,18 @@ const SuperAdminOrganizations = () => {
       {platformStats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Organizations */}
-          <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl hover:shadow-2xl hover:border-[#3A4E63] transition-all duration-300">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#3A4E63]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
+          <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl hover:shadow-2xl hover:border-[#033F99] transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#033F99]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-3">
-                <div className="p-3 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] rounded-2xl shadow-lg">
+                <div className="p-3 bg-gradient-to-br from-[#033F99] to-[#0147CC] rounded-2xl shadow-lg">
                   <Building2 className="w-6 h-6 text-white" />
                 </div>
               </div>
-              <p className="text-sm font-bold text-[#3A4E63] uppercase tracking-wider mb-1">
+              <p className="text-sm font-bold text-[#033F99] uppercase tracking-wider mb-1">
                 Total Organizations
               </p>
-              <p className="text-4xl font-black text-[#3A4E63]">
+              <p className="text-4xl font-black text-[#033F99]">
                 {platformStats.total_organizations}
               </p>
               <p className="text-xs text-slate-600 mt-2 font-medium">
@@ -335,7 +335,7 @@ const SuperAdminOrganizations = () => {
       {/* Search and Filters - Premium Style */}
       <div className="mb-6">
         <h2
-          className="text-2xl font-bold text-[#3A4E63] mb-4"
+          className="text-2xl font-bold text-[#033F99] mb-4"
           style={{ fontFamily: "Poppins" }}
         >
           Manage Organizations
@@ -349,7 +349,7 @@ const SuperAdminOrganizations = () => {
               placeholder="Search organizations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent transition-all text-slate-900 font-medium"
+              className="w-full pl-12 pr-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent transition-all text-slate-900 font-medium"
             />
           </div>
 
@@ -357,7 +357,7 @@ const SuperAdminOrganizations = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-6 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent cursor-pointer font-semibold text-slate-900"
+            className="px-6 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent cursor-pointer font-semibold text-slate-900"
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
@@ -368,7 +368,7 @@ const SuperAdminOrganizations = () => {
 
           <button
             onClick={fetchOrganizationsData}
-            className="px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#0147CC] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold rounded-xl transition-all shadow-lg flex items-center gap-2"
+            className="px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#0147CC] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold rounded-xl transition-all shadow-lg flex items-center gap-2"
           >
             <Activity className="w-5 h-5" />
             Refresh
@@ -381,7 +381,7 @@ const SuperAdminOrganizations = () => {
         {filteredOrgs.map((org) => (
           <div
             key={org.org_id}
-            className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 border-2 border-slate-200 shadow-lg hover:shadow-xl hover:border-[#3A4E63]/50 transition-all duration-300 cursor-pointer"
+            className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 border-2 border-slate-200 shadow-lg hover:shadow-xl hover:border-[#033F99]/50 transition-all duration-300 cursor-pointer"
             onClick={() => {
               setSelectedOrg(org);
               setShowOrgDetails(true);
@@ -391,7 +391,7 @@ const SuperAdminOrganizations = () => {
               {/* Organization Info */}
               <div className="md:col-span-3">
                 <div className="flex items-center gap-3">
-                  <div className="p-3 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] rounded-xl shadow-md">
+                  <div className="p-3 bg-gradient-to-br from-[#033F99] to-[#0147CC] rounded-xl shadow-md">
                     <Building2 className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -479,7 +479,7 @@ const SuperAdminOrganizations = () => {
                     setSelectedOrg(org);
                     setShowOrgDetails(true);
                   }}
-                  className="p-2 bg-[#3A4E63] hover:bg-[#0147CC] text-white rounded-lg transition-all shadow-md"
+                  className="p-2 bg-[#033F99] hover:bg-[#0147CC] text-white rounded-lg transition-all shadow-md"
                 >
                   <Eye className="w-4 h-4" />
                 </button>
@@ -504,11 +504,11 @@ const SuperAdminOrganizations = () => {
           <div className="bg-white rounded-3xl p-8 max-w-2xl w-full shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] rounded-2xl shadow-lg">
+                <div className="p-3 bg-gradient-to-br from-[#033F99] to-[#0147CC] rounded-2xl shadow-lg">
                   <Building2 className="w-8 h-8 text-white" />
                 </div>
                 <h2
-                  className="text-3xl font-bold text-[#3A4E63]"
+                  className="text-3xl font-bold text-[#033F99]"
                   style={{ fontFamily: "Poppins" }}
                 >
                   Create New Organization
@@ -528,7 +528,7 @@ const SuperAdminOrganizations = () => {
             <form onSubmit={handleCreateOrganization} className="space-y-6">
               {/* Organization Name */}
               <div>
-                <label className="block text-sm font-bold text-[#3A4E63] mb-2 uppercase tracking-wider">
+                <label className="block text-sm font-bold text-[#033F99] mb-2 uppercase tracking-wider">
                   Organization Name
                 </label>
                 <input
@@ -537,7 +537,7 @@ const SuperAdminOrganizations = () => {
                   onChange={(e) =>
                     setNewOrgData({ ...newOrgData, org_name: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent transition-all"
                   placeholder="e.g., Acme Corporation"
                   required
                 />
@@ -546,7 +546,7 @@ const SuperAdminOrganizations = () => {
               {/* Admin Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-bold text-[#3A4E63] mb-2 uppercase tracking-wider">
+                  <label className="block text-sm font-bold text-[#033F99] mb-2 uppercase tracking-wider">
                     Admin Full Name
                   </label>
                   <input
@@ -558,14 +558,14 @@ const SuperAdminOrganizations = () => {
                         admin_full_name: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent transition-all"
                     placeholder="John Doe"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-[#3A4E63] mb-2 uppercase tracking-wider">
+                  <label className="block text-sm font-bold text-[#033F99] mb-2 uppercase tracking-wider">
                     Admin Email
                   </label>
                   <input
@@ -577,7 +577,7 @@ const SuperAdminOrganizations = () => {
                         admin_email: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent transition-all"
                     placeholder="admin@acme.com"
                     required
                   />
@@ -586,7 +586,7 @@ const SuperAdminOrganizations = () => {
 
               {/* Admin Password */}
               <div>
-                <label className="block text-sm font-bold text-[#3A4E63] mb-2 uppercase tracking-wider">
+                <label className="block text-sm font-bold text-[#033F99] mb-2 uppercase tracking-wider">
                   Admin Password
                 </label>
                 <input
@@ -598,7 +598,7 @@ const SuperAdminOrganizations = () => {
                       admin_password: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent transition-all"
                   placeholder="••••••••"
                   required
                   minLength={8}
@@ -651,7 +651,7 @@ const SuperAdminOrganizations = () => {
                 <button
                   type="submit"
                   disabled={creating}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#0147CC] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold rounded-xl transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#0147CC] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold rounded-xl transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {creating ? (
                     <>
@@ -677,12 +677,12 @@ const SuperAdminOrganizations = () => {
           <div className="bg-white rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] rounded-2xl shadow-lg">
+                <div className="p-3 bg-gradient-to-br from-[#033F99] to-[#0147CC] rounded-2xl shadow-lg">
                   <Building2 className="w-8 h-8 text-white" />
                 </div>
                 <div>
                   <h2
-                    className="text-3xl font-bold text-[#3A4E63]"
+                    className="text-3xl font-bold text-[#033F99]"
                     style={{ fontFamily: "Poppins" }}
                   >
                     {selectedOrg.org_name}
@@ -703,7 +703,7 @@ const SuperAdminOrganizations = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Organization Info */}
               <div className="bg-slate-50 rounded-2xl p-6 border-2 border-slate-200">
-                <h3 className="text-xl font-bold text-[#3A4E63] mb-4">
+                <h3 className="text-xl font-bold text-[#033F99] mb-4">
                   Organization Details
                 </h3>
                 <div className="space-y-3">

@@ -204,7 +204,7 @@ const ProductTour = ({
       {/* Highlight Box */}
       {highlightPosition && (
         <div
-          className="fixed z-[9999] border-2 border-[#3A4E63] rounded-xl pointer-events-none transition-all duration-300"
+          className="fixed z-[9999] border-2 border-[#033F99] rounded-xl pointer-events-none transition-all duration-300"
           style={{
             top: highlightPosition.top,
             left: highlightPosition.left,
@@ -215,7 +215,7 @@ const ProductTour = ({
           }}
         >
           {/* Pulse animation */}
-          <div className="absolute inset-0 border-2 border-[#3A4E63] rounded-xl animate-ping opacity-75" />
+          <div className="absolute inset-0 border-2 border-[#033F99] rounded-xl animate-ping opacity-75" />
         </div>
       )}
 
@@ -225,7 +225,7 @@ const ProductTour = ({
         style={getTooltipStyle()}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] p-4 text-white">
+        <div className="bg-gradient-to-r from-[#033F99] to-[#033F99] p-4 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
@@ -260,13 +260,12 @@ const ProductTour = ({
             <button
               key={index}
               onClick={() => setCurrentStep(index)}
-              className={`w-2 h-2 rounded-full transition-all ${
-                index === currentStep
-                  ? "w-6 bg-[#3A4E63]"
+              className={`w-2 h-2 rounded-full transition-all ${index === currentStep
+                  ? "w-6 bg-[#033F99]"
                   : index < currentStep
-                    ? "bg-[#3A4E63]/60"
+                    ? "bg-[#033F99]/60"
                     : "bg-slate-300"
-              }`}
+                }`}
             />
           ))}
         </div>
@@ -291,7 +290,7 @@ const ProductTour = ({
             )}
             <button
               onClick={handleNext}
-              className="flex items-center gap-2 px-4 py-2 bg-[#3A4E63] hover:bg-[#3A4E63] text-white rounded-lg font-semibold transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#033F99] hover:bg-[#033F99] text-white rounded-lg font-semibold transition-colors"
             >
               {currentStep === totalSteps - 1 ? (
                 <>
@@ -334,7 +333,7 @@ export const TourTrigger = ({ onClick, variant = "default" }) => {
     return (
       <button
         onClick={onClick}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all"
       >
         <Hand className="h-5 w-5" />
         <span className="font-semibold">Take a Tour</span>
@@ -345,7 +344,7 @@ export const TourTrigger = ({ onClick, variant = "default" }) => {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-4 py-2 text-[#3A4E63] hover:bg-[#3A4E63]/10 rounded-lg font-semibold transition-colors"
+      className="flex items-center gap-2 px-4 py-2 text-[#033F99] hover:bg-[#033F99]/10 rounded-lg font-semibold transition-colors"
     >
       <Hand className="h-5 w-5" />
       Take a Tour

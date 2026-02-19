@@ -180,12 +180,12 @@ const ReportingPage = () => {
       <div className="max-w-5xl">
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center">
               <BarChart3 className="h-7 w-7 text-white" />
             </div>
             <div>
               <h1 className="text-4xl font-bold text-slate-900">Reporting</h1>
-              <p className="text-lg text-[#3A4E63] font-semibold">
+              <p className="text-lg text-[#033F99] font-semibold">
                 Financial Statements
               </p>
             </div>
@@ -201,7 +201,7 @@ const ReportingPage = () => {
             {benefits.map((b, i) => (
               <div
                 key={i}
-                className="bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] p-6 rounded-2xl text-white text-center"
+                className="bg-gradient-to-br from-[#033F99] to-[#033F99] p-6 rounded-2xl text-white text-center"
               >
                 <p className="text-4xl font-bold mb-2">{b.metric}</p>
                 <p className="text-lg font-semibold mb-1">{b.label}</p>
@@ -223,7 +223,7 @@ const ReportingPage = () => {
         {/* Interactive Demo */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <Play className="h-6 w-6 text-[#3A4E63]" />
+            <Play className="h-6 w-6 text-[#033F99]" />
             <h2 className="text-3xl font-bold text-slate-900">
               Interactive Demo
             </h2>
@@ -236,13 +236,13 @@ const ReportingPage = () => {
             <div className="flex gap-3 mb-6">
               <button
                 onClick={() => setSelectedReport("pnl")}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedReport === "pnl" ? "bg-[#3A4E63] text-white" : "bg-white text-slate-700 border border-slate-300 hover:border-[#3A4E63]"}`}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedReport === "pnl" ? "bg-[#033F99] text-white" : "bg-white text-slate-700 border border-slate-300 hover:border-[#033F99]"}`}
               >
                 Profit & Loss
               </button>
               <button
                 onClick={() => setSelectedReport("balance")}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedReport === "balance" ? "bg-[#3A4E63] text-white" : "bg-white text-slate-700 border border-slate-300 hover:border-[#3A4E63]"}`}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedReport === "balance" ? "bg-[#033F99] text-white" : "bg-white text-slate-700 border border-slate-300 hover:border-[#033F99]"}`}
               >
                 Balance Sheet
               </button>
@@ -255,7 +255,7 @@ const ReportingPage = () => {
                     <h4 className="font-semibold text-slate-900">
                       Profit & Loss Statement - FY 2025-26 YTD
                     </h4>
-                    <button className="text-[#3A4E63] text-sm font-semibold hover:underline flex items-center gap-1">
+                    <button className="text-[#033F99] text-sm font-semibold hover:underline flex items-center gap-1">
                       <FileText className="h-4 w-4" /> Export
                     </button>
                   </div>
@@ -331,14 +331,14 @@ const ReportingPage = () => {
                     <h4 className="font-semibold text-slate-900">
                       Balance Sheet - As of 15 Jan 2026
                     </h4>
-                    <button className="text-[#3A4E63] text-sm font-semibold hover:underline flex items-center gap-1">
+                    <button className="text-[#033F99] text-sm font-semibold hover:underline flex items-center gap-1">
                       <FileText className="h-4 w-4" /> Export
                     </button>
                   </div>
 
                   <div className="grid md:grid-cols-2 divide-x">
                     <div className="p-4">
-                      <h5 className="font-bold text-[#3A4E63] mb-3">Assets</h5>
+                      <h5 className="font-bold text-[#033F99] mb-3">Assets</h5>
                       <div className="space-y-2">
                         {balanceSheet.assets.map((item, i) => (
                           <div key={i} className="flex justify-between text-sm">
@@ -349,8 +349,8 @@ const ReportingPage = () => {
                           </div>
                         ))}
                         <div className="flex justify-between pt-2 border-t font-bold">
-                          <span className="text-[#3A4E63]">Total Assets</span>
-                          <span className="text-[#3A4E63]">
+                          <span className="text-[#033F99]">Total Assets</span>
+                          <span className="text-[#033F99]">
                             ₹{(totalAssets / 10000000).toFixed(1)} Cr
                           </span>
                         </div>
@@ -424,7 +424,7 @@ const ReportingPage = () => {
             {features.map((f, i) => (
               <div
                 key={i}
-                className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#3A4E63] transition-all"
+                className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#033F99] transition-all"
               >
                 <h3 className="text-xl font-bold text-slate-900 mb-3">
                   {f.title}
@@ -449,7 +449,7 @@ const ReportingPage = () => {
         <CaseStudy data={caseStudy} />
         <TestimonialSection testimonials={testimonials} />
 
-        <section className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] p-8 rounded-3xl text-white">
+        <section className="bg-gradient-to-r from-[#033F99] to-[#033F99] p-8 rounded-3xl text-white">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold mb-2">
@@ -458,7 +458,7 @@ const ReportingPage = () => {
               <p className="opacity-90">See your numbers as they happen</p>
             </div>
             <Link to="/auth/signup">
-              <button className="bg-white text-[#3A4E63] font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
+              <button className="bg-white text-[#033F99] font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
                 <Zap className="h-5 w-5" />
                 Start Free Trial
               </button>

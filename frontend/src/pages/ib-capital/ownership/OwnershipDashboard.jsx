@@ -62,7 +62,7 @@ const OwnershipDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -95,7 +95,7 @@ const OwnershipDashboard = () => {
           </div>
           <Link
             to="/ib-capital/ownership/create"
-            className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
+            className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Add Shareholder
@@ -137,11 +137,10 @@ const OwnershipDashboard = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === tab
-                    ? "border-[#3A4E63] text-[#3A4E63]"
+                className={`py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === tab
+                    ? "border-[#033F99] text-[#033F99]"
                     : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
+                  }`}
               >
                 {tab === "cap-table" ? "Cap Table" : "Shareholders"}
               </button>
@@ -159,7 +158,7 @@ const OwnershipDashboard = () => {
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]/20"
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]/20"
               />
             </div>
             <button className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-2">
@@ -210,13 +209,12 @@ const OwnershipDashboard = () => {
                     </td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          entry.owner_type === "individual"
+                        className={`px-2 py-1 text-xs rounded-full ${entry.owner_type === "individual"
                             ? "bg-blue-100 text-blue-700"
                             : entry.owner_type === "entity"
                               ? "bg-purple-100 text-purple-700"
                               : "bg-gray-100 text-gray-700"
-                        }`}
+                          }`}
                       >
                         {entry.owner_type}
                       </span>
@@ -228,7 +226,7 @@ const OwnershipDashboard = () => {
                       <div className="flex items-center justify-end gap-2">
                         <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-[#3A4E63] rounded-full"
+                            className="h-full bg-[#033F99] rounded-full"
                             style={{
                               width: `${Math.min(entry.ownership_percentage, 100)}%`,
                             }}
@@ -295,13 +293,12 @@ const OwnershipDashboard = () => {
                     </td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          owner.owner_type === "individual"
+                        className={`px-2 py-1 text-xs rounded-full ${owner.owner_type === "individual"
                             ? "bg-blue-100 text-blue-700"
                             : owner.owner_type === "entity"
                               ? "bg-purple-100 text-purple-700"
                               : "bg-gray-100 text-gray-700"
-                        }`}
+                          }`}
                       >
                         {owner.owner_type}
                       </span>
@@ -309,11 +306,10 @@ const OwnershipDashboard = () => {
                     <td className="py-3 px-4 text-gray-600">{owner.country}</td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          owner.status === "active"
+                        className={`px-2 py-1 text-xs rounded-full ${owner.status === "active"
                             ? "bg-green-100 text-green-700"
                             : "bg-gray-100 text-gray-700"
-                        }`}
+                          }`}
                       >
                         {owner.status}
                       </span>

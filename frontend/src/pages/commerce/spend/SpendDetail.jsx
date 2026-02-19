@@ -86,7 +86,7 @@ const SpendDetail = () => {
   if (loading)
     return (
       <div className="p-6 flex items-center justify-center min-h-screen">
-        <div className="w-6 h-6 border-3 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-6 h-6 border-3 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   if (!spend)
@@ -134,7 +134,7 @@ const SpendDetail = () => {
               Edit
             </Button>
           </Link>
-          <Button className="gap-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63]700">
+          <Button className="gap-2 bg-gradient-to-r from-[#033F99] to-[#033F99]700">
             <Download className="h-4 w-4" />
             Download
           </Button>
@@ -142,10 +142,10 @@ const SpendDetail = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4 bg-white border-l-4 border-[#3A4E63]">
+        <Card className="p-4 bg-white border-l-4 border-[#033F99]">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-slate-600">Expense Amount</p>
-            <DollarSign className="h-5 w-5 text-[#3A4E63]" />
+            <DollarSign className="h-5 w-5 text-[#033F99]" />
           </div>
           <p className="text-2xl font-bold text-slate-900">
             ₹{(spend.expense_amount / 1000).toFixed(1)}K
@@ -169,7 +169,7 @@ const SpendDetail = () => {
             ₹{(spend.net_expense / 1000).toFixed(1)}K
           </p>
         </Card>
-        <Card className="p-4 bg-white border-l-4 border-[#3A4E63]">
+        <Card className="p-4 bg-white border-l-4 border-[#033F99]">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-slate-600">Type</p>
             <FileText className="h-5 w-5 text-[#0147CC]" />
@@ -183,7 +183,7 @@ const SpendDetail = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="p-6 bg-white">
           <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <User className="h-5 w-5 text-[#3A4E63]" />
+            <User className="h-5 w-5 text-[#033F99]" />
             Employee Information
           </h3>
           <div className="space-y-3">
@@ -203,7 +203,7 @@ const SpendDetail = () => {
         </Card>
         <Card className="p-6 bg-white">
           <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <FileText className="h-5 w-5 text-[#3A4E63]" />
+            <FileText className="h-5 w-5 text-[#033F99]" />
             Expense Details
           </h3>
           <div className="space-y-3">
@@ -233,7 +233,7 @@ const SpendDetail = () => {
           </h3>
           <Button
             onClick={() => handleStatusUpdate("Submitted")}
-            className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63]700"
+            className="bg-gradient-to-r from-[#033F99] to-[#033F99]700"
           >
             <CheckCircle className="h-4 w-4 mr-2" />
             Submit for Approval
@@ -248,7 +248,7 @@ const SpendDetail = () => {
           <div className="flex gap-3">
             <Button
               onClick={() => handleStatusUpdate("Approved")}
-              className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63]700"
+              className="bg-gradient-to-r from-[#033F99] to-[#033F99]700"
             >
               <CheckCircle className="h-4 w-4 mr-2" />
               Approve

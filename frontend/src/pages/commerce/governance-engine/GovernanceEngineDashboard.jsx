@@ -173,7 +173,7 @@ const GovernanceEngineDashboard = () => {
   if (loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
 
@@ -287,7 +287,7 @@ const GovernanceEngineDashboard = () => {
             </h2>
             <Link
               to="/commerce/governance-engine/policies"
-              className="text-sm text-[#3A4E63] hover:underline"
+              className="text-sm text-[#033F99] hover:underline"
             >
               View All
             </Link>
@@ -338,7 +338,7 @@ const GovernanceEngineDashboard = () => {
             </h2>
             <Link
               to="/commerce/governance-engine/limits"
-              className="text-sm text-[#3A4E63] hover:underline"
+              className="text-sm text-[#033F99] hover:underline"
             >
               View All
             </Link>

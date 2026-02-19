@@ -165,17 +165,15 @@ const PartyEngineCreate = () => {
                       key={role.id}
                       type="button"
                       onClick={() => toggleRole(role.id)}
-                      className={`p-4 rounded-xl border-2 text-left transition-all ${
-                        isSelected
+                      className={`p-4 rounded-xl border-2 text-left transition-all ${isSelected
                           ? `border-${role.color}-500 bg-${role.color}-50 ring-2 ring-${role.color}-500`
                           : "border-gray-200 hover:border-gray-300"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                            isSelected ? `bg-${role.color}-100` : "bg-gray-100"
-                          }`}
+                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${isSelected ? `bg-${role.color}-100` : "bg-gray-100"
+                            }`}
                         >
                           <role.icon
                             className={`h-5 w-5 ${isSelected ? `text-${role.color}-600` : "text-gray-500"}`}
@@ -217,7 +215,7 @@ const PartyEngineCreate = () => {
                   value={formData.legal_name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="Enter registered legal name"
                 />
               </div>
@@ -232,7 +230,7 @@ const PartyEngineCreate = () => {
                     value={formData.country}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   >
                     {countries.map((c) => (
                       <option key={c} value={c}>
@@ -250,7 +248,7 @@ const PartyEngineCreate = () => {
                     name="registration_number"
                     value={formData.registration_number}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="CIN / EIN / Registration #"
                   />
                 </div>
@@ -281,7 +279,7 @@ const PartyEngineCreate = () => {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {saving ? "Creating..." : "Create Party"}

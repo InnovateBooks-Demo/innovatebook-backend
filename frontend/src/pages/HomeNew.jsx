@@ -76,7 +76,7 @@ const HomeNew = () => {
         "Collections Automation",
       ],
       link: "/solutions/commerce",
-      color: "#3A4E63",
+      color: "#033F99",
     },
     {
       id: "finance",
@@ -93,7 +93,7 @@ const HomeNew = () => {
         "Tax Compliance",
       ],
       link: "/solutions/finance",
-      color: "#3A4E63",
+      color: "#033F99",
     },
     {
       id: "operations",
@@ -110,7 +110,7 @@ const HomeNew = () => {
         "Delivery Milestones",
       ],
       link: "/solutions/operations",
-      color: "#3A4E63",
+      color: "#033F99",
     },
     {
       id: "workforce",
@@ -127,7 +127,7 @@ const HomeNew = () => {
         "Compliance Reports",
       ],
       link: "/solutions/workforce",
-      color: "#3A4E63",
+      color: "#033F99",
     },
     {
       id: "capital",
@@ -144,7 +144,7 @@ const HomeNew = () => {
         "Treasury Management",
       ],
       link: "/solutions/capital",
-      color: "#3A4E63",
+      color: "#033F99",
     },
   ];
 
@@ -290,14 +290,14 @@ const HomeNew = () => {
   ];
 
   const trustedLogos = [
-    { name: "TechFlow", color: "#3A4E63" },
-    { name: "CloudPeak", color: "#3A4E63" },
-    { name: "DataStream", color: "#3A4E63" },
-    { name: "Nexus Labs", color: "#3A4E63" },
-    { name: "Quantum Tech", color: "#3A4E63" },
-    { name: "BlueShift", color: "#3A4E63" },
-    { name: "Vertex Inc", color: "#3A4E63" },
-    { name: "CoreLogic", color: "#3A4E63" },
+    { name: "TechFlow", color: "#033F99" },
+    { name: "CloudPeak", color: "#033F99" },
+    { name: "DataStream", color: "#033F99" },
+    { name: "Nexus Labs", color: "#033F99" },
+    { name: "Quantum Tech", color: "#033F99" },
+    { name: "BlueShift", color: "#033F99" },
+    { name: "Vertex Inc", color: "#033F99" },
+    { name: "CoreLogic", color: "#033F99" },
   ];
 
   return (
@@ -305,39 +305,39 @@ const HomeNew = () => {
       <SharedNavigation />
 
       {/* Hero Section - Full Color */}
-      <section className="pt-24 pb-20 px-4 relative overflow-hidden bg-[#3A4E63]">
+      <section className="pt-28 pb-16 sm:pt-32 sm:pb-24 px-4 relative overflow-hidden bg-[#033F99]">
         {/* Subtle Background Pattern */}
         <div className="absolute inset-0 overflow-hidden opacity-10">
-          <div className="absolute top-20 left-10 w-96 h-96 bg-white rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-20 w-80 h-80 bg-white rounded-full blur-3xl" />
+          <div className="absolute top-20 left-10 w-96 h-96 bg-white rounded-full blur-3xl lg:block hidden" />
+          <div className="absolute bottom-10 right-20 w-80 h-80 bg-white rounded-full blur-3xl lg:block hidden" />
         </div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-5xl mx-auto">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-2.5 rounded-full text-white font-semibold text-sm mb-8">
-              <Sparkles className="h-4 w-4" />
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-white font-semibold text-xs sm:text-sm mb-6 sm:mb-8">
+              <Sparkles className="h-3.5 w-3.5 sm:h-4 w-4" />
               <span>Trusted by 500+ Finance Teams</span>
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-3.5 w-3.5 sm:h-4 w-4" />
             </div>
 
             {/* Headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight tracking-tight text-white">
+            <h1 className="text-3xl xs:text-4xl sm:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight tracking-tight text-white px-2"> // RESPONSIVE CHANGE
               Financial Intelligence
-              <br />
-              <span className="font-light italic">That Works for You.</span>
+              <br className="hidden sm:block" /> // RESPONSIVE CHANGE
+              <span className="font-light italic ml-2 sm:ml-0">That Works for You.</span>
             </h1>
 
-            <p className="text-xl sm:text-2xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-2xl text-white/90 mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed px-4">
               The Business Operating System that connects commerce, execution,
               finance, workforce, and capital in one intelligent platform.
             </p>
 
             {/* CTAs */}
-            <div className="flex justify-center items-center gap-4 mb-16 flex-wrap">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mb-12 sm:mb-16 px-4"> // RESPONSIVE CHANGE
               <Link
                 to="/auth/signup"
-                className="group inline-flex items-center gap-2 bg-white text-[#3A4E63] px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+                className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 bg-white text-[#033F99] px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1" // RESPONSIVE CHANGE
               >
                 <Sparkles className="h-5 w-5" />
                 Sign Up Free
@@ -345,7 +345,7 @@ const HomeNew = () => {
               </Link>
               <Link
                 to="/contact"
-                className="group inline-flex items-center gap-2 border-2 border-white/40 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/10 transition-all"
+                className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 border-2 border-white/40 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/10 transition-all"
               >
                 <Play className="h-5 w-5" />
                 Request a Demo
@@ -353,18 +353,18 @@ const HomeNew = () => {
             </div>
 
             {/* Stats Row - On Dark Background */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto px-4"> // RESPONSIVE CHANGE
               {stats.map((stat, index) => {
                 const Icon = stat.icon;
                 return (
                   <div
                     key={`stat-${stat.label}-${index}`}
-                    className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all group"
+                    className="bg-white/10 backdrop-blur-sm p-5 sm:p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all group"
                   >
                     <div className="flex items-center justify-center gap-2 mb-2">
-                      <Icon className="h-5 w-5 text-white/70 group-hover:text-white transition-colors" />
+                      <Icon className="h-4 w-4 sm:h-5 w-5 text-white/70 group-hover:text-white transition-colors" />
                     </div>
-                    <p className="text-3xl font-bold text-white">
+                    <p className="text-2xl sm:text-3xl font-bold text-white">
                       <AnimatedCounter
                         end={stat.value}
                         prefix={stat.prefix || ""}
@@ -372,7 +372,7 @@ const HomeNew = () => {
                         decimals={stat.value === 99.9 ? 1 : 0}
                       />
                     </p>
-                    <p className="text-sm text-white/80 font-medium">
+                    <p className="text-xs sm:text-sm text-white/80 font-medium">
                       {stat.label}
                     </p>
                   </div>
@@ -391,34 +391,34 @@ const HomeNew = () => {
       />
 
       {/* Problem Section */}
-      <section id="problems" data-animate className="py-20 px-4 bg-white">
+      <section id="problems" data-animate className="py-16 sm:py-24 px-4 bg-white">
         <div
           className={`max-w-7xl mx-auto transition-all duration-1000 ${isVisible["problems"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
         >
-          <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 bg-red-100 text-red-700 text-sm font-semibold rounded-full mb-4">
+          <div className="text-center mb-12 sm:mb-16 px-4">
+            <span className="inline-block px-4 py-1.5 bg-red-100 text-red-700 text-xs sm:text-sm font-semibold rounded-full mb-4">
               The Problem
             </span>
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-slate-900">
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4 text-slate-900 tracking-tight">
               Sound Familiar?
             </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
               Your business runs on disconnected systems. Each decision is made
               without full context.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 sm:px-0"> // RESPONSIVE CHANGE
             {problems.map((problem, index) => {
               const Icon = problem.icon;
               return (
                 <div
                   key={`problem-${problem.title}-${index}`}
-                  className="group bg-slate-50 p-8 rounded-2xl border border-slate-200 hover:border-red-200 hover:bg-red-50/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+                  className="group bg-slate-50 p-6 sm:p-8 rounded-3xl border border-slate-200 hover:border-red-200 hover:bg-red-50/30 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="w-14 h-14 bg-red-100 group-hover:bg-red-200 rounded-xl flex items-center justify-center mb-6 transition-all">
-                    <Icon className="h-7 w-7 text-red-600" />
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-red-100 group-hover:bg-red-200 rounded-2xl flex items-center justify-center mb-6 transition-all">
+                    <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-red-600" />
                   </div>
                   <h3 className="font-bold text-xl mb-3 text-slate-900">
                     {problem.title}
@@ -426,11 +426,11 @@ const HomeNew = () => {
                   <p className="text-slate-600 text-sm leading-relaxed mb-4">
                     {problem.description}
                   </p>
-                  <div className="pt-4 border-t border-slate-200">
+                  <div className="pt-4 border-t border-slate-200 flex items-baseline gap-2">
                     <span className="text-2xl font-bold text-red-600">
                       {problem.stat}
                     </span>
-                    <span className="text-sm text-slate-500 ml-2">
+                    <span className="text-xs text-slate-500 font-medium">
                       {problem.statLabel}
                     </span>
                   </div>
@@ -445,85 +445,88 @@ const HomeNew = () => {
       <section
         id="solutions"
         data-animate
-        className="py-20 px-4 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] relative overflow-hidden"
+        className="py-16 sm:py-24 px-4 bg-gradient-to-br from-[#033F99] to-[#012a6a] relative overflow-hidden"
       >
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full blur-3xl" />
+          <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl lg:block hidden" />
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full blur-3xl lg:block hidden" />
         </div>
 
         <div
           className={`max-w-7xl mx-auto relative z-10 transition-all duration-1000 ${isVisible["solutions"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
         >
-          <div className="text-center mb-12">
-            <span className="inline-block px-4 py-1.5 bg-white/20 text-white text-sm font-semibold rounded-full mb-4">
+          <div className="text-center mb-10 sm:mb-12 px-4">
+            <span className="inline-block px-4 py-1.5 bg-white/20 text-white text-xs sm:text-sm font-semibold rounded-full mb-4">
               The Solution
             </span>
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4 text-white tracking-tight">
               One Platform. Complete Control.
             </h2>
-            <p className="text-xl text-white/80 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
               From lead to contract to delivery to billing to payroll to
               capital—everything connected.
             </p>
           </div>
 
-          {/* Solution Tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-12">
+          {/* Solution Tabs - Horizontal scroll on mobile */}
+          <div className="flex overflow-x-auto sm:flex-wrap justify-start sm:justify-center gap-2 mb-8 sm:mb-12 px-4 sm:px-0 pb-4 sm:pb-0 no-scrollbar"> // RESPONSIVE CHANGE
             {solutions.map((solution, index) => {
               const Icon = solution.icon;
               return (
                 <button
                   key={`tab-${solution.id}`}
                   onClick={() => setActiveTab(index)}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
-                    activeTab === index
-                      ? "bg-white text-[#3A4E63] shadow-lg"
-                      : "bg-white/10 text-white hover:bg-white/20"
-                  }`}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 whitespace-nowrap shrink-0 ${activeTab === index
+                    ? "bg-white text-[#033F99] shadow-xl scale-105"
+                    : "bg-white/10 text-white hover:bg-white/20"
+                    }`}
                 >
-                  <Icon className="h-5 w-5" />
-                  {solution.label}
+                  <Icon className="h-4 w-4 sm:h-5 w-5" />
+                  <span className="text-sm sm:text-base">{solution.label}</span>
                 </button>
               );
             })}
           </div>
 
           {/* Active Solution Content */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 md:p-12 border border-white/20">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div>
+          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-6 sm:p-12 border border-white/20 shadow-2xl">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+              <div className="order-2 lg:order-1">
                 <div className="flex items-center gap-3 mb-4">
-                  {React.createElement(solutions[activeTab].icon, {
-                    className: "h-8 w-8 text-white",
-                  })}
-                  <span className="text-white/60 text-sm font-medium">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    {React.createElement(solutions[activeTab].icon, {
+                      className: "h-6 w-6 sm:h-8 w-8 text-white",
+                    })}
+                  </div>
+                  <span className="text-white/60 text-xs sm:text-sm font-bold uppercase tracking-widest">
                     {solutions[activeTab].subtitle}
                   </span>
                 </div>
-                <h3 className="text-3xl font-bold text-white mb-4">
+                <h3 className="text-2xl sm:text-4xl font-bold text-white mb-4 sm:mb-6">
                   {solutions[activeTab].title}
                 </h3>
-                <p className="text-lg text-white/80 mb-8 leading-relaxed">
+                <p className="text-base sm:text-lg text-white/90 mb-8 leading-relaxed">
                   {solutions[activeTab].description}
                 </p>
 
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-4 mb-10">
                   {solutions[activeTab].features.map((feature, i) => (
                     <li
                       key={`feature-${i}`}
-                      className="flex items-center gap-3 text-white/90"
+                      className="flex items-center gap-3 text-white/90 group"
                     >
-                      <CheckCircle className="h-5 w-5 text-white flex-shrink-0" />
-                      <span>{feature}</span>
+                      <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:text-[#033F99] transition-all">
+                        <CheckCircle className="h-4 w-4" />
+                      </div>
+                      <span className="text-sm sm:text-base font-medium">{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Link
                   to={solutions[activeTab].link}
-                  className="inline-flex items-center gap-2 bg-white text-[#3A4E63] px-8 py-4 rounded-xl font-bold hover:bg-slate-100 transition-all transform hover:scale-105 shadow-lg"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-[#033F99] px-8 py-4 rounded-xl font-bold hover:bg-white/90 transition-all transform hover:scale-105 shadow-xl"
                 >
                   Explore {solutions[activeTab].label}
                   <ArrowRight className="h-5 w-5" />
@@ -531,51 +534,60 @@ const HomeNew = () => {
               </div>
 
               {/* Live Interactive Dashboard Preview */}
-              <div className="bg-white rounded-2xl overflow-hidden shadow-2xl">
+              <div className="order-1 lg:order-2 bg-white rounded-2xl overflow-hidden shadow-2xl transform lg:rotate-2 hover:rotate-0 transition-transform duration-500 max-w-full"> // RESPONSIVE CHANGE
                 {/* Dashboard Header */}
-                <div className="bg-slate-900 px-4 py-3 flex items-center gap-2">
-                  <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-red-500" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                    <div className="w-3 h-3 rounded-full bg-[#3A4E63]" />
+                <div className="bg-slate-900 px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                    </div>
+                    <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest ml-2">
+                      {solutions[activeTab].title} Preview
+                    </span>
                   </div>
-                  <span className="text-white/60 text-xs ml-2">
-                    {solutions[activeTab].title} Dashboard
-                  </span>
+                  <div className="h-4 w-24 bg-white/10 rounded-full" />
                 </div>
 
                 {/* Dashboard Content */}
-                <div className="p-4 bg-gradient-to-br from-slate-50 to-white">
+                <div className="p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-white">
                   {/* Metrics Row */}
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-white p-3 rounded-lg border border-slate-200 hover:border-[#3A4E63] transition-colors cursor-pointer">
-                      <p className="text-[10px] text-slate-500 mb-1">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                    <div className="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 hover:border-[#033F99] transition-all cursor-pointer shadow-sm hover:shadow-md">
+                      <p className="text-[10px] sm:text-xs text-slate-500 font-bold uppercase mb-1">
                         Total Revenue
                       </p>
-                      <p className="text-lg font-bold text-slate-900">₹24.5L</p>
-                      <p className="text-[10px] text-[#3A4E63]">+12.5% ↑</p>
+                      <p className="text-lg sm:text-2xl font-black text-slate-900">₹24.5L</p>
+                      <p className="text-[10px] sm:text-xs font-bold text-green-600 flex items-center gap-1">+12.5% <TrendingUp className="h-3 w-3" /></p>
                     </div>
-                    <div className="bg-white p-3 rounded-lg border border-slate-200 hover:border-[#3A4E63] transition-colors cursor-pointer">
-                      <p className="text-[10px] text-slate-500 mb-1">
+                    <div className="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 hover:border-[#033F99] transition-all cursor-pointer shadow-sm hover:shadow-md">
+                      <p className="text-[10px] sm:text-xs text-slate-500 font-bold uppercase mb-1">
                         Active Items
                       </p>
-                      <p className="text-lg font-bold text-slate-900">156</p>
-                      <p className="text-[10px] text-[#3A4E63]">+8 this week</p>
+                      <p className="text-lg sm:text-2xl font-black text-slate-900">156</p>
+                      <p className="text-[10px] sm:text-xs font-bold text-[#033F99]">+8 this week</p>
                     </div>
                   </div>
 
                   {/* Mini Chart */}
-                  <div className="bg-white p-3 rounded-lg border border-slate-200 mb-4">
-                    <p className="text-[10px] text-slate-500 mb-2">
-                      Performance Trend
-                    </p>
-                    <div className="flex items-end gap-1 h-16">
+                  <div className="bg-white p-4 rounded-xl border border-slate-200 mb-4 sm:mb-6 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-[10px] sm:text-xs text-slate-500 font-bold uppercase">
+                        Performance Trend
+                      </p>
+                      <div className="flex gap-2">
+                        <div className="h-2 w-8 bg-slate-100 rounded-full" />
+                        <div className="h-2 w-8 bg-[#033F99]/20 rounded-full" />
+                      </div>
+                    </div>
+                    <div className="flex items-end gap-1 sm:gap-2 h-20 sm:h-24 px-1">
                       {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map(
                         (h, i) => (
                           <div
                             key={`bar-${i}`}
-                            className="flex-1 bg-[#3A4E63] rounded-t transition-all hover:bg-[#3A4E63]"
-                            style={{ height: `${h}%` }}
+                            className={`flex-1 rounded-t-sm transition-all duration-700 hover:bg-[#033F99] ${i % 2 === 0 ? 'bg-[#033F99]' : 'bg-[#033F99]/40'}`}
+                            style={{ height: `${h}%`, animationDelay: `${i * 50}ms` }}
                           />
                         ),
                       )}
@@ -584,29 +596,19 @@ const HomeNew = () => {
 
                   {/* Activity List */}
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 p-2 bg-[#3A4E63]/5 rounded-lg">
-                      <div className="w-6 h-6 rounded-full bg-[#3A4E63]/20 flex items-center justify-center">
+                    <div className="flex items-center gap-3 p-3 bg-[#033F99]/5 rounded-xl border border-[#033F99]/10">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#033F99] flex items-center justify-center shrink-0">
                         {React.createElement(solutions[activeTab].icon, {
-                          className: "h-3 w-3 text-[#3A4E63]",
+                          className: "h-4 w-4 sm:h-5 w-5 text-white",
                         })}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-medium text-slate-900 truncate">
+                        <p className="text-xs sm:text-sm font-bold text-slate-900 truncate">
                           New item processed
                         </p>
-                        <p className="text-[8px] text-slate-500">Just now</p>
+                        <p className="text-[10px] font-medium text-slate-500">Just now</p>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg">
-                      <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center">
-                        <CheckCircle className="h-3 w-3 text-[#3A4E63]" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-medium text-slate-900 truncate">
-                          Approval completed
-                        </p>
-                        <p className="text-[8px] text-slate-500">2 min ago</p>
-                      </div>
+                      <div className="w-2 h-2 rounded-full bg-[#033F99] animate-pulse" />
                     </div>
                   </div>
                 </div>
@@ -622,15 +624,14 @@ const HomeNew = () => {
                 <Link
                   key={`card-${solution.id}`}
                   to={solution.link}
-                  className={`group p-6 rounded-2xl border transition-all duration-300 ${
-                    activeTab === index
-                      ? "bg-white text-[#3A4E63] border-white shadow-lg"
-                      : "bg-white/5 text-white border-white/10 hover:bg-white/10 hover:border-white/20"
-                  }`}
+                  className={`group p-6 rounded-2xl border transition-all duration-300 ${activeTab === index
+                    ? "bg-white text-[#033F99] border-white shadow-lg"
+                    : "bg-white/5 text-white border-white/10 hover:bg-white/10 hover:border-white/20"
+                    }`}
                   onMouseEnter={() => setActiveTab(index)}
                 >
                   <Icon
-                    className={`h-8 w-8 mb-3 ${activeTab === index ? "text-[#3A4E63]" : "text-white"}`}
+                    className={`h-8 w-8 mb-3 ${activeTab === index ? "text-[#033F99]" : "text-white"}`}
                   />
                   <h4 className="font-bold mb-1">{solution.title}</h4>
                   <p
@@ -652,7 +653,7 @@ const HomeNew = () => {
         >
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <span className="inline-block px-4 py-1.5 bg-[#3A4E63]/10 text-[#3A4E63] text-sm font-semibold rounded-full mb-4">
+              <span className="inline-block px-4 py-1.5 bg-[#033F99]/10 text-[#033F99] text-sm font-semibold rounded-full mb-4">
                 Intelligence Layer
               </span>
               <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-slate-900">
@@ -690,8 +691,8 @@ const HomeNew = () => {
                       key={`intelligence-${item.title}-${index}`}
                       className="flex gap-4 group"
                     >
-                      <div className="w-14 h-14 bg-[#3A4E63]/10 group-hover:bg-[#3A4E63] rounded-xl flex items-center justify-center flex-shrink-0 transition-all">
-                        <Icon className="h-7 w-7 text-[#3A4E63] group-hover:text-white transition-colors" />
+                      <div className="w-14 h-14 bg-[#033F99]/10 group-hover:bg-[#033F99] rounded-xl flex items-center justify-center flex-shrink-0 transition-all">
+                        <Icon className="h-7 w-7 text-[#033F99] group-hover:text-white transition-colors" />
                       </div>
                       <div>
                         <h3 className="text-xl font-bold text-slate-900 mb-1">
@@ -706,7 +707,7 @@ const HomeNew = () => {
 
               <Link
                 to="/solutions/intelligence"
-                className="inline-flex items-center gap-2 text-[#3A4E63] font-bold mt-8 hover:gap-3 transition-all"
+                className="inline-flex items-center gap-2 text-[#033F99] font-bold mt-8 hover:gap-3 transition-all"
               >
                 Explore Intelligence
                 <ArrowRight className="h-5 w-5" />
@@ -715,33 +716,33 @@ const HomeNew = () => {
 
             <div className="relative">
               {/* Interactive Intelligence Preview */}
-              <div className="bg-gradient-to-br from-[#3A4E63]/10 to-[#3A4E63]/5 rounded-3xl p-6 border border-[#3A4E63]/20">
+              <div className="bg-gradient-to-br from-[#033F99]/10 to-[#033F99]/5 rounded-3xl p-6 border border-[#033F99]/20">
                 {/* Mini Dashboard Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#3A4E63] flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-[#033F99] flex items-center justify-center">
                       <Brain className="h-4 w-4 text-white" />
                     </div>
                     <span className="font-bold text-slate-900">
                       AI Insights
                     </span>
                   </div>
-                  <span className="px-3 py-1 bg-[#3A4E63]/10 text-[#3A4E63] text-xs rounded-full font-semibold animate-pulse">
+                  <span className="px-3 py-1 bg-[#033F99]/10 text-[#033F99] text-xs rounded-full font-semibold animate-pulse">
                     Live
                   </span>
                 </div>
 
                 {/* Insight Cards Grid with Tooltips */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="group relative bg-white p-4 rounded-xl border border-slate-200 hover:border-[#3A4E63] hover:shadow-lg transition-all cursor-pointer">
+                  <div className="group relative bg-white p-4 rounded-xl border border-slate-200 hover:border-[#033F99] hover:shadow-lg transition-all cursor-pointer">
                     <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="h-4 w-4 text-[#3A4E63]" />
+                      <TrendingUp className="h-4 w-4 text-[#033F99]" />
                       <span className="text-xs text-slate-500">
                         Cash Forecast
                       </span>
                     </div>
                     <p className="text-lg font-bold text-slate-900">₹24.5L</p>
-                    <p className="text-xs text-[#3A4E63]">+12% vs last month</p>
+                    <p className="text-xs text-[#033F99]">+12% vs last month</p>
                     {/* Tooltip */}
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-10">
                       Predicted cash balance for next 3 weeks based on AR/AP
@@ -749,13 +750,13 @@ const HomeNew = () => {
                       <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
                     </div>
                   </div>
-                  <div className="group relative bg-white p-4 rounded-xl border border-slate-200 hover:border-[#3A4E63] hover:shadow-lg transition-all cursor-pointer">
+                  <div className="group relative bg-white p-4 rounded-xl border border-slate-200 hover:border-[#033F99] hover:shadow-lg transition-all cursor-pointer">
                     <div className="flex items-center gap-2 mb-2">
-                      <Target className="h-4 w-4 text-[#3A4E63]" />
+                      <Target className="h-4 w-4 text-[#033F99]" />
                       <span className="text-xs text-slate-500">Risk Score</span>
                     </div>
                     <p className="text-lg font-bold text-slate-900">Low</p>
-                    <p className="text-xs text-[#3A4E63]">3 items flagged</p>
+                    <p className="text-xs text-[#033F99]">3 items flagged</p>
                     {/* Tooltip */}
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-10">
                       Overall business risk score based on cash, compliance &
@@ -763,13 +764,13 @@ const HomeNew = () => {
                       <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
                     </div>
                   </div>
-                  <div className="group relative bg-white p-4 rounded-xl border border-slate-200 hover:border-[#3A4E63] hover:shadow-lg transition-all cursor-pointer">
+                  <div className="group relative bg-white p-4 rounded-xl border border-slate-200 hover:border-[#033F99] hover:shadow-lg transition-all cursor-pointer">
                     <div className="flex items-center gap-2 mb-2">
-                      <Clock className="h-4 w-4 text-[#3A4E63]" />
+                      <Clock className="h-4 w-4 text-[#033F99]" />
                       <span className="text-xs text-slate-500">Pending</span>
                     </div>
                     <p className="text-lg font-bold text-slate-900">12</p>
-                    <p className="text-xs text-[#3A4E63]">Approvals waiting</p>
+                    <p className="text-xs text-[#033F99]">Approvals waiting</p>
                     {/* Tooltip */}
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-10">
                       Invoices, expenses & purchase orders awaiting your
@@ -777,13 +778,13 @@ const HomeNew = () => {
                       <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
                     </div>
                   </div>
-                  <div className="group relative bg-white p-4 rounded-xl border border-slate-200 hover:border-[#3A4E63] hover:shadow-lg transition-all cursor-pointer">
+                  <div className="group relative bg-white p-4 rounded-xl border border-slate-200 hover:border-[#033F99] hover:shadow-lg transition-all cursor-pointer">
                     <div className="flex items-center gap-2 mb-2">
-                      <Zap className="h-4 w-4 text-[#3A4E63]" />
+                      <Zap className="h-4 w-4 text-[#033F99]" />
                       <span className="text-xs text-slate-500">Efficiency</span>
                     </div>
                     <p className="text-lg font-bold text-slate-900">94%</p>
-                    <p className="text-xs text-[#3A4E63]">Process automation</p>
+                    <p className="text-xs text-[#033F99]">Process automation</p>
                     {/* Tooltip */}
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-10">
                       Percentage of workflows running on automation vs manual
@@ -793,7 +794,7 @@ const HomeNew = () => {
                 </div>
 
                 {/* AI Recommendation */}
-                <div className="bg-[#3A4E63] p-4 rounded-xl text-white">
+                <div className="bg-[#033F99] p-4 rounded-xl text-white">
                   <div className="flex items-center gap-2 mb-2">
                     <Brain className="h-4 w-4" />
                     <span className="text-xs font-semibold opacity-80">
@@ -812,14 +813,14 @@ const HomeNew = () => {
                 className="absolute -left-4 top-1/4 bg-white p-3 rounded-xl shadow-lg border border-slate-100 animate-bounce"
                 style={{ animationDuration: "3s" }}
               >
-                <p className="text-xl font-bold text-[#3A4E63]">+23%</p>
+                <p className="text-xl font-bold text-[#033F99]">+23%</p>
                 <p className="text-xs text-slate-500">Revenue Growth</p>
               </div>
               <div
                 className="absolute -right-4 bottom-1/4 bg-white p-3 rounded-xl shadow-lg border border-slate-100 animate-bounce"
                 style={{ animationDuration: "4s" }}
               >
-                <p className="text-xl font-bold text-[#3A4E63]">4 hrs</p>
+                <p className="text-xl font-bold text-[#033F99]">4 hrs</p>
                 <p className="text-xs text-slate-500">Month-End Close</p>
               </div>
             </div>
@@ -833,7 +834,7 @@ const HomeNew = () => {
           className={`max-w-7xl mx-auto transition-all duration-1000 ${isVisible["features"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
         >
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 bg-[#3A4E63]/10 text-[#3A4E63] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-1.5 bg-[#033F99]/10 text-[#033F99] text-sm font-semibold rounded-full mb-4">
               Enterprise Features
             </span>
             <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-slate-900">
@@ -850,10 +851,10 @@ const HomeNew = () => {
               return (
                 <div
                   key={`feature-${feature.title}-${index}`}
-                  className="group bg-white p-8 rounded-2xl border border-slate-100 hover:border-[#3A4E63]/30 hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
+                  className="group bg-white p-8 rounded-2xl border border-slate-100 hover:border-[#033F99]/30 hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
                 >
-                  <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63]/10 to-[#3A4E63]/5 group-hover:from-[#3A4E63] group-hover:to-[#3A4E63] rounded-xl flex items-center justify-center mb-6 transition-all">
-                    <Icon className="h-7 w-7 text-[#3A4E63] group-hover:text-white transition-colors" />
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#033F99]/10 to-[#033F99]/5 group-hover:from-[#033F99] group-hover:to-[#033F99] rounded-xl flex items-center justify-center mb-6 transition-all">
+                    <Icon className="h-7 w-7 text-[#033F99] group-hover:text-white transition-colors" />
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 mb-3">
                     {feature.title}
@@ -874,7 +875,7 @@ const HomeNew = () => {
           className={`max-w-7xl mx-auto transition-all duration-1000 ${isVisible["testimonials"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
         >
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 bg-[#3A4E63]/10 text-[#3A4E63] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-1.5 bg-[#033F99]/10 text-[#033F99] text-sm font-semibold rounded-full mb-4">
               Customer Stories
             </span>
             <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-slate-900">
@@ -913,7 +914,7 @@ const HomeNew = () => {
           className={`max-w-4xl mx-auto transition-all duration-1000 ${isVisible["faq"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
         >
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 bg-[#3A4E63]/10 text-[#3A4E63] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-1.5 bg-[#033F99]/10 text-[#033F99] text-sm font-semibold rounded-full mb-4">
               FAQ
             </span>
             <h2 className="text-4xl font-bold mb-4 text-slate-900">
@@ -929,7 +930,7 @@ const HomeNew = () => {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 px-4 bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] relative overflow-hidden">
+      <section className="py-24 px-4 bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full blur-3xl" />
@@ -947,7 +948,7 @@ const HomeNew = () => {
           <div className="flex flex-wrap justify-center gap-4 mb-10">
             <Link
               to="/auth/signup"
-              className="inline-flex items-center gap-2 bg-white text-[#3A4E63] px-10 py-5 rounded-xl font-bold hover:bg-slate-100 transition-all transform hover:scale-105 shadow-xl"
+              className="inline-flex items-center gap-2 bg-white text-[#033F99] px-10 py-5 rounded-xl font-bold hover:bg-slate-100 transition-all transform hover:scale-105 shadow-xl"
             >
               <Sparkles className="h-5 w-5" />
               Start Free Trial
@@ -998,7 +999,7 @@ const HomeNew = () => {
               <div className="flex gap-4">
                 <a
                   href="#"
-                  className="w-10 h-10 bg-slate-800 hover:bg-[#3A4E63] rounded-lg flex items-center justify-center transition-colors"
+                  className="w-10 h-10 bg-slate-800 hover:bg-[#033F99] rounded-lg flex items-center justify-center transition-colors"
                 >
                   <svg
                     className="h-5 w-5"
@@ -1010,7 +1011,7 @@ const HomeNew = () => {
                 </a>
                 <a
                   href="#"
-                  className="w-10 h-10 bg-slate-800 hover:bg-[#3A4E63] rounded-lg flex items-center justify-center transition-colors"
+                  className="w-10 h-10 bg-slate-800 hover:bg-[#033F99] rounded-lg flex items-center justify-center transition-colors"
                 >
                   <svg
                     className="h-5 w-5"
@@ -1094,7 +1095,7 @@ const HomeNew = () => {
               <div className="space-y-3">
                 <Link
                   to="/auth/signup"
-                  className="block text-[#3A4E63] hover:text-white transition-colors text-sm font-semibold"
+                  className="block text-[#033F99] hover:text-white transition-colors text-sm font-semibold"
                 >
                   Start Free Trial →
                 </Link>

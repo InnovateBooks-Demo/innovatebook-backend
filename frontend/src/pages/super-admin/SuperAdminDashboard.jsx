@@ -122,7 +122,7 @@ const SuperAdminDashboard = () => {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
-          <RefreshCw className="w-12 h-12 text-[#3A4E63] animate-spin mx-auto mb-4" />
+          <RefreshCw className="w-12 h-12 text-[#033F99] animate-spin mx-auto mb-4" />
           <p className="text-slate-600 font-medium">Loading Dashboard...</p>
         </div>
       </div>
@@ -167,7 +167,7 @@ const SuperAdminDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <div className="p-2 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] rounded-xl">
+              <div className="p-2 bg-gradient-to-br from-[#033F99] to-[#0147CC] rounded-xl">
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -303,15 +303,14 @@ const SuperAdminDashboard = () => {
                   <div key={plan} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-3 h-3 rounded-full ${
-                          plan === "enterprise"
+                        className={`w-3 h-3 rounded-full ${plan === "enterprise"
                             ? "bg-purple-500"
                             : plan === "professional"
                               ? "bg-blue-500"
                               : plan === "basic"
                                 ? "bg-green-500"
                                 : "bg-slate-400"
-                        }`}
+                          }`}
                       ></div>
                       <span className="text-sm font-medium text-slate-700 capitalize">
                         {plan || "Unknown"}
@@ -378,7 +377,7 @@ const SuperAdminDashboard = () => {
               </h2>
               <Link
                 to="/super-admin/organizations"
-                className="text-sm text-[#3A4E63] hover:underline font-medium"
+                className="text-sm text-[#033F99] hover:underline font-medium"
               >
                 View All
               </Link>
@@ -411,10 +410,10 @@ const SuperAdminDashboard = () => {
               ))}
               {(!stats?.recent_organizations ||
                 stats.recent_organizations.length === 0) && (
-                <p className="text-sm text-slate-500 text-center py-4">
-                  No organizations yet
-                </p>
-              )}
+                  <p className="text-sm text-slate-500 text-center py-4">
+                    No organizations yet
+                  </p>
+                )}
             </div>
           </div>
 
@@ -426,7 +425,7 @@ const SuperAdminDashboard = () => {
               </h2>
               <Link
                 to="/super-admin/users"
-                className="text-sm text-[#3A4E63] hover:underline font-medium"
+                className="text-sm text-[#033F99] hover:underline font-medium"
               >
                 View All
               </Link>
@@ -438,7 +437,7 @@ const SuperAdminDashboard = () => {
                   className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#033F99] to-[#0147CC] rounded-full flex items-center justify-center text-white font-bold text-sm">
                       {user.first_name?.[0]}
                       {user.last_name?.[0]}
                     </div>
@@ -450,13 +449,12 @@ const SuperAdminDashboard = () => {
                     </div>
                   </div>
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      user.role === "super_admin"
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === "super_admin"
                         ? "bg-purple-100 text-purple-700"
                         : user.role === "org_admin"
                           ? "bg-blue-100 text-blue-700"
                           : "bg-slate-100 text-slate-700"
-                    }`}
+                      }`}
                   >
                     {user.role}
                   </span>

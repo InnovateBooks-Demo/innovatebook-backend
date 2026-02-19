@@ -109,8 +109,8 @@ const CollectDetail = () => {
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-screen">
-        <div className="flex items-center gap-3 text-[#3A4E63]">
-          <div className="w-6 h-6 border-3 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+        <div className="flex items-center gap-3 text-[#033F99]">
+          <div className="w-6 h-6 border-3 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
           <span className="text-lg font-medium">
             Loading collection details...
           </span>
@@ -169,7 +169,7 @@ const CollectDetail = () => {
               Edit
             </Button>
           </Link>
-          <Button className="gap-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63]">
+          <Button className="gap-2 bg-gradient-to-r from-[#033F99] to-[#033F99]">
             <Download className="h-4 w-4" />
             Download Report
           </Button>
@@ -178,10 +178,10 @@ const CollectDetail = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4 bg-white border-l-4 border-[#3A4E63]">
+        <Card className="p-4 bg-white border-l-4 border-[#033F99]">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-slate-600">Amount Due</p>
-            <DollarSign className="h-5 w-5 text-[#3A4E63]" />
+            <DollarSign className="h-5 w-5 text-[#033F99]" />
           </div>
           <p className="text-2xl font-bold text-slate-900">
             ₹{(collection.amount_due / 100000).toFixed(2)}L
@@ -220,7 +220,7 @@ const CollectDetail = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="p-6 bg-white">
           <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <FileText className="h-5 w-5 text-[#3A4E63]" />
+            <FileText className="h-5 w-5 text-[#033F99]" />
             Collection Information
           </h3>
           <div className="space-y-3">
@@ -253,7 +253,7 @@ const CollectDetail = () => {
 
         <Card className="p-6 bg-white">
           <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-[#3A4E63]" />
+            <CreditCard className="h-5 w-5 text-[#033F99]" />
             Payment Details
           </h3>
           <div className="space-y-3">
@@ -297,7 +297,7 @@ const CollectDetail = () => {
           {!showPaymentDialog ? (
             <Button
               onClick={() => setShowPaymentDialog(true)}
-              className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63]"
+              className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99]"
             >
               <DollarSign className="h-4 w-4 mr-2" />
               Record Payment
@@ -335,7 +335,7 @@ const CollectDetail = () => {
                         method: e.target.value,
                       }))
                     }
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   >
                     <option value="Bank Transfer">Bank Transfer</option>
                     <option value="UPI">UPI</option>

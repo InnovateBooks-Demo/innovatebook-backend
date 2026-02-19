@@ -49,7 +49,7 @@ const LearningPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 text-[#3A4E63] animate-spin" />
+        <RefreshCw className="w-8 h-8 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -159,7 +159,7 @@ const LearningPage = () => {
 
             <div className="space-y-3">
               {Object.entries(accuracy?.recommendation_feedback || {}).length >
-              0 ? (
+                0 ? (
                 Object.entries(accuracy.recommendation_feedback).map(
                   ([action, count]) => {
                     const total = Object.values(
@@ -188,13 +188,12 @@ const LearningPage = () => {
                         <div className="flex items-center gap-3">
                           <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${
-                                action === "accepted"
+                              className={`h-full rounded-full ${action === "accepted"
                                   ? "bg-green-500"
                                   : action === "dismissed"
                                     ? "bg-red-500"
                                     : "bg-amber-500"
-                              }`}
+                                }`}
                               style={{ width: `${percentage}%` }}
                             />
                           </div>
@@ -283,15 +282,14 @@ const LearningPage = () => {
                       </td>
                       <td className="py-3 px-4">
                         {record.deviation !== null &&
-                        record.deviation !== undefined ? (
+                          record.deviation !== undefined ? (
                           <span
-                            className={`text-sm font-medium ${
-                              Math.abs(record.deviation) < 0.1
+                            className={`text-sm font-medium ${Math.abs(record.deviation) < 0.1
                                 ? "text-green-600"
                                 : Math.abs(record.deviation) < 0.3
                                   ? "text-amber-600"
                                   : "text-red-600"
-                            }`}
+                              }`}
                           >
                             {record.deviation > 0 ? "+" : ""}
                             {record.deviation?.toFixed(2)}
@@ -303,13 +301,12 @@ const LearningPage = () => {
                       <td className="py-3 px-4">
                         {record.feedback ? (
                           <span
-                            className={`px-2 py-0.5 rounded text-xs font-medium ${
-                              record.feedback === "accepted"
+                            className={`px-2 py-0.5 rounded text-xs font-medium ${record.feedback === "accepted"
                                 ? "bg-green-100 text-green-700"
                                 : record.feedback === "dismissed"
                                   ? "bg-red-100 text-red-700"
                                   : "bg-amber-100 text-amber-700"
-                            }`}
+                              }`}
                           >
                             {record.feedback}
                           </span>

@@ -118,7 +118,7 @@ const ContactPage = () => {
               get back to you within 24-48 hours.
             </p>
             <Link to="/">
-              <button className="px-8 py-4 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white font-bold rounded-xl hover:shadow-lg transition-all">
+              <button className="px-8 py-4 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white font-bold rounded-xl hover:shadow-lg transition-all">
                 Back to Home
               </button>
             </Link>
@@ -133,7 +133,7 @@ const ContactPage = () => {
       <SharedNavigation />
 
       {/* Hero Section - Full Color */}
-      <section className="pt-24 pb-16 px-6 relative overflow-hidden bg-[#3A4E63]">
+      <section className="pt-24 pb-16 px-6 relative overflow-hidden bg-[#033F99]">
         <div className="absolute inset-0 overflow-hidden opacity-10">
           <div className="absolute top-20 left-10 w-96 h-96 bg-white rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 right-20 w-80 h-80 bg-white rounded-full blur-3xl"></div>
@@ -145,7 +145,7 @@ const ContactPage = () => {
             Contact Us
           </div>
 
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6"> // RESPONSIVE CHANGE
             Let's <span className="italic font-light">Talk.</span>
           </h1>
 
@@ -163,11 +163,11 @@ const ContactPage = () => {
       </section>
 
       {/* Main Content */}
-      <section className="py-12 px-6">
+      <section className="py-12 px-4 sm:px-6 md:px-8"> // RESPONSIVE CHANGE
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12"> // RESPONSIVE CHANGE
             {/* Contact Form */}
-            <div className="bg-white rounded-3xl border-2 border-slate-200 p-8 shadow-lg">
+            <div className="bg-white rounded-3xl border-2 border-slate-200 p-6 sm:p-8 shadow-lg"> // RESPONSIVE CHANGE
               <h2 className="text-2xl font-bold text-slate-900 mb-2">
                 Request a Demo
               </h2>
@@ -177,9 +177,9 @@ const ContactPage = () => {
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> // RESPONSIVE CHANGE
+                  <div className="min-w-0"> // RESPONSIVE CHANGE
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
                       Your Name *
                     </label>
                     <input
@@ -188,12 +188,12 @@ const ContactPage = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#3A4E63] transition-colors"
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#033F99] transition-colors"
                       placeholder="John Doe"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <div className="min-w-0"> // RESPONSIVE CHANGE
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
                       Work Email *
                     </label>
                     <input
@@ -202,15 +202,15 @@ const ContactPage = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#3A4E63] transition-colors"
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#033F99] transition-colors"
                       placeholder="john@company.com"
                     />
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> // RESPONSIVE CHANGE
+                  <div className="min-w-0"> // RESPONSIVE CHANGE
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
                       Company Name *
                     </label>
                     <input
@@ -219,19 +219,19 @@ const ContactPage = () => {
                       value={formData.company}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#3A4E63] transition-colors"
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#033F99] transition-colors"
                       placeholder="Acme Inc."
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <div className="min-w-0"> // RESPONSIVE CHANGE
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
                       Company Size
                     </label>
                     <select
                       name="companySize"
                       value={formData.companySize}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#3A4E63] transition-colors bg-white"
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#033F99] transition-colors bg-white"
                     >
                       <option value="">Select size</option>
                       <option value="1-10">1-10 employees</option>
@@ -243,9 +243,9 @@ const ContactPage = () => {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> // RESPONSIVE CHANGE
+                  <div className="min-w-0"> // RESPONSIVE CHANGE
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
                       Industry
                     </label>
                     <input
@@ -253,12 +253,12 @@ const ContactPage = () => {
                       name="industry"
                       value={formData.industry}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#3A4E63] transition-colors"
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#033F99] transition-colors"
                       placeholder="e.g., Technology, Manufacturing"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <div className="min-w-0"> // RESPONSIVE CHANGE
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
                       Current Tools
                     </label>
                     <input
@@ -266,7 +266,7 @@ const ContactPage = () => {
                       name="currentTools"
                       value={formData.currentTools}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#3A4E63] transition-colors"
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#033F99] transition-colors"
                       placeholder="e.g., Tally, Salesforce, Zoho"
                     />
                   </div>
@@ -280,7 +280,7 @@ const ContactPage = () => {
                     name="problem"
                     value={formData.problem}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#3A4E63] transition-colors bg-white"
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#033F99] transition-colors bg-white"
                   >
                     <option value="">Select primary challenge</option>
                     <option value="fragmented-tools">
@@ -300,15 +300,15 @@ const ContactPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Additional Message
+                  <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                    How can we help? *
                   </label>
                   <textarea
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
                     rows={4}
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#3A4E63] transition-colors resize-none"
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#033F99] transition-colors resize-none"
                     placeholder="Tell us more about your needs..."
                   />
                 </div>
@@ -316,7 +316,7 @@ const ContactPage = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-4 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white font-bold rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                  className="w-full py-4 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white font-bold rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-70"
                 >
                   {isSubmitting ? (
                     <>
@@ -346,8 +346,8 @@ const ContactPage = () => {
                   return (
                     <div key={index} className="mb-6 last:mb-0">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 bg-[#3A4E63]/10 rounded-xl flex items-center justify-center">
-                          <Icon className="h-5 w-5 text-[#3A4E63]" />
+                        <div className="w-10 h-10 bg-[#033F99]/10 rounded-xl flex items-center justify-center">
+                          <Icon className="h-5 w-5 text-[#033F99]" />
                         </div>
                         <h3 className="text-lg font-bold text-slate-900">
                           {method.title}
@@ -363,7 +363,7 @@ const ContactPage = () => {
                               </p>
                               <a
                                 href={`mailto:${item.email}`}
-                                className="text-[#3A4E63] font-semibold hover:underline"
+                                className="text-[#033F99] font-semibold hover:underline"
                               >
                                 {item.email}
                               </a>
@@ -397,7 +397,7 @@ const ContactPage = () => {
               </div>
 
               {/* Our Process */}
-              <div className="bg-gradient-to-br from-[#3A4E63]/5 to-purple-500/5 rounded-3xl border border-[#3A4E63]/20 p-8">
+              <div className="bg-gradient-to-br from-[#033F99]/5 to-purple-500/5 rounded-3xl border border-[#033F99]/20 p-8">
                 <h2 className="text-2xl font-bold text-slate-900 mb-2">
                   What Happens When You Contact Us
                 </h2>
@@ -408,7 +408,7 @@ const ContactPage = () => {
                 <div className="space-y-4">
                   {processSteps.map((step, index) => (
                     <div key={index} className="flex items-center gap-4">
-                      <div className="w-8 h-8 bg-[#3A4E63] rounded-full flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 bg-[#033F99] rounded-full flex items-center justify-center flex-shrink-0">
                         <span className="text-white font-bold text-sm">
                           {step.step}
                         </span>
@@ -429,7 +429,7 @@ const ContactPage = () => {
               <div className="bg-slate-900 rounded-3xl p-8 text-white">
                 <h2 className="text-2xl font-bold mb-6">Security & Trust</h2>
 
-                <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6"> // RESPONSIVE CHANGE
                   {trustBadges.map((badge, index) => {
                     const Icon = badge.icon;
                     return (
@@ -454,7 +454,7 @@ const ContactPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63]">
+      <section className="py-20 px-6 bg-gradient-to-r from-[#033F99] to-[#033F99]">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Let's Build Clarity Into Your Business
@@ -497,7 +497,7 @@ const ContactPage = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
-                <span className="text-[#3A4E63] font-bold text-xl">IB</span>
+                <span className="text-[#033F99] font-bold text-xl">IB</span>
               </div>
               <span className="text-2xl font-bold">Innovate Books</span>
             </div>

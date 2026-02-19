@@ -122,7 +122,7 @@ const ProcureRequestCreate = () => {
                   value={formData.title}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="Enter request title"
                 />
               </div>
@@ -136,7 +136,7 @@ const ProcureRequestCreate = () => {
                   onChange={handleChange}
                   required
                   rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="Describe what you need and why..."
                 />
               </div>
@@ -149,7 +149,7 @@ const ProcureRequestCreate = () => {
                   value={formData.request_type}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                 >
                   <option value="goods">Goods</option>
                   <option value="services">Services</option>
@@ -166,7 +166,7 @@ const ProcureRequestCreate = () => {
                   value={formData.priority}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -183,7 +183,7 @@ const ProcureRequestCreate = () => {
                   name="needed_by_date"
                   value={formData.needed_by_date}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
               </div>
             </div>
@@ -209,7 +209,7 @@ const ProcureRequestCreate = () => {
                   value={formData.requesting_department}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                 >
                   <option value="">Select Department</option>
                   <option value="IT">IT</option>
@@ -230,7 +230,7 @@ const ProcureRequestCreate = () => {
                   value={formData.cost_center}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                 >
                   <option value="">Select Cost Center</option>
                   <option value="TECH">TECH</option>
@@ -249,7 +249,7 @@ const ProcureRequestCreate = () => {
                   name="project_code"
                   value={formData.project_code}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="PRJ-XXX"
                 />
               </div>
@@ -280,7 +280,7 @@ const ProcureRequestCreate = () => {
                   value={formData.estimated_cost}
                   onChange={handleChange}
                   min="0"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
               </div>
               <div className="flex items-center">
@@ -290,7 +290,7 @@ const ProcureRequestCreate = () => {
                     name="is_recurring"
                     checked={formData.is_recurring}
                     onChange={handleChange}
-                    className="w-5 h-5 rounded border-gray-300 text-[#3A4E63] focus:ring-[#3A4E63]"
+                    className="w-5 h-5 rounded border-gray-300 text-[#033F99] focus:ring-[#033F99]"
                   />
                   <span className="text-sm font-medium text-gray-700">
                     Recurring / Subscription
@@ -313,7 +313,7 @@ const ProcureRequestCreate = () => {
                 value={formData.notes}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 placeholder="Any additional notes..."
               />
             </div>
@@ -332,7 +332,7 @@ const ProcureRequestCreate = () => {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {loading ? "Creating..." : "Create Request"}

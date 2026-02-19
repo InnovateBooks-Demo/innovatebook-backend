@@ -189,7 +189,7 @@ const AddCustomerPage = () => {
                   type="button"
                   onClick={fetchGSTDetails}
                   disabled={fetchingGST || formData.gstin.length !== 15}
-                  style={{ backgroundColor: "#3A4E63" }}
+                  style={{ backgroundColor: "#033F99" }}
                 >
                   {fetchingGST ? (
                     <>
@@ -327,7 +327,7 @@ const AddCustomerPage = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                style={{ backgroundColor: "#3A4E63" }}
+                style={{ backgroundColor: "#033F99" }}
               >
                 {loading ? (
                   <>

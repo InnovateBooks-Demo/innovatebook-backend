@@ -140,7 +140,7 @@ const PeopleList = () => {
             </div>
             <button
               onClick={() => navigate("/ib-workforce/people/create")}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] transition-colors"
               data-testid="create-person-btn"
             >
               <Plus className="h-4 w-4" />
@@ -188,14 +188,14 @@ const PeopleList = () => {
                 placeholder="Search by name or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 data-testid="search-input"
               />
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               data-testid="status-filter"
             >
               <option value="">All Status</option>
@@ -207,7 +207,7 @@ const PeopleList = () => {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               data-testid="type-filter"
             >
               <option value="">All Types</option>
@@ -252,7 +252,7 @@ const PeopleList = () => {
                     className="px-6 py-12 text-center text-gray-500"
                   >
                     <div className="flex items-center justify-center gap-2">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#3A4E63]"></div>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#033F99]"></div>
                       Loading...
                     </div>
                   </td>
@@ -266,7 +266,7 @@ const PeopleList = () => {
                     No people found.{" "}
                     <button
                       onClick={() => navigate("/ib-workforce/people/create")}
-                      className="text-[#3A4E63] hover:underline"
+                      className="text-[#033F99] hover:underline"
                     >
                       Add your first person
                     </button>
@@ -326,7 +326,7 @@ const PeopleList = () => {
                           onClick={() =>
                             navigate(`/ib-workforce/people/${person.person_id}`)
                           }
-                          className="p-1.5 text-gray-400 hover:text-[#3A4E63] hover:bg-gray-100 rounded"
+                          className="p-1.5 text-gray-400 hover:text-[#033F99] hover:bg-gray-100 rounded"
                           data-testid={`view-${person.person_id}`}
                         >
                           <Eye className="h-4 w-4" />
@@ -338,7 +338,7 @@ const PeopleList = () => {
                                 `/ib-workforce/people/${person.person_id}/edit`,
                               )
                             }
-                            className="p-1.5 text-gray-400 hover:text-[#3A4E63] hover:bg-gray-100 rounded"
+                            className="p-1.5 text-gray-400 hover:text-[#033F99] hover:bg-gray-100 rounded"
                             data-testid={`edit-${person.person_id}`}
                           >
                             <Edit className="h-4 w-4" />

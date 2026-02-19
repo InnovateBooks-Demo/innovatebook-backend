@@ -164,7 +164,7 @@ const BankAccountDetail = () => {
           <div>
             <h1
               className="text-3xl font-semibold"
-              style={{ fontFamily: "Inter", color: "#3A4E63" }}
+              style={{ fontFamily: "Inter", color: "#033F99" }}
             >
               {bank?.bank_name}
             </h1>
@@ -204,7 +204,7 @@ const BankAccountDetail = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold" style={{ color: "#3A4E63" }}>
+            <p className="text-2xl font-semibold" style={{ color: "#033F99" }}>
               {formatCurrency(bank?.current_balance)}
             </p>
           </CardContent>
@@ -266,21 +266,19 @@ const BankAccountDetail = () => {
                         <td>{trans.description}</td>
                         <td>
                           <span
-                            className={`badge ${
-                              trans.transaction_type === "Credit"
+                            className={`badge ${trans.transaction_type === "Credit"
                                 ? "badge-success"
                                 : "badge-warning"
-                            }`}
+                              }`}
                           >
                             {trans.transaction_type}
                           </span>
                         </td>
                         <td
-                          className={`font-semibold ${
-                            trans.transaction_type === "Credit"
+                          className={`font-semibold ${trans.transaction_type === "Credit"
                               ? "text-green-600"
                               : "text-red-600"
-                          }`}
+                            }`}
                         >
                           {formatCurrency(trans.amount)}
                         </td>
@@ -321,21 +319,19 @@ const BankAccountDetail = () => {
                         <td>{trans.description}</td>
                         <td>
                           <span
-                            className={`badge ${
-                              trans.transaction_type === "Credit"
+                            className={`badge ${trans.transaction_type === "Credit"
                                 ? "badge-success"
                                 : "badge-warning"
-                            }`}
+                              }`}
                           >
                             {trans.transaction_type}
                           </span>
                         </td>
                         <td
-                          className={`font-semibold ${
-                            trans.transaction_type === "Credit"
+                          className={`font-semibold ${trans.transaction_type === "Credit"
                               ? "text-green-600"
                               : "text-red-600"
-                          }`}
+                            }`}
                         >
                           {formatCurrency(trans.amount)}
                         </td>
@@ -366,9 +362,8 @@ const BankAccountDetail = () => {
                 {matchSuggestions.map((suggestion, index) => (
                   <div
                     key={`item-${index}`}
-                    className={`p-3 border-b cursor-pointer hover:bg-gray-50 ${
-                      selectedEntity?.id === suggestion.id ? "bg-blue-50" : ""
-                    }`}
+                    className={`p-3 border-b cursor-pointer hover:bg-gray-50 ${selectedEntity?.id === suggestion.id ? "bg-blue-50" : ""
+                      }`}
                     onClick={() => {
                       setSelectedEntity(suggestion);
                       setMatchAmount(suggestion.amount.toString());
@@ -384,7 +379,7 @@ const BankAccountDetail = () => {
                       <div className="text-right">
                         <p
                           className="font-semibold"
-                          style={{ color: "#3A4E63" }}
+                          style={{ color: "#033F99" }}
                         >
                           {formatCurrency(suggestion.amount)}
                         </p>

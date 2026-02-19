@@ -102,7 +102,7 @@ const CollectCreate = () => {
         <Button
           onClick={handleSubmit}
           disabled={loading}
-          className="gap-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63]"
+          className="gap-2 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99]"
         >
           <Save className="h-4 w-4" />
           {loading ? "Creating..." : "Create Collection"}
@@ -122,7 +122,7 @@ const CollectCreate = () => {
               <select
                 value={formData.invoice_id}
                 onChange={handleBillSelect}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 required
               >
                 <option value="">Select a bill...</option>

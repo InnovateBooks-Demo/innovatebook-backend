@@ -175,7 +175,7 @@ const InvoiceDetailPro = () => {
                   </Button>
                   <Button
                     onClick={handleSaveEdit}
-                    style={{ backgroundColor: "#3A4E63", color: "white" }}
+                    style={{ backgroundColor: "#033F99", color: "white" }}
                     className="hover:opacity-90"
                   >
                     <Save className="h-4 w-4 mr-2" />
@@ -197,7 +197,7 @@ const InvoiceDetailPro = () => {
               {/* Icon */}
               <div
                 className="w-16 h-16 rounded-xl flex items-center justify-center text-white"
-                style={{ backgroundColor: "#3A4E63" }}
+                style={{ backgroundColor: "#033F99" }}
               >
                 <FileText className="h-8 w-8" />
               </div>
@@ -234,15 +234,14 @@ const InvoiceDetailPro = () => {
 
             {/* Status Badge */}
             <span
-              className={`px-4 py-2 rounded-lg text-sm font-semibold ${
-                invoice?.status === "Paid"
+              className={`px-4 py-2 rounded-lg text-sm font-semibold ${invoice?.status === "Paid"
                   ? "bg-green-50 text-green-700 border-2 border-green-200"
                   : invoice?.status === "Partially Paid"
                     ? "bg-yellow-50 text-yellow-700 border-2 border-yellow-200"
                     : invoice?.status === "Overdue"
                       ? "bg-red-50 text-red-700 border-2 border-red-200"
                       : "bg-gray-50 text-gray-700 border-2 border-gray-200"
-              }`}
+                }`}
             >
               {invoice?.status}
             </span>
@@ -279,7 +278,7 @@ const InvoiceDetailPro = () => {
                 >
                   <DollarSign
                     className="h-4 w-4"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   />
                 </div>
               </div>
@@ -359,14 +358,13 @@ const InvoiceDetailPro = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === tab
+                className={`py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === tab
                     ? "border-blue-600 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
+                  }`}
                 style={
                   activeTab === tab
-                    ? { borderColor: "#3A4E63", color: "#3A4E63" }
+                    ? { borderColor: "#033F99", color: "#033F99" }
                     : {}
                 }
               >
@@ -586,8 +584,7 @@ const InvoiceDetailPro = () => {
                           Aging Bucket
                         </span>
                         <span
-                          className={`text-sm font-semibold px-2.5 py-1 rounded-full ${
-                            !bucket
+                          className={`text-sm font-semibold px-2.5 py-1 rounded-full ${!bucket
                               ? "bg-green-50 text-green-700"
                               : bucket === "Current"
                                 ? "bg-blue-50 text-blue-700"
@@ -596,7 +593,7 @@ const InvoiceDetailPro = () => {
                                   : bucket === "31-60 Days"
                                     ? "bg-orange-50 text-orange-700"
                                     : "bg-red-50 text-red-700"
-                          }`}
+                            }`}
                         >
                           {bucket || "Paid"}
                         </span>
@@ -680,7 +677,7 @@ const InvoiceDetailPro = () => {
                   <span className="font-bold text-gray-900">
                     Total Invoice Amount
                   </span>
-                  <span className="font-bold" style={{ color: "#3A4E63" }}>
+                  <span className="font-bold" style={{ color: "#033F99" }}>
                     {formatCurrency(invoice?.total_amount)}
                   </span>
                 </div>
@@ -696,12 +693,12 @@ const InvoiceDetailPro = () => {
                   className="flex justify-between py-4 text-lg border-t-2 border-gray-200 rounded-lg"
                   style={{ backgroundColor: "#EEF4FF" }}
                 >
-                  <span className="font-bold" style={{ color: "#3A4E63" }}>
+                  <span className="font-bold" style={{ color: "#033F99" }}>
                     Net Receivable
                   </span>
                   <span
                     className="font-bold text-2xl"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     {formatCurrency(
                       invoice?.total_amount - (invoice?.tds_amount || 0),
@@ -727,7 +724,7 @@ const InvoiceDetailPro = () => {
                     <div
                       key={`item-${index}`}
                       className="flex gap-4 p-4 hover:bg-gray-50 rounded-lg transition-colors border-l-4"
-                      style={{ borderLeftColor: "#3A4E63" }}
+                      style={{ borderLeftColor: "#033F99" }}
                     >
                       <div
                         className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -735,7 +732,7 @@ const InvoiceDetailPro = () => {
                       >
                         <Calendar
                           className="h-5 w-5"
-                          style={{ color: "#3A4E63" }}
+                          style={{ color: "#033F99" }}
                         />
                       </div>
                       <div className="flex-1">

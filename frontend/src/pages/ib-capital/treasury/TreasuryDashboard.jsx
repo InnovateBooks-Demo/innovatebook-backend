@@ -64,7 +64,7 @@ const TreasuryDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -95,7 +95,7 @@ const TreasuryDashboard = () => {
           </div>
           <Link
             to="/ib-capital/treasury/request-outflow"
-            className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
+            className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Request Outflow
@@ -139,11 +139,10 @@ const TreasuryDashboard = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`py-4 text-sm font-medium border-b-2 transition-colors capitalize ${
-                  activeTab === tab
-                    ? "border-[#3A4E63] text-[#3A4E63]"
+                className={`py-4 text-sm font-medium border-b-2 transition-colors capitalize ${activeTab === tab
+                    ? "border-[#033F99] text-[#033F99]"
                     : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
+                  }`}
               >
                 {tab === "accounts"
                   ? "Bank Accounts"
@@ -195,13 +194,12 @@ const TreasuryDashboard = () => {
                     </td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          acc.account_type === "operating"
+                        className={`px-2 py-1 text-xs rounded-full ${acc.account_type === "operating"
                             ? "bg-blue-100 text-blue-700"
                             : acc.account_type === "capital"
                               ? "bg-green-100 text-green-700"
                               : "bg-orange-100 text-orange-700"
-                        }`}
+                          }`}
                       >
                         {acc.account_type}
                       </span>
@@ -249,13 +247,12 @@ const TreasuryDashboard = () => {
                     </td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          inflow.source_type === "equity"
+                        className={`px-2 py-1 text-xs rounded-full ${inflow.source_type === "equity"
                             ? "bg-green-100 text-green-700"
                             : inflow.source_type === "debt"
                               ? "bg-orange-100 text-orange-700"
                               : "bg-blue-100 text-blue-700"
-                        }`}
+                          }`}
                       >
                         {inflow.source_type}
                       </span>
@@ -305,13 +302,12 @@ const TreasuryDashboard = () => {
                     </td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          outflow.purpose_type === "debt_repayment"
+                        className={`px-2 py-1 text-xs rounded-full ${outflow.purpose_type === "debt_repayment"
                             ? "bg-orange-100 text-orange-700"
                             : outflow.purpose_type === "capex"
                               ? "bg-purple-100 text-purple-700"
                               : "bg-blue-100 text-blue-700"
-                        }`}
+                          }`}
                       >
                         {outflow.purpose_type?.replace("_", " ")}
                       </span>
@@ -338,15 +334,14 @@ const TreasuryDashboard = () => {
                           <XCircle className="w-4 h-4 text-red-500" />
                         )}
                         <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            outflow.status === "executed"
+                          className={`px-2 py-1 text-xs rounded-full ${outflow.status === "executed"
                               ? "bg-green-100 text-green-700"
                               : outflow.status === "approved"
                                 ? "bg-blue-100 text-blue-700"
                                 : outflow.status === "requested"
                                   ? "bg-yellow-100 text-yellow-700"
                                   : "bg-red-100 text-red-700"
-                          }`}
+                            }`}
                         >
                           {outflow.status}
                         </span>

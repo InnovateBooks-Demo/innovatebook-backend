@@ -100,7 +100,7 @@ const RoleEdit = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -147,7 +147,7 @@ const RoleEdit = () => {
                   name="role_name"
                   value={formData.role_name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                   required
                   data-testid="role-name-input"
                 />
@@ -161,7 +161,7 @@ const RoleEdit = () => {
                   name="role_category"
                   value={formData.role_category}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   data-testid="category-select"
                 >
                   <option value="operational">Operational</option>
@@ -180,7 +180,7 @@ const RoleEdit = () => {
                   value={formData.description}
                   onChange={handleChange}
                   rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                   data-testid="description-input"
                 />
               </div>
@@ -192,7 +192,7 @@ const RoleEdit = () => {
                   id="is_active"
                   checked={formData.is_active}
                   onChange={handleChange}
-                  className="w-4 h-4 text-[#3A4E63] border-gray-300 rounded focus:ring-[#3A4E63]"
+                  className="w-4 h-4 text-[#033F99] border-gray-300 rounded focus:ring-[#033F99]"
                   data-testid="active-checkbox"
                 />
                 <label htmlFor="is_active" className="text-sm text-gray-700">
@@ -214,7 +214,7 @@ const RoleEdit = () => {
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] disabled:opacity-50"
               data-testid="save-btn"
             >
               {saving ? (

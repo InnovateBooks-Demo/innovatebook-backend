@@ -169,7 +169,7 @@ const UsersPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <RefreshCw className="w-10 h-10 text-[#3A4E63] animate-spin" />
+        <RefreshCw className="w-10 h-10 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -236,14 +236,14 @@ const UsersPage = () => {
                   placeholder="Search users..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
               </div>
 
               <select
                 value={filterOrg}
                 onChange={(e) => setFilterOrg(e.target.value)}
-                className="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="all">All Organizations</option>
                 {organizations.map((org) => (
@@ -256,7 +256,7 @@ const UsersPage = () => {
               <select
                 value={filterRole}
                 onChange={(e) => setFilterRole(e.target.value)}
-                className="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="all">All Roles</option>
                 <option value="super_admin">Super Admin</option>
@@ -269,7 +269,7 @@ const UsersPage = () => {
             <button
               onClick={() => setShowCreateModal(true)}
               data-testid="create-user-btn"
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#3A4E63] hover:bg-[#022a6b] text-white rounded-lg transition-colors font-medium"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#033F99] hover:bg-[#022a6b] text-white rounded-lg transition-colors font-medium"
             >
               <Plus className="w-5 h-5" />
               Create User
@@ -312,7 +312,7 @@ const UsersPage = () => {
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        <div className="w-10 h-10 bg-gradient-to-br from-[#033F99] to-[#0147CC] rounded-full flex items-center justify-center text-white font-bold text-sm">
                           {user.first_name?.[0]}
                           {user.last_name?.[0]}
                         </div>
@@ -342,11 +342,10 @@ const UsersPage = () => {
                     </td>
                     <td className="px-6 py-4">
                       <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                          user.is_active
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${user.is_active
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
-                        }`}
+                          }`}
                       >
                         {user.is_active ? (
                           <CheckCircle className="w-3.5 h-3.5" />
@@ -430,7 +429,7 @@ const UsersPage = () => {
                     onChange={(e) =>
                       setNewUser({ ...newUser, first_name: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     required
                   />
                 </div>
@@ -445,7 +444,7 @@ const UsersPage = () => {
                     onChange={(e) =>
                       setNewUser({ ...newUser, last_name: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     required
                   />
                 </div>
@@ -462,7 +461,7 @@ const UsersPage = () => {
                   onChange={(e) =>
                     setNewUser({ ...newUser, email: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   required
                 />
               </div>
@@ -478,7 +477,7 @@ const UsersPage = () => {
                   onChange={(e) =>
                     setNewUser({ ...newUser, password: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   required
                 />
               </div>
@@ -493,7 +492,7 @@ const UsersPage = () => {
                     onChange={(e) =>
                       setNewUser({ ...newUser, org_id: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     required
                   >
                     <option value="">Select Organization</option>
@@ -516,7 +515,7 @@ const UsersPage = () => {
                     onChange={(e) =>
                       setNewUser({ ...newUser, role: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   >
                     <option value="user">User</option>
                     <option value="manager">Manager</option>
@@ -543,7 +542,7 @@ const UsersPage = () => {
                   type="submit"
                   data-testid="create-user-submit-btn"
                   disabled={creating}
-                  className="flex-1 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2.5 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {creating ? (
                     <>
@@ -582,7 +581,7 @@ const UsersPage = () => {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="Enter new password"
                 />
               </div>
@@ -600,7 +599,7 @@ const UsersPage = () => {
                 </button>
                 <button
                   onClick={() => handleResetPassword(showResetPasswordModal)}
-                  className="flex-1 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] transition-colors font-medium"
+                  className="flex-1 px-4 py-2.5 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] transition-colors font-medium"
                 >
                   Reset Password
                 </button>

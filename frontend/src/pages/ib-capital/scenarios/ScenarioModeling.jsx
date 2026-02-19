@@ -317,7 +317,7 @@ const ScenarioModeling = () => {
           </button>
           <button
             onClick={() => setShowNewScenario(true)}
-            className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e] flex items-center gap-2"
+            className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e] flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
             New Scenario
@@ -342,11 +342,10 @@ const ScenarioModeling = () => {
                 <div
                   key={scenario.scenario_id}
                   onClick={() => fetchScenarioDetails(scenario.scenario_id)}
-                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                    selectedScenario?.scenario_id === scenario.scenario_id
-                      ? "border-[#3A4E63] bg-blue-50"
+                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${selectedScenario?.scenario_id === scenario.scenario_id
+                      ? "border-[#033F99] bg-blue-50"
                       : "hover:bg-gray-50"
-                  }`}
+                    }`}
                 >
                   <div className="flex justify-between items-start">
                     <div>
@@ -738,7 +737,7 @@ const ScenarioModeling = () => {
             <div className="flex gap-2 mt-4">
               <button
                 onClick={runQuickSimulation}
-                className="flex-1 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e]"
+                className="flex-1 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e]"
               >
                 Calculate
               </button>
@@ -830,7 +829,7 @@ const ScenarioModeling = () => {
             <div className="flex gap-2 mt-4">
               <button
                 onClick={createScenario}
-                className="flex-1 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e]"
+                className="flex-1 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e]"
               >
                 Create
               </button>
@@ -938,7 +937,7 @@ const ScenarioModeling = () => {
             <div className="flex gap-2 mt-4">
               <button
                 onClick={addRound}
-                className="flex-1 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e]"
+                className="flex-1 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e]"
               >
                 Add Round
               </button>

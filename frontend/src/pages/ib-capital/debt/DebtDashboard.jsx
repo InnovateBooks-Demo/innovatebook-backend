@@ -53,7 +53,7 @@ const DebtDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -87,7 +87,7 @@ const DebtDashboard = () => {
           </div>
           <Link
             to="/ib-capital/debt/create"
-            className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
+            className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Add Debt
@@ -127,11 +127,10 @@ const DebtDashboard = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`py-4 text-sm font-medium border-b-2 transition-colors capitalize ${
-                  activeTab === tab
-                    ? "border-[#3A4E63] text-[#3A4E63]"
+                className={`py-4 text-sm font-medium border-b-2 transition-colors capitalize ${activeTab === tab
+                    ? "border-[#033F99] text-[#033F99]"
                     : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
+                  }`}
               >
                 {tab === "debts" ? "Debt Instruments" : "Covenants"}
               </button>
@@ -179,13 +178,12 @@ const DebtDashboard = () => {
                     </td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          debt.debt_type === "term_loan"
+                        className={`px-2 py-1 text-xs rounded-full ${debt.debt_type === "term_loan"
                             ? "bg-blue-100 text-blue-700"
                             : debt.debt_type === "convertible_note"
                               ? "bg-purple-100 text-purple-700"
                               : "bg-gray-100 text-gray-700"
-                        }`}
+                          }`}
                       >
                         {debt.debt_type?.replace("_", " ")}
                       </span>
@@ -201,15 +199,14 @@ const DebtDashboard = () => {
                     </td>
                     <td className="py-3 px-4 text-center">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          debt.status === "active"
+                        className={`px-2 py-1 text-xs rounded-full ${debt.status === "active"
                             ? "bg-green-100 text-green-700"
                             : debt.status === "repaid"
                               ? "bg-gray-100 text-gray-700"
                               : debt.status === "defaulted"
                                 ? "bg-red-100 text-red-700"
                                 : "bg-yellow-100 text-yellow-700"
-                        }`}
+                          }`}
                       >
                         {debt.status}
                       </span>
@@ -260,13 +257,12 @@ const DebtDashboard = () => {
                     </td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          cov.covenant_type === "financial"
+                        className={`px-2 py-1 text-xs rounded-full ${cov.covenant_type === "financial"
                             ? "bg-blue-100 text-blue-700"
                             : cov.covenant_type === "operational"
                               ? "bg-purple-100 text-purple-700"
                               : "bg-gray-100 text-gray-700"
-                        }`}
+                          }`}
                       >
                         {cov.covenant_type}
                       </span>
@@ -289,13 +285,12 @@ const DebtDashboard = () => {
                           <AlertTriangle className="w-4 h-4 text-red-500" />
                         )}
                         <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            cov.current_status === "compliant"
+                          className={`px-2 py-1 text-xs rounded-full ${cov.current_status === "compliant"
                               ? "bg-green-100 text-green-700"
                               : cov.current_status === "warning"
                                 ? "bg-yellow-100 text-yellow-700"
                                 : "bg-red-100 text-red-700"
-                          }`}
+                            }`}
                         >
                           {cov.current_status}
                         </span>

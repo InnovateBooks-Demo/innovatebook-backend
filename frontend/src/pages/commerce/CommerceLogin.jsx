@@ -55,7 +55,7 @@ const CommerceLogin = ({ setIsAuthenticated }) => {
       console.error("Authentication error:", error);
       toast.error(
         error.response?.data?.detail ||
-          "Authentication failed. Please try again.",
+        "Authentication failed. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -70,11 +70,11 @@ const CommerceLogin = ({ setIsAuthenticated }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#033F99] via-[#033F99] to-[#033F99] relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-20 left-20 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#3A4E63] rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#033F99] rounded-full blur-3xl"></div>
       </div>
 
       {/* Header */}
@@ -95,7 +95,7 @@ const CommerceLogin = ({ setIsAuthenticated }) => {
             >
               Innovate Books
             </div>
-            <div className="text-xs text-[#3A4E63]">IB Commerce Platform</div>
+            <div className="text-xs text-[#033F99]">IB Commerce Platform</div>
           </div>
         </Link>
       </div>
@@ -116,7 +116,7 @@ const CommerceLogin = ({ setIsAuthenticated }) => {
                 >
                   IB Commerce
                 </h1>
-                <p className="text-[#3A4E63]">
+                <p className="text-[#033F99]">
                   SOP-Driven Commercial Lifecycle
                 </p>
               </div>
@@ -129,7 +129,7 @@ const CommerceLogin = ({ setIsAuthenticated }) => {
               >
                 Transform Every Transaction Into Strategic Intelligence
               </h2>
-              <p className="text-lg text-[#3A4E63] leading-relaxed">
+              <p className="text-lg text-[#033F99] leading-relaxed">
                 Complete financial flow from lead capture to payment
                 reconciliation — structured, verified, and SOP-governed across
                 12 intelligent modules.
@@ -149,14 +149,14 @@ const CommerceLogin = ({ setIsAuthenticated }) => {
                     <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
                       <CheckCircle className="h-4 w-4 text-white" />
                     </div>
-                    <span className="text-[#3A4E63]">{feature}</span>
+                    <span className="text-[#033F99]">{feature}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="pt-8 border-t border-white/20">
-              <p className="text-sm text-[#3A4E63]">
+              <p className="text-sm text-[#033F99]">
                 Trusted by 500+ finance teams worldwide • Processing ₹10,000Cr+
                 transactions
               </p>
@@ -253,7 +253,7 @@ const CommerceLogin = ({ setIsAuthenticated }) => {
                   </label>
                   <a
                     href="#"
-                    className="text-[#3A4E63] hover:text-[#3A4E63] font-medium"
+                    className="text-[#033F99] hover:text-[#033F99] font-medium"
                   >
                     Forgot password?
                   </a>
@@ -263,7 +263,7 @@ const CommerceLogin = ({ setIsAuthenticated }) => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 text-base bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-semibold shadow-lg"
+                className="w-full h-12 text-base bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-semibold shadow-lg"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -286,7 +286,7 @@ const CommerceLogin = ({ setIsAuthenticated }) => {
                   : "Already have an account? "}
                 <button
                   onClick={() => setIsLogin(!isLogin)}
-                  className="text-[#3A4E63] hover:text-[#3A4E63] font-semibold"
+                  className="text-[#033F99] hover:text-[#033F99] font-semibold"
                 >
                   {isLogin ? "Sign up" : "Sign in"}
                 </button>
@@ -294,14 +294,14 @@ const CommerceLogin = ({ setIsAuthenticated }) => {
             </div>
 
             {/* Demo Credentials */}
-            <div className="mt-6 p-4 bg-[#C4D9F4] rounded-xl border border-[#3A4E63]">
-              <p className="text-sm font-semibold text-[#3A4E63] mb-2">
+            <div className="mt-6 p-4 bg-[#C4D9F4] rounded-xl border border-[#033F99]">
+              <p className="text-sm font-semibold text-[#033F99] mb-2">
                 Demo Account:
               </p>
-              <p className="text-xs text-[#3A4E63]">
+              <p className="text-xs text-[#033F99]">
                 Email: demo@innovatebooks.com
               </p>
-              <p className="text-xs text-[#3A4E63]">Password: demo123</p>
+              <p className="text-xs text-[#033F99]">Password: demo123</p>
             </div>
 
             <div className="mt-6 pt-6 border-t border-slate-200 text-center text-xs text-slate-500">

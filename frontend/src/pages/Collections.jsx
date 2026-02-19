@@ -13,7 +13,7 @@ const Collections = () => {
       <div className="mb-8">
         <h1
           className="text-3xl font-semibold mb-2"
-          style={{ fontFamily: "Inter", color: "#3A4E63" }}
+          style={{ fontFamily: "Inter", color: "#033F99" }}
         >
           Collections
         </h1>
@@ -24,7 +24,7 @@ const Collections = () => {
         <CardHeader>
           <CardTitle
             className="text-xl font-semibold"
-            style={{ color: "#3A4E63" }}
+            style={{ color: "#033F99" }}
           >
             Collections Dashboard
           </CardTitle>

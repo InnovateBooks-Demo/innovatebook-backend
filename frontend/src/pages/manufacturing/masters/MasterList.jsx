@@ -76,14 +76,14 @@ const MasterList = () => {
         <div className="mb-6">
           <button
             onClick={() => navigate("/commerce/manufacturing/masters")}
-            className="text-[#3A4E63] hover:text-[#0147CC] flex items-center gap-2 mb-4 font-semibold"
+            className="text-[#033F99] hover:text-[#0147CC] flex items-center gap-2 mb-4 font-semibold"
           >
             <FaArrowLeft /> Back to Masters
           </button>
 
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-[#3A4E63] flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-[#033F99] flex items-center gap-3">
                 <span className="text-4xl">{metadata.icon}</span>
                 {metadata.title}
               </h1>
@@ -93,7 +93,7 @@ const MasterList = () => {
               onClick={() =>
                 navigate(`/commerce/manufacturing/masters/${masterType}/create`)
               }
-              className="bg-gradient-to-r from-[#3A4E63] to-[#0147CC] text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold"
+              className="bg-gradient-to-r from-[#033F99] to-[#0147CC] text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold"
             >
               <FaPlus /> Add New
             </button>
@@ -102,21 +102,21 @@ const MasterList = () => {
 
         {/* Content */}
         {loading ? (
-          <div className="bg-white rounded-2xl shadow-xl p-12 text-center border-2 border-[#3A4E63]/20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63] mx-auto"></div>
+          <div className="bg-white rounded-2xl shadow-xl p-12 text-center border-2 border-[#033F99]/20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99] mx-auto"></div>
             <p className="mt-4 text-slate-600">Loading...</p>
           </div>
         ) : items.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-xl p-12 text-center border-2 border-[#3A4E63]/20">
+          <div className="bg-white rounded-2xl shadow-xl p-12 text-center border-2 border-[#033F99]/20">
             <p className="text-slate-500 text-lg">
               No items found. Click "Add New" to create one.
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-[#3A4E63]/20">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-[#033F99]/20">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-200">
-                <thead className="bg-gradient-to-r from-[#3A4E63] to-[#0147CC]">
+                <thead className="bg-gradient-to-r from-[#033F99] to-[#0147CC]">
                   <tr>
                     {items.length > 0 &&
                       Object.keys(items[0])
@@ -168,7 +168,7 @@ const MasterList = () => {
                                 `/commerce/manufacturing/masters/${masterType}/${item.id}/edit`,
                               )
                             }
-                            className="text-[#3A4E63] hover:text-[#0147CC] font-semibold"
+                            className="text-[#033F99] hover:text-[#0147CC] font-semibold"
                           >
                             <FaEdit />
                           </button>

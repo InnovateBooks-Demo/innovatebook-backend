@@ -197,7 +197,7 @@ const PayrollDashboard = () => {
             </div>
             <button
               onClick={handleCreatePayrun}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] transition-colors"
               data-testid="create-payrun-btn"
             >
               <Plus className="h-4 w-4" />
@@ -286,15 +286,14 @@ const PayrollDashboard = () => {
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          run.status === "approved"
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${run.status === "approved"
                             ? "bg-emerald-100 text-emerald-700"
                             : run.status === "posted"
                               ? "bg-purple-100 text-purple-700"
                               : run.status === "calculated"
                                 ? "bg-blue-100 text-blue-700"
                                 : "bg-gray-100 text-gray-700"
-                        }`}
+                          }`}
                       >
                         {run.status}
                       </span>
@@ -304,7 +303,7 @@ const PayrollDashboard = () => {
                         {run.status === "draft" && (
                           <button
                             onClick={() => handleCalculate(run.payrun_id)}
-                            className="text-sm text-[#3A4E63] hover:underline flex items-center gap-1"
+                            className="text-sm text-[#033F99] hover:underline flex items-center gap-1"
                           >
                             <Calculator className="h-3 w-3" /> Calculate
                           </button>

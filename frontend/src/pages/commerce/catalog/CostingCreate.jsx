@@ -69,7 +69,7 @@ const CostingCreate = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Calculator className="w-5 h-5 text-[#3A4E63]" /> Cost Information
+            <Calculator className="w-5 h-5 text-[#033F99]" /> Cost Information
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
@@ -174,7 +174,7 @@ const CostingCreate = () => {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-2.5 bg-[#3A4E63] text-white rounded-xl font-semibold disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-2.5 bg-[#033F99] text-white rounded-xl font-semibold disabled:opacity-50"
           >
             <Save className="w-4 h-4" /> {loading ? "Creating..." : "Create"}
           </button>

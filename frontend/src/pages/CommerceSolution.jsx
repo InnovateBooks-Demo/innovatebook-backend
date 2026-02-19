@@ -43,7 +43,7 @@ const CommerceSolution = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-blue-50 to-white">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-[#3A4E63]">
+      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-[#033F99]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center">
@@ -63,7 +63,7 @@ const CommerceSolution = () => {
               <Link to="/commerce/login">
                 <Button
                   size="sm"
-                  className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white shadow-lg"
+                  className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white shadow-lg"
                 >
                   Try IB Commerce
                 </Button>
@@ -77,7 +77,7 @@ const CommerceSolution = () => {
       <section className="pt-32 pb-20 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center shadow-xl">
+            <div className="w-20 h-20 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center shadow-xl">
               <ShoppingCart className="h-10 w-10 text-white" />
             </div>
             <div>
@@ -87,7 +87,7 @@ const CommerceSolution = () => {
               >
                 IB Commerce
               </h1>
-              <p className="text-xl text-[#3A4E63] mt-1 font-medium">
+              <p className="text-xl text-[#033F99] mt-1 font-medium">
                 Reimagine Commerce Intelligence
               </p>
             </div>
@@ -99,7 +99,7 @@ const CommerceSolution = () => {
           <div className="flex gap-4">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white shadow-xl"
+              className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white shadow-xl"
               asChild
             >
               <Link to="/commerce/login">Try IB Commerce</Link>
@@ -107,7 +107,7 @@ const CommerceSolution = () => {
             <Button
               size="lg"
               variant="outline"
-              className="border-2 border-[#3A4E63] text-[#3A4E63] hover:bg-[#C4D9F4]"
+              className="border-2 border-[#033F99] text-[#033F99] hover:bg-[#C4D9F4]"
               asChild
             >
               <Link to="/contact">Schedule Demo</Link>
@@ -129,9 +129,9 @@ const CommerceSolution = () => {
             {features.map((feature, index) => (
               <div
                 key={`item-${index}`}
-                className="flex items-start gap-4 bg-white p-6 rounded-xl border border-[#3A4E63] shadow-lg hover:shadow-xl transition-shadow"
+                className="flex items-start gap-4 bg-white p-6 rounded-xl border border-[#033F99] shadow-lg hover:shadow-xl transition-shadow"
               >
-                <CheckCircle className="h-6 w-6 text-[#3A4E63] flex-shrink-0 mt-1" />
+                <CheckCircle className="h-6 w-6 text-[#033F99] flex-shrink-0 mt-1" />
                 <p className="text-slate-700 text-lg">{feature}</p>
               </div>
             ))}
@@ -151,7 +151,7 @@ const CommerceSolution = () => {
           <p className="text-slate-600 mb-6 text-lg">
             Each transaction carries financial DNA with predictive intelligence
           </p>
-          <div className="bg-gradient-to-br from-slate-900 to-[#3A4E63] text-green-400 p-8 rounded-2xl font-mono text-sm overflow-x-auto shadow-2xl">
+          <div className="bg-gradient-to-br from-slate-900 to-[#033F99] text-green-400 p-8 rounded-2xl font-mono text-sm overflow-x-auto shadow-2xl">
             <pre>{`{
   "EntityType": "Customer",
   "Nature": "Revenue",
@@ -184,9 +184,9 @@ const CommerceSolution = () => {
               return (
                 <div
                   key={`item-${index}`}
-                  className="bg-white p-8 rounded-2xl border border-[#3A4E63] shadow-lg hover:shadow-xl transition-shadow text-center"
+                  className="bg-white p-8 rounded-2xl border border-[#033F99] shadow-lg hover:shadow-xl transition-shadow text-center"
                 >
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <div className="w-16 h-16 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <Icon className="h-8 w-8 text-white" />
                   </div>
                   <h3 className="font-bold text-lg mb-2 text-slate-900">
@@ -201,7 +201,7 @@ const CommerceSolution = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4 bg-gradient-to-br from-[#3A4E63] via-[#3A4E63] to-purple-700">
+      <section className="py-20 px-4 bg-gradient-to-br from-[#033F99] via-[#033F99] to-purple-700">
         <div className="max-w-4xl mx-auto text-center">
           <h2
             className="text-4xl font-bold mb-4 text-white"
@@ -209,12 +209,12 @@ const CommerceSolution = () => {
           >
             Ready to Transform Commerce Operations?
           </h2>
-          <p className="text-xl mb-8 text-[#3A4E63]">
+          <p className="text-xl mb-8 text-[#033F99]">
             ERPs record transactions. We understand them with AI.
           </p>
           <Button
             size="lg"
-            className="bg-white text-[#3A4E63] hover:bg-[#C4D9F4] font-semibold shadow-xl"
+            className="bg-white text-[#033F99] hover:bg-[#C4D9F4] font-semibold shadow-xl"
             asChild
           >
             <Link to="/commerce/login">Try IB Commerce Free</Link>

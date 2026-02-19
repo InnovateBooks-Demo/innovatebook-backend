@@ -105,7 +105,7 @@ const RecommendationsPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 text-[#3A4E63] animate-spin" />
+        <RefreshCw className="w-8 h-8 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -221,11 +221,10 @@ const RecommendationsPage = () => {
             <button
               key={p}
               onClick={() => setPriorityFilter(p)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                priorityFilter === p
-                  ? "bg-[#3A4E63] text-white"
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${priorityFilter === p
+                  ? "bg-[#033F99] text-white"
                   : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
-              }`}
+                }`}
             >
               {p === "all" ? "All" : `P${p}`}
             </button>

@@ -35,7 +35,7 @@ const FinanceDashboard = () => {
       change: "+8.3%",
       trend: "up",
       icon: TrendingUp,
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       bgColor: "blue",
     },
     {
@@ -71,7 +71,7 @@ const FinanceDashboard = () => {
       description: "Track collections & receipts",
       icon: DollarSign,
       path: "/finance/collect",
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
     },
     {
       title: "Pay",
@@ -148,12 +148,12 @@ const FinanceDashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 p-8">
       <div className="mb-8">
         <h1
-          className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+          className="text-4xl font-bold bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
           style={{ fontFamily: "Poppins" }}
         >
           Finance Dashboard
         </h1>
-        <p className="text-[#3A4E63] mt-2 font-medium text-lg">
+        <p className="text-[#033F99] mt-2 font-medium text-lg">
           Your complete financial overview at a glance
         </p>
       </div>
@@ -165,7 +165,7 @@ const FinanceDashboard = () => {
           return (
             <div
               key={kpi.title}
-              className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl hover:shadow-2xl hover:border-[#3A4E63] transition-all duration-300"
+              className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl hover:shadow-2xl hover:border-[#033F99] transition-all duration-300"
             >
               <div
                 className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${kpi.color} opacity-10 rounded-full -mr-16 -mt-16`}
@@ -178,11 +178,10 @@ const FinanceDashboard = () => {
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <div
-                    className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-bold ${
-                      kpi.trend === "up"
+                    className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-bold ${kpi.trend === "up"
                         ? "bg-emerald-100 text-emerald-700"
                         : "bg-red-100 text-red-700"
-                    }`}
+                      }`}
                   >
                     {kpi.trend === "up" ? (
                       <ArrowUpRight className="h-4 w-4" />
@@ -192,10 +191,10 @@ const FinanceDashboard = () => {
                     {kpi.change}
                   </div>
                 </div>
-                <p className="text-sm font-bold text-[#3A4E63] uppercase tracking-wider mb-1">
+                <p className="text-sm font-bold text-[#033F99] uppercase tracking-wider mb-1">
                   {kpi.title}
                 </p>
-                <p className="text-3xl font-black text-[#3A4E63]">
+                <p className="text-3xl font-black text-[#033F99]">
                   {kpi.value}
                 </p>
               </div>
@@ -206,7 +205,7 @@ const FinanceDashboard = () => {
 
       {/* Quick Actions */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-[#3A4E63] mb-4">
+        <h2 className="text-2xl font-bold text-[#033F99] mb-4">
           Quick Actions
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -216,7 +215,7 @@ const FinanceDashboard = () => {
               <button
                 key={action.title}
                 onClick={() => navigate(action.path)}
-                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 border-2 border-[#3A4E63]/50 shadow-lg hover:shadow-2xl hover:border-[#3A4E63] transition-all duration-300 text-left"
+                className="group relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 border-2 border-[#033F99]/50 shadow-lg hover:shadow-2xl hover:border-[#033F99] transition-all duration-300 text-left"
               >
                 <div
                   className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${action.color} opacity-5 rounded-full -mr-12 -mt-12 group-hover:opacity-10 transition-opacity`}
@@ -226,10 +225,10 @@ const FinanceDashboard = () => {
                 >
                   <Icon className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-[#3A4E63] mb-1">
+                <h3 className="text-lg font-bold text-[#033F99] mb-1">
                   {action.title}
                 </h3>
-                <p className="text-sm text-[#3A4E63]/70 font-medium">
+                <p className="text-sm text-[#033F99]/70 font-medium">
                   {action.description}
                 </p>
               </button>
@@ -239,12 +238,12 @@ const FinanceDashboard = () => {
       </div>
 
       {/* Recent Activities */}
-      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl">
+      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-[#3A4E63]">
+          <h2 className="text-2xl font-bold text-[#033F99]">
             Recent Activities
           </h2>
-          <button className="text-[#3A4E63] font-semibold hover:underline">
+          <button className="text-[#033F99] font-semibold hover:underline">
             View All
           </button>
         </div>
@@ -256,17 +255,17 @@ const FinanceDashboard = () => {
                 key={activity.id || `${activity.type}-${activity.time}`}
                 className="flex items-start gap-4 p-4 rounded-xl bg-[#C4D9F4]/30 hover:bg-[#C4D9F4]/50 transition-all cursor-pointer"
               >
-                <div className="p-2 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-lg">
+                <div className="p-2 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-lg">
                   <Icon className="h-5 w-5 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-bold text-[#3A4E63]">
+                  <p className="text-sm font-bold text-[#033F99]">
                     {activity.type}
                   </p>
-                  <p className="text-sm text-[#3A4E63]/70 mt-1">
+                  <p className="text-sm text-[#033F99]/70 mt-1">
                     {activity.description}
                   </p>
-                  <p className="text-xs text-[#3A4E63]/50 mt-1">
+                  <p className="text-xs text-[#033F99]/50 mt-1">
                     {activity.time}
                   </p>
                 </div>

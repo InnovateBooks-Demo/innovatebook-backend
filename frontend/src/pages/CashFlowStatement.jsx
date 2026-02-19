@@ -173,7 +173,7 @@ const CashFlowStatement = () => {
             <Button
               onClick={loadReport}
               disabled={loading}
-              style={{ backgroundColor: "#3A4E63" }}
+              style={{ backgroundColor: "#033F99" }}
               className="text-white"
             >
               {loading ? (
@@ -286,7 +286,7 @@ const CashFlowStatement = () => {
                 <span className="text-base font-bold text-white">
                   Closing Cash Balance
                 </span>
-                <span className="text-2xl font-bold text-[#3A4E63]">
+                <span className="text-2xl font-bold text-[#033F99]">
                   {formatCurrency(data?.closing_balance || 0)}
                 </span>
               </div>

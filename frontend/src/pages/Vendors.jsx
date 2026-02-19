@@ -92,7 +92,7 @@ const Vendors = () => {
         <div>
           <h1
             className="text-3xl font-semibold mb-2"
-            style={{ fontFamily: "Inter", color: "#3A4E63" }}
+            style={{ fontFamily: "Inter", color: "#033F99" }}
           >
             Vendors
           </h1>
@@ -141,8 +141,8 @@ const Vendors = () => {
         </CardContent>
       </Card>
 
-      <div className="table-wrapper">
-        <table className="data-table" data-testid="vendors-table">
+      <div className="w-full overflow-x-auto"> {/* RESPONSIVE CHANGE */}
+        <table className="data-table min-w-[800px]" data-testid="vendors-table"> {/* RESPONSIVE CHANGE */}
           <thead>
             <tr>
               <th>Vendor Name</th>
@@ -166,7 +166,7 @@ const Vendors = () => {
                 <td>{vendor.contact_person}</td>
                 <td>{vendor.email}</td>
                 <td>{vendor.phone}</td>
-                <td className="font-semibold" style={{ color: "#3A4E63" }}>
+                <td className="font-semibold" style={{ color: "#033F99" }}>
                   {formatCurrency(vendor.total_payable)}
                 </td>
                 <td className="font-semibold text-red-600">
@@ -174,11 +174,10 @@ const Vendors = () => {
                 </td>
                 <td>
                   <span
-                    className={`badge ${
-                      vendor.status === "Active"
-                        ? "badge-success"
-                        : "badge-danger"
-                    }`}
+                    className={`badge ${vendor.status === "Active"
+                      ? "badge-success"
+                      : "badge-danger"
+                      }`}
                   >
                     {vendor.status}
                   </span>

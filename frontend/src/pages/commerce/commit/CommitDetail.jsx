@@ -73,7 +73,7 @@ const CommitDetail = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-screen">
         <div className="flex items-center gap-3 text-slate-600">
-          <div className="w-6 h-6 border-2 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-6 h-6 border-2 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
           Loading commitment details...
         </div>
       </div>
@@ -124,7 +124,7 @@ const CommitDetail = () => {
 
         <div className="flex items-center gap-3">
           <Link to={`/commerce/commit/${commitId}/edit`}>
-            <Button className="gap-2 bg-[#3A4E63] hover:bg-[#3A4E63]">
+            <Button className="gap-2 bg-[#033F99] hover:bg-[#033F99]">
               <Edit2 className="h-4 w-4" />
               Edit
             </Button>
@@ -179,7 +179,7 @@ const CommitDetail = () => {
       <Card className="p-6 bg-white border-slate-200">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 bg-[#C4D9F4] rounded-lg flex items-center justify-center">
-            <FileText className="h-5 w-5 text-[#3A4E63]" />
+            <FileText className="h-5 w-5 text-[#033F99]" />
           </div>
           <h3 className="text-lg font-bold text-slate-900">
             Contract Information
@@ -195,7 +195,7 @@ const CommitDetail = () => {
           </div>
           <div>
             <p className="text-sm text-slate-600 mb-1">Linked Evaluation</p>
-            <p className="text-sm font-medium text-[#3A4E63]">
+            <p className="text-sm font-medium text-[#033F99]">
               {commit.evaluation_id}
             </p>
           </div>

@@ -219,7 +219,7 @@ const LeadDetailSOP = () => {
             <StatusBadge status={lead.lead_status}>
               {lead.lead_status}
             </StatusBadge>
-            <span className="text-xs px-2 py-1 rounded bg-[#C4D9F4] text-[#3A4E63] font-medium">
+            <span className="text-xs px-2 py-1 rounded bg-[#C4D9F4] text-[#033F99] font-medium">
               {lead.current_sop_stage?.replace("Lead_", "").replace("_SOP", "")}
             </span>
           </div>
@@ -246,7 +246,7 @@ const LeadDetailSOP = () => {
       <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-            <GitBranch className="w-5 h-5 text-[#3A4E63]" />
+            <GitBranch className="w-5 h-5 text-[#033F99]" />
             SOP Workflow Progress
           </h2>
           <span className="text-sm text-slate-500">
@@ -259,7 +259,7 @@ const LeadDetailSOP = () => {
           {/* Progress Line */}
           <div className="absolute top-8 left-0 right-0 h-1 bg-slate-200 -z-10"></div>
           <div
-            className="absolute top-8 left-0 h-1 bg-gradient-to-r from-[#3A4E63] to-emerald-500 -z-10 transition-all duration-500"
+            className="absolute top-8 left-0 h-1 bg-gradient-to-r from-[#033F99] to-emerald-500 -z-10 transition-all duration-500"
             style={{
               width: `${(sopStages.filter((s) => getStageStatus(s.id)).length / sopStages.length) * 100}%`,
             }}
@@ -281,13 +281,12 @@ const LeadDetailSOP = () => {
                   <div
                     className={`
                     w-16 h-16 rounded-full flex items-center justify-center mb-3 transition-all duration-300
-                    ${
-                      isCompleted
+                    ${isCompleted
                         ? "bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/50"
                         : isCurrent
-                          ? "bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] shadow-lg shadow-[#3A4E63]/50 ring-4 ring-[#6B9FE6]"
+                          ? "bg-gradient-to-br from-[#033F99] to-[#033F99] shadow-lg shadow-[#033F99]/50 ring-4 ring-[#6B9FE6]"
                           : "bg-slate-200"
-                    }
+                      }
                   `}
                   >
                     {isCompleted ? (
@@ -314,12 +313,11 @@ const LeadDetailSOP = () => {
                         }
                         className={`
                           text-xs px-3 py-1 rounded-full font-medium transition-all
-                          ${
-                            processing ||
+                          ${processing ||
                             (index > 0 &&
                               !getStageStatus(sopStages[index - 1].id))
-                              ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                              : "bg-[#C4D9F4] text-[#3A4E63] hover:bg-[#6B9FE6]"
+                            ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                            : "bg-[#C4D9F4] text-[#033F99] hover:bg-[#6B9FE6]"
                           }
                         `}
                       >
@@ -349,10 +347,9 @@ const LeadDetailSOP = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`
                 flex items-center gap-2 px-6 py-3 font-medium transition-all
-                ${
-                  activeTab === tab.id
-                    ? "text-[#3A4E63] border-b-2 border-[#3A4E63]"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                ${activeTab === tab.id
+                  ? "text-[#033F99] border-b-2 border-[#033F99]"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }
               `}
             >
@@ -370,7 +367,7 @@ const LeadDetailSOP = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* KPI Cards */}
             <div className="grid grid-cols-4 gap-4">
-              <div className="bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-lg p-4 text-white">
+              <div className="bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-lg p-4 text-white">
                 <div className="flex items-center justify-between mb-2">
                   <TrendingUp className="w-5 h-5" />
                   <span className="text-xs font-medium bg-white/20 px-2 py-1 rounded">
@@ -426,7 +423,7 @@ const LeadDetailSOP = () => {
             <ContentCard
               title={
                 <div className="flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-[#3A4E63]" />
+                  <Building2 className="w-5 h-5 text-[#033F99]" />
                   Business Information
                 </div>
               }
@@ -463,7 +460,7 @@ const LeadDetailSOP = () => {
                     href={lead.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-[#3A4E63] hover:text-[#3A4E63] font-medium"
+                    className="inline-flex items-center gap-2 text-[#033F99] hover:text-[#033F99] font-medium"
                   >
                     <Globe className="w-4 h-4" />
                     Visit Website
@@ -476,7 +473,7 @@ const LeadDetailSOP = () => {
             <ContentCard
               title={
                 <div className="flex items-center gap-2">
-                  <User className="w-5 h-5 text-[#3A4E63]" />
+                  <User className="w-5 h-5 text-[#033F99]" />
                   Contact Information
                 </div>
               }
@@ -519,7 +516,7 @@ const LeadDetailSOP = () => {
                 <button
                   onClick={runDuplicateCheck}
                   disabled={processing}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg border-2 border-[#6B9FE6] bg-[#EBF3FC] hover:bg-[#C4D9F4] text-[#3A4E63] font-medium transition-all"
+                  className="w-full flex items-center gap-3 p-3 rounded-lg border-2 border-[#6B9FE6] bg-[#EBF3FC] hover:bg-[#C4D9F4] text-[#033F99] font-medium transition-all"
                 >
                   <Users className="w-5 h-5" />
                   Run Duplicate Check
@@ -649,8 +646,7 @@ const InfoItem = ({ label, value, icon: Icon, badge }) => (
       <span
         className={`
         inline-block px-3 py-1 rounded-full text-sm font-medium
-        ${
-          value === "Approved" || value === "Qualified" || value === "Converted"
+        ${value === "Approved" || value === "Qualified" || value === "Converted"
             ? "bg-emerald-100 text-emerald-700"
             : value === "Pending" || value === "Captured"
               ? "bg-amber-100 text-amber-700"
@@ -658,8 +654,8 @@ const InfoItem = ({ label, value, icon: Icon, badge }) => (
                 ? "bg-rose-100 text-rose-700"
                 : value === "Low"
                   ? "bg-emerald-100 text-emerald-700"
-                  : "bg-[#C4D9F4] text-[#3A4E63]"
-        }
+                  : "bg-[#C4D9F4] text-[#033F99]"
+          }
       `}
       >
         {value}
@@ -677,7 +673,7 @@ const AIInsightsTab = ({ lead }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* AI Score Visualization */}
-      <div className="bg-gradient-to-br from-[#3A4E63] to-violet-600 rounded-lg p-8 text-white">
+      <div className="bg-gradient-to-br from-[#033F99] to-violet-600 rounded-lg p-8 text-white">
         <div className="flex items-center gap-3 mb-6">
           <Sparkles className="w-8 h-8" />
           <h2 className="text-2xl font-bold">AI-Powered Score</h2>
@@ -734,13 +730,13 @@ const AIInsightsTab = ({ lead }) => {
                     <span className="text-sm font-medium text-slate-700 capitalize">
                       {key.replace(/_/g, " ")}
                     </span>
-                    <span className="text-sm font-bold text-[#3A4E63]">
+                    <span className="text-sm font-bold text-[#033F99]">
                       {value}/20
                     </span>
                   </div>
                   <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-[#3A4E63] to-violet-500 transition-all duration-500"
+                      className="h-full bg-gradient-to-r from-[#033F99] to-violet-500 transition-all duration-500"
                       style={{ width: `${(value / 20) * 100}%` }}
                     ></div>
                   </div>
@@ -787,13 +783,13 @@ const EnrichmentTab = ({ lead }) => {
                 <span className="text-sm font-medium text-white">
                   Confidence Score
                 </span>
-                <span className="text-lg font-bold text-[#3A4E63]">
+                <span className="text-lg font-bold text-[#033F99]">
                   {enrichment.confidence_score}%
                 </span>
               </div>
               <div className="h-2 bg-[#6B9FE6] rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[#3A4E63]"
+                  className="h-full bg-[#033F99]"
                   style={{ width: `${enrichment.confidence_score}%` }}
                 ></div>
               </div>
@@ -852,7 +848,7 @@ const EnrichmentTab = ({ lead }) => {
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-[#0558CC] hover:bg-[#EBF3FC] transition-all"
                   >
-                    <Globe className="w-5 h-5 text-[#3A4E63]" />
+                    <Globe className="w-5 h-5 text-[#033F99]" />
                     <span className="text-sm font-medium text-slate-900 capitalize">
                       {platform}
                     </span>
@@ -869,7 +865,7 @@ const EnrichmentTab = ({ lead }) => {
             {enrichment.tech_stack.map((tech, idx) => (
               <span
                 key={idx}
-                className="px-3 py-1 bg-[#C4D9F4] text-[#3A4E63] rounded-full text-sm font-medium"
+                className="px-3 py-1 bg-[#C4D9F4] text-[#033F99] rounded-full text-sm font-medium"
               >
                 {tech}
               </span>
@@ -896,7 +892,7 @@ const AuditTrailTab = ({ auditTrail }) => {
       <ContentCard
         title={
           <div className="flex items-center gap-2">
-            <GitBranch className="w-5 h-5 text-[#3A4E63]" />
+            <GitBranch className="w-5 h-5 text-[#033F99]" />
             SOP Stage History
           </div>
         }
@@ -909,7 +905,7 @@ const AuditTrailTab = ({ auditTrail }) => {
                 className="flex items-start gap-4 p-4 bg-slate-50 rounded-lg"
               >
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#C4D9F4] flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 text-[#3A4E63]" />
+                  <CheckCircle className="w-5 h-5 text-[#033F99]" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
@@ -939,7 +935,7 @@ const AuditTrailTab = ({ auditTrail }) => {
       <ContentCard
         title={
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-[#3A4E63]" />
+            <Activity className="w-5 h-5 text-[#033F99]" />
             Complete Audit Log
           </div>
         }
@@ -949,7 +945,7 @@ const AuditTrailTab = ({ auditTrail }) => {
             audit_trail.map((entry, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between p-3 border-l-4 border-[#3A4E63] bg-slate-50 rounded-r-lg"
+                className="flex items-center justify-between p-3 border-l-4 border-[#033F99] bg-slate-50 rounded-r-lg"
               >
                 <div>
                   <p className="text-sm font-medium text-slate-900">
@@ -978,7 +974,7 @@ const AuditTrailTab = ({ auditTrail }) => {
         <ContentCard
           title={
             <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-[#3A4E63]" />
+              <Users className="w-5 h-5 text-[#033F99]" />
               Engagement History
             </div>
           }

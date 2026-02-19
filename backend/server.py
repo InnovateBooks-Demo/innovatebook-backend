@@ -4548,7 +4548,14 @@ from engagement_routes import engagement_router
 from auth_routes import router as auth_router
 # from routes.auth.auth_routes import router as auth_router
 
-from test_helpers import router as test_helpers_router
+# from test_helpers import router as test_helpers_router
+# try:
+#     from test_helpers import router as test_helpers_router
+#     app.include_router(test_helpers_router, prefix="/api/test-helpers", tags=["test-helpers"])
+# except ModuleNotFoundError:
+#     # test_helpers is optional (dev-only). Ignore if missing.
+#     pass
+
 # from chat_routes import router as chat_router  # Legacy - using workspace_router instead
 from user_management_routes import router as user_management_router
 from webrtc_routes import router as webrtc_router
@@ -4578,7 +4585,7 @@ from razorpay_webhook_routes import router as razorpay_webhook_router
 # Include the router in the main app
 app.include_router(api_router)
 app.include_router(auth_router, prefix="/api")
-app.include_router(test_helpers_router, prefix="/api")
+# app.include_router(test_helpers_router, prefix="/api")
 app.include_router(commerce_router, prefix="/api")
 app.include_router(lead_router, prefix="/api")
 app.include_router(engagement_router)

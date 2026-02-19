@@ -147,8 +147,8 @@ const AgingDSORedesigned = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#3A4E63] border-r-transparent"></div>
-          <p className="mt-4 text-[#3A4E63] font-semibold text-lg">
+          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#033F99] border-r-transparent"></div>
+          <p className="mt-4 text-[#033F99] font-semibold text-lg">
             Loading aging data...
           </p>
         </div>
@@ -165,21 +165,21 @@ const AgingDSORedesigned = () => {
         <div className="flex items-center justify-between mb-2">
           <div>
             <h1
-              className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+              className="text-4xl font-bold bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
               style={{ fontFamily: "Poppins" }}
             >
               Aging Analysis & DSO
             </h1>
-            <p className="text-[#3A4E63] mt-2 font-medium text-lg">
+            <p className="text-[#033F99] mt-2 font-medium text-lg">
               Track receivables aging and days sales outstanding
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#3A4E63] text-[#3A4E63] font-semibold rounded-xl hover:bg-[#C4D9F4] hover:border-[#3A4E63] transition-all duration-200">
+            <button className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#033F99] text-[#033F99] font-semibold rounded-xl hover:bg-[#C4D9F4] hover:border-[#033F99] transition-all duration-200">
               <Calendar className="h-5 w-5" />
               <span>This Month</span>
             </button>
-            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold rounded-xl shadow-xl transition-all duration-200">
+            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold rounded-xl shadow-xl transition-all duration-200">
               <Download className="h-5 w-5" />
               <span>Export Report</span>
             </button>
@@ -189,18 +189,18 @@ const AgingDSORedesigned = () => {
 
       {/* KPI Cards - Premium Style */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl hover:shadow-2xl hover:border-[#3A4E63] transition-all duration-300">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#3A4E63]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
+        <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl hover:shadow-2xl hover:border-[#033F99] transition-all duration-300">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#033F99]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
           <div className="relative">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-3 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl shadow-lg">
                 <DollarSign className="h-6 w-6 text-white" />
               </div>
             </div>
-            <p className="text-sm font-bold text-[#3A4E63] uppercase tracking-wider mb-1">
+            <p className="text-sm font-bold text-[#033F99] uppercase tracking-wider mb-1">
               Total Outstanding
             </p>
-            <p className="text-4xl font-black text-[#3A4E63]">
+            <p className="text-4xl font-black text-[#033F99]">
               {formatCurrency(metrics.totalOutstanding)}
             </p>
           </div>
@@ -259,9 +259,9 @@ const AgingDSORedesigned = () => {
       </div>
 
       {/* Aging Buckets - Premium Style */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl mb-8">
+      <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl mb-8">
         <h2
-          className="text-2xl font-bold text-[#3A4E63] mb-6"
+          className="text-2xl font-bold text-[#033F99] mb-6"
           style={{ fontFamily: "Poppins" }}
         >
           Aging Buckets
@@ -313,7 +313,7 @@ const AgingDSORedesigned = () => {
       {/* Filters - Premium Style */}
       <div className="mb-6">
         <h2
-          className="text-2xl font-bold text-[#3A4E63] mb-4"
+          className="text-2xl font-bold text-[#033F99] mb-4"
           style={{ fontFamily: "Poppins" }}
         >
           Filter & Search
@@ -326,14 +326,14 @@ const AgingDSORedesigned = () => {
               placeholder="Search invoices or customers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent transition-all text-slate-900 font-medium"
+              className="w-full pl-12 pr-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent transition-all text-slate-900 font-medium"
             />
           </div>
 
           <select
             value={bucketFilter}
             onChange={(e) => setBucketFilter(e.target.value)}
-            className="px-6 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent cursor-pointer font-semibold text-slate-900"
+            className="px-6 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent cursor-pointer font-semibold text-slate-900"
           >
             <option value="all">All Buckets</option>
             <option value="current">Current</option>
@@ -356,9 +356,9 @@ const AgingDSORedesigned = () => {
       </div>
 
       {/* Invoices Table - Premium Style */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 border-2 border-[#3A4E63]/50 shadow-2xl overflow-hidden">
+      <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 border-2 border-[#033F99]/50 shadow-2xl overflow-hidden">
         <h2
-          className="text-2xl font-bold text-[#3A4E63] mb-6"
+          className="text-2xl font-bold text-[#033F99] mb-6"
           style={{ fontFamily: "Poppins" }}
         >
           Invoice Details
@@ -366,7 +366,7 @@ const AgingDSORedesigned = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white">
+              <tr className="bg-gradient-to-r from-[#033F99] to-[#033F99] text-white">
                 <th className="px-6 py-4 text-left font-bold text-sm uppercase">
                   Invoice #
                 </th>
@@ -396,12 +396,12 @@ const AgingDSORedesigned = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#3A4E63]/20">
+            <tbody className="divide-y divide-[#033F99]/20">
               {filteredInvoices.length === 0 ? (
                 <tr>
                   <td
                     colSpan="9"
-                    className="px-6 py-12 text-center text-[#3A4E63]"
+                    className="px-6 py-12 text-center text-[#033F99]"
                   >
                     No invoices found
                   </td>
@@ -413,19 +413,19 @@ const AgingDSORedesigned = () => {
                     className="hover:bg-[#C4D9F4]/30 cursor-pointer transition-all"
                     onClick={() => navigate(`/finance/invoices/${invoice.id}`)}
                   >
-                    <td className="px-6 py-4 text-sm font-bold text-[#3A4E63]">
+                    <td className="px-6 py-4 text-sm font-bold text-[#033F99]">
                       {invoice.invoice_number}
                     </td>
-                    <td className="px-6 py-4 text-sm text-[#3A4E63] font-medium">
+                    <td className="px-6 py-4 text-sm text-[#033F99] font-medium">
                       {invoice.customer_name}
                     </td>
-                    <td className="px-6 py-4 text-sm text-[#3A4E63]">
+                    <td className="px-6 py-4 text-sm text-[#033F99]">
                       {formatDate(invoice.invoice_date)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-[#3A4E63]">
+                    <td className="px-6 py-4 text-sm text-[#033F99]">
                       {formatDate(invoice.due_date)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-[#3A4E63] text-right font-bold">
+                    <td className="px-6 py-4 text-sm text-[#033F99] text-right font-bold">
                       {formatCurrency(invoice.total_amount)}
                     </td>
                     <td className="px-6 py-4 text-sm text-red-600 text-right font-bold">
@@ -433,33 +433,31 @@ const AgingDSORedesigned = () => {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span
-                        className={`inline-flex px-3 py-1.5 rounded-lg text-xs font-bold border-2 ${
-                          (invoice.days_overdue || 0) <= 0
+                        className={`inline-flex px-3 py-1.5 rounded-lg text-xs font-bold border-2 ${(invoice.days_overdue || 0) <= 0
                             ? "bg-emerald-100 text-emerald-700 border-emerald-200"
                             : (invoice.days_overdue || 0) <= 30
                               ? "bg-yellow-100 text-yellow-700 border-yellow-200"
                               : (invoice.days_overdue || 0) <= 60
                                 ? "bg-orange-100 text-orange-700 border-orange-200"
                                 : "bg-red-100 text-red-700 border-red-200"
-                        }`}
+                          }`}
                       >
                         {invoice.days_overdue || 0}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-[#3A4E63] text-center font-bold">
+                    <td className="px-6 py-4 text-sm text-[#033F99] text-center font-bold">
                       {invoice.dso || 0}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span
-                        className={`inline-flex px-3 py-1.5 rounded-lg text-xs font-bold border-2 ${
-                          invoice.bucket === "Current"
+                        className={`inline-flex px-3 py-1.5 rounded-lg text-xs font-bold border-2 ${invoice.bucket === "Current"
                             ? "bg-emerald-100 text-emerald-700 border-emerald-200"
                             : invoice.bucket === "1-30 Days"
                               ? "bg-yellow-100 text-yellow-700 border-yellow-200"
                               : invoice.bucket === "31-60 Days"
                                 ? "bg-orange-100 text-orange-700 border-orange-200"
                                 : "bg-red-100 text-red-700 border-red-200"
-                        }`}
+                          }`}
                       >
                         {invoice.bucket || "N/A"}
                       </span>

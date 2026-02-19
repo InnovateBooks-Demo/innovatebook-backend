@@ -154,7 +154,7 @@ const WorkspaceDashboard = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   }
@@ -180,7 +180,7 @@ const WorkspaceDashboard = () => {
       {showTourPrompt && !isTourActive && (
         <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
           <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full animate-scaleIn">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center mx-auto mb-6">
               <MessageSquare className="h-8 w-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-slate-900 text-center mb-2">
@@ -201,7 +201,7 @@ const WorkspaceDashboard = () => {
                   setShowTourPrompt(false);
                   startTour();
                 }}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
               >
                 Start Tour
               </button>
@@ -234,7 +234,7 @@ const WorkspaceDashboard = () => {
             className="bg-white rounded-xl p-4 border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#3A4E63] rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#033F99] rounded-lg flex items-center justify-center">
                 <Activity className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -343,7 +343,7 @@ const WorkspaceDashboard = () => {
               <h2 className="font-semibold text-gray-900">My Tasks</h2>
               <button
                 onClick={() => navigate("/workspace/tasks")}
-                className="text-[#3A4E63] text-sm hover:underline flex items-center gap-1"
+                className="text-[#033F99] text-sm hover:underline flex items-center gap-1"
               >
                 View All <ArrowRight className="h-4 w-4" />
               </button>
@@ -361,7 +361,7 @@ const WorkspaceDashboard = () => {
                     className="p-4 hover:bg-gray-50 transition-colors"
                   >
                     <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 rounded-full bg-[#3A4E63] mt-2"></div>
+                      <div className="w-2 h-2 rounded-full bg-[#033F99] mt-2"></div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-gray-900 text-sm truncate">
                           {task.title}
@@ -395,7 +395,7 @@ const WorkspaceDashboard = () => {
               <h2 className="font-semibold text-gray-900">Pending Approvals</h2>
               <button
                 onClick={() => navigate("/workspace/approvals")}
-                className="text-[#3A4E63] text-sm hover:underline flex items-center gap-1"
+                className="text-[#033F99] text-sm hover:underline flex items-center gap-1"
               >
                 View All <ArrowRight className="h-4 w-4" />
               </button>
@@ -439,7 +439,7 @@ const WorkspaceDashboard = () => {
               </h2>
               <button
                 onClick={() => navigate("/workspace/notifications")}
-                className="text-[#3A4E63] text-sm hover:underline flex items-center gap-1"
+                className="text-[#033F99] text-sm hover:underline flex items-center gap-1"
               >
                 View All <ArrowRight className="h-4 w-4" />
               </button>
@@ -485,7 +485,7 @@ const WorkspaceDashboard = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <button
               onClick={() => navigate("/workspace/tasks")}
-              className="flex items-center gap-3 p-4 bg-[#3A4E63] text-white rounded-lg hover:bg-[#3A4E63] transition-colors"
+              className="flex items-center gap-3 p-4 bg-[#033F99] text-white rounded-lg hover:bg-[#033F99] transition-colors"
             >
               <Plus className="h-5 w-5" />
               <span className="font-medium text-sm">Create Task</span>

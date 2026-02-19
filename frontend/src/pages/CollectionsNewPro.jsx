@@ -87,7 +87,7 @@ const CollectionsNewPro = () => {
             </p>
           </div>
           <Button
-            style={{ backgroundColor: "#3A4E63" }}
+            style={{ backgroundColor: "#033F99" }}
             className="text-white hover:opacity-90"
           >
             <DollarSign className="h-4 w-4 mr-2" />

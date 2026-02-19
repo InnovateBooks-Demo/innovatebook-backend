@@ -159,7 +159,7 @@ const TaxListRedesigned = () => {
               {filteredTaxes.map((tax) => (
                 <TableRow key={tax.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-bold text-[#3A4E63]">
+                    <span className="text-sm font-bold text-[#033F99]">
                       {tax.tax_id}
                     </span>
                   </td>
@@ -171,7 +171,7 @@ const TaxListRedesigned = () => {
                       {tax.tax_type}
                     </span>
                     {tax.return_type && (
-                      <div className="text-xs text-[#3A4E63]">
+                      <div className="text-xs text-[#033F99]">
                         {tax.return_type}
                       </div>
                     )}

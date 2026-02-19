@@ -92,7 +92,7 @@ const ForecastPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 text-[#3A4E63] animate-spin" />
+        <RefreshCw className="w-8 h-8 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -127,21 +127,19 @@ const ForecastPage = () => {
         <div className="flex items-center gap-2 mb-6">
           <button
             onClick={() => setActiveTab("forecasts")}
-            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-              activeTab === "forecasts"
-                ? "bg-[#3A4E63] text-white"
+            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${activeTab === "forecasts"
+                ? "bg-[#033F99] text-white"
                 : "bg-white text-slate-600 border border-slate-200"
-            }`}
+              }`}
           >
             Active Forecasts
           </button>
           <button
             onClick={() => setActiveTab("whatif")}
-            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-              activeTab === "whatif"
-                ? "bg-[#3A4E63] text-white"
+            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${activeTab === "whatif"
+                ? "bg-[#033F99] text-white"
                 : "bg-white text-slate-600 border border-slate-200"
-            }`}
+              }`}
           >
             What-If Scenarios
           </button>
@@ -166,11 +164,10 @@ const ForecastPage = () => {
                       </p>
                     </div>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        forecast.status === "active"
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${forecast.status === "active"
                           ? "bg-green-100 text-green-700"
                           : "bg-slate-100 text-slate-700"
-                      }`}
+                        }`}
                     >
                       {forecast.status}
                     </span>
@@ -184,7 +181,7 @@ const ForecastPage = () => {
                       </span>
                       <span className="text-2xl font-bold text-slate-900">
                         {forecast.metric_name?.includes("Revenue") ||
-                        forecast.metric_name?.includes("Cash")
+                          forecast.metric_name?.includes("Cash")
                           ? `₹${(forecast.projected_value / 100000).toFixed(1)}L`
                           : forecast.projected_value}
                       </span>
@@ -254,19 +251,17 @@ const ForecastPage = () => {
                       setScenarioParams(defaultParams);
                       setSimulationResult(null);
                     }}
-                    className={`p-4 rounded-xl cursor-pointer transition-all ${
-                      selectedScenario?.id === scenario.id
+                    className={`p-4 rounded-xl cursor-pointer transition-all ${selectedScenario?.id === scenario.id
                         ? "bg-emerald-50 border-2 border-emerald-500"
                         : "bg-slate-50 border border-transparent hover:border-slate-200"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          selectedScenario?.id === scenario.id
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${selectedScenario?.id === scenario.id
                             ? "bg-emerald-500"
                             : "bg-slate-200"
-                        }`}
+                          }`}
                       >
                         <Sliders
                           className={`w-5 h-5 ${selectedScenario?.id === scenario.id ? "text-white" : "text-slate-600"}`}

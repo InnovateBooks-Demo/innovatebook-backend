@@ -94,7 +94,7 @@ const Banking = () => {
         <div>
           <h1
             className="text-3xl font-semibold mb-2"
-            style={{ fontFamily: "Inter", color: "#3A4E63" }}
+            style={{ fontFamily: "Inter", color: "#033F99" }}
           >
             Banking
           </h1>
@@ -139,7 +139,7 @@ const Banking = () => {
             <CardHeader>
               <CardTitle
                 className="text-lg font-semibold"
-                style={{ color: "#3A4E63" }}
+                style={{ color: "#033F99" }}
               >
                 {account.bank_name}
               </CardTitle>
@@ -153,7 +153,7 @@ const Banking = () => {
                   <span className="text-gray-600">Current Balance</span>
                   <span
                     className="text-xl font-semibold"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     {formatCurrency(account.current_balance)}
                   </span>
@@ -173,7 +173,7 @@ const Banking = () => {
         <CardHeader>
           <CardTitle
             className="text-xl font-semibold"
-            style={{ color: "#3A4E63" }}
+            style={{ color: "#033F99" }}
           >
             Recent Transactions
           </CardTitle>
@@ -203,31 +203,28 @@ const Banking = () => {
                     <td>{trans.description}</td>
                     <td>
                       <span
-                        className={`badge ${
-                          trans.transaction_type === "Credit"
+                        className={`badge ${trans.transaction_type === "Credit"
                             ? "badge-success"
                             : "badge-warning"
-                        }`}
+                          }`}
                       >
                         {trans.transaction_type}
                       </span>
                     </td>
                     <td
-                      className={`font-semibold ${
-                        trans.transaction_type === "Credit"
+                      className={`font-semibold ${trans.transaction_type === "Credit"
                           ? "text-green-600"
                           : "text-red-600"
-                      }`}
+                        }`}
                     >
                       {formatCurrency(trans.amount)}
                     </td>
                     <td>
                       <span
-                        className={`badge ${
-                          trans.status === "Matched"
+                        className={`badge ${trans.status === "Matched"
                             ? "badge-success"
                             : "badge-warning"
-                        }`}
+                          }`}
                       >
                         {trans.status}
                       </span>

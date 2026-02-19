@@ -19,12 +19,12 @@ export const FeatureGrid = ({
       return (
         <div
           key={`feature-${feature.title}-${index}`}
-          className="flex gap-4 p-6 rounded-xl bg-white border border-slate-100 hover:border-[#3A4E63]/30 hover:shadow-lg transition-all duration-300 group"
+          className="flex gap-4 p-6 rounded-xl bg-white border border-slate-100 hover:border-[#033F99]/30 hover:shadow-lg transition-all duration-300 group"
           data-testid={`feature-${feature.title?.toLowerCase().replace(/\s+/g, "-")}`}
         >
           {Icon && (
-            <div className="w-12 h-12 rounded-lg bg-[#3A4E63]/10 group-hover:bg-[#3A4E63] flex items-center justify-center flex-shrink-0 transition-all duration-300">
-              <Icon className="h-6 w-6 text-[#3A4E63] group-hover:text-white transition-colors duration-300" />
+            <div className="w-12 h-12 rounded-lg bg-[#033F99]/10 group-hover:bg-[#033F99] flex items-center justify-center flex-shrink-0 transition-all duration-300">
+              <Icon className="h-6 w-6 text-[#033F99] group-hover:text-white transition-colors duration-300" />
             </div>
           )}
           <div>
@@ -45,8 +45,8 @@ export const FeatureGrid = ({
           data-testid={`feature-${feature.title?.toLowerCase().replace(/\s+/g, "-")}`}
         >
           {Icon && (
-            <div className="w-14 h-14 mx-auto rounded-xl bg-[#3A4E63]/10 group-hover:bg-[#3A4E63]/20 flex items-center justify-center mb-4 transition-all duration-300">
-              <Icon className="h-7 w-7 text-[#3A4E63]" />
+            <div className="w-14 h-14 mx-auto rounded-xl bg-[#033F99]/10 group-hover:bg-[#033F99]/20 flex items-center justify-center mb-4 transition-all duration-300">
+              <Icon className="h-7 w-7 text-[#033F99]" />
             </div>
           )}
           <h3 className="font-bold text-slate-900 mb-2">{feature.title}</h3>
@@ -59,12 +59,12 @@ export const FeatureGrid = ({
     return (
       <div
         key={`feature-${feature.title}-${index}`}
-        className="bg-white p-8 rounded-2xl border border-slate-100 hover:border-[#3A4E63]/30 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group"
+        className="bg-white p-8 rounded-2xl border border-slate-100 hover:border-[#033F99]/30 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group"
         data-testid={`feature-${feature.title?.toLowerCase().replace(/\s+/g, "-")}`}
       >
         {Icon && (
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#3A4E63]/10 to-[#3A4E63]/5 group-hover:from-[#3A4E63]/20 group-hover:to-[#3A4E63]/10 flex items-center justify-center mb-6 transition-all duration-300">
-            <Icon className="h-7 w-7 text-[#3A4E63]" />
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#033F99]/10 to-[#033F99]/5 group-hover:from-[#033F99]/20 group-hover:to-[#033F99]/10 flex items-center justify-center mb-6 transition-all duration-300">
+            <Icon className="h-7 w-7 text-[#033F99]" />
           </div>
         )}
         <h3 className="text-xl font-bold text-slate-900 mb-3">
@@ -73,7 +73,7 @@ export const FeatureGrid = ({
         <p className="text-slate-600 leading-relaxed">{feature.description}</p>
         {feature.stats && (
           <div className="mt-4 pt-4 border-t border-slate-100">
-            <span className="text-2xl font-bold text-[#3A4E63]">
+            <span className="text-2xl font-bold text-[#033F99]">
               {feature.stats}
             </span>
             {feature.statsLabel && (

@@ -243,7 +243,7 @@ const Customers = () => {
         <div>
           <h1
             className="text-3xl font-semibold mb-2"
-            style={{ fontFamily: "Inter", color: "#3A4E63" }}
+            style={{ fontFamily: "Inter", color: "#033F99" }}
           >
             Customers
           </h1>
@@ -434,8 +434,8 @@ const Customers = () => {
         </CardContent>
       </Card>
 
-      <div className="table-wrapper">
-        <table className="data-table" data-testid="customers-table">
+      <div className="w-full overflow-x-auto"> {/* RESPONSIVE CHANGE */}
+        <table className="data-table min-w-[800px]" data-testid="customers-table"> {/* RESPONSIVE CHANGE */}
           <thead>
             <tr>
               <th className="w-12">
@@ -477,7 +477,7 @@ const Customers = () => {
                 <td
                   className="font-medium cursor-pointer"
                   onClick={() => navigate(`/customers/${customer.id}`)}
-                  style={{ color: "#3A4E63" }}
+                  style={{ color: "#033F99" }}
                 >
                   {customer.customer_id || "-"}
                 </td>
@@ -508,7 +508,7 @@ const Customers = () => {
                 <td
                   onClick={() => navigate(`/customers/${customer.id}`)}
                   className="cursor-pointer font-semibold"
-                  style={{ color: "#3A4E63" }}
+                  style={{ color: "#033F99" }}
                 >
                   {formatCurrency(customer.outstanding_amount)}
                 </td>
@@ -523,11 +523,10 @@ const Customers = () => {
                   className="cursor-pointer"
                 >
                   <span
-                    className={`badge ${
-                      customer.status === "Active"
-                        ? "badge-success"
-                        : "badge-danger"
-                    }`}
+                    className={`badge ${customer.status === "Active"
+                      ? "badge-success"
+                      : "badge-danger"
+                      }`}
                   >
                     {customer.status}
                   </span>

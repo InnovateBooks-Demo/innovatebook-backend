@@ -122,11 +122,10 @@ const PersonCreate = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 pb-3 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === tab.id
-                      ? "border-[#3A4E63] text-[#3A4E63]"
+                  className={`flex items-center gap-2 pb-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                      ? "border-[#033F99] text-[#033F99]"
                       : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                    }`}
                 >
                   <Icon className="h-4 w-4" />
                   {tab.label}
@@ -157,7 +156,7 @@ const PersonCreate = () => {
                       name="first_name"
                       value={formData.first_name}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                       placeholder="Enter first name"
                       required
                       data-testid="first-name-input"
@@ -176,7 +175,7 @@ const PersonCreate = () => {
                       name="last_name"
                       value={formData.last_name}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                       placeholder="Enter last name"
                       required
                       data-testid="last-name-input"
@@ -195,7 +194,7 @@ const PersonCreate = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                       placeholder="Enter email address"
                       required
                       data-testid="email-input"
@@ -214,7 +213,7 @@ const PersonCreate = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                       placeholder="Enter phone number"
                       data-testid="phone-input"
                     />
@@ -229,7 +228,7 @@ const PersonCreate = () => {
                     name="person_type"
                     value={formData.person_type}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     data-testid="person-type-select"
                   >
                     <option value="employee">Employee</option>
@@ -247,7 +246,7 @@ const PersonCreate = () => {
                     name="employment_type"
                     value={formData.employment_type}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     data-testid="employment-type-select"
                   >
                     <option value="full_time">Full Time</option>
@@ -277,7 +276,7 @@ const PersonCreate = () => {
                       name="department_name"
                       value={formData.department_name}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                       placeholder="e.g., Engineering, Sales, HR"
                       data-testid="department-input"
                     />
@@ -295,7 +294,7 @@ const PersonCreate = () => {
                       name="location"
                       value={formData.location}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                       placeholder="e.g., Mumbai, Delhi, Remote"
                       data-testid="location-input"
                     />
@@ -313,7 +312,7 @@ const PersonCreate = () => {
                       name="joining_date"
                       value={formData.joining_date}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                       data-testid="joining-date-input"
                     />
                   </div>
@@ -338,7 +337,7 @@ const PersonCreate = () => {
                     name="employee_code"
                     value={formData.employee_code}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                     placeholder="e.g., EMP001"
                     data-testid="employee-code-input"
                   />
@@ -353,7 +352,7 @@ const PersonCreate = () => {
                     name="designation"
                     value={formData.designation}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                     placeholder="e.g., Senior Engineer"
                     data-testid="designation-input"
                   />
@@ -368,7 +367,7 @@ const PersonCreate = () => {
                     name="cost_center"
                     value={formData.cost_center}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                     placeholder="e.g., Engineering"
                     data-testid="cost-center-input"
                   />
@@ -389,7 +388,7 @@ const PersonCreate = () => {
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] disabled:opacity-50"
               data-testid="submit-btn"
             >
               {loading ? (

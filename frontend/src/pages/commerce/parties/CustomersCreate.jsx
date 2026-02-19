@@ -152,7 +152,7 @@
 // //                   onChange={(e) =>
 // //                     setFormData({ ...formData, display_name: e.target.value })
 // //                   }
-// //                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+// //                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
 // //                   placeholder="Enter display name"
 // //                 />
 // //               </div>
@@ -167,7 +167,7 @@
 // //                   onChange={(e) =>
 // //                     setFormData({ ...formData, legal_name: e.target.value })
 // //                   }
-// //                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+// //                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
 // //                   placeholder="Enter legal name"
 // //                 />
 // //               </div>
@@ -181,7 +181,7 @@
 // //                   onChange={(e) =>
 // //                     setFormData({ ...formData, customer_type: e.target.value })
 // //                   }
-// //                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+// //                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
 // //                 >
 // //                   <option value="B2B">B2B</option>
 // //                   <option value="B2C">B2C</option>
@@ -198,7 +198,7 @@
 // //                   onChange={(e) =>
 // //                     setFormData({ ...formData, segment: e.target.value })
 // //                   }
-// //                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+// //                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
 // //                 >
 // //                   <option value="Enterprise">Enterprise</option>
 // //                   <option value="SMB">SMB</option>
@@ -219,7 +219,7 @@
 // //                       country_of_registration: e.target.value,
 // //                     })
 // //                   }
-// //                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+// //                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
 // //                   placeholder="Enter country"
 // //                 />
 // //               </div>
@@ -236,7 +236,7 @@
 // //                       industry_classification: e.target.value,
 // //                     })
 // //                   }
-// //                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+// //                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
 // //                   placeholder="Enter industry"
 // //                 />
 // //               </div>
@@ -257,7 +257,7 @@
 // //                   onChange={(e) =>
 // //                     setNewContact({ ...newContact, name: e.target.value })
 // //                   }
-// //                   className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+// //                   className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 // //                 />
 // //                 <input
 // //                   type="text"
@@ -266,7 +266,7 @@
 // //                   onChange={(e) =>
 // //                     setNewContact({ ...newContact, role: e.target.value })
 // //                   }
-// //                   className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+// //                   className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 // //                 />
 // //                 <input
 // //                   type="email"
@@ -275,7 +275,7 @@
 // //                   onChange={(e) =>
 // //                     setNewContact({ ...newContact, email: e.target.value })
 // //                   }
-// //                   className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+// //                   className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 // //                 />
 // //                 <input
 // //                   type="tel"
@@ -284,12 +284,12 @@
 // //                   onChange={(e) =>
 // //                     setNewContact({ ...newContact, phone: e.target.value })
 // //                   }
-// //                   className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+// //                   className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 // //                 />
 // //                 <button
 // //                   type="button"
 // //                   onClick={addContact}
-// //                   className="px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e] transition-colors"
+// //                   className="px-4 py-2.5 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e] transition-colors"
 // //                 >
 // //                   <Plus className="h-5 w-5 mx-auto" />
 // //                 </button>
@@ -333,7 +333,7 @@
 // //             <button
 // //               type="submit"
 // //               disabled={loading}
-// //               className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50"
+// //               className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50"
 // //             >
 // //               <Save className="h-4 w-4" />
 // //               {loading ? "Creating..." : "Create Customer"}
@@ -475,10 +475,10 @@
 
 //     input:
 //       "w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-white " +
-//       "focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent",
+//       "focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent",
 //     select:
 //       "w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-white " +
-//       "focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent",
+//       "focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent",
 
 //     helpText: "mt-1 text-xs text-gray-500",
 
@@ -487,12 +487,12 @@
 //     btnCancel:
 //       "inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors",
 //     btnPrimary:
-//       "inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50",
+//       "inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50",
 
 //     // Contacts add row (compact on right)
 //     contactGrid: "grid grid-cols-1 md:grid-cols-2 gap-3",
 //     plusBtn:
-//       "h-[46px] w-full md:w-auto px-4 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e] transition-colors flex items-center justify-center disabled:opacity-50",
+//       "h-[46px] w-full md:w-auto px-4 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e] transition-colors flex items-center justify-center disabled:opacity-50",
 
 //     contactItem:
 //       "flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200",
@@ -898,9 +898,9 @@ const CustomersCreate = ({ isOverlay = false, onSuccess, onCancel }) => {
         typeof detail === "string"
           ? detail
           : detail?.message ||
-            detail?.error ||
-            data?.message ||
-            "Failed to create customer";
+          detail?.error ||
+          data?.message ||
+          "Failed to create customer";
 
       toast.error(message);
     } finally {
@@ -963,10 +963,10 @@ const CustomersCreate = ({ isOverlay = false, onSuccess, onCancel }) => {
 
     input:
       "w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-white " +
-      "focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent",
+      "focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent",
     select:
       "w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-white " +
-      "focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent",
+      "focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent",
 
     helpText: "mt-1 text-xs text-gray-500",
 
@@ -975,11 +975,11 @@ const CustomersCreate = ({ isOverlay = false, onSuccess, onCancel }) => {
     btnCancel:
       "inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors",
     btnPrimary:
-      "inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50",
+      "inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50",
 
     contactGrid: "grid grid-cols-1 md:grid-cols-2 gap-3",
     plusBtn:
-      "h-[46px] w-full md:w-auto px-4 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e] transition-colors flex items-center justify-center disabled:opacity-50",
+      "h-[46px] w-full md:w-auto px-4 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e] transition-colors flex items-center justify-center disabled:opacity-50",
 
     contactItem:
       "flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200",

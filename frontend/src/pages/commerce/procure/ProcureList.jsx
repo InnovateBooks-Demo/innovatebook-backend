@@ -80,7 +80,7 @@ const ProcureList = () => {
       },
       Approved: {
         bg: "bg-[#C4D9F4]",
-        text: "text-[#3A4E63]",
+        text: "text-[#033F99]",
         icon: CheckCircle,
       },
       Ordered: {
@@ -214,7 +214,7 @@ const ProcureList = () => {
             value: procurements.filter(
               (p) => p.procurement_status === "Approved",
             ).length,
-            color: "text-[#3A4E63]",
+            color: "text-[#033F99]",
             icon: CheckCircle,
           },
           {

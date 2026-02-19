@@ -101,7 +101,7 @@ const ManageBanks = () => {
           <div>
             <h1
               className="text-3xl font-semibold"
-              style={{ fontFamily: "Inter", color: "#3A4E63" }}
+              style={{ fontFamily: "Inter", color: "#033F99" }}
             >
               Manage Banks
             </h1>
@@ -112,7 +112,7 @@ const ManageBanks = () => {
 
       <Card className="chart-container">
         <CardHeader>
-          <CardTitle style={{ color: "#3A4E63" }}>Bank Accounts</CardTitle>
+          <CardTitle style={{ color: "#033F99" }}>Bank Accounts</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="table-wrapper">
@@ -136,7 +136,7 @@ const ManageBanks = () => {
                     <td>{bank.account_number}</td>
                     <td>{bank.ifsc}</td>
                     <td>{bank.branch || "-"}</td>
-                    <td className="font-semibold" style={{ color: "#3A4E63" }}>
+                    <td className="font-semibold" style={{ color: "#033F99" }}>
                       {formatCurrency(bank.current_balance)}
                     </td>
                     <td>

@@ -70,7 +70,7 @@ const SpendEdit = () => {
   if (loading)
     return (
       <div className="p-6 flex items-center justify-center min-h-screen">
-        <Loader className="h-6 w-6 animate-spin text-[#3A4E63]" />
+        <Loader className="h-6 w-6 animate-spin text-[#033F99]" />
       </div>
     );
 
@@ -97,7 +97,7 @@ const SpendEdit = () => {
         <Button
           onClick={handleSubmit}
           disabled={saving}
-          className="gap-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63]700"
+          className="gap-2 bg-gradient-to-r from-[#033F99] to-[#033F99]700"
         >
           <Save className="h-4 w-4" />
           {saving ? "Saving..." : "Save Changes"}
@@ -128,7 +128,7 @@ const SpendEdit = () => {
                 name="expense_type"
                 value={formData.expense_type}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="Travel">Travel</option>
                 <option value="Food">Food</option>
@@ -170,7 +170,7 @@ const SpendEdit = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 rows="3"
               ></textarea>
             </div>

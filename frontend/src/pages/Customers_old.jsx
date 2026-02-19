@@ -101,7 +101,7 @@ const Customers = () => {
     }
   };
 
-  const filteredCustomers = customers.filter(c => 
+  const filteredCustomers = customers.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -116,7 +116,7 @@ const Customers = () => {
     <div className="p-8" data-testid="customers-page">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-semibold mb-2" style={{ fontFamily: 'Inter', color: '#3A4E63' }}>Customers</h1>
+          <h1 className="text-3xl font-semibold mb-2" style={{ fontFamily: 'Inter', color: '#033F99' }}>Customers</h1>
           <p className="text-gray-600">Manage your customer database</p>
         </div>
         <div className="flex gap-3">
@@ -142,99 +142,98 @@ const Customers = () => {
                 Add Customer
               </Button>
             </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Add New Customer</DialogTitle>
-              <DialogDescription>Enter customer details below</DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleAddCustomer} className="space-y-4" data-testid="add-customer-form">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Company Name *</Label>
-                  <Input required value={newCustomer.name} onChange={(e) => setNewCustomer({...newCustomer, name: e.target.value})} data-testid="customer-name-input" />
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Add New Customer</DialogTitle>
+                <DialogDescription>Enter customer details below</DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleAddCustomer} className="space-y-4" data-testid="add-customer-form">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Company Name *</Label>
+                    <Input required value={newCustomer.name} onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })} data-testid="customer-name-input" />
+                  </div>
+                  <div>
+                    <Label>Contact Person *</Label>
+                    <Input required value={newCustomer.contact_person} onChange={(e) => setNewCustomer({ ...newCustomer, contact_person: e.target.value })} data-testid="customer-contact-input" />
+                  </div>
+                  <div>
+                    <Label>Email *</Label>
+                    <Input type="email" required value={newCustomer.email} onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })} data-testid="customer-email-input" />
+                  </div>
+                  <div>
+                    <Label>Phone *</Label>
+                    <Input required value={newCustomer.phone} onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })} data-testid="customer-phone-input" />
+                  </div>
+                  <div>
+                    <Label>GSTIN</Label>
+                    <Input value={newCustomer.gstin} onChange={(e) => setNewCustomer({ ...newCustomer, gstin: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label>Credit Limit *</Label>
+                    <Input type="number" required value={newCustomer.credit_limit} onChange={(e) => setNewCustomer({ ...newCustomer, credit_limit: parseFloat(e.target.value) })} data-testid="customer-credit-input" />
+                  </div>
                 </div>
                 <div>
-                  <Label>Contact Person *</Label>
-                  <Input required value={newCustomer.contact_person} onChange={(e) => setNewCustomer({...newCustomer, contact_person: e.target.value})} data-testid="customer-contact-input" />
+                  <Label>Address</Label>
+                  <Input value={newCustomer.address} onChange={(e) => setNewCustomer({ ...newCustomer, address: e.target.value })} />
                 </div>
-                <div>
-                  <Label>Email *</Label>
-                  <Input type="email" required value={newCustomer.email} onChange={(e) => setNewCustomer({...newCustomer, email: e.target.value})} data-testid="customer-email-input" />
-                </div>
-                <div>
-                  <Label>Phone *</Label>
-                  <Input required value={newCustomer.phone} onChange={(e) => setNewCustomer({...newCustomer, phone: e.target.value})} data-testid="customer-phone-input" />
-                </div>
-                <div>
-                  <Label>GSTIN</Label>
-                  <Input value={newCustomer.gstin} onChange={(e) => setNewCustomer({...newCustomer, gstin: e.target.value})} />
-                </div>
-                <div>
-                  <Label>Credit Limit *</Label>
-                  <Input type="number" required value={newCustomer.credit_limit} onChange={(e) => setNewCustomer({...newCustomer, credit_limit: parseFloat(e.target.value)})} data-testid="customer-credit-input" />
-                </div>
-              </div>
-              <div>
-                <Label>Address</Label>
-                <Input value={newCustomer.address} onChange={(e) => setNewCustomer({...newCustomer, address: e.target.value})} />
-              </div>
-              <Button type="submit" className="w-full" data-testid="submit-customer-btn">Add Customer</Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
+                <Button type="submit" className="w-full" data-testid="submit-customer-btn">Add Customer</Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
 
-      <Card className="chart-container mb-6">
-        <CardContent className="pt-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search customers..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              data-testid="search-customers-input"
-            />
-          </div>
-        </CardContent>
-      </Card>
+        <Card className="chart-container mb-6">
+          <CardContent className="pt-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search customers..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                data-testid="search-customers-input"
+              />
+            </div>
+          </CardContent>
+        </Card>
 
-      <div className="table-wrapper">
-        <table className="data-table" data-testid="customers-table">
-          <thead>
-            <tr>
-              <th>Customer Name</th>
-              <th>Contact Person</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Outstanding</th>
-              <th>Overdue</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredCustomers.map((customer) => (
-              <tr key={customer.id} data-testid={`customer-row-${customer.id}`}>
-                <td className="font-medium">{customer.name}</td>
-                <td>{customer.contact_person}</td>
-                <td>{customer.email}</td>
-                <td>{customer.phone}</td>
-                <td className="font-semibold" style={{ color: '#3A4E63' }}>{formatCurrency(customer.outstanding_amount)}</td>
-                <td className="font-semibold text-red-600">{formatCurrency(customer.overdue_amount)}</td>
-                <td>
-                  <span className={`badge ${
-                    customer.status === 'Active' ? 'badge-success' : 'badge-danger'
-                  }`}>
-                    {customer.status}
-                  </span>
-                </td>
+        <div className="table-wrapper">
+          <table className="data-table" data-testid="customers-table">
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Contact Person</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Outstanding</th>
+                <th>Overdue</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredCustomers.map((customer) => (
+                <tr key={customer.id} data-testid={`customer-row-${customer.id}`}>
+                  <td className="font-medium">{customer.name}</td>
+                  <td>{customer.contact_person}</td>
+                  <td>{customer.email}</td>
+                  <td>{customer.phone}</td>
+                  <td className="font-semibold" style={{ color: '#033F99' }}>{formatCurrency(customer.outstanding_amount)}</td>
+                  <td className="font-semibold text-red-600">{formatCurrency(customer.overdue_amount)}</td>
+                  <td>
+                    <span className={`badge ${customer.status === 'Active' ? 'badge-success' : 'badge-danger'
+                      }`}>
+                      {customer.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-  );
+      );
 };
 
-export default Customers;
+      export default Customers;

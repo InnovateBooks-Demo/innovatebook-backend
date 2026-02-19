@@ -165,12 +165,12 @@ const LearningPage = () => {
       <div className="max-w-5xl">
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center">
               <GraduationCap className="h-7 w-7 text-white" />
             </div>
             <div>
               <h1 className="text-4xl font-bold text-slate-900">Learning</h1>
-              <p className="text-lg text-[#3A4E63] font-semibold">
+              <p className="text-lg text-[#033F99] font-semibold">
                 Training & Development
               </p>
             </div>
@@ -186,7 +186,7 @@ const LearningPage = () => {
             {benefits.map((b, i) => (
               <div
                 key={i}
-                className="bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] p-6 rounded-2xl text-white text-center"
+                className="bg-gradient-to-br from-[#033F99] to-[#033F99] p-6 rounded-2xl text-white text-center"
               >
                 <p className="text-4xl font-bold mb-2">{b.metric}</p>
                 <p className="text-lg font-semibold mb-1">{b.label}</p>
@@ -204,7 +204,7 @@ const LearningPage = () => {
             {features.map((f, i) => (
               <div
                 key={i}
-                className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#3A4E63] transition-all hover:shadow-lg"
+                className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#033F99] transition-all hover:shadow-lg"
               >
                 <h3 className="text-xl font-bold text-slate-900 mb-3">
                   {f.title}
@@ -238,7 +238,7 @@ const LearningPage = () => {
 
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <Play className="h-6 w-6 text-[#3A4E63]" />
+            <Play className="h-6 w-6 text-[#033F99]" />
             <h2 className="text-3xl font-bold text-slate-900">
               Interactive Demo
             </h2>
@@ -247,14 +247,14 @@ const LearningPage = () => {
             </span>
           </div>
           <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden">
-            <div className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] p-4 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-[#033F99] to-[#033F99] p-4 flex items-center justify-between">
               <h3 className="text-white font-bold">Learning Dashboard</h3>
               <div className="flex gap-2">
                 {["courses", "paths", "certifications"].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-3 py-1 rounded-lg text-sm font-semibold capitalize ${activeTab === tab ? "bg-white text-[#3A4E63]" : "bg-white/20 text-white"}`}
+                    className={`px-3 py-1 rounded-lg text-sm font-semibold capitalize ${activeTab === tab ? "bg-white text-[#033F99]" : "bg-white/20 text-white"}`}
                   >
                     {tab}
                   </button>
@@ -270,7 +270,7 @@ const LearningPage = () => {
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-[#EBF3FC] rounded-xl flex items-center justify-center">
-                        <BookOpen className="h-6 w-6 text-[#3A4E63]" />
+                        <BookOpen className="h-6 w-6 text-[#033F99]" />
                       </div>
                       <div>
                         <p className="font-semibold text-slate-900">
@@ -284,7 +284,7 @@ const LearningPage = () => {
                     <div className="flex items-center gap-6">
                       <div className="w-32 bg-slate-200 rounded-full h-2">
                         <div
-                          className="bg-[#3A4E63] h-2 rounded-full"
+                          className="bg-[#033F99] h-2 rounded-full"
                           style={{ width: `${course.progress}%` }}
                         />
                       </div>
@@ -304,7 +304,7 @@ const LearningPage = () => {
         <CaseStudy data={caseStudyData} />
         <TestimonialSection testimonials={testimonials} />
 
-        <section className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] p-8 rounded-3xl text-white">
+        <section className="bg-gradient-to-r from-[#033F99] to-[#033F99] p-8 rounded-3xl text-white">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold mb-2">
@@ -315,7 +315,7 @@ const LearningPage = () => {
               </p>
             </div>
             <Link to="/auth/signup">
-              <button className="bg-white text-[#3A4E63] font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
+              <button className="bg-white text-[#033F99] font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
                 <Zap className="h-5 w-5" /> Start Free Trial
               </button>
             </Link>

@@ -47,11 +47,10 @@ export const FAQAccordion = ({
         {faqs.map((faq, index) => (
           <div
             key={`faq-${index}`}
-            className={`border-2 rounded-2xl transition-all duration-300 ${
-              isOpen(index)
-                ? "border-[#3A4E63] shadow-lg"
+            className={`border-2 rounded-2xl transition-all duration-300 ${isOpen(index)
+                ? "border-[#033F99] shadow-lg"
                 : "border-slate-200 hover:border-slate-300"
-            }`}
+              }`}
           >
             <button
               onClick={() => toggleItem(index)}
@@ -62,22 +61,19 @@ export const FAQAccordion = ({
                 {faq.question}
               </span>
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                  isOpen(index) ? "bg-[#3A4E63] rotate-180" : "bg-slate-100"
-                }`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${isOpen(index) ? "bg-[#033F99] rotate-180" : "bg-slate-100"
+                  }`}
               >
                 <ChevronDown
-                  className={`h-5 w-5 transition-colors ${
-                    isOpen(index) ? "text-white" : "text-slate-600"
-                  }`}
+                  className={`h-5 w-5 transition-colors ${isOpen(index) ? "text-white" : "text-slate-600"
+                    }`}
                 />
               </div>
             </button>
 
             <div
-              className={`overflow-hidden transition-all duration-300 ${
-                isOpen(index) ? "max-h-96" : "max-h-0"
-              }`}
+              className={`overflow-hidden transition-all duration-300 ${isOpen(index) ? "max-h-96" : "max-h-0"
+                }`}
             >
               <div className="px-6 pb-6 text-slate-600 leading-relaxed">
                 {faq.answer}
@@ -102,20 +98,19 @@ export const FAQAccordion = ({
               className="w-full flex items-center justify-between text-left group"
               aria-expanded={isOpen(index)}
             >
-              <span className="font-semibold text-slate-900 group-hover:text-[#3A4E63] transition-colors pr-4">
+              <span className="font-semibold text-slate-900 group-hover:text-[#033F99] transition-colors pr-4">
                 {faq.question}
               </span>
               {isOpen(index) ? (
-                <Minus className="h-5 w-5 text-[#3A4E63] flex-shrink-0" />
+                <Minus className="h-5 w-5 text-[#033F99] flex-shrink-0" />
               ) : (
-                <Plus className="h-5 w-5 text-slate-400 group-hover:text-[#3A4E63] flex-shrink-0 transition-colors" />
+                <Plus className="h-5 w-5 text-slate-400 group-hover:text-[#033F99] flex-shrink-0 transition-colors" />
               )}
             </button>
 
             <div
-              className={`overflow-hidden transition-all duration-300 ${
-                isOpen(index) ? "max-h-96 mt-4" : "max-h-0"
-              }`}
+              className={`overflow-hidden transition-all duration-300 ${isOpen(index) ? "max-h-96 mt-4" : "max-h-0"
+                }`}
             >
               <p className="text-slate-600 leading-relaxed">{faq.answer}</p>
             </div>
@@ -131,11 +126,10 @@ export const FAQAccordion = ({
       {faqs.map((faq, index) => (
         <div
           key={`faq-${index}`}
-          className={`bg-white rounded-xl border transition-all duration-300 ${
-            isOpen(index)
-              ? "border-[#3A4E63]/30 shadow-md"
+          className={`bg-white rounded-xl border transition-all duration-300 ${isOpen(index)
+              ? "border-[#033F99]/30 shadow-md"
               : "border-slate-200 hover:border-slate-300"
-          }`}
+            }`}
         >
           <button
             onClick={() => toggleItem(index)}
@@ -146,16 +140,14 @@ export const FAQAccordion = ({
               {faq.question}
             </span>
             <ChevronDown
-              className={`h-5 w-5 text-slate-500 flex-shrink-0 transition-transform duration-300 ${
-                isOpen(index) ? "rotate-180" : ""
-              }`}
+              className={`h-5 w-5 text-slate-500 flex-shrink-0 transition-transform duration-300 ${isOpen(index) ? "rotate-180" : ""
+                }`}
             />
           </button>
 
           <div
-            className={`overflow-hidden transition-all duration-300 ${
-              isOpen(index) ? "max-h-96" : "max-h-0"
-            }`}
+            className={`overflow-hidden transition-all duration-300 ${isOpen(index) ? "max-h-96" : "max-h-0"
+              }`}
           >
             <div className="px-5 pb-5 text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
               {faq.answer}

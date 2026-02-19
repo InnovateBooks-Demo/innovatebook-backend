@@ -58,7 +58,7 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
   const moduleGroups = [
     {
       label: "Cash Flow",
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       items: [
         {
           name: "Actuals",
@@ -173,7 +173,7 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
       style={{ fontFamily: "Poppins" }}
     >
       {/* Top Navigation Bar */}
-      <nav className="bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] shadow-lg sticky top-0 z-50">
+      <nav className="bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] shadow-lg sticky top-0 z-50">
         <div className="max-w-full px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo & Brand */}
@@ -195,11 +195,10 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
                 {/* Dashboard */}
                 <Link
                   to="/finance"
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all duration-200 ${
-                    location.pathname === "/finance"
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all duration-200 ${location.pathname === "/finance"
                       ? "bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30"
                       : "text-white/80 hover:bg-white/10 hover:text-white"
-                  }`}
+                    }`}
                 >
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="text-sm">Dashboard</span>
@@ -217,11 +216,10 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
                           activeDropdown === group.label ? null : group.label,
                         )
                       }
-                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all duration-200 ${
-                        group.items.some((item) => isActive(item.path))
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all duration-200 ${group.items.some((item) => isActive(item.path))
                           ? "bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30"
                           : "text-white/80 hover:bg-white/10 hover:text-white"
-                      }`}
+                        }`}
                     >
                       <span className="text-sm">{group.label}</span>
                       <ChevronDown
@@ -231,9 +229,9 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
 
                     {/* Premium Dropdown Menu */}
                     {activeDropdown === group.label && (
-                      <div className="absolute top-full left-0 mt-3 w-[420px] bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-[#3A4E63]/50 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="absolute top-full left-0 mt-3 w-[420px] bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-[#033F99]/50 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
                         {/* Premium Header */}
-                        <div className="px-6 py-4 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63]">
+                        <div className="px-6 py-4 bg-gradient-to-r from-[#033F99] to-[#033F99]">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30">
                               <div className="w-1.5 h-6 rounded-full bg-white"></div>
@@ -258,18 +256,16 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
                                 key={item.path}
                                 to={item.path}
                                 onClick={() => setActiveDropdown(null)}
-                                className={`flex items-start gap-4 mx-3 px-4 py-4 rounded-2xl transition-all duration-200 group ${
-                                  isActive(item.path)
-                                    ? "bg-gradient-to-r from-[#3A4E63] to-[#C4D9F4] shadow-md border-2 border-[#3A4E63]"
-                                    : "hover:bg-[#C4D9F4] border-2 border-transparent hover:border-[#3A4E63] hover:shadow-sm"
-                                }`}
+                                className={`flex items-start gap-4 mx-3 px-4 py-4 rounded-2xl transition-all duration-200 group ${isActive(item.path)
+                                    ? "bg-gradient-to-r from-[#033F99] to-[#C4D9F4] shadow-md border-2 border-[#033F99]"
+                                    : "hover:bg-[#C4D9F4] border-2 border-transparent hover:border-[#033F99] hover:shadow-sm"
+                                  }`}
                               >
                                 <div
-                                  className={`p-3 rounded-xl transition-all duration-200 shadow-lg ${
-                                    isActive(item.path)
-                                      ? "bg-gradient-to-br from-[#3A4E63] to-[#3A4E63]"
-                                      : "bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] group-hover:from-[#3A4E63] group-hover:to-[#3A4E63]"
-                                  }`}
+                                  className={`p-3 rounded-xl transition-all duration-200 shadow-lg ${isActive(item.path)
+                                      ? "bg-gradient-to-br from-[#033F99] to-[#033F99]"
+                                      : "bg-gradient-to-br from-[#033F99] to-[#033F99] group-hover:from-[#033F99] group-hover:to-[#033F99]"
+                                    }`}
                                 >
                                   <Icon className="h-6 w-6 text-white" />
                                 </div>
@@ -283,7 +279,7 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
                                 </div>
                                 {isActive(item.path) && (
                                   <div className="flex items-center">
-                                    <div className="w-2 h-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] rounded-full"></div>
+                                    <div className="w-2 h-2 bg-gradient-to-r from-[#033F99] to-[#033F99] rounded-full"></div>
                                   </div>
                                 )}
                               </Link>
@@ -292,8 +288,8 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
                         </div>
 
                         {/* Premium Footer */}
-                        <div className="px-6 py-3 bg-[#C4D9F4]/50 border-t-2 border-[#3A4E63]">
-                          <p className="text-xs text-[#3A4E63] font-semibold text-center">
+                        <div className="px-6 py-3 bg-[#C4D9F4]/50 border-t-2 border-[#033F99]">
+                          <p className="text-xs text-[#033F99] font-semibold text-center">
                             AI-Powered {group.label} Management
                           </p>
                         </div>
@@ -309,7 +305,7 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
               {/* Notification Bell */}
               <button className="relative p-2.5 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200">
                 <Bell className="h-5 w-5" />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-br from-red-500 to-red-600 rounded-full ring-2 ring-[#3A4E63]"></span>
+                <span className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-br from-red-500 to-red-600 rounded-full ring-2 ring-[#033F99]"></span>
               </button>
 
               {/* Settings */}
@@ -345,8 +341,8 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
 
                 {/* Profile Dropdown Menu */}
                 {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-3 w-72 bg-white/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-[#3A4E63] py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="px-4 py-3 border-b border-[#3A4E63]">
+                  <div className="absolute right-0 mt-3 w-72 bg-white/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-[#033F99] py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="px-4 py-3 border-b border-[#033F99]">
                       <p className="text-sm font-bold text-slate-900">
                         {user?.full_name || "User"}
                       </p>
@@ -360,7 +356,7 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
                       className="flex items-center gap-3 px-4 py-3 hover:bg-[#C4D9F4] transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
-                      <User className="h-4 w-4 text-[#3A4E63]" />
+                      <User className="h-4 w-4 text-[#033F99]" />
                       <span className="text-sm font-medium text-slate-700">
                         My Profile
                       </span>
@@ -371,13 +367,13 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
                       className="flex items-center gap-3 px-4 py-3 hover:bg-[#C4D9F4] transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
-                      <Settings className="h-4 w-4 text-[#3A4E63]" />
+                      <Settings className="h-4 w-4 text-[#033F99]" />
                       <span className="text-sm font-medium text-slate-700">
                         Settings
                       </span>
                     </Link>
 
-                    <div className="border-t border-[#3A4E63] my-2"></div>
+                    <div className="border-t border-[#033F99] my-2"></div>
 
                     <button
                       onClick={() => {
@@ -412,17 +408,16 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-[#3A4E63] bg-white/95 backdrop-blur-md">
+          <div className="lg:hidden border-t border-[#033F99] bg-white/95 backdrop-blur-md">
             <div className="px-4 py-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
               {/* Dashboard */}
               <Link
                 to="/finance"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-2 ${
-                  location.pathname === "/finance"
-                    ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white"
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-2 ${location.pathname === "/finance"
+                    ? "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white"
                     : "text-slate-700 hover:bg-slate-50"
-                }`}
+                  }`}
               >
                 <LayoutDashboard className="h-5 w-5" />
                 <span className="font-semibold text-sm">Dashboard</span>
@@ -447,11 +442,10 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
                           key={item.path}
                           to={item.path}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 px-4 py-3 rounded-xl ${
-                            isActive(item.path)
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl ${isActive(item.path)
                               ? `bg-gradient-to-r ${group.color} text-white`
                               : "text-slate-700 hover:bg-slate-50"
-                          }`}
+                            }`}
                         >
                           <Icon className="h-5 w-5" />
                           <div className="flex-1">
@@ -492,7 +486,7 @@ const FinanceLayout = ({ setIsAuthenticated }) => {
 
       {/* Main Content */}
       <main className="max-w-full px-6 py-8">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-[#3A4E63]/50 overflow-hidden">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-[#033F99]/50 overflow-hidden">
           <Outlet />
         </div>
       </main>

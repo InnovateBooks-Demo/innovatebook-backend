@@ -131,7 +131,7 @@ const ProcureCommitReview = () => {
   if (loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   if (!commit)
@@ -212,7 +212,7 @@ const ProcureCommitReview = () => {
                     `/commerce/procure-workflow/contracts/${commit.contract_id}`,
                   )
                 }
-                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e]"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e]"
               >
                 <ArrowRight className="h-4 w-4" />
                 View Contract

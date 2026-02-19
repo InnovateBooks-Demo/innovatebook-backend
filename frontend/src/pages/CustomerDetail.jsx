@@ -99,7 +99,7 @@ const CustomerDetail = () => {
             <div
               className="w-20 h-20 rounded-full flex items-center justify-center text-white text-3xl font-bold"
               style={{
-                background: "linear-gradient(135deg, #3A4E63 0%, #0066FF 100%)",
+                background: "linear-gradient(135deg, #033F99 0%, #0066FF 100%)",
               }}
             >
               {customer?.name?.charAt(0)}
@@ -108,16 +108,15 @@ const CustomerDetail = () => {
               <div className="flex items-center gap-3 mb-2">
                 <h1
                   className="text-4xl font-bold"
-                  style={{ fontFamily: "Inter", color: "#3A4E63" }}
+                  style={{ fontFamily: "Inter", color: "#033F99" }}
                 >
                   {customer?.name}
                 </h1>
                 <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    customer?.status === "Active"
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${customer?.status === "Active"
                       ? "bg-green-100 text-green-700"
                       : "bg-red-100 text-red-700"
-                  }`}
+                    }`}
                 >
                   {customer?.status}
                 </span>
@@ -159,7 +158,7 @@ const CustomerDetail = () => {
       <div className="grid md:grid-cols-4 gap-6 mb-8">
         <Card
           className="stat-card border-l-4"
-          style={{ borderLeftColor: "#3A4E63" }}
+          style={{ borderLeftColor: "#033F99" }}
         >
           <CardHeader className="pb-3">
             <CardTitle className="text-sm text-gray-600 flex items-center gap-2">
@@ -168,7 +167,7 @@ const CustomerDetail = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold" style={{ color: "#3A4E63" }}>
+            <p className="text-3xl font-bold" style={{ color: "#033F99" }}>
               {formatCurrency(data?.total_invoiced)}
             </p>
             <p className="text-xs text-gray-500 mt-1">
@@ -227,7 +226,7 @@ const CustomerDetail = () => {
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         <Card className="col-span-2">
           <CardHeader>
-            <CardTitle style={{ color: "#3A4E63" }}>
+            <CardTitle style={{ color: "#033F99" }}>
               Customer Information
             </CardTitle>
           </CardHeader>
@@ -308,14 +307,14 @@ const CustomerDetail = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle style={{ color: "#3A4E63" }}>Payment Metrics</CardTitle>
+            <CardTitle style={{ color: "#033F99" }}>Payment Metrics</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <Label className="text-sm font-semibold text-gray-700 mb-2 block">
                 Credit Limit
               </Label>
-              <p className="text-2xl font-bold" style={{ color: "#3A4E63" }}>
+              <p className="text-2xl font-bold" style={{ color: "#033F99" }}>
                 {formatCurrency(customer?.credit_limit)}
               </p>
             </div>
@@ -353,7 +352,7 @@ const CustomerDetail = () => {
         <TabsContent value="invoices">
           <Card>
             <CardHeader>
-              <CardTitle style={{ color: "#3A4E63" }}>
+              <CardTitle style={{ color: "#033F99" }}>
                 Invoice History
               </CardTitle>
               <CardDescription>All invoices for this customer</CardDescription>
@@ -392,13 +391,12 @@ const CustomerDetail = () => {
                           </td>
                           <td>
                             <span
-                              className={`badge ${
-                                invoice.status === "Paid"
+                              className={`badge ${invoice.status === "Paid"
                                   ? "badge-success"
                                   : invoice.status === "Partially Paid"
                                     ? "badge-warning"
                                     : "badge-secondary"
-                              }`}
+                                }`}
                             >
                               {invoice.status}
                             </span>
@@ -434,7 +432,7 @@ const CustomerDetail = () => {
         <TabsContent value="activities">
           <Card>
             <CardHeader>
-              <CardTitle style={{ color: "#3A4E63" }}>
+              <CardTitle style={{ color: "#033F99" }}>
                 Recent Activities
               </CardTitle>
               <CardDescription>Transaction history and updates</CardDescription>

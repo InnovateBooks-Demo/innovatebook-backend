@@ -52,7 +52,7 @@ const Reports = () => {
       <div className="mb-8">
         <h1
           className="text-3xl font-semibold mb-2"
-          style={{ fontFamily: "Inter", color: "#3A4E63" }}
+          style={{ fontFamily: "Inter", color: "#033F99" }}
         >
           Reports
         </h1>
@@ -66,7 +66,7 @@ const Reports = () => {
             <div>
               <CardTitle
                 className="text-xl font-semibold"
-                style={{ color: "#3A4E63" }}
+                style={{ color: "#033F99" }}
               >
                 AR Summary Report
               </CardTitle>
@@ -87,7 +87,7 @@ const Reports = () => {
                 <span className="text-gray-600">Total Receivables</span>
                 <span
                   className="text-lg font-semibold"
-                  style={{ color: "#3A4E63" }}
+                  style={{ color: "#033F99" }}
                 >
                   {formatCurrency(arSummary?.total_receivables)}
                 </span>
@@ -105,7 +105,7 @@ const Reports = () => {
                 </span>
               </div>
               <div className="flex justify-between items-center py-3 bg-blue-50 rounded-lg px-4">
-                <span className="font-semibold" style={{ color: "#3A4E63" }}>
+                <span className="font-semibold" style={{ color: "#033F99" }}>
                   Collection Rate
                 </span>
                 <span className="text-xl font-semibold text-green-600">
@@ -122,7 +122,7 @@ const Reports = () => {
             <div>
               <CardTitle
                 className="text-xl font-semibold"
-                style={{ color: "#3A4E63" }}
+                style={{ color: "#033F99" }}
               >
                 AP Summary Report
               </CardTitle>
@@ -143,7 +143,7 @@ const Reports = () => {
                 <span className="text-gray-600">Total Payables</span>
                 <span
                   className="text-lg font-semibold"
-                  style={{ color: "#3A4E63" }}
+                  style={{ color: "#033F99" }}
                 >
                   {formatCurrency(apSummary?.total_payables)}
                 </span>
@@ -161,7 +161,7 @@ const Reports = () => {
                 </span>
               </div>
               <div className="flex justify-between items-center py-3 bg-blue-50 rounded-lg px-4">
-                <span className="font-semibold" style={{ color: "#3A4E63" }}>
+                <span className="font-semibold" style={{ color: "#033F99" }}>
                   Payment Rate
                 </span>
                 <span className="text-xl font-semibold text-green-600">
@@ -178,7 +178,7 @@ const Reports = () => {
         <CardHeader>
           <CardTitle
             className="text-xl font-semibold"
-            style={{ color: "#3A4E63" }}
+            style={{ color: "#033F99" }}
           >
             Available Reports
           </CardTitle>

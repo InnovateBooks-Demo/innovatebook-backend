@@ -131,7 +131,7 @@ const AIForecastPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 text-[#3A4E63] animate-spin" />
+        <RefreshCw className="w-8 h-8 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -168,32 +168,29 @@ const AIForecastPage = () => {
         <div className="flex items-center gap-2 mb-6">
           <button
             onClick={() => setActiveTab("forecasts")}
-            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-              activeTab === "forecasts"
-                ? "bg-[#3A4E63] text-white"
+            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${activeTab === "forecasts"
+                ? "bg-[#033F99] text-white"
                 : "bg-white text-slate-600 border border-slate-200"
-            }`}
+              }`}
           >
             Active Forecasts
           </button>
           <button
             onClick={() => setActiveTab("ai-generate")}
-            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 ${
-              activeTab === "ai-generate"
+            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 ${activeTab === "ai-generate"
                 ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white"
                 : "bg-white text-slate-600 border border-slate-200"
-            }`}
+              }`}
           >
             <Sparkles className="w-4 h-4" />
             AI Generate
           </button>
           <button
             onClick={() => setActiveTab("whatif")}
-            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-              activeTab === "whatif"
-                ? "bg-[#3A4E63] text-white"
+            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${activeTab === "whatif"
+                ? "bg-[#033F99] text-white"
                 : "bg-white text-slate-600 border border-slate-200"
-            }`}
+              }`}
           >
             What-If Scenarios
           </button>
@@ -322,11 +319,10 @@ const AIForecastPage = () => {
                       </p>
                     </div>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        forecast.status === "active"
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${forecast.status === "active"
                           ? "bg-green-100 text-green-700"
                           : "bg-slate-100 text-slate-700"
-                      }`}
+                        }`}
                     >
                       {forecast.status}
                     </span>
@@ -350,14 +346,14 @@ const AIForecastPage = () => {
                         {formatValue(
                           "value",
                           forecast.confidence_lower ||
-                            forecast.confidence_band?.lower,
+                          forecast.confidence_band?.lower,
                         )}
                       </div>
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-emerald-700 font-medium">
                         {formatValue(
                           "value",
                           forecast.confidence_upper ||
-                            forecast.confidence_band?.upper,
+                          forecast.confidence_band?.upper,
                         )}
                       </div>
                     </div>
@@ -424,19 +420,17 @@ const AIForecastPage = () => {
                       setScenarioParams(defaultParams);
                       setSimulationResult(null);
                     }}
-                    className={`p-4 rounded-xl cursor-pointer transition-all ${
-                      selectedScenario?.id === scenario.id
+                    className={`p-4 rounded-xl cursor-pointer transition-all ${selectedScenario?.id === scenario.id
                         ? "bg-emerald-50 border-2 border-emerald-500"
                         : "bg-slate-50 border border-transparent hover:border-slate-200"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          selectedScenario?.id === scenario.id
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${selectedScenario?.id === scenario.id
                             ? "bg-emerald-500"
                             : "bg-slate-200"
-                        }`}
+                          }`}
                       >
                         <Sliders
                           className={`w-5 h-5 ${selectedScenario?.id === scenario.id ? "text-white" : "text-slate-600"}`}
@@ -569,13 +563,12 @@ const AIForecastPage = () => {
                           (insight, i) => (
                             <div
                               key={i}
-                              className={`p-3 rounded-lg mt-2 ${
-                                insight.severity === "critical"
+                              className={`p-3 rounded-lg mt-2 ${insight.severity === "critical"
                                   ? "bg-red-50 border-l-2 border-red-500"
                                   : insight.severity === "warning"
                                     ? "bg-amber-50 border-l-2 border-amber-500"
                                     : "bg-blue-50 border-l-2 border-blue-500"
-                              }`}
+                                }`}
                             >
                               <p className="text-sm font-medium">
                                 {insight.title}

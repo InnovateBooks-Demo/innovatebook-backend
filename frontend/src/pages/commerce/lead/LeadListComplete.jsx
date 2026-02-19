@@ -93,19 +93,19 @@ const LeadListComplete = () => {
 
   const getScoreBadgeColor = (category) => {
     if (category === "Hot")
-      return "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-lg shadow-[#3A4E63]/50";
+      return "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white shadow-lg shadow-[#033F99]/50";
     if (category === "Warm")
-      return "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-md shadow-[#044AB3]/40";
+      return "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white shadow-md shadow-[#044AB3]/40";
     return "bg-gradient-to-r from-slate-300 to-slate-400 text-slate-700 shadow-sm";
   };
 
   const getStatusColor = (status) => {
     const colors = {
-      New: "bg-[#EBF3FC] text-[#3A4E63] border border-[#6B9FE6]",
+      New: "bg-[#EBF3FC] text-[#033F99] border border-[#6B9FE6]",
       Enriching: "bg-[#C4D9F4] text-white border border-[#0558CC]",
       Validated: "bg-emerald-50 text-emerald-700 border border-emerald-200",
       Qualified: "bg-[#C4D9F4] text-white border border-[#0558CC]",
-      Assigned: "bg-[#EBF3FC] text-[#3A4E63] border border-[#6B9FE6]",
+      Assigned: "bg-[#EBF3FC] text-[#033F99] border border-[#6B9FE6]",
       Engaged: "bg-[#C4D9F4] text-white border border-[#0558CC]",
       Dormant: "bg-amber-50 text-amber-700 border border-amber-200",
       Converted: "bg-emerald-100 text-emerald-800 border border-emerald-300",
@@ -147,17 +147,17 @@ const LeadListComplete = () => {
       <div className="grid grid-cols-5 gap-4 mb-6">
         <div className="bg-white rounded-lg border-2 border-[#6B9FE6] p-4 hover:shadow-lg hover:border-[#0558CC] transition-all">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-[#3A4E63]">
+            <span className="text-sm font-semibold text-[#033F99]">
               Total Leads
             </span>
             <div className="p-2 bg-[#C4D9F4] rounded-lg">
-              <Users className="w-5 h-5 text-[#3A4E63]" />
+              <Users className="w-5 h-5 text-[#033F99]" />
             </div>
           </div>
           <p className="text-3xl font-bold text-white">{kpis.total}</p>
         </div>
 
-        <div className="bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-lg p-4 text-white shadow-lg shadow-[#3A4E63]/50 hover:shadow-xl hover:shadow-[#3A4E63]/60 transition-all">
+        <div className="bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-lg p-4 text-white shadow-lg shadow-[#033F99]/50 hover:shadow-xl hover:shadow-[#033F99]/60 transition-all">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-[#C4D9F4]">
               🔥 Hot Leads
@@ -170,7 +170,7 @@ const LeadListComplete = () => {
           <p className="text-xs text-[#6B9FE6] mt-1">High Priority</p>
         </div>
 
-        <div className="bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-lg p-4 text-white shadow-md shadow-[#044AB3]/40 hover:shadow-lg hover:shadow-[#044AB3]/50 transition-all">
+        <div className="bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-lg p-4 text-white shadow-md shadow-[#044AB3]/40 hover:shadow-lg hover:shadow-[#044AB3]/50 transition-all">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-[#C4D9F4]">
               ⚡ Warm Leads
@@ -220,14 +220,14 @@ const LeadListComplete = () => {
               placeholder="Search by company, contact name, or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:ring-4 focus:ring-[#C4D9F4] focus:border-[#3A4E63] transition-all font-medium text-slate-700 placeholder:text-slate-400"
+              className="w-full pl-12 pr-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:ring-4 focus:ring-[#C4D9F4] focus:border-[#033F99] transition-all font-medium text-slate-700 placeholder:text-slate-400"
             />
           </div>
 
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:ring-4 focus:ring-[#C4D9F4] focus:border-[#3A4E63] transition-all font-semibold text-slate-700 bg-white"
+            className="px-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:ring-4 focus:ring-[#C4D9F4] focus:border-[#033F99] transition-all font-semibold text-slate-700 bg-white"
           >
             <option value="">All Status</option>
             <option value="New">New</option>
@@ -244,7 +244,7 @@ const LeadListComplete = () => {
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="px-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:ring-4 focus:ring-[#C4D9F4] focus:border-[#3A4E63] transition-all font-semibold text-slate-700 bg-white"
+            className="px-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:ring-4 focus:ring-[#C4D9F4] focus:border-[#033F99] transition-all font-semibold text-slate-700 bg-white"
           >
             <option value="">All Scores</option>
             <option value="Hot">🔥 Hot (76-100)</option>
@@ -307,14 +307,14 @@ const LeadListComplete = () => {
                     className="hover:bg-[#EBF3FC] transition-all cursor-pointer group"
                   >
                     <td className="px-6 py-4">
-                      <span className="font-mono text-sm text-[#3A4E63] font-bold group-hover:text-[#3A4E63] transition-colors">
+                      <span className="font-mono text-sm text-[#033F99] font-bold group-hover:text-[#033F99] transition-colors">
                         {lead.lead_id}
                       </span>
                     </td>
 
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-bold text-slate-900 group-hover:text-[#3A4E63] transition-colors">
+                        <p className="font-bold text-slate-900 group-hover:text-[#033F99] transition-colors">
                           {lead.company_name}
                         </p>
                         <p className="text-sm text-slate-600">
@@ -384,7 +384,7 @@ const LeadListComplete = () => {
 
                     <td className="px-6 py-4">
                       {lead.estimated_deal_value ? (
-                        <span className="text-sm font-bold text-[#3A4E63]">
+                        <span className="text-sm font-bold text-[#033F99]">
                           ₹{lead.estimated_deal_value.toLocaleString("en-IN")}
                         </span>
                       ) : (

@@ -160,7 +160,7 @@ const RolesPermissions = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   }
@@ -197,7 +197,7 @@ const RolesPermissions = () => {
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e]"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e]"
             >
               <Plus className="h-4 w-4" />
               Create Role
@@ -216,11 +216,10 @@ const RolesPermissions = () => {
                 <div
                   key={role.role_id}
                   onClick={() => setSelectedRole(role)}
-                  className={`px-4 py-3 cursor-pointer hover:bg-gray-50 ${
-                    selectedRole?.role_id === role.role_id
-                      ? "bg-blue-50 border-l-2 border-l-[#3A4E63]"
+                  className={`px-4 py-3 cursor-pointer hover:bg-gray-50 ${selectedRole?.role_id === role.role_id
+                      ? "bg-blue-50 border-l-2 border-l-[#033F99]"
                       : ""
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
@@ -293,19 +292,19 @@ const RolesPermissions = () => {
                                     onChange={() => {
                                       const newPermissions = isEnabled
                                         ? selectedRole.permissions.filter(
-                                            (p) => p !== permission,
-                                          )
+                                          (p) => p !== permission,
+                                        )
                                         : [
-                                            ...(selectedRole.permissions || []),
-                                            permission,
-                                          ];
+                                          ...(selectedRole.permissions || []),
+                                          permission,
+                                        ];
                                       handleUpdatePermissions(
                                         selectedRole.role_id,
                                         newPermissions,
                                       );
                                     }}
                                     disabled={selectedRole.is_system}
-                                    className="w-4 h-4 rounded border-gray-300 text-[#3A4E63] focus:ring-[#3A4E63]"
+                                    className="w-4 h-4 rounded border-gray-300 text-[#033F99] focus:ring-[#033F99]"
                                   />
                                   <span className="text-sm text-gray-700 capitalize">
                                     {permission.split(".")[1]}
@@ -371,7 +370,7 @@ const CreateRoleModal = ({ onClose, onCreate }) => {
                 value={roleName}
                 onChange={(e) => setRoleName(e.target.value)}
                 placeholder="e.g., Project Manager"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 required
               />
             </div>
@@ -384,7 +383,7 @@ const CreateRoleModal = ({ onClose, onCreate }) => {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe this role..."
                 rows={3}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
               />
             </div>
           </div>
@@ -398,7 +397,7 @@ const CreateRoleModal = ({ onClose, onCreate }) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e]"
+              className="px-4 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e]"
             >
               Create Role
             </button>

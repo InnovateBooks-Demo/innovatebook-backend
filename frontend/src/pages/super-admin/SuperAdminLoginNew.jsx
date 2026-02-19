@@ -45,7 +45,7 @@ const SuperAdminLoginNew = () => {
     } catch (err) {
       setError(
         err.response?.data?.detail ||
-          "Login failed. Please check your credentials.",
+        "Login failed. Please check your credentials.",
       );
     } finally {
       setLoading(false);
@@ -68,8 +68,8 @@ const SuperAdminLoginNew = () => {
         {/* Logo/Header */}
         <div className="text-center mb-8">
           <div className="inline-block relative">
-            <div className="absolute inset-0 bg-[#3A4E63]/30 rounded-3xl blur-xl animate-pulse"></div>
-            <div className="relative p-5 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] rounded-2xl shadow-2xl border border-white/10">
+            <div className="absolute inset-0 bg-[#033F99]/30 rounded-3xl blur-xl animate-pulse"></div>
+            <div className="relative p-5 bg-gradient-to-br from-[#033F99] to-[#0147CC] rounded-2xl shadow-2xl border border-white/10">
               <Shield className="w-12 h-12 text-white" />
             </div>
           </div>
@@ -99,7 +99,7 @@ const SuperAdminLoginNew = () => {
                   onChange={(e) =>
                     setCredentials({ ...credentials, email: e.target.value })
                   }
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-900/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-900/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent transition-all"
                   placeholder="admin@innovatebooks.com"
                   required
                 />
@@ -120,7 +120,7 @@ const SuperAdminLoginNew = () => {
                   onChange={(e) =>
                     setCredentials({ ...credentials, password: e.target.value })
                   }
-                  className="w-full pl-12 pr-12 py-3.5 bg-slate-900/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent transition-all"
+                  className="w-full pl-12 pr-12 py-3.5 bg-slate-900/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent transition-all"
                   placeholder="Enter password"
                   required
                 />
@@ -151,7 +151,7 @@ const SuperAdminLoginNew = () => {
               type="submit"
               data-testid="super-admin-login-btn"
               disabled={loading}
-              className="w-full py-4 bg-gradient-to-r from-[#3A4E63] to-[#0147CC] hover:from-[#022a6b] hover:to-[#3A4E63] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-4 bg-gradient-to-r from-[#033F99] to-[#0147CC] hover:from-[#022a6b] hover:to-[#033F99] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

@@ -68,7 +68,7 @@ const ProcureDetail = () => {
       Requested: { bg: "bg-blue-100", text: "text-blue-700", icon: FileText },
       Approved: {
         bg: "bg-[#C4D9F4]",
-        text: "text-[#3A4E63]",
+        text: "text-[#033F99]",
         icon: CheckCircle,
       },
       Ordered: {
@@ -174,10 +174,10 @@ const ProcureDetail = () => {
             ₹{(procurement.estimated_value / 100000).toFixed(2)}L
           </p>
         </Card>
-        <Card className="p-4 bg-white border-l-4 border-[#3A4E63]">
+        <Card className="p-4 bg-white border-l-4 border-[#033F99]">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-slate-600">PO Value</p>
-            <FileText className="h-5 w-5 text-[#3A4E63]" />
+            <FileText className="h-5 w-5 text-[#033F99]" />
           </div>
           <p className="text-2xl font-bold text-slate-900">
             ₹{(procurement.po_value / 100000).toFixed(2)}L

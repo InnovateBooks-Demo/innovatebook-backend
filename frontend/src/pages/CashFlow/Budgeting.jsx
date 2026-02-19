@@ -26,7 +26,7 @@ const CashFlowBudgeting = () => {
       <div className="mb-8">
         <h1
           className="text-3xl font-semibold mb-2"
-          style={{ fontFamily: "Inter", color: "#3A4E63" }}
+          style={{ fontFamily: "Inter", color: "#033F99" }}
         >
           Cash Flow Budgeting
         </h1>
@@ -39,7 +39,7 @@ const CashFlowBudgeting = () => {
         {/* Budget Setup Wizard */}
         <Card className="chart-container">
           <CardHeader>
-            <CardTitle style={{ color: "#3A4E63" }}>Budget Setup</CardTitle>
+            <CardTitle style={{ color: "#033F99" }}>Budget Setup</CardTitle>
             <CardDescription>
               Create annual/quarterly/monthly budgets
             </CardDescription>
@@ -96,7 +96,7 @@ const CashFlowBudgeting = () => {
         <div className="grid md:grid-cols-2 gap-6">
           <Card className="chart-container">
             <CardHeader>
-              <CardTitle style={{ color: "#3A4E63" }}>
+              <CardTitle style={{ color: "#033F99" }}>
                 Inflows Planning
               </CardTitle>
               <CardDescription>Expected receipts and revenue</CardDescription>
@@ -128,7 +128,7 @@ const CashFlowBudgeting = () => {
           {/* Outflows Planning */}
           <Card className="chart-container">
             <CardHeader>
-              <CardTitle style={{ color: "#3A4E63" }}>
+              <CardTitle style={{ color: "#033F99" }}>
                 Outflows Planning
               </CardTitle>
               <CardDescription>Planned expenses by category</CardDescription>
@@ -161,7 +161,7 @@ const CashFlowBudgeting = () => {
         {/* Budget Summary */}
         <Card className="chart-container">
           <CardHeader>
-            <CardTitle style={{ color: "#3A4E63" }}>Budget Summary</CardTitle>
+            <CardTitle style={{ color: "#033F99" }}>Budget Summary</CardTitle>
             <CardDescription>Overall budget allocation</CardDescription>
           </CardHeader>
           <CardContent>
@@ -179,12 +179,12 @@ const CashFlowBudgeting = () => {
                 </span>
               </div>
               <div className="flex justify-between py-3 bg-blue-50 rounded-lg px-4">
-                <span className="font-semibold" style={{ color: "#3A4E63" }}>
+                <span className="font-semibold" style={{ color: "#033F99" }}>
                   Net Budget
                 </span>
                 <span
                   className="text-xl font-semibold"
-                  style={{ color: "#3A4E63" }}
+                  style={{ color: "#033F99" }}
                 >
                   {formatCurrency(0)}
                 </span>
@@ -196,7 +196,7 @@ const CashFlowBudgeting = () => {
         {/* Approval Workflow */}
         <Card className="chart-container">
           <CardHeader>
-            <CardTitle style={{ color: "#3A4E63" }}>
+            <CardTitle style={{ color: "#033F99" }}>
               Approval Workflow
             </CardTitle>
             <CardDescription>

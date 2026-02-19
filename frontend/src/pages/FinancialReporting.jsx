@@ -23,7 +23,7 @@ const FinancialReporting = () => {
       title: "Profit & Loss Statement",
       description: "View revenue, expenses, and net profit/loss for any period",
       icon: TrendingUp,
-      color: "from-blue-500 to-[#3A4E63]",
+      color: "from-blue-500 to-[#033F99]",
       route: "/financial-reporting/profit-loss",
       features: [
         "Revenue breakdown",
@@ -97,7 +97,7 @@ const FinancialReporting = () => {
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-[#3A4E63] flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-[#033F99] flex items-center justify-center">
               <FileText className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -201,7 +201,7 @@ const FinancialReporting = () => {
                   <Button
                     className="w-full group-hover:bg-gray-900 transition-colors"
                     style={{
-                      backgroundColor: "#3A4E63",
+                      backgroundColor: "#033F99",
                       fontFamily: "Inter, sans-serif",
                     }}
                   >

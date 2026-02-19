@@ -144,7 +144,7 @@ const UserManagement = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   }
@@ -181,7 +181,7 @@ const UserManagement = () => {
             </div>
             <button
               onClick={() => setShowInviteModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e]"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e]"
             >
               <Plus className="h-4 w-4" />
               Invite User
@@ -194,8 +194,8 @@ const UserManagement = () => {
           <button
             onClick={() => setActiveTab("users")}
             className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "users"
-                ? "border-[#3A4E63] text-[#3A4E63]"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+              ? "border-[#033F99] text-[#033F99]"
+              : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
           >
             Active Users ({users.filter((u) => u.is_active).length})
@@ -203,8 +203,8 @@ const UserManagement = () => {
           <button
             onClick={() => setActiveTab("invites")}
             className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "invites"
-                ? "border-[#3A4E63] text-[#3A4E63]"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+              ? "border-[#033F99] text-[#033F99]"
+              : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
           >
             Pending Invites ({invites.length})
@@ -212,8 +212,8 @@ const UserManagement = () => {
           <button
             onClick={() => setActiveTab("deactivated")}
             className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "deactivated"
-                ? "border-[#3A4E63] text-[#3A4E63]"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+              ? "border-[#033F99] text-[#033F99]"
+              : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
           >
             Deactivated ({users.filter((u) => !u.is_active).length})
@@ -231,7 +231,7 @@ const UserManagement = () => {
               placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
             />
           </div>
         </div>
@@ -264,7 +264,7 @@ const UserManagement = () => {
                     <tr key={user.user_id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-[#3A4E63] rounded-full flex items-center justify-center text-white font-medium">
+                          <div className="w-10 h-10 bg-[#033F99] rounded-full flex items-center justify-center text-white font-medium">
                             {user.full_name?.charAt(0) || "U"}
                           </div>
                           <div>
@@ -359,7 +359,7 @@ const UserManagement = () => {
                       <td className="px-6 py-4">
                         <button
                           onClick={() => handleResendInvite(invite.invite_id)}
-                          className="text-sm text-[#3A4E63] hover:underline"
+                          className="text-sm text-[#033F99] hover:underline"
                         >
                           Resend
                         </button>
@@ -423,7 +423,7 @@ const UserManagement = () => {
                           {user.deactivated_at || "-"}
                         </td>
                         <td className="px-6 py-4">
-                          <button className="text-sm text-[#3A4E63] hover:underline">
+                          <button className="text-sm text-[#033F99] hover:underline">
                             Reactivate
                           </button>
                         </td>
@@ -465,8 +465,8 @@ const InviteUserModal = ({ roles, onClose, onInvite }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl w-full max-w-md p-6">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"> {/* RESPONSIVE CHANGE */}
+      <div className="bg-white rounded-xl w-[95vw] sm:w-[90vw] md:w-[700px] max-w-full max-h-[85vh] overflow-y-auto p-6"> {/* RESPONSIVE CHANGE */}
         <h2 className="text-xl font-semibold text-gray-900 mb-4">
           Invite User
         </h2>
@@ -481,7 +481,7 @@ const InviteUserModal = ({ roles, onClose, onInvite }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="user@company.com"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 required
               />
             </div>
@@ -492,7 +492,7 @@ const InviteUserModal = ({ roles, onClose, onInvite }) => {
               <select
                 value={roleId}
                 onChange={(e) => setRoleId(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 required
               >
                 <option value="">Select a role</option>
@@ -504,7 +504,7 @@ const InviteUserModal = ({ roles, onClose, onInvite }) => {
               </select>
             </div>
           </div>
-          <div className="flex justify-end gap-3 mt-6">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6"> {/* RESPONSIVE CHANGE */}
             <button
               type="button"
               onClick={onClose}
@@ -514,7 +514,7 @@ const InviteUserModal = ({ roles, onClose, onInvite }) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e]"
+              className="px-4 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e]"
             >
               Send Invite
             </button>

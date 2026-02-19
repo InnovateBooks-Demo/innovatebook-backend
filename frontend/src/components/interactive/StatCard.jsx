@@ -41,11 +41,11 @@ export const StatCard = ({
         data-testid={`stat-card-${label?.toLowerCase().replace(/\s+/g, "-")}`}
       >
         {Icon && (
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#3A4E63]/10 flex items-center justify-center mb-6">
-            <Icon className="h-8 w-8 text-[#3A4E63]" />
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#033F99]/10 flex items-center justify-center mb-6">
+            <Icon className="h-8 w-8 text-[#033F99]" />
           </div>
         )}
-        <p className="text-5xl md:text-6xl font-bold text-[#3A4E63] mb-2">
+        <p className="text-5xl md:text-6xl font-bold text-[#033F99] mb-2">
           {isVisible ? (
             <AnimatedCounter end={value} prefix={prefix} suffix={suffix} />
           ) : (
@@ -66,8 +66,8 @@ export const StatCard = ({
         data-testid={`stat-card-${label?.toLowerCase().replace(/\s+/g, "-")}`}
       >
         {Icon && (
-          <div className="w-10 h-10 rounded-lg bg-[#3A4E63]/10 flex items-center justify-center">
-            <Icon className="h-5 w-5 text-[#3A4E63]" />
+          <div className="w-10 h-10 rounded-lg bg-[#033F99]/10 flex items-center justify-center">
+            <Icon className="h-5 w-5 text-[#033F99]" />
           </div>
         )}
         <div>
@@ -107,22 +107,21 @@ export const StatCard = ({
   return (
     <div
       ref={ref}
-      className={`bg-white p-6 rounded-2xl border border-slate-100 hover:border-[#3A4E63]/30 hover:shadow-lg transition-all duration-300 ${className}`}
+      className={`bg-white p-6 rounded-2xl border border-slate-100 hover:border-[#033F99]/30 hover:shadow-lg transition-all duration-300 ${className}`}
       data-testid={`stat-card-${label?.toLowerCase().replace(/\s+/g, "-")}`}
     >
       <div className="flex items-start justify-between mb-4">
         {Icon && (
-          <div className="w-12 h-12 rounded-xl bg-[#3A4E63]/10 flex items-center justify-center">
-            <Icon className="h-6 w-6 text-[#3A4E63]" />
+          <div className="w-12 h-12 rounded-xl bg-[#033F99]/10 flex items-center justify-center">
+            <Icon className="h-6 w-6 text-[#033F99]" />
           </div>
         )}
         {trend && (
           <span
-            className={`px-2 py-1 rounded-full text-xs font-semibold ${
-              trend > 0
-                ? "bg-[#3A4E63]/10 text-[#3A4E63]"
+            className={`px-2 py-1 rounded-full text-xs font-semibold ${trend > 0
+                ? "bg-[#033F99]/10 text-[#033F99]"
                 : "bg-red-100 text-red-700"
-            }`}
+              }`}
           >
             {trend > 0 ? "+" : ""}
             {trend}%

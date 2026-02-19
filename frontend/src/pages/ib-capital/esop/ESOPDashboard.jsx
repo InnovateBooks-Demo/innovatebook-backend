@@ -99,7 +99,7 @@ const ESOPDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -129,7 +129,7 @@ const ESOPDashboard = () => {
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
+            className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             New Grant
@@ -254,7 +254,7 @@ const ESOPDashboard = () => {
                 placeholder="Search employee..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               />
             </div>
             <select
@@ -370,7 +370,7 @@ const ESOPDashboard = () => {
                         <p>No ESOP grants yet</p>
                         <button
                           onClick={() => setShowCreateModal(true)}
-                          className="mt-2 text-[#3A4E63] hover:underline text-sm"
+                          className="mt-2 text-[#033F99] hover:underline text-sm"
                         >
                           Create your first grant
                         </button>
@@ -476,7 +476,7 @@ const CreateGrantModal = ({ onClose, onSuccess }) => {
                   setFormData({ ...formData, employee_id: e.target.value })
                 }
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               />
             </div>
             <div>
@@ -490,7 +490,7 @@ const CreateGrantModal = ({ onClose, onSuccess }) => {
                   setFormData({ ...formData, employee_name: e.target.value })
                 }
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               />
             </div>
           </div>
@@ -507,7 +507,7 @@ const CreateGrantModal = ({ onClose, onSuccess }) => {
                   setFormData({ ...formData, total_options: e.target.value })
                 }
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               />
             </div>
             <div>
@@ -521,7 +521,7 @@ const CreateGrantModal = ({ onClose, onSuccess }) => {
                   setFormData({ ...formData, exercise_price: e.target.value })
                 }
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               />
             </div>
           </div>
@@ -537,7 +537,7 @@ const CreateGrantModal = ({ onClose, onSuccess }) => {
                 setFormData({ ...formData, grant_date: e.target.value })
               }
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
             />
           </div>
 
@@ -550,7 +550,7 @@ const CreateGrantModal = ({ onClose, onSuccess }) => {
               onChange={(e) =>
                 setFormData({ ...formData, vesting_schedule: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
             >
               <option value="cliff_1yr_monthly_4yr">
                 1 Year Cliff + Monthly (4 Year)
@@ -574,7 +574,7 @@ const CreateGrantModal = ({ onClose, onSuccess }) => {
                     cliff_months: parseInt(e.target.value),
                   })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               />
             </div>
             <div>
@@ -590,7 +590,7 @@ const CreateGrantModal = ({ onClose, onSuccess }) => {
                     vesting_period_months: parseInt(e.target.value),
                   })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               />
             </div>
           </div>
@@ -605,7 +605,7 @@ const CreateGrantModal = ({ onClose, onSuccess }) => {
                 setFormData({ ...formData, notes: e.target.value })
               }
               rows={2}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
             />
           </div>
 
@@ -620,7 +620,7 @@ const CreateGrantModal = ({ onClose, onSuccess }) => {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] disabled:opacity-50"
+              className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] disabled:opacity-50"
             >
               {saving ? "Creating..." : "Create Grant"}
             </button>

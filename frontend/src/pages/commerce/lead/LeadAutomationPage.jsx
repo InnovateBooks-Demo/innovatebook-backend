@@ -224,8 +224,8 @@ const LeadAutomationPage = () => {
 
   const getStageColor = (stage) => {
     const colors = {
-      cyan: "from-[#3A4E63] to-[#3A4E63]",
-      blue: "from-[#3A4E63] to-[#0147CC]",
+      cyan: "from-[#033F99] to-[#033F99]",
+      blue: "from-[#033F99] to-[#0147CC]",
       purple: "from-purple-500 to-purple-600",
       green: "from-green-500 to-green-600",
       amber: "from-amber-500 to-amber-600",
@@ -239,7 +239,7 @@ const LeadAutomationPage = () => {
       case "success":
         return <CheckCircle className="h-8 w-8 text-green-500" />;
       case "running":
-        return <Loader2 className="h-8 w-8 text-[#3A4E63] animate-spin" />;
+        return <Loader2 className="h-8 w-8 text-[#033F99] animate-spin" />;
       case "error":
         return <XCircle className="h-8 w-8 text-red-500" />;
       case "warning":
@@ -258,17 +258,17 @@ const LeadAutomationPage = () => {
   const progress = (completedStages / totalStages) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#3A4E63] to-slate-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#033F99] to-slate-900 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#3A4E63] to-purple-500 rounded-3xl mb-6 shadow-2xl">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#033F99] to-purple-500 rounded-3xl mb-6 shadow-2xl">
             <Activity className="h-10 w-10 text-white" />
           </div>
           <h1 className="text-5xl font-black text-white mb-4">
             Lead Automation Workflow
           </h1>
-          <p className="text-[#3A4E63] text-xl font-medium">
+          <p className="text-[#033F99] text-xl font-medium">
             Processing:{" "}
             <span className="text-white font-bold">
               {leadData.company_name}
@@ -278,7 +278,7 @@ const LeadAutomationPage = () => {
           {/* Progress Bar */}
           <div className="mt-8 max-w-2xl mx-auto">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[#3A4E63] font-semibold text-sm">
+              <span className="text-[#033F99] font-semibold text-sm">
                 Progress
               </span>
               <span className="text-white font-bold text-lg">
@@ -287,11 +287,11 @@ const LeadAutomationPage = () => {
             </div>
             <div className="h-4 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm border-2 border-white/20">
               <div
-                className="h-full bg-gradient-to-r from-[#3A4E63] via-purple-500 to-pink-500 transition-all duration-1000 ease-out"
+                className="h-full bg-gradient-to-r from-[#033F99] via-purple-500 to-pink-500 transition-all duration-1000 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <div className="mt-3 text-[#3A4E63] text-sm">
+            <div className="mt-3 text-[#033F99] text-sm">
               {completedStages} of {totalStages} stages completed
             </div>
           </div>
@@ -311,28 +311,25 @@ const LeadAutomationPage = () => {
             return (
               <div
                 key={stage.key}
-                className={`relative overflow-hidden rounded-2xl transition-all duration-500 ${
-                  isActive ? "scale-105 shadow-2xl" : "scale-100"
-                } ${
-                  isDone
+                className={`relative overflow-hidden rounded-2xl transition-all duration-500 ${isActive ? "scale-105 shadow-2xl" : "scale-100"
+                  } ${isDone
                     ? "bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-2 border-green-500/50"
                     : isError
                       ? "bg-gradient-to-br from-red-500/20 to-rose-500/20 border-2 border-red-500/50"
                       : isRunning
-                        ? "bg-gradient-to-br from-[#3A4E63]/20 to-[#3A4E63]/20 border-2 border-[#3A4E63]/50"
+                        ? "bg-gradient-to-br from-[#033F99]/20 to-[#033F99]/20 border-2 border-[#033F99]/50"
                         : "bg-white/5 border-2 border-white/10"
-                } backdrop-blur-xl`}
+                  } backdrop-blur-xl`}
               >
                 {/* Stage Number Badge */}
                 <div className="absolute top-4 right-4">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                      isDone
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${isDone
                         ? "bg-green-500 text-white"
                         : isRunning
-                          ? "bg-[#3A4E63] text-white animate-pulse"
+                          ? "bg-[#033F99] text-white animate-pulse"
                           : "bg-white/10 text-white/50"
-                    }`}
+                      }`}
                   >
                     {idx + 1}
                   </div>
@@ -352,21 +349,20 @@ const LeadAutomationPage = () => {
                   <h3 className="text-xl font-bold text-white mb-2">
                     {stage.name}
                   </h3>
-                  <p className="text-[#3A4E63] text-sm mb-4">{stage.desc}</p>
+                  <p className="text-[#033F99] text-sm mb-4">{stage.desc}</p>
 
                   {/* Status */}
                   <div className="flex items-center gap-3">
                     {getStatusIcon(stageData.status)}
                     <span
-                      className={`text-sm font-semibold ${
-                        isDone
+                      className={`text-sm font-semibold ${isDone
                           ? "text-green-400"
                           : isError
                             ? "text-red-400"
                             : isRunning
-                              ? "text-[#3A4E63]"
+                              ? "text-[#033F99]"
                               : "text-slate-400"
-                      }`}
+                        }`}
                     >
                       {isDone
                         ? "Completed"
@@ -383,20 +379,19 @@ const LeadAutomationPage = () => {
                   {/* Details */}
                   {stageData.data && (
                     <div className="mt-4 p-3 bg-white/5 rounded-lg border border-white/10">
-                      <p className="text-[#3A4E63] text-xs">
+                      <p className="text-[#033F99] text-xs">
                         {stageData.data.message || "Processing..."}
                       </p>
                       {stageData.data.score && (
                         <p className="text-white font-bold text-lg mt-2">
                           Score: {stageData.data.score}/100
                           <span
-                            className={`ml-2 px-2 py-1 rounded text-xs ${
-                              stageData.data.category === "Hot"
+                            className={`ml-2 px-2 py-1 rounded text-xs ${stageData.data.category === "Hot"
                                 ? "bg-red-500"
                                 : stageData.data.category === "Warm"
                                   ? "bg-amber-500"
-                                  : "bg-[#3A4E63]"
-                            }`}
+                                  : "bg-[#033F99]"
+                              }`}
                           >
                             {stageData.data.category}
                           </span>
@@ -414,7 +409,7 @@ const LeadAutomationPage = () => {
 
                 {/* Active Indicator */}
                 {isActive && !isDone && (
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3A4E63] via-purple-500 to-pink-500 animate-pulse" />
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#033F99] via-purple-500 to-pink-500 animate-pulse" />
                 )}
               </div>
             );

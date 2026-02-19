@@ -46,7 +46,7 @@ const CommerceSolutionElite = () => {
       id: "lead",
       name: "Lead Management",
       icon: Users,
-      gradient: "from-[#3A4E63] via-[#3A4E63] to-[#3A4E63]",
+      gradient: "from-[#033F99] via-[#033F99] to-[#033F99]",
       accentColor: "teal",
       tagline: "AI-Powered Lead Intelligence",
       shortDesc: "Capture, score, and convert leads automatically",
@@ -92,7 +92,7 @@ const CommerceSolutionElite = () => {
       id: "evaluate",
       name: "Opportunity Evaluation",
       icon: Target,
-      gradient: "from-[#3A4E63] via-[#3A4E63] to-[#3A4E63]",
+      gradient: "from-[#033F99] via-[#033F99] to-[#033F99]",
       accentColor: "cyan",
       tagline: "Deal Intelligence Platform",
       shortDesc: "Assess opportunities with precision",
@@ -126,7 +126,7 @@ const CommerceSolutionElite = () => {
       id: "commit",
       name: "Contract Management",
       icon: FileText,
-      gradient: "from-[#3A4E63] via-[#3A4E63] to-[#3A4E63]",
+      gradient: "from-[#033F99] via-[#033F99] to-[#033F99]",
       accentColor: "teal",
       tagline: "Contract Lifecycle Hub",
       shortDesc: "Manage contracts end-to-end",
@@ -164,7 +164,7 @@ const CommerceSolutionElite = () => {
       id: "execute",
       name: "Order Execution",
       icon: Package,
-      gradient: "from-green-500 via-emerald-500 to-[#3A4E63]",
+      gradient: "from-green-500 via-emerald-500 to-[#033F99]",
       accentColor: "green",
       tagline: "Fulfillment Excellence",
       shortDesc: "Track orders from placement to delivery",
@@ -266,13 +266,13 @@ const CommerceSolutionElite = () => {
 
   const getAccentColor = (color) => {
     const colors = {
-      teal: "border-[#3A4E63] bg-[#C4D9F4]",
-      cyan: "border-[#3A4E63] bg-[#C4D9F4]",
+      teal: "border-[#033F99] bg-[#C4D9F4]",
+      cyan: "border-[#033F99] bg-[#C4D9F4]",
       green: "border-green-500 bg-green-50",
       orange: "border-orange-500 bg-orange-50",
       emerald: "border-emerald-500 bg-emerald-50",
     };
-    return colors[color] || "border-[#3A4E63] bg-[#C4D9F4]";
+    return colors[color] || "border-[#033F99] bg-[#C4D9F4]";
   };
 
   return (
@@ -282,7 +282,7 @@ const CommerceSolutionElite = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-xl flex items-center justify-center shadow-lg">
                 <ShoppingCart className="h-6 w-6 text-white" />
               </div>
               <span className="text-xl font-black text-slate-900">
@@ -297,7 +297,7 @@ const CommerceSolutionElite = () => {
                 </button>
               </Link>
               <Link to="/commerce/login">
-                <button className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all">
+                <button className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all">
                   Try Free
                   <ArrowRight className="h-4 w-4" />
                 </button>
@@ -310,9 +310,9 @@ const CommerceSolutionElite = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6 relative overflow-hidden bg-gradient-to-br from-slate-50 via-[#C4D9F4] to-[#C4D9F4]">
         <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-[#3A4E63] rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
+          <div className="absolute top-20 left-10 w-72 h-72 bg-[#033F99] rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
           <div
-            className="absolute top-40 right-10 w-72 h-72 bg-[#3A4E63] rounded-full mix-blend-multiply filter blur-3xl animate-pulse"
+            className="absolute top-40 right-10 w-72 h-72 bg-[#033F99] rounded-full mix-blend-multiply filter blur-3xl animate-pulse"
             style={{ animationDelay: "2s" }}
           ></div>
           <div
@@ -324,8 +324,8 @@ const CommerceSolutionElite = () => {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-lg mb-8">
-              <Sparkles className="h-4 w-4 text-[#3A4E63]" />
-              <span className="text-sm font-bold bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent">
+              <Sparkles className="h-4 w-4 text-[#033F99]" />
+              <span className="text-sm font-bold bg-gradient-to-r from-[#033F99] to-[#033F99] bg-clip-text text-transparent">
                 AI-Powered Commerce Platform
               </span>
             </div>
@@ -334,7 +334,7 @@ const CommerceSolutionElite = () => {
               className="text-7xl md:text-8xl font-black mb-8"
               style={{ fontFamily: "Poppins", lineHeight: "1.1" }}
             >
-              <span className="bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-emerald-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#033F99] via-[#033F99] to-emerald-600 bg-clip-text text-transparent">
                 Complete Commerce
               </span>
               <br />
@@ -348,13 +348,13 @@ const CommerceSolutionElite = () => {
 
             <div className="flex flex-wrap gap-4 justify-center mb-16">
               <Link to="/commerce/login">
-                <button className="group px-8 py-4 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold rounded-xl shadow-2xl hover:shadow-[#3A4E63] transition-all text-lg flex items-center gap-3">
+                <button className="group px-8 py-4 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold rounded-xl shadow-2xl hover:shadow-[#033F99] transition-all text-lg flex items-center gap-3">
                   Start Free Trial
                   <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </Link>
               <Link to="/contact">
-                <button className="px-8 py-4 bg-white hover:bg-slate-50 text-slate-900 font-bold rounded-xl shadow-xl border-2 border-slate-200 hover:border-[#3A4E63] transition-all text-lg">
+                <button className="px-8 py-4 bg-white hover:bg-slate-50 text-slate-900 font-bold rounded-xl shadow-xl border-2 border-slate-200 hover:border-[#033F99] transition-all text-lg">
                   Schedule Demo
                 </button>
               </Link>
@@ -367,25 +367,25 @@ const CommerceSolutionElite = () => {
                   value: "12",
                   label: "Modules",
                   icon: Layers,
-                  gradient: "from-[#3A4E63] to-[#3A4E63]",
+                  gradient: "from-[#033F99] to-[#033F99]",
                 },
                 {
                   value: "80%",
                   label: "Efficiency",
                   icon: TrendingUp,
-                  gradient: "from-[#3A4E63] to-emerald-500",
+                  gradient: "from-[#033F99] to-emerald-500",
                 },
                 {
                   value: "AI",
                   label: "Powered",
                   icon: Sparkles,
-                  gradient: "from-[#3A4E63] to-[#3A4E63]",
+                  gradient: "from-[#033F99] to-[#033F99]",
                 },
                 {
                   value: "24/7",
                   label: "Processing",
                   icon: Clock,
-                  gradient: "from-emerald-500 to-[#3A4E63]",
+                  gradient: "from-emerald-500 to-[#033F99]",
                 },
               ].map((stat, idx) => {
                 const Icon = stat.icon;
@@ -445,11 +445,10 @@ const CommerceSolutionElite = () => {
                     onClick={() =>
                       setSelectedModule(isExpanded ? null : module.id)
                     }
-                    className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-white to-slate-50 p-8 border-2 cursor-pointer transition-all ${
-                      isExpanded
-                        ? "border-[#3A4E63] shadow-2xl"
+                    className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-white to-slate-50 p-8 border-2 cursor-pointer transition-all ${isExpanded
+                        ? "border-[#033F99] shadow-2xl"
                         : "border-slate-200 hover:border-slate-300 hover:shadow-xl"
-                    }`}
+                      }`}
                   >
                     {/* Gradient Orb */}
                     <div
@@ -502,7 +501,7 @@ const CommerceSolutionElite = () => {
                         {/* Description */}
                         <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-200">
                           <div className="flex items-center gap-2 mb-4">
-                            <Sparkles className="h-5 w-5 text-[#3A4E63]" />
+                            <Sparkles className="h-5 w-5 text-[#033F99]" />
                             <h4 className="text-lg font-black text-slate-900">
                               Overview
                             </h4>
@@ -515,7 +514,7 @@ const CommerceSolutionElite = () => {
                         {/* Workflow */}
                         <div>
                           <div className="flex items-center gap-2 mb-6">
-                            <Workflow className="h-5 w-5 text-[#3A4E63]" />
+                            <Workflow className="h-5 w-5 text-[#033F99]" />
                             <h4 className="text-lg font-black text-slate-900">
                               Complete Workflow
                             </h4>
@@ -526,7 +525,7 @@ const CommerceSolutionElite = () => {
                               return (
                                 <div
                                   key={idx}
-                                  className="bg-white rounded-xl p-5 shadow-md border border-slate-200 hover:border-[#3A4E63] hover:shadow-lg transition-all"
+                                  className="bg-white rounded-xl p-5 shadow-md border border-slate-200 hover:border-[#033F99] hover:shadow-lg transition-all"
                                 >
                                   <div className="flex items-start gap-4">
                                     <div
@@ -594,7 +593,7 @@ const CommerceSolutionElite = () => {
                             {module.features.map((feature, idx) => (
                               <div
                                 key={idx}
-                                className="bg-white rounded-lg px-4 py-3 border-2 border-slate-200 text-center font-bold text-slate-700 text-sm hover:border-[#3A4E63] hover:bg-[#C4D9F4] transition-all"
+                                className="bg-white rounded-lg px-4 py-3 border-2 border-slate-200 text-center font-bold text-slate-700 text-sm hover:border-[#033F99] hover:bg-[#C4D9F4] transition-all"
                               >
                                 {feature}
                               </div>
@@ -623,7 +622,7 @@ const CommerceSolutionElite = () => {
             </div>
             <br />
             <Link to="/commerce/login">
-              <button className="px-10 py-4 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white font-bold rounded-xl shadow-2xl hover:shadow-[#3A4E63] hover:scale-105 transition-all text-lg">
+              <button className="px-10 py-4 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white font-bold rounded-xl shadow-2xl hover:shadow-[#033F99] hover:scale-105 transition-all text-lg">
                 Explore All 12 Modules
               </button>
             </Link>
@@ -632,10 +631,10 @@ const CommerceSolutionElite = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-6 bg-gradient-to-br from-slate-900 via-[#3A4E63] to-[#3A4E63] relative overflow-hidden">
+      <section className="py-24 px-6 bg-gradient-to-br from-slate-900 via-[#033F99] to-[#033F99] relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-[#3A4E63] rounded-full mix-blend-multiply filter blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#3A4E63] rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <div className="absolute top-0 left-0 w-96 h-96 bg-[#033F99] rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#033F99] rounded-full mix-blend-multiply filter blur-3xl"></div>
         </div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -645,12 +644,12 @@ const CommerceSolutionElite = () => {
           >
             Ready to Transform?
           </h2>
-          <p className="text-2xl text-[#3A4E63] mb-12">
+          <p className="text-2xl text-[#033F99] mb-12">
             Join 500+ businesses automating their commerce operations
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link to="/commerce/login">
-              <button className="px-10 py-5 bg-white text-[#3A4E63] hover:bg-[#C4D9F4] font-black rounded-xl shadow-2xl hover:scale-105 transition-all text-lg">
+              <button className="px-10 py-5 bg-white text-[#033F99] hover:bg-[#C4D9F4] font-black rounded-xl shadow-2xl hover:scale-105 transition-all text-lg">
                 Start Free Trial
               </button>
             </Link>

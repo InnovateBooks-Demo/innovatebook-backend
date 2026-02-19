@@ -92,7 +92,7 @@ const PricingEdit = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-[#3A4E63]" /> Pricing
+            <DollarSign className="w-5 h-5 text-[#033F99]" /> Pricing
             Information
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -106,7 +106,7 @@ const PricingEdit = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#3A4E63]/20 focus:border-[#3A4E63] outline-none"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#033F99]/20 focus:border-[#033F99] outline-none"
               />
             </div>
             <div>
@@ -189,7 +189,7 @@ const PricingEdit = () => {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-2.5 bg-[#3A4E63] text-white rounded-xl font-semibold disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-2.5 bg-[#033F99] text-white rounded-xl font-semibold disabled:opacity-50"
           >
             <Save className="w-4 h-4" /> {loading ? "Saving..." : "Save"}
           </button>

@@ -228,12 +228,12 @@ const EmployeesPage = () => {
       <div className="max-w-5xl">
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center">
               <Users className="h-7 w-7 text-white" />
             </div>
             <div>
               <h1 className="text-4xl font-bold text-slate-900">Employees</h1>
-              <p className="text-lg text-[#3A4E63] font-semibold">
+              <p className="text-lg text-[#033F99] font-semibold">
                 Complete Employee Registry
               </p>
             </div>
@@ -250,7 +250,7 @@ const EmployeesPage = () => {
             {benefits.map((benefit, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] p-6 rounded-2xl text-white"
+                className="bg-gradient-to-br from-[#033F99] to-[#033F99] p-6 rounded-2xl text-white"
               >
                 <p className="text-4xl font-bold mb-2">{benefit.metric}</p>
                 <p className="font-semibold mb-1">{benefit.label}</p>
@@ -269,7 +269,7 @@ const EmployeesPage = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#3A4E63] transition-all hover:shadow-lg"
+                className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#033F99] transition-all hover:shadow-lg"
               >
                 <h3 className="text-xl font-bold text-slate-900 mb-2">
                   {feature.title}
@@ -324,7 +324,7 @@ const EmployeesPage = () => {
                   </select>
                 </div>
               </div>
-              <button className="bg-[#3A4E63] text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
+              <button className="bg-[#033F99] text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
                 <UserPlus className="h-4 w-4" /> Add Employee
               </button>
             </div>
@@ -357,7 +357,7 @@ const EmployeesPage = () => {
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        <div className="w-10 h-10 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center text-white font-bold text-sm">
                           {emp.avatar}
                         </div>
                         <div>
@@ -372,11 +372,10 @@ const EmployeesPage = () => {
                     <td className="px-6 py-4 text-slate-700">{emp.dept}</td>
                     <td className="px-6 py-4">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          emp.status === "Active"
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${emp.status === "Active"
                             ? "bg-green-100 text-green-700"
                             : "bg-amber-100 text-amber-700"
-                        }`}
+                          }`}
                       >
                         {emp.status}
                       </span>
@@ -409,7 +408,7 @@ const EmployeesPage = () => {
         <TestimonialSection testimonials={testimonials} />
 
         {/* CTA */}
-        <section className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] p-8 rounded-3xl text-white">
+        <section className="bg-gradient-to-r from-[#033F99] to-[#033F99] p-8 rounded-3xl text-white">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold mb-2">
@@ -420,7 +419,7 @@ const EmployeesPage = () => {
               </p>
             </div>
             <Link to="/auth/signup">
-              <button className="bg-white text-[#3A4E63] font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
+              <button className="bg-white text-[#033F99] font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
                 <Zap className="h-5 w-5" /> Start Free Trial
               </button>
             </Link>

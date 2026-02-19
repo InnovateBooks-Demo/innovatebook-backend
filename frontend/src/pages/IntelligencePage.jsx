@@ -57,7 +57,7 @@ const IntelligencePage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h1
-              className="text-6xl font-bold mb-6 bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+              className="text-6xl font-bold mb-6 bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
               style={{ fontFamily: "Inter, system-ui, sans-serif" }}
             >
               Financial Intelligence
@@ -72,8 +72,8 @@ const IntelligencePage = () => {
               const Icon = feature.icon;
               const bgColor =
                 feature.color === "indigo"
-                  ? "from-[#3A4E63] to-[#3A4E63]"
-                  : "from-[#3A4E63] to-[#3A4E63]";
+                  ? "from-[#033F99] to-[#033F99]"
+                  : "from-[#033F99] to-[#033F99]";
               return (
                 <div
                   key={feature.name}
@@ -98,7 +98,7 @@ const IntelligencePage = () => {
           <div className="mt-16 text-center">
             <Link
               to="/auth/signup"
-              className="inline-block bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-xl"
+              className="inline-block bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-xl"
             >
               Experience the Intelligence
             </Link>

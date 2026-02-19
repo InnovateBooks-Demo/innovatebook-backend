@@ -72,7 +72,7 @@ const RiskDetail = () => {
   if (loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   if (!risk)
@@ -82,7 +82,7 @@ const RiskDetail = () => {
         <p className="text-gray-500 mb-4">Risk not found</p>
         <button
           onClick={() => navigate("/commerce/govern/risk")}
-          className="text-[#3A4E63] hover:underline"
+          className="text-[#033F99] hover:underline"
         >
           Back to Risks
         </button>

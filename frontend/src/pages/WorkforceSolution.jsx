@@ -178,13 +178,13 @@ const WorkforceSolution = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full opacity-10 pointer-events-none">
-          <div className="absolute top-20 right-20 w-96 h-96 bg-[#3A4E63] rounded-full blur-3xl"></div>
+          <div className="absolute top-20 right-20 w-96 h-96 bg-[#033F99] rounded-full blur-3xl"></div>
         </div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <Link
             to="/solutions"
-            className="inline-flex items-center gap-2 text-[#3A4E63] hover:text-[#3A4E63] font-semibold mb-8 transition-colors"
+            className="inline-flex items-center gap-2 text-[#033F99] hover:text-[#033F99] font-semibold mb-8 transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
             Back to Solutions
@@ -192,8 +192,8 @@ const WorkforceSolution = () => {
 
           <div className="text-center max-w-5xl mx-auto">
             <div className="inline-flex items-center gap-3 bg-[#EBF3FC] px-6 py-3 rounded-full mb-6">
-              <Users className="h-6 w-6 text-[#3A4E63]" />
-              <span className="text-[#3A4E63] font-bold text-lg">
+              <Users className="h-6 w-6 text-[#033F99]" />
+              <span className="text-[#033F99] font-bold text-lg">
                 IB Workforce
               </span>
             </div>
@@ -202,7 +202,7 @@ const WorkforceSolution = () => {
               className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
               style={{ fontFamily: "Inter, system-ui, sans-serif" }}
             >
-              <span className="bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent">
                 Human Capital Intelligence
               </span>
               <br />
@@ -217,13 +217,13 @@ const WorkforceSolution = () => {
 
             <div className="flex justify-center items-center gap-6 mb-12 flex-wrap">
               <Link to="/auth/signup">
-                <button className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#011B4E] text-white font-bold px-10 py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-2">
+                <button className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#011B4E] text-white font-bold px-10 py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-2">
                   <Sparkles className="h-5 w-5" />
                   Start Free Trial
                 </button>
               </Link>
               <Link to="/solutions/workforce/overview">
-                <button className="bg-white border-2 border-[#3A4E63] text-[#3A4E63] hover:bg-[#3A4E63] hover:text-white font-bold px-10 py-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-lg flex items-center gap-2">
+                <button className="bg-white border-2 border-[#033F99] text-[#033F99] hover:bg-[#033F99] hover:text-white font-bold px-10 py-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-lg flex items-center gap-2">
                   <Users className="h-5 w-5" />
                   Explore Modules
                   <ChevronRight className="h-5 w-5" />
@@ -242,7 +242,7 @@ const WorkforceSolution = () => {
                   key={index}
                   className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-[#C4D9F4]"
                 >
-                  <p className="text-3xl font-bold text-[#3A4E63] mb-1">
+                  <p className="text-3xl font-bold text-[#033F99] mb-1">
                     {stat.metric}
                   </p>
                   <p className="text-sm text-slate-600 font-medium">
@@ -274,10 +274,10 @@ const WorkforceSolution = () => {
               return (
                 <div
                   key={index}
-                  className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-3xl border-2 border-slate-200 hover:border-[#3A4E63] hover:shadow-xl transition-all"
+                  className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-3xl border-2 border-slate-200 hover:border-[#033F99] hover:shadow-xl transition-all"
                 >
                   <div className="w-14 h-14 bg-[#EBF3FC] rounded-2xl flex items-center justify-center mb-6">
-                    <Icon className="h-7 w-7 text-[#3A4E63]" />
+                    <Icon className="h-7 w-7 text-[#033F99]" />
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 mb-4">
                     {item.title}
@@ -296,7 +296,7 @@ const WorkforceSolution = () => {
       </section>
 
       {/* Core Principle */}
-      <section className="py-16 px-4 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63]">
+      <section className="py-16 px-4 bg-gradient-to-r from-[#033F99] to-[#033F99]">
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
             The Core Principle
@@ -330,11 +330,11 @@ const WorkforceSolution = () => {
               return (
                 <div
                   key={module.id}
-                  className="bg-white rounded-3xl border-2 border-slate-200 hover:border-[#3A4E63] transition-all overflow-hidden"
+                  className="bg-white rounded-3xl border-2 border-slate-200 hover:border-[#033F99] transition-all overflow-hidden"
                 >
                   <div className="p-8">
                     <div className="flex items-start gap-6">
-                      <div className="w-16 h-16 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center flex-shrink-0">
+                      <div className="w-16 h-16 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center flex-shrink-0">
                         <Icon className="h-8 w-8 text-white" />
                       </div>
                       <div className="flex-1">
@@ -342,7 +342,7 @@ const WorkforceSolution = () => {
                           <h3 className="text-2xl font-bold text-slate-900">
                             {module.name}
                           </h3>
-                          <span className="text-[#3A4E63] font-semibold">
+                          <span className="text-[#033F99] font-semibold">
                             {module.tagline}
                           </span>
                         </div>
@@ -384,7 +384,7 @@ const WorkforceSolution = () => {
 
           <div className="bg-gradient-to-br from-[#EBF3FC] to-[#C4D9F4]/50 p-8 rounded-3xl border-2 border-[#C4D9F4]">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center">
                 <span className="text-white text-2xl font-bold">SM</span>
               </div>
               <div>
@@ -410,12 +410,12 @@ const WorkforceSolution = () => {
                 <p className="text-sm text-slate-600 mb-1">
                   Revenue Attribution
                 </p>
-                <p className="text-2xl font-bold text-[#3A4E63]">₹14.1L/mo</p>
+                <p className="text-2xl font-bold text-[#033F99]">₹14.1L/mo</p>
                 <p className="text-xs text-slate-500">14% of ARR</p>
               </div>
               <div className="bg-white p-4 rounded-xl">
                 <p className="text-sm text-slate-600 mb-1">ROI</p>
-                <p className="text-2xl font-bold text-[#3A4E63]">670%</p>
+                <p className="text-2xl font-bold text-[#033F99]">670%</p>
                 <p className="text-xs text-slate-500">Above benchmark</p>
               </div>
               <div className="bg-white p-4 rounded-xl">
@@ -457,9 +457,9 @@ const WorkforceSolution = () => {
               return (
                 <div
                   key={index}
-                  className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#3A4E63] hover:shadow-lg transition-all"
+                  className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#033F99] hover:shadow-lg transition-all"
                 >
-                  <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center mb-6">
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center mb-6">
                     <BenIcon className="h-7 w-7 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 mb-3">
@@ -467,7 +467,7 @@ const WorkforceSolution = () => {
                   </h3>
                   <p className="text-slate-600 mb-4">{benefit.description}</p>
                   <div className="pt-4 border-t border-slate-200">
-                    <p className="text-2xl font-bold text-[#3A4E63]">
+                    <p className="text-2xl font-bold text-[#033F99]">
                       {benefit.metric}
                     </p>
                   </div>
@@ -479,7 +479,7 @@ const WorkforceSolution = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-[#3A4E63] via-[#3A4E63] to-[#3A4E63]">
+      <section className="py-20 px-4 bg-gradient-to-br from-[#033F99] via-[#033F99] to-[#033F99]">
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-4xl sm:text-5xl font-bold mb-6">
             Make Human Capital Your Competitive Advantage
@@ -490,7 +490,7 @@ const WorkforceSolution = () => {
           </p>
           <div className="flex justify-center items-center gap-6 flex-wrap">
             <Link to="/auth/signup">
-              <button className="bg-white text-[#3A4E63] font-bold px-10 py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-2">
+              <button className="bg-white text-[#033F99] font-bold px-10 py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-2">
                 <Sparkles className="h-5 w-5" />
                 Start Free Trial
               </button>

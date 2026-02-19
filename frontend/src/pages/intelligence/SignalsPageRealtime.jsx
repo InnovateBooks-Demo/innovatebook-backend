@@ -80,10 +80,10 @@ const SignalsPageRealtime = () => {
                 prev.map((s) =>
                   s.signal_id === data.signal_id
                     ? {
-                        ...s,
-                        acknowledged: true,
-                        acknowledged_by: data.acknowledged_by,
-                      }
+                      ...s,
+                      acknowledged: true,
+                      acknowledged_by: data.acknowledged_by,
+                    }
                     : s,
                 ),
               );
@@ -224,7 +224,7 @@ const SignalsPageRealtime = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 text-[#3A4E63] animate-spin" />
+        <RefreshCw className="w-8 h-8 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -258,11 +258,10 @@ const SignalsPageRealtime = () => {
             <div className="flex items-center gap-3">
               {/* WebSocket Status */}
               <div
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
-                  wsConnected
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${wsConnected
                     ? "bg-green-100 text-green-700"
                     : "bg-slate-100 text-slate-500"
-                }`}
+                  }`}
               >
                 {wsConnected ? (
                   <Wifi className="w-3 h-3" />
@@ -273,7 +272,7 @@ const SignalsPageRealtime = () => {
               </div>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm font-medium"
               >
                 <Plus className="w-4 h-4" />
                 Create Signal
@@ -347,14 +346,14 @@ const SignalsPageRealtime = () => {
                 placeholder="Search signals..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               />
             </div>
 
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
             >
               <option value="all">All Severities</option>
               <option value="critical">Critical</option>
@@ -365,7 +364,7 @@ const SignalsPageRealtime = () => {
             <select
               value={sourceFilter}
               onChange={(e) => setSourceFilter(e.target.value)}
-              className="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
             >
               <option value="all">All Sources</option>
               {sources.map((s) => (
@@ -391,23 +390,21 @@ const SignalsPageRealtime = () => {
             filteredSignals.map((signal) => (
               <div
                 key={signal.signal_id}
-                className={`bg-white rounded-xl border p-5 transition-all hover:shadow-md ${
-                  signal.severity === "critical"
+                className={`bg-white rounded-xl border p-5 transition-all hover:shadow-md ${signal.severity === "critical"
                     ? "border-l-4 border-l-red-500"
                     : signal.severity === "warning"
                       ? "border-l-4 border-l-amber-500"
                       : "border-l-4 border-l-blue-500"
-                }`}
+                  }`}
               >
                 <div className="flex items-start gap-4">
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      signal.severity === "critical"
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${signal.severity === "critical"
                         ? "bg-red-100"
                         : signal.severity === "warning"
                           ? "bg-amber-100"
                           : "bg-blue-100"
-                    }`}
+                      }`}
                   >
                     {getSeverityIcon(signal.severity)}
                   </div>
@@ -456,7 +453,7 @@ const SignalsPageRealtime = () => {
                     ) : (
                       <button
                         onClick={() => acknowledgeSignal(signal.signal_id)}
-                        className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm font-medium"
+                        className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm font-medium"
                       >
                         Acknowledge
                       </button>
@@ -527,7 +524,7 @@ const CreateSignalModal = ({ onClose, onCreate, sources }) => {
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               placeholder="Signal title..."
             />
           </div>
@@ -542,7 +539,7 @@ const CreateSignalModal = ({ onClose, onCreate, sources }) => {
                 setFormData({ ...formData, description: e.target.value })
               }
               rows={3}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               placeholder="Describe the signal..."
             />
           </div>
@@ -557,7 +554,7 @@ const CreateSignalModal = ({ onClose, onCreate, sources }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, severity: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="info">Info</option>
                 <option value="warning">Warning</option>
@@ -574,7 +571,7 @@ const CreateSignalModal = ({ onClose, onCreate, sources }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, source_solution: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 {sources.map((s) => (
                   <option key={s} value={s}>
@@ -596,7 +593,7 @@ const CreateSignalModal = ({ onClose, onCreate, sources }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, source_module: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 placeholder="e.g., leads, billing..."
               />
             </div>
@@ -610,7 +607,7 @@ const CreateSignalModal = ({ onClose, onCreate, sources }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, signal_type: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="ai_detected">AI Detected</option>
                 <option value="margin_erosion">Margin Erosion</option>
@@ -633,7 +630,7 @@ const CreateSignalModal = ({ onClose, onCreate, sources }) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] transition-colors"
+              className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] transition-colors"
             >
               Create Signal
             </button>

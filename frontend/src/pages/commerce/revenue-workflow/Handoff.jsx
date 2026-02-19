@@ -66,7 +66,7 @@ const RevenueHandoff = () => {
   if (loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   if (!handoff)
@@ -180,7 +180,7 @@ const RevenueHandoff = () => {
                 <p className="text-sm text-gray-500 mb-2">Scope / Items</p>
                 <div className="bg-gray-50 rounded-lg p-3">
                   {handoff.operations_data?.scope &&
-                  handoff.operations_data.scope.length > 0 ? (
+                    handoff.operations_data.scope.length > 0 ? (
                     <ul className="space-y-2">
                       {handoff.operations_data.scope.map((item, i) => (
                         <li key={i} className="text-sm text-gray-700">

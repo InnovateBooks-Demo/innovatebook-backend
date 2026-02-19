@@ -212,7 +212,7 @@ const BankingTransactions = () => {
           <div>
             <h1
               className="text-3xl font-semibold"
-              style={{ fontFamily: "Inter", color: "#3A4E63" }}
+              style={{ fontFamily: "Inter", color: "#033F99" }}
             >
               {bank?.bank_name} Transactions
             </h1>
@@ -253,7 +253,7 @@ const BankingTransactions = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold" style={{ color: "#3A4E63" }}>
+            <p className="text-2xl font-semibold" style={{ color: "#033F99" }}>
               {formatCurrency(bank?.current_balance)}
             </p>
           </CardContent>
@@ -263,7 +263,7 @@ const BankingTransactions = () => {
           className="stat-card cursor-pointer hover:shadow-lg transition-shadow"
           onClick={() => setFilterType("all")}
           style={{
-            borderColor: filterType === "all" ? "#3A4E63" : "transparent",
+            borderColor: filterType === "all" ? "#033F99" : "transparent",
             borderWidth: "2px",
           }}
         >
@@ -273,7 +273,7 @@ const BankingTransactions = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold" style={{ color: "#3A4E63" }}>
+            <p className="text-2xl font-semibold" style={{ color: "#033F99" }}>
               {transactions.length}
             </p>
           </CardContent>
@@ -369,7 +369,7 @@ const BankingTransactions = () => {
       <Card className="chart-container">
         <CardHeader className="pb-4">
           <div className="flex justify-between items-center">
-            <CardTitle style={{ color: "#3A4E63" }}>
+            <CardTitle style={{ color: "#033F99" }}>
               Transaction History
               {filterType !== "all" &&
                 ` - ${filterType.charAt(0).toUpperCase() + filterType.slice(1)}`}
@@ -424,21 +424,19 @@ const BankingTransactions = () => {
                     <td>{trans.description}</td>
                     <td>
                       <span
-                        className={`badge ${
-                          trans.transaction_type === "Credit"
+                        className={`badge ${trans.transaction_type === "Credit"
                             ? "badge-success"
                             : "badge-warning"
-                        }`}
+                          }`}
                       >
                         {trans.transaction_type}
                       </span>
                     </td>
                     <td
-                      className={`font-semibold ${
-                        trans.transaction_type === "Credit"
+                      className={`font-semibold ${trans.transaction_type === "Credit"
                           ? "text-green-600"
                           : "text-red-600"
-                      }`}
+                        }`}
                     >
                       {formatCurrency(trans.amount)}
                     </td>
@@ -446,13 +444,12 @@ const BankingTransactions = () => {
                     <td>
                       <div className="flex items-center gap-2">
                         <span
-                          className={`badge ${
-                            trans.status === "Matched"
+                          className={`badge ${trans.status === "Matched"
                               ? "badge-success"
                               : trans.status === "Partially Matched"
                                 ? "badge-warning"
                                 : "badge-secondary"
-                          }`}
+                            }`}
                         >
                           {trans.status || "Uncategorized"}
                         </span>
@@ -468,20 +465,20 @@ const BankingTransactions = () => {
                       <div className="flex gap-2">
                         {(trans.status === "Matched" ||
                           trans.status === "Partially Matched") && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDematchTransaction(trans);
-                            }}
-                            disabled={trans.is_reconciled}
-                            className="text-orange-600 hover:text-orange-700"
-                            title="Dematch Transaction"
-                          >
-                            <XCircle className="h-4 w-4" />
-                          </Button>
-                        )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDematchTransaction(trans);
+                              }}
+                              disabled={trans.is_reconciled}
+                              className="text-orange-600 hover:text-orange-700"
+                              title="Dematch Transaction"
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </Button>
+                          )}
                         <Button
                           variant="ghost"
                           size="sm"
@@ -536,7 +533,7 @@ const BankingTransactions = () => {
       <Dialog open={showReconcileDialog} onOpenChange={setShowReconcileDialog}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl" style={{ color: "#3A4E63" }}>
+            <DialogTitle className="text-2xl" style={{ color: "#033F99" }}>
               Reconcile Transactions
             </DialogTitle>
             <DialogDescription className="text-base">
@@ -548,7 +545,7 @@ const BankingTransactions = () => {
           <div className="space-y-6 py-4">
             {/* Period Summary */}
             <Card
-              style={{ background: "#EEF4FF", border: "2px solid #3A4E63" }}
+              style={{ background: "#EEF4FF", border: "2px solid #033F99" }}
             >
               <CardContent className="pt-6">
                 <div className="grid md:grid-cols-3 gap-4 text-center">
@@ -566,7 +563,7 @@ const BankingTransactions = () => {
                     </p>
                     <p
                       className="font-bold text-2xl"
-                      style={{ color: "#3A4E63" }}
+                      style={{ color: "#033F99" }}
                     >
                       {filteredTransactions.length}
                     </p>
@@ -592,7 +589,7 @@ const BankingTransactions = () => {
 
             {/* Transaction Breakdown */}
             <div>
-              <h4 className="font-semibold mb-3" style={{ color: "#3A4E63" }}>
+              <h4 className="font-semibold mb-3" style={{ color: "#033F99" }}>
                 Transaction Breakdown
               </h4>
               <div className="grid md:grid-cols-2 gap-4">

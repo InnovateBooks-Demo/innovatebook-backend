@@ -98,7 +98,7 @@ const OrgAdminDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -109,7 +109,7 @@ const OrgAdminDashboard = () => {
       <div className="bg-white border-b border-gray-200">
         <div className="px-8 py-6">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-[#3A4E63] rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-[#033F99] rounded-xl flex items-center justify-center">
               <Building2 className="h-7 w-7 text-white" />
             </div>
             <div>

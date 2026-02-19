@@ -65,7 +65,7 @@ const SpendCreate = () => {
         <Button
           onClick={handleSubmit}
           disabled={loading}
-          className="gap-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63]700"
+          className="gap-2 bg-gradient-to-r from-[#033F99] to-[#033F99]700"
         >
           <Save className="h-4 w-4" />
           {loading ? "Creating..." : "Create Expense"}
@@ -98,7 +98,7 @@ const SpendCreate = () => {
                 name="expense_type"
                 value={formData.expense_type}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="Travel">Travel</option>
                 <option value="Food">Food</option>
@@ -141,7 +141,7 @@ const SpendCreate = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 rows="3"
                 placeholder="Expense details..."
               ></textarea>

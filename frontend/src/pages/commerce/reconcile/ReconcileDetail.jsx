@@ -60,7 +60,7 @@ const ReconcileDetail = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="w-16 h-16 border-4 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-16 h-16 border-4 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -161,13 +161,13 @@ const ReconcileDetail = () => {
             )}
             {(reconcile.reconcile_status === "Matched" ||
               reconcile.reconcile_status === "Partially Matched") && (
-              <Button
-                onClick={() => handleStatusUpdate("Closed")}
-                className="bg-[#0147CC] hover:bg-blue-700 text-white"
-              >
-                Close Reconciliation
-              </Button>
-            )}
+                <Button
+                  onClick={() => handleStatusUpdate("Closed")}
+                  className="bg-[#0147CC] hover:bg-blue-700 text-white"
+                >
+                  Close Reconciliation
+                </Button>
+              )}
           </div>
         </div>
       </Card>
@@ -198,7 +198,7 @@ const ReconcileDetail = () => {
                 ₹{(reconcile.amount_external / 100000).toFixed(2)}L
               </p>
             </div>
-            <FileText className="h-8 w-8 text-[#3A4E63]" />
+            <FileText className="h-8 w-8 text-[#033F99]" />
           </div>
         </Card>
 
@@ -223,14 +223,14 @@ const ReconcileDetail = () => {
         <Card className="p-4 bg-gradient-to-br from-[#EBF3FC] to-[#C4D9F4] border-[#6B9FE6]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[#3A4E63]">
+              <p className="text-sm font-medium text-[#033F99]">
                 Reconciliation Score
               </p>
               <p className="text-2xl font-bold text-white">
                 {reconcile.reconciliation_score}%
               </p>
             </div>
-            <TrendingUp className="h-8 w-8 text-[#3A4E63]" />
+            <TrendingUp className="h-8 w-8 text-[#033F99]" />
           </div>
         </Card>
       </div>
@@ -240,7 +240,7 @@ const ReconcileDetail = () => {
         {/* Basic Information */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <GitCompare className="h-5 w-5 text-[#3A4E63]" />
+            <GitCompare className="h-5 w-5 text-[#033F99]" />
             Reconciliation Information
           </h3>
           <div className="space-y-3">
@@ -292,13 +292,12 @@ const ReconcileDetail = () => {
             <div className="flex justify-between items-center">
               <span className="text-slate-600">Match Status:</span>
               <span
-                className={`font-medium ${
-                  reconcile.match_status === "Matched"
+                className={`font-medium ${reconcile.match_status === "Matched"
                     ? "text-emerald-600"
                     : reconcile.match_status === "Mismatch"
                       ? "text-red-600"
                       : "text-amber-600"
-                }`}
+                  }`}
               >
                 {reconcile.match_status}
               </span>

@@ -27,14 +27,14 @@ const Home = () => {
   const solutions = [
     {
       name: "Commerce",
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       icon: ShoppingCart,
       description: "Customer, revenue, vendor intelligence",
       path: "/solutions/commerce",
     },
     {
       name: "Workforce",
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       icon: Users,
       description: "Human ROI, payroll, cost mapping",
       path: "/solutions/workforce",
@@ -55,7 +55,7 @@ const Home = () => {
     },
     {
       name: "Finance",
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       icon: FileText,
       description: "FP&A, accounting, budgeting, and forecasting",
       path: "/solutions/finance",
@@ -126,7 +126,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50">
       {/* Navigation - Matching Lead Module Design */}
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-xl z-50 border-b-2 border-[#3A4E63]/50 shadow-lg">
+      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-xl z-50 border-b-2 border-[#033F99]/50 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <Link to="/" className="flex items-center gap-3">
@@ -137,7 +137,7 @@ const Home = () => {
               />
               <div className="hidden sm:block">
                 <span
-                  className="font-bold text-2xl bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+                  className="font-bold text-2xl bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
                   style={{ fontFamily: "Poppins" }}
                 >
                   Innovate Books
@@ -147,38 +147,38 @@ const Home = () => {
             <div className="hidden md:flex items-center gap-6">
               <Link
                 to="/solutions"
-                className="text-[#3A4E63] hover:text-[#3A4E63] font-semibold transition-colors text-lg"
+                className="text-[#033F99] hover:text-[#033F99] font-semibold transition-colors text-lg"
               >
                 Solutions
               </Link>
               <Link
                 to="/insights"
-                className="text-[#3A4E63] hover:text-[#3A4E63] font-semibold transition-colors text-lg"
+                className="text-[#033F99] hover:text-[#033F99] font-semibold transition-colors text-lg"
               >
                 Insights
               </Link>
               <Link
                 to="/intelligence"
-                className="text-[#3A4E63] hover:text-[#3A4E63] font-semibold transition-colors text-lg"
+                className="text-[#033F99] hover:text-[#033F99] font-semibold transition-colors text-lg"
               >
                 Intelligence
               </Link>
               <Link
                 to="/about"
-                className="text-[#3A4E63] hover:text-[#3A4E63] font-semibold transition-colors text-lg"
+                className="text-[#033F99] hover:text-[#033F99] font-semibold transition-colors text-lg"
               >
                 About
               </Link>
               <Link
                 to="/contact"
-                className="text-[#3A4E63] hover:text-[#3A4E63] font-semibold transition-colors text-lg"
+                className="text-[#033F99] hover:text-[#033F99] font-semibold transition-colors text-lg"
               >
                 Contact
               </Link>
               <Link to="/auth/login">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold rounded-2xl shadow-xl shadow-[#3A4E63]/50 hover:shadow-[#3A4E63]/60 transition-all duration-300 transform hover:scale-105 px-6 py-3 flex items-center gap-2"
+                  className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold rounded-2xl shadow-xl shadow-[#033F99]/50 hover:shadow-[#033F99]/60 transition-all duration-300 transform hover:scale-105 px-6 py-3 flex items-center gap-2"
                 >
                   <LogIn className="h-5 w-5" />
                   Login
@@ -187,7 +187,7 @@ const Home = () => {
               <Link to="/auth/signup">
                 <Button
                   size="lg"
-                  className="bg-white text-[#3A4E63] border-2 border-[#3A4E63] hover:bg-[#C4D9F4] font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-6 py-3 flex items-center gap-2"
+                  className="bg-white text-[#033F99] border-2 border-[#033F99] hover:bg-[#C4D9F4] font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-6 py-3 flex items-center gap-2"
                 >
                   <UserPlus className="h-5 w-5" />
                   Sign Up
@@ -202,24 +202,24 @@ const Home = () => {
       <section className="pt-32 pb-20 px-4 bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 relative overflow-hidden">
         {/* Background decoration - Cyan theme */}
         <div className="absolute top-0 right-0 w-1/3 h-full opacity-10">
-          <div className="absolute top-20 right-20 w-64 h-64 bg-[#3A4E63] rounded-full blur-3xl"></div>
-          <div className="absolute top-40 right-40 w-48 h-48 bg-[#3A4E63] rounded-full blur-3xl"></div>
+          <div className="absolute top-20 right-20 w-64 h-64 bg-[#033F99] rounded-full blur-3xl"></div>
+          <div className="absolute top-40 right-40 w-48 h-48 bg-[#033F99] rounded-full blur-3xl"></div>
         </div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto">
             <h1
-              className="text-5xl sm:text-6xl lg:text-7xl font-black mb-6 leading-tight bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+              className="text-5xl sm:text-6xl lg:text-7xl font-black mb-6 leading-tight bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
               style={{ fontFamily: "Poppins" }}
             >
               Financial Intelligence OS <br />
-              <span className="bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent">
                 for the Modern Enterprise
               </span>
             </h1>
 
             <p
-              className="text-xl text-[#3A4E63] mb-12 max-w-3xl mx-auto leading-relaxed font-medium"
+              className="text-xl text-[#033F99] mb-12 max-w-3xl mx-auto leading-relaxed font-medium"
               style={{ fontFamily: "Inter" }}
             >
               Transform financial data into strategic decisions. Automate
@@ -230,7 +230,7 @@ const Home = () => {
             <div className="flex justify-center items-center gap-6 mb-16 flex-wrap">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-black shadow-2xl shadow-[#3A4E63]/50 hover:shadow-[#3A4E63]/60 transition-all duration-300 transform hover:scale-105 px-12 py-7 text-xl rounded-2xl"
+                className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-black shadow-2xl shadow-[#033F99]/50 hover:shadow-[#033F99]/60 transition-all duration-300 transform hover:scale-105 px-12 py-7 text-xl rounded-2xl"
                 asChild
               >
                 <Link to="/auth/signup" className="flex items-center gap-3">
@@ -240,7 +240,7 @@ const Home = () => {
               </Button>
               <Button
                 size="lg"
-                className="bg-white text-[#3A4E63] border-3 border-[#3A4E63] hover:bg-[#C4D9F4] font-black shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 px-12 py-7 text-xl rounded-2xl"
+                className="bg-white text-[#033F99] border-3 border-[#033F99] hover:bg-[#C4D9F4] font-black shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 px-12 py-7 text-xl rounded-2xl"
                 asChild
               >
                 <Link to="/contact">Schedule Demo</Link>
@@ -248,9 +248,9 @@ const Home = () => {
             </div>
 
             {/* Powered by AI - Enhanced Design with Cyan theme */}
-            <div className="relative bg-white/70 backdrop-blur-xl rounded-3xl p-10 shadow-2xl border-2 border-[#3A4E63]/50 hover:border-[#3A4E63] transition-all">
+            <div className="relative bg-white/70 backdrop-blur-xl rounded-3xl p-10 shadow-2xl border-2 border-[#033F99]/50 hover:border-[#033F99] transition-all">
               <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
-                <div className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] px-10 py-4 rounded-full shadow-2xl">
+                <div className="bg-gradient-to-r from-[#033F99] to-[#033F99] px-10 py-4 rounded-full shadow-2xl">
                   <span className="text-white text-base font-black flex items-center gap-3">
                     <Brain className="h-6 w-6" />
                     Powered by Advanced Financial AI
@@ -260,13 +260,13 @@ const Home = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-6">
                 <div className="text-center group">
-                  <div className="w-24 h-24 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-2xl group-hover:scale-110 transition-transform">
+                  <div className="w-24 h-24 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-2xl group-hover:scale-110 transition-transform">
                     <TrendingUp className="h-12 w-12 text-white" />
                   </div>
-                  <p className="text-lg font-black text-[#3A4E63]">
+                  <p className="text-lg font-black text-[#033F99]">
                     Real-Time Intelligence
                   </p>
-                  <p className="text-sm text-[#3A4E63] mt-2 font-semibold">
+                  <p className="text-sm text-[#033F99] mt-2 font-semibold">
                     Live data processing every second
                   </p>
                 </div>
@@ -274,21 +274,21 @@ const Home = () => {
                   <div className="w-24 h-24 bg-gradient-to-br from-purple-600 to-purple-700 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-2xl group-hover:scale-110 transition-transform">
                     <Brain className="h-12 w-12 text-white" />
                   </div>
-                  <p className="text-lg font-black text-[#3A4E63]">
+                  <p className="text-lg font-black text-[#033F99]">
                     Predictive Analytics
                   </p>
-                  <p className="text-sm text-[#3A4E63] mt-2 font-semibold">
+                  <p className="text-sm text-[#033F99] mt-2 font-semibold">
                     AI-powered forecasting engine
                   </p>
                 </div>
                 <div className="text-center group">
-                  <div className="w-24 h-24 bg-gradient-to-br from-emerald-600 to-[#3A4E63] rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-2xl group-hover:scale-110 transition-transform">
+                  <div className="w-24 h-24 bg-gradient-to-br from-emerald-600 to-[#033F99] rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-2xl group-hover:scale-110 transition-transform">
                     <Zap className="h-12 w-12 text-white" />
                   </div>
-                  <p className="text-lg font-black text-[#3A4E63]">
+                  <p className="text-lg font-black text-[#033F99]">
                     Automated Decisions
                   </p>
-                  <p className="text-sm text-[#3A4E63] mt-2 font-semibold">
+                  <p className="text-sm text-[#033F99] mt-2 font-semibold">
                     Smart recommendations 24/7
                   </p>
                 </div>
@@ -303,12 +303,12 @@ const Home = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2
-              className="text-5xl font-black mb-6 bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+              className="text-5xl font-black mb-6 bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
               style={{ fontFamily: "Poppins" }}
             >
               The Challenge with Traditional Finance Systems
             </h2>
-            <p className="text-[#3A4E63] text-xl max-w-3xl mx-auto font-semibold">
+            <p className="text-[#033F99] text-xl max-w-3xl mx-auto font-semibold">
               Finance teams waste 60% of their time on manual data assembly
               instead of strategic analysis. Fragmented tools create blind
               spots.
@@ -344,15 +344,15 @@ const Home = () => {
               return (
                 <div
                   key={`item-${index}`}
-                  className="bg-white/70 backdrop-blur-xl p-8 rounded-3xl border-2 border-[#3A4E63]/50 hover:border-[#3A4E63] hover:shadow-2xl transition-all duration-300 text-center group"
+                  className="bg-white/70 backdrop-blur-xl p-8 rounded-3xl border-2 border-[#033F99]/50 hover:border-[#033F99] hover:shadow-2xl transition-all duration-300 text-center group"
                 >
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
+                  <div className="w-16 h-16 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
                     <Icon className="h-8 w-8 text-white" />
                   </div>
-                  <h3 className="font-black text-xl mb-3 text-[#3A4E63]">
+                  <h3 className="font-black text-xl mb-3 text-[#033F99]">
                     {item.label}
                   </h3>
-                  <p className="text-[#3A4E63] text-sm leading-relaxed font-semibold">
+                  <p className="text-[#033F99] text-sm leading-relaxed font-semibold">
                     {item.description}
                   </p>
                 </div>
@@ -363,9 +363,9 @@ const Home = () => {
       </section>
 
       {/* Trusted By Section - Cyan Theme */}
-      <section className="py-16 px-4 bg-gradient-to-r from-[#C4D9F4] to-white border-y-2 border-[#3A4E63]">
+      <section className="py-16 px-4 bg-gradient-to-r from-[#C4D9F4] to-white border-y-2 border-[#033F99]">
         <div className="max-w-6xl mx-auto">
-          <p className="text-center text-[#3A4E63] text-sm uppercase tracking-wider mb-8 font-black">
+          <p className="text-center text-[#033F99] text-sm uppercase tracking-wider mb-8 font-black">
             Trusted by Finance Teams at Leading Companies
           </p>
           <div className="flex justify-center items-center gap-12 flex-wrap">
@@ -379,7 +379,7 @@ const Home = () => {
             ].map((company, i) => (
               <div
                 key={`item-${i}`}
-                className="text-2xl font-black text-[#3A4E63]/40 hover:text-[#3A4E63] transition-colors"
+                className="text-2xl font-black text-[#033F99]/40 hover:text-[#033F99] transition-colors"
               >
                 {company}
               </div>
@@ -392,12 +392,12 @@ const Home = () => {
       <section className="py-24 px-4 bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50">
         <div className="max-w-6xl mx-auto text-center">
           <h2
-            className="text-5xl font-black mb-8 bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+            className="text-5xl font-black mb-8 bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
             style={{ fontFamily: "Poppins" }}
           >
             From Transaction → to Truth → to Action
           </h2>
-          <p className="text-2xl text-[#3A4E63] mb-16 max-w-3xl mx-auto font-semibold">
+          <p className="text-2xl text-[#033F99] mb-16 max-w-3xl mx-auto font-semibold">
             Innovate Books unifies every layer of business finance into one
             intelligent, living system that learns and adapts.
           </p>
@@ -406,11 +406,11 @@ const Home = () => {
             {["Transaction", "Context", "Insight", "Action"].map(
               (step, index) => (
                 <React.Fragment key={`item-${index}`}>
-                  <div className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white px-12 py-6 rounded-2xl font-black text-xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105">
+                  <div className="bg-gradient-to-r from-[#033F99] to-[#033F99] text-white px-12 py-6 rounded-2xl font-black text-xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105">
                     {step}
                   </div>
                   {index < 3 && (
-                    <ArrowRight className="h-8 w-8 text-[#3A4E63]" />
+                    <ArrowRight className="h-8 w-8 text-[#033F99]" />
                   )}
                 </React.Fragment>
               ),
@@ -439,15 +439,15 @@ const Home = () => {
               return (
                 <div
                   key={`item-${i}`}
-                  className="text-center p-8 rounded-3xl bg-white/70 backdrop-blur-xl border-2 border-[#3A4E63]/50 hover:border-[#3A4E63] hover:shadow-2xl transition-all"
+                  className="text-center p-8 rounded-3xl bg-white/70 backdrop-blur-xl border-2 border-[#033F99]/50 hover:border-[#033F99] hover:shadow-2xl transition-all"
                 >
-                  <div className="w-20 h-20 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
                     <Icon className="h-10 w-10 text-white" />
                   </div>
-                  <h3 className="font-black text-xl mb-3 text-[#3A4E63]">
+                  <h3 className="font-black text-xl mb-3 text-[#033F99]">
                     {item.title}
                   </h3>
-                  <p className="text-[#3A4E63] font-semibold">{item.desc}</p>
+                  <p className="text-[#033F99] font-semibold">{item.desc}</p>
                 </div>
               );
             })}
@@ -456,7 +456,7 @@ const Home = () => {
           <div className="mt-12">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-black shadow-2xl hover:shadow-3xl px-12 py-6 text-xl rounded-2xl transition-all duration-300 transform hover:scale-105"
+              className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-black shadow-2xl hover:shadow-3xl px-12 py-6 text-xl rounded-2xl transition-all duration-300 transform hover:scale-105"
               asChild
             >
               <Link to="/solutions">Explore All Solutions →</Link>
@@ -570,12 +570,12 @@ const Home = () => {
       <section className="py-24 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <h2
-            className="text-5xl font-black text-center mb-6 bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+            className="text-5xl font-black text-center mb-6 bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
             style={{ fontFamily: "Poppins" }}
           >
             Enterprise-Grade Financial Intelligence
           </h2>
-          <p className="text-center text-[#3A4E63] mb-16 text-xl max-w-3xl mx-auto font-semibold">
+          <p className="text-center text-[#033F99] mb-16 text-xl max-w-3xl mx-auto font-semibold">
             Powered by proprietary AI engines and advanced automation that
             transform how finance teams operate
           </p>
@@ -586,15 +586,15 @@ const Home = () => {
               return (
                 <div
                   key={`item-${index}`}
-                  className="p-10 rounded-3xl bg-white/70 backdrop-blur-xl border-2 border-[#3A4E63]/50 hover:border-[#3A4E63] hover:shadow-2xl transition-all duration-300 group"
+                  className="p-10 rounded-3xl bg-white/70 backdrop-blur-xl border-2 border-[#033F99]/50 hover:border-[#033F99] hover:shadow-2xl transition-all duration-300 group"
                 >
-                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] flex items-center justify-center mb-6 shadow-2xl group-hover:scale-110 transition-transform">
+                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#033F99] to-[#033F99] flex items-center justify-center mb-6 shadow-2xl group-hover:scale-110 transition-transform">
                     <Icon className="h-10 w-10 text-white" />
                   </div>
-                  <h3 className="text-2xl font-black mb-4 text-[#3A4E63]">
+                  <h3 className="text-2xl font-black mb-4 text-[#033F99]">
                     {feature.title}
                   </h3>
-                  <p className="text-[#3A4E63] leading-relaxed font-semibold">
+                  <p className="text-[#033F99] leading-relaxed font-semibold">
                     {feature.description}
                   </p>
                 </div>
@@ -737,12 +737,12 @@ const Home = () => {
             ].map((stat, index) => (
               <div
                 key={`item-${index}`}
-                className="bg-white/70 backdrop-blur-xl p-10 rounded-3xl border-2 border-[#3A4E63]/50 hover:border-[#3A4E63] hover:shadow-2xl transition-all duration-300"
+                className="bg-white/70 backdrop-blur-xl p-10 rounded-3xl border-2 border-[#033F99]/50 hover:border-[#033F99] hover:shadow-2xl transition-all duration-300"
               >
-                <p className="text-6xl font-black bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent mb-4">
+                <p className="text-6xl font-black bg-gradient-to-r from-[#033F99] to-[#033F99] bg-clip-text text-transparent mb-4">
                   {stat.value}
                 </p>
-                <p className="text-[#3A4E63] font-bold text-lg">{stat.label}</p>
+                <p className="text-[#033F99] font-bold text-lg">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -750,11 +750,11 @@ const Home = () => {
       </section>
 
       {/* Enhanced CTA Banner - Cyan Theme */}
-      <section className="py-24 px-4 bg-gradient-to-br from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] relative overflow-hidden">
+      <section className="py-24 px-4 bg-gradient-to-br from-[#033F99] via-[#033F99] to-[#033F99] relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-[#3A4E63] rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-[#033F99] rounded-full blur-3xl"></div>
         </div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -780,7 +780,7 @@ const Home = () => {
           <div className="flex justify-center gap-6 flex-wrap">
             <Button
               size="lg"
-              className="bg-white text-[#3A4E63] hover:bg-[#C4D9F4] font-black shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 px-12 py-7 text-xl rounded-2xl"
+              className="bg-white text-[#033F99] hover:bg-[#C4D9F4] font-black shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 px-12 py-7 text-xl rounded-2xl"
               asChild
             >
               <Link to="/auth/signup" className="flex items-center gap-3">
@@ -815,7 +815,7 @@ const Home = () => {
       </section>
 
       {/* Footer - Cyan Theme */}
-      <footer className="bg-gradient-to-br from-[#3A4E63] via-[#3A4E63] to-slate-900 text-white py-16 px-4 border-t-4 border-[#3A4E63]">
+      <footer className="bg-gradient-to-br from-[#033F99] via-[#033F99] to-slate-900 text-white py-16 px-4 border-t-4 border-[#033F99]">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div>
@@ -826,19 +826,19 @@ const Home = () => {
                   className="h-10 w-auto"
                 />
                 <span
-                  className="font-black text-xl bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+                  className="font-black text-xl bg-gradient-to-r from-[#033F99] to-[#033F99] bg-clip-text text-transparent"
                   style={{ fontFamily: "Poppins" }}
                 >
                   Innovate Books
                 </span>
               </div>
-              <p className="text-[#3A4E63] text-sm font-semibold">
+              <p className="text-[#033F99] text-sm font-semibold">
                 Financial Intelligence OS for the Modern Enterprise
               </p>
             </div>
             <div>
               <h4
-                className="font-black mb-4 text-base text-[#3A4E63]"
+                className="font-black mb-4 text-base text-[#033F99]"
                 style={{ fontFamily: "Poppins" }}
               >
                 Product
@@ -846,25 +846,25 @@ const Home = () => {
               <div className="space-y-3">
                 <Link
                   to="/solutions"
-                  className="block text-[#3A4E63] hover:text-white transition-colors text-sm font-semibold"
+                  className="block text-[#033F99] hover:text-white transition-colors text-sm font-semibold"
                 >
                   All Solutions
                 </Link>
                 <Link
                   to="/insights"
-                  className="block text-[#3A4E63] hover:text-white transition-colors text-sm font-semibold"
+                  className="block text-[#033F99] hover:text-white transition-colors text-sm font-semibold"
                 >
                   Insights
                 </Link>
                 <Link
                   to="/intelligence"
-                  className="block text-[#3A4E63] hover:text-white transition-colors text-sm font-semibold"
+                  className="block text-[#033F99] hover:text-white transition-colors text-sm font-semibold"
                 >
                   Intelligence
                 </Link>
                 <a
                   href="#"
-                  className="block text-[#3A4E63] hover:text-white transition-colors text-sm font-semibold"
+                  className="block text-[#033F99] hover:text-white transition-colors text-sm font-semibold"
                 >
                   Pricing
                 </a>
@@ -872,7 +872,7 @@ const Home = () => {
             </div>
             <div>
               <h4
-                className="font-black mb-4 text-base text-[#3A4E63]"
+                className="font-black mb-4 text-base text-[#033F99]"
                 style={{ fontFamily: "Poppins" }}
               >
                 Company
@@ -880,25 +880,25 @@ const Home = () => {
               <div className="space-y-3">
                 <Link
                   to="/about"
-                  className="block text-[#3A4E63] hover:text-white transition-colors text-sm font-semibold"
+                  className="block text-[#033F99] hover:text-white transition-colors text-sm font-semibold"
                 >
                   About Us
                 </Link>
                 <a
                   href="#"
-                  className="block text-[#3A4E63] hover:text-white transition-colors text-sm font-semibold"
+                  className="block text-[#033F99] hover:text-white transition-colors text-sm font-semibold"
                 >
                   Careers
                 </a>
                 <a
                   href="#"
-                  className="block text-[#3A4E63] hover:text-white transition-colors text-sm font-semibold"
+                  className="block text-[#033F99] hover:text-white transition-colors text-sm font-semibold"
                 >
                   Blog
                 </a>
                 <a
                   href="#"
-                  className="block text-[#3A4E63] hover:text-white transition-colors text-sm font-semibold"
+                  className="block text-[#033F99] hover:text-white transition-colors text-sm font-semibold"
                 >
                   Newsroom
                 </a>
@@ -906,29 +906,29 @@ const Home = () => {
             </div>
             <div>
               <h4
-                className="font-black mb-4 text-base text-[#3A4E63]"
+                className="font-black mb-4 text-base text-[#033F99]"
                 style={{ fontFamily: "Poppins" }}
               >
                 Contact
               </h4>
-              <div className="space-y-3 text-[#3A4E63] text-sm font-semibold">
+              <div className="space-y-3 text-[#033F99] text-sm font-semibold">
                 <p>contact@innovatebooks.in</p>
                 <p>+91 XXX XXX XXXX</p>
                 <Link
                   to="/contact"
-                  className="block text-[#3A4E63] hover:text-[#3A4E63] transition-colors font-bold"
+                  className="block text-[#033F99] hover:text-[#033F99] transition-colors font-bold"
                 >
                   Get in Touch →
                 </Link>
                 <div className="mt-6 flex gap-4">
                   <Link to="/auth/login">
-                    <button className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+                    <button className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
                       <LogIn className="h-5 w-5" />
                       Login
                     </button>
                   </Link>
                   <Link to="/auth/signup">
-                    <button className="bg-white text-[#3A4E63] border-2 border-[#3A4E63] hover:bg-[#C4D9F4] font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+                    <button className="bg-white text-[#033F99] border-2 border-[#033F99] hover:bg-[#C4D9F4] font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
                       <UserPlus className="h-5 w-5" />
                       Sign Up
                     </button>
@@ -937,11 +937,11 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <div className="border-t-2 border-[#3A4E63] pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-[#3A4E63] text-sm font-semibold">
+          <div className="border-t-2 border-[#033F99] pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-[#033F99] text-sm font-semibold">
               &copy; 2025 Innovate Books. All rights reserved.
             </p>
-            <div className="flex gap-6 text-sm text-[#3A4E63] font-semibold">
+            <div className="flex gap-6 text-sm text-[#033F99] font-semibold">
               <a href="#" className="hover:text-white transition-colors">
                 Privacy Policy
               </a>

@@ -87,9 +87,9 @@ const GovernList = () => {
     avgCompliance:
       governances.length > 0
         ? (
-            governances.reduce((sum, g) => sum + g.sla_compliance_percent, 0) /
-            governances.length
-          ).toFixed(1)
+          governances.reduce((sum, g) => sum + g.sla_compliance_percent, 0) /
+          governances.length
+        ).toFixed(1)
         : 0,
   };
 
@@ -107,7 +107,7 @@ const GovernList = () => {
     const colors = {
       Process: "text-[#0147CC]",
       Policy: "text-purple-600",
-      Control: "text-[#3A4E63]",
+      Control: "text-[#033F99]",
     };
     return colors[type] || "text-slate-600";
   };
@@ -115,7 +115,7 @@ const GovernList = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="w-16 h-16 border-4 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-16 h-16 border-4 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -137,7 +137,7 @@ const GovernList = () => {
         </div>
         <Button
           onClick={() => navigate("/commerce/govern/new")}
-          className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white"
+          className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white"
         >
           <Plus className="h-5 w-5 mr-2" />
           New SOP
@@ -149,10 +149,10 @@ const GovernList = () => {
         <Card className="p-4 bg-gradient-to-br from-[#EBF3FC] to-[#C4D9F4] border-[#6B9FE6]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[#3A4E63]">Total</p>
+              <p className="text-sm font-medium text-[#033F99]">Total</p>
               <p className="text-2xl font-bold text-white">{stats.total}</p>
             </div>
-            <Shield className="h-8 w-8 text-[#3A4E63]" />
+            <Shield className="h-8 w-8 text-[#033F99]" />
           </div>
         </Card>
 
@@ -198,7 +198,7 @@ const GovernList = () => {
                 {stats.archived}
               </p>
             </div>
-            <Clock className="h-8 w-8 text-[#3A4E63]" />
+            <Clock className="h-8 w-8 text-[#033F99]" />
           </div>
         </Card>
 
@@ -230,7 +230,7 @@ const GovernList = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
           >
             <option value="All">All Status</option>
             <option value="Draft">Draft</option>
@@ -288,7 +288,7 @@ const GovernList = () => {
               {filteredGovernances.map((gov) => (
                 <tr key={gov.id} className="hover:bg-slate-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-semibold text-[#3A4E63]">
+                    <span className="text-sm font-semibold text-[#033F99]">
                       {gov.govern_id}
                     </span>
                   </td>
@@ -346,7 +346,7 @@ const GovernList = () => {
                         onClick={() =>
                           navigate(`/commerce/govern/${gov.govern_id}`)
                         }
-                        className="text-[#3A4E63] hover:text-white"
+                        className="text-[#033F99] hover:text-white"
                         title="View"
                       >
                         <Eye className="h-4 w-4" />

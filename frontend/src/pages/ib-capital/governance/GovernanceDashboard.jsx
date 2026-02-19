@@ -51,7 +51,7 @@ const GovernanceDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -85,7 +85,7 @@ const GovernanceDashboard = () => {
           </div>
           <Link
             to="/ib-capital/governance/rules/create"
-            className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
+            className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Add Rule
@@ -125,11 +125,10 @@ const GovernanceDashboard = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`py-4 text-sm font-medium border-b-2 transition-colors capitalize ${
-                  activeTab === tab
-                    ? "border-[#3A4E63] text-[#3A4E63]"
+                className={`py-4 text-sm font-medium border-b-2 transition-colors capitalize ${activeTab === tab
+                    ? "border-[#033F99] text-[#033F99]"
                     : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
+                  }`}
               >
                 {tab === "approvals"
                   ? "Approval Queue"
@@ -193,13 +192,12 @@ const GovernanceDashboard = () => {
                           <XCircle className="w-4 h-4 text-red-500" />
                         )}
                         <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            approval.decision === "approved"
+                          className={`px-2 py-1 text-xs rounded-full ${approval.decision === "approved"
                               ? "bg-green-100 text-green-700"
                               : approval.decision === "pending"
                                 ? "bg-yellow-100 text-yellow-700"
                                 : "bg-red-100 text-red-700"
-                          }`}
+                            }`}
                         >
                           {approval.decision}
                         </span>
@@ -254,13 +252,12 @@ const GovernanceDashboard = () => {
                     </td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          rule.rule_type === "approval"
+                        className={`px-2 py-1 text-xs rounded-full ${rule.rule_type === "approval"
                             ? "bg-blue-100 text-blue-700"
                             : rule.rule_type === "restriction"
                               ? "bg-orange-100 text-orange-700"
                               : "bg-purple-100 text-purple-700"
-                        }`}
+                          }`}
                       >
                         {rule.rule_type}
                       </span>
@@ -270,24 +267,22 @@ const GovernanceDashboard = () => {
                     </td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          rule.enforcement_action === "require_approval"
+                        className={`px-2 py-1 text-xs rounded-full ${rule.enforcement_action === "require_approval"
                             ? "bg-yellow-100 text-yellow-700"
                             : rule.enforcement_action === "block"
                               ? "bg-red-100 text-red-700"
                               : "bg-green-100 text-green-700"
-                        }`}
+                          }`}
                       >
                         {rule.enforcement_action?.replace("_", " ")}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-center">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          rule.is_active
+                        className={`px-2 py-1 text-xs rounded-full ${rule.is_active
                             ? "bg-green-100 text-green-700"
                             : "bg-gray-100 text-gray-700"
-                        }`}
+                          }`}
                       >
                         {rule.is_active ? "Active" : "Inactive"}
                       </span>
@@ -341,13 +336,12 @@ const GovernanceDashboard = () => {
                     </td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          item.level === "unanimous"
+                        className={`px-2 py-1 text-xs rounded-full ${item.level === "unanimous"
                             ? "bg-red-100 text-red-700"
                             : item.level === "majority"
                               ? "bg-yellow-100 text-yellow-700"
                               : "bg-green-100 text-green-700"
-                        }`}
+                          }`}
                       >
                         {item.level}
                       </span>

@@ -90,9 +90,9 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-50 via-white to-[#3A4E63]/5 flex overflow-hidden">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[#F8FAFC]">
       {/* Left Side - Info Panel */}
-      <div className="hidden lg:flex w-[45%] bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] p-8 items-center justify-center relative overflow-hidden">
+      <div className="w-full lg:w-[45%] bg-gradient-to-br from-[#033F99] to-[#033F99] p-8 flex items-center justify-center relative overflow-hidden">
         <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-3xl" />
 
@@ -147,7 +147,7 @@ const SignupPage = () => {
                   key={i}
                   className="flex items-center gap-2 text-white/70 text-xs"
                 >
-                  <div className="w-4 h-4 rounded-full bg-[#3A4E63] flex items-center justify-center text-[10px] text-white font-bold">
+                  <div className="w-4 h-4 rounded-full bg-[#033F99] flex items-center justify-center text-[10px] text-white font-bold">
                     {i + 1}
                   </div>
                   <span>{item}</span>
@@ -174,8 +174,8 @@ const SignupPage = () => {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-[55%] flex items-center justify-center px-8">
-        <div className="w-full max-w-md">
+      <div className="w-full lg:w-[55%] flex items-center justify-center px-4 sm:px-6 md:px-8 py-12 lg:py-0"> // RESPONSIVE CHANGE
+        <div className="w-full max-w-md min-w-0">
           <Link to="/" className="flex items-center gap-2 mb-4">
             <img
               src="/innovate-books-logo-new.png"
@@ -198,10 +198,10 @@ const SignupPage = () => {
           {/* Step Indicator */}
           <div className="flex items-center gap-3 mb-4">
             <div
-              className={`flex items-center gap-1.5 ${step >= 1 ? "text-[#3A4E63]" : "text-slate-400"}`}
+              className={`flex items-center gap-1.5 ${step >= 1 ? "text-[#033F99]" : "text-slate-400"}`}
             >
               <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${step >= 1 ? "bg-[#3A4E63] text-white" : "bg-slate-200"}`}
+                className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${step >= 1 ? "bg-[#033F99] text-white" : "bg-slate-200"}`}
               >
                 1
               </div>
@@ -209,14 +209,14 @@ const SignupPage = () => {
             </div>
             <div className="flex-1 h-0.5 bg-slate-200">
               <div
-                className={`h-full bg-[#3A4E63] transition-all ${step >= 2 ? "w-full" : "w-0"}`}
+                className={`h-full bg-[#033F99] transition-all ${step >= 2 ? "w-full" : "w-0"}`}
               />
             </div>
             <div
-              className={`flex items-center gap-1.5 ${step >= 2 ? "text-[#3A4E63]" : "text-slate-400"}`}
+              className={`flex items-center gap-1.5 ${step >= 2 ? "text-[#033F99]" : "text-slate-400"}`}
             >
               <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${step >= 2 ? "bg-[#3A4E63] text-white" : "bg-slate-200"}`}
+                className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${step >= 2 ? "bg-[#033F99] text-white" : "bg-slate-200"}`}
               >
                 2
               </div>
@@ -236,27 +236,39 @@ const SignupPage = () => {
             <form onSubmit={handleSubmit} className="space-y-3">
               {step === 1 && (
                 <>
-                  <div>
-                    <label className="block text-slate-700 font-semibold mb-1 text-xs">
-                      Full Name
-                    </label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> // RESPONSIVE CHANGE
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                        First Name *
+                      </label>
                       <input
                         type="text"
-                        name="full_name"
-                        value={formData.full_name}
-                        onChange={handleChange}
-                        placeholder="John Doe"
+                        name="first_name"
                         required
-                        data-testid="signup-name-input"
-                        className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg focus:border-[#3A4E63] focus:ring-2 focus:ring-[#3A4E63]/20 outline-none text-sm"
+                        value={formData.first_name}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#033F99] transition-colors"
+                        placeholder="John"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                        Last Name *
+                      </label>
+                      <input
+                        type="text"
+                        name="last_name"
+                        required
+                        value={formData.last_name}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#033F99] transition-colors"
+                        placeholder="Doe"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-slate-700 font-semibold mb-1 text-xs">
-                      Work Email
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                      Work Email *
                     </label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -268,13 +280,13 @@ const SignupPage = () => {
                         placeholder="you@company.com"
                         required
                         data-testid="signup-email-input"
-                        className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg focus:border-[#3A4E63] focus:ring-2 focus:ring-[#3A4E63]/20 outline-none text-sm"
+                        className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg focus:border-[#033F99] focus:ring-2 focus:ring-[#033F99]/20 outline-none text-sm"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-slate-700 font-semibold mb-1 text-xs">
-                      Password
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                      Password *
                     </label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -287,7 +299,7 @@ const SignupPage = () => {
                         required
                         minLength={8}
                         data-testid="signup-password-input"
-                        className="w-full pl-9 pr-9 py-2.5 border border-slate-300 rounded-lg focus:border-[#3A4E63] focus:ring-2 focus:ring-[#3A4E63]/20 outline-none text-sm"
+                        className="w-full pl-9 pr-9 py-2.5 border border-slate-300 rounded-lg focus:border-[#033F99] focus:ring-2 focus:ring-[#033F99]/20 outline-none text-sm"
                       />
                       <button
                         type="button"
@@ -308,8 +320,8 @@ const SignupPage = () => {
               {step === 2 && (
                 <>
                   <div>
-                    <label className="block text-slate-700 font-semibold mb-1 text-xs">
-                      Company Name
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> // RESPONSIVE CHANGE
+                      Official Company Name *
                     </label>
                     <div className="relative">
                       <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -321,20 +333,20 @@ const SignupPage = () => {
                         placeholder="Acme Inc"
                         required
                         data-testid="signup-company-input"
-                        className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg focus:border-[#3A4E63] focus:ring-2 focus:ring-[#3A4E63]/20 outline-none text-sm"
+                        className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg focus:border-[#033F99] focus:ring-2 focus:ring-[#033F99]/20 outline-none text-sm"
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-slate-700 font-semibold mb-1 text-xs">
-                        Industry
+                      <label className="block text-sm font-semibold text-slate-700 mb-3 break-words">
+                        Industry *
                       </label>
                       <select
                         name="industry"
                         value={formData.industry}
                         onChange={handleChange}
-                        className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:border-[#3A4E63] outline-none text-sm bg-white"
+                        className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:border-[#033F99] outline-none text-sm bg-white"
                       >
                         <option value="">Select</option>
                         {industries.map((ind) => (
@@ -345,14 +357,14 @@ const SignupPage = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-slate-700 font-semibold mb-1 text-xs">
-                        Size
+                      <label className="block text-sm font-semibold text-slate-700 mb-3 break-words">
+                        Company Size *
                       </label>
                       <select
                         name="company_size"
                         value={formData.company_size}
                         onChange={handleChange}
-                        className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:border-[#3A4E63] outline-none text-sm bg-white"
+                        className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:border-[#033F99] outline-none text-sm bg-white"
                       >
                         <option value="">Select</option>
                         {companySizes.map((size) => (
@@ -364,10 +376,10 @@ const SignupPage = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-slate-700 font-semibold mb-1 text-xs">
-                      Primary Use Case
+                    <label className="block text-sm font-semibold text-slate-700 mb-4 break-words">
+                      Primary Use Case *
                     </label>
-                    <div className="grid grid-cols-4 gap-1.5">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       {useCases.map((uc) => {
                         const Icon = uc.icon;
                         return (
@@ -377,10 +389,10 @@ const SignupPage = () => {
                             onClick={() =>
                               setFormData({ ...formData, use_case: uc.id })
                             }
-                            className={`p-2 rounded-lg border text-center transition-all ${formData.use_case === uc.id ? "border-[#3A4E63] bg-[#3A4E63]/5" : "border-slate-200 hover:border-slate-300"}`}
+                            className={`p-2 rounded-lg border text-center transition-all ${formData.use_case === uc.id ? "border-[#033F99] bg-[#033F99]/5" : "border-slate-200 hover:border-slate-300"}`}
                           >
                             <Icon
-                              className={`h-4 w-4 mx-auto mb-0.5 ${formData.use_case === uc.id ? "text-[#3A4E63]" : "text-slate-400"}`}
+                              className={`h-4 w-4 mx-auto mb-0.5 ${formData.use_case === uc.id ? "text-[#033F99]" : "text-slate-400"}`}
                             />
                             <p className="font-semibold text-[10px] text-slate-900">
                               {uc.label}
@@ -407,7 +419,7 @@ const SignupPage = () => {
                   type="submit"
                   disabled={loading}
                   data-testid="signup-submit-btn"
-                  className="flex-1 bg-[#3A4E63] hover:bg-[#3A4E63] text-white font-bold py-2.5 rounded-lg shadow-lg shadow-[#3A4E63]/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
+                  className="flex-1 bg-[#033F99] hover:bg-[#033F99] text-white font-bold py-2.5 rounded-lg shadow-lg shadow-[#033F99]/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
                 >
                   {loading ? (
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
@@ -429,7 +441,7 @@ const SignupPage = () => {
 
             <p className="text-center mt-3 text-slate-600 text-xs">
               Already have an account?{" "}
-              <Link to="/auth/login" className="text-[#3A4E63] font-semibold">
+              <Link to="/auth/login" className="text-[#033F99] font-semibold">
                 Log in
               </Link>
             </p>

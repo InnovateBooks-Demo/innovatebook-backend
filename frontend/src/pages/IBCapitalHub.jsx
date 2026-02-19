@@ -117,7 +117,7 @@ const IBCapitalHub = ({ children }) => {
           <div className="p-6">
             <Link
               to="/solutions"
-              className="flex items-center gap-2 text-[#3A4E63] hover:text-[#3A4E63] font-semibold mb-6 transition-colors"
+              className="flex items-center gap-2 text-[#033F99] hover:text-[#033F99] font-semibold mb-6 transition-colors"
             >
               <ArrowLeft className="h-5 w-5" />
               All Solutions
@@ -144,11 +144,10 @@ const IBCapitalHub = ({ children }) => {
                         setExpandedModule(module.id);
                         navigate(module.path);
                       }}
-                      className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${
-                        isCurrentModule
-                          ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-lg"
+                      className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${isCurrentModule
+                          ? "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white shadow-lg"
                           : "hover:bg-slate-50 text-slate-700"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <Icon className="h-5 w-5" />
@@ -174,14 +173,14 @@ const IBCapitalHub = ({ children }) => {
               })}
             </nav>
 
-            <div className="mt-8 p-4 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl text-white">
+            <div className="mt-8 p-4 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl text-white">
               <h3 className="font-bold mb-2">Ready to Get Started?</h3>
               <p className="text-sm mb-4 opacity-90">
                 Transform your treasury management
               </p>
               <Link
                 to="/auth/signup"
-                className="block w-full text-center bg-white text-[#3A4E63] font-bold py-2 rounded-lg hover:shadow-lg transition-all"
+                className="block w-full text-center bg-white text-[#033F99] font-bold py-2 rounded-lg hover:shadow-lg transition-all"
               >
                 Start Free Trial
               </Link>
@@ -211,13 +210,13 @@ const IBCapitalHub = ({ children }) => {
                     <ChevronRight className="h-4 w-4 text-slate-400" />
                   )}
                   {index === breadcrumbs.length - 1 ? (
-                    <span className="font-semibold text-[#3A4E63]">
+                    <span className="font-semibold text-[#033F99]">
                       {crumb.name}
                     </span>
                   ) : (
                     <Link
                       to={crumb.path}
-                      className="text-slate-600 hover:text-[#3A4E63] transition-colors"
+                      className="text-slate-600 hover:text-[#033F99] transition-colors"
                     >
                       {crumb.name}
                     </Link>

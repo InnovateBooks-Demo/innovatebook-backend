@@ -128,7 +128,7 @@
 //   if (loading)
 //     return (
 //       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-//         <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+//         <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
 //       </div>
 //     );
 
@@ -180,7 +180,7 @@
 //                   value={formData.company_name}
 //                   onChange={handleChange}
 //                   required
-//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 //                   placeholder="Enter company name"
 //                 />
 //               </div>
@@ -193,7 +193,7 @@
 //                   name="website"
 //                   value={formData.website}
 //                   onChange={handleChange}
-//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 //                   placeholder="https://example.com"
 //                 />
 //               </div>
@@ -207,7 +207,7 @@
 //                   value={formData.country}
 //                   onChange={handleChange}
 //                   required
-//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 //                   placeholder="Enter country"
 //                 />
 //               </div>
@@ -219,7 +219,7 @@
 //                   name="industry"
 //                   value={formData.industry}
 //                   onChange={handleChange}
-//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
 //                 >
 //                   <option value="">Select Industry</option>
 //                   <option value="Technology">Technology</option>
@@ -255,7 +255,7 @@
 //                   value={formData.contact_name}
 //                   onChange={handleChange}
 //                   required
-//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 //                   placeholder="Enter name"
 //                 />
 //               </div>
@@ -269,7 +269,7 @@
 //                   value={formData.contact_email}
 //                   onChange={handleChange}
 //                   required
-//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 //                   placeholder="email@example.com"
 //                 />
 //               </div>
@@ -282,7 +282,7 @@
 //                   name="contact_phone"
 //                   value={formData.contact_phone}
 //                   onChange={handleChange}
-//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 //                   placeholder="+91-XXXXXXXXXX"
 //                 />
 //               </div>
@@ -309,7 +309,7 @@
 //                   value={formData.lead_source}
 //                   onChange={handleChange}
 //                   required
-//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
 //                 >
 //                   <option value="inbound">Inbound</option>
 //                   <option value="outbound">Outbound</option>
@@ -330,7 +330,7 @@
 //                   value={formData.estimated_deal_value}
 //                   onChange={handleChange}
 //                   min="0"
-//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 //                 />
 //               </div>
 //               <div>
@@ -341,7 +341,7 @@
 //                   name="expected_timeline"
 //                   value={formData.expected_timeline}
 //                   onChange={handleChange}
-//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
 //                 >
 //                   <option value="0-3 months">0-3 months</option>
 //                   <option value="3-6 months">3-6 months</option>
@@ -368,7 +368,7 @@
 //                   name="problem_identified"
 //                   checked={formData.problem_identified}
 //                   onChange={handleChange}
-//                   className="w-5 h-5 rounded border-gray-300 text-[#3A4E63] focus:ring-[#3A4E63]"
+//                   className="w-5 h-5 rounded border-gray-300 text-[#033F99] focus:ring-[#033F99]"
 //                 />
 //                 <span className="text-sm font-medium text-gray-700">
 //                   Problem identified?
@@ -390,7 +390,7 @@
 //                         value={val}
 //                         checked={formData.budget_mentioned === val}
 //                         onChange={handleChange}
-//                         className="w-4 h-4 text-[#3A4E63] focus:ring-[#3A4E63]"
+//                         className="w-4 h-4 text-[#033F99] focus:ring-[#033F99]"
 //                       />
 //                       <span className="text-sm text-gray-600 capitalize">
 //                         {val}
@@ -405,7 +405,7 @@
 //                   name="authority_known"
 //                   checked={formData.authority_known}
 //                   onChange={handleChange}
-//                   className="w-5 h-5 rounded border-gray-300 text-[#3A4E63] focus:ring-[#3A4E63]"
+//                   className="w-5 h-5 rounded border-gray-300 text-[#033F99] focus:ring-[#033F99]"
 //                 />
 //                 <span className="text-sm font-medium text-gray-700">
 //                   Authority/Decision maker known?
@@ -417,7 +417,7 @@
 //                   name="need_timeline"
 //                   checked={formData.need_timeline}
 //                   onChange={handleChange}
-//                   className="w-5 h-5 rounded border-gray-300 text-[#3A4E63] focus:ring-[#3A4E63]"
+//                   className="w-5 h-5 rounded border-gray-300 text-[#033F99] focus:ring-[#033F99]"
 //                 />
 //                 <span className="text-sm font-medium text-gray-700">
 //                   Timeline need established?
@@ -443,7 +443,7 @@
 //                   name="next_action"
 //                   value={formData.next_action}
 //                   onChange={handleChange}
-//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 //                   placeholder="e.g., Schedule demo, Follow up call"
 //                 />
 //               </div>
@@ -456,7 +456,7 @@
 //                   value={formData.notes}
 //                   onChange={handleChange}
 //                   rows={3}
-//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+//                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
 //                   placeholder="Additional notes about this lead..."
 //                 />
 //               </div>
@@ -478,7 +478,7 @@
 //             <button
 //               type="submit"
 //               disabled={saving}
-//               className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50"
+//               className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50"
 //             >
 //               <Save className="h-4 w-4" />
 //               {saving ? "Saving..." : "Save Changes"}
@@ -700,7 +700,7 @@
 //     return (
 //       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
 //         <div className="flex items-center gap-3 text-slate-700">
-//           <Loader2 className="h-7 w-7 animate-spin text-[#3A4E63]" />
+//           <Loader2 className="h-7 w-7 animate-spin text-[#033F99]" />
 //           <span className="text-sm">Loading lead...</span>
 //         </div>
 //       </div>
@@ -758,7 +758,7 @@
 //               form="lead-edit-form"
 //               type="submit"
 //               disabled={saving}
-//               className="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-[#3A4E63] rounded-xl hover:bg-[#022d6e] transition shadow-sm disabled:opacity-60"
+//               className="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-[#033F99] rounded-xl hover:bg-[#022d6e] transition shadow-sm disabled:opacity-60"
 //             >
 //               {saving ? (
 //                 <>
@@ -1033,7 +1033,7 @@
 //                       key={val}
 //                       className={`px-3 py-2 rounded-xl border text-sm cursor-pointer transition ${
 //                         formData.budget_mentioned === val
-//                           ? "border-[#3A4E63] bg-blue-50 text-[#3A4E63]"
+//                           ? "border-[#033F99] bg-blue-50 text-[#033F99]"
 //                           : "border-slate-200 hover:bg-slate-50 text-slate-600"
 //                       }`}
 //                     >
@@ -1132,7 +1132,7 @@
 //           background: white;
 //         }
 //         .field:focus {
-//           border-color: #3A4E63;
+//           border-color: #033F99;
 //           box-shadow: 0 0 0 3px rgba(3, 63, 153, 0.15);
 //         }
 //       `}</style>
@@ -1188,7 +1188,7 @@
 //         name={name}
 //         checked={checked}
 //         onChange={onChange}
-//         className="w-5 h-5 rounded border-slate-300 text-[#3A4E63] focus:ring-[#3A4E63]"
+//         className="w-5 h-5 rounded border-slate-300 text-[#033F99] focus:ring-[#033F99]"
 //       />
 //       <span className="text-sm font-medium text-slate-700">{label}</span>
 //     </label>
@@ -1299,8 +1299,8 @@ const RevenueLeadEdit = () => {
     () =>
       toNum(
         formData.expected_deal_value ??
-          formData.estimated_deal_value ??
-          formData.deal_value,
+        formData.estimated_deal_value ??
+        formData.deal_value,
       ),
     [
       formData.expected_deal_value,
@@ -1708,7 +1708,7 @@ const RevenueLeadEdit = () => {
   if (loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
 
@@ -1752,7 +1752,7 @@ const RevenueLeadEdit = () => {
               type="submit"
               form="lead-edit-form"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -1786,7 +1786,7 @@ const RevenueLeadEdit = () => {
                   name="lead_name"
                   value={formData.lead_name}
                   onChange={handleBasicChange}
-                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="e.g., Q2 Renewal - ABC"
                 />
               </Field>
@@ -1799,7 +1799,7 @@ const RevenueLeadEdit = () => {
                     value={formData.company_name}
                     onChange={handleBasicChange}
                     required
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="Enter company name"
                   />
                 </Field>
@@ -1813,7 +1813,7 @@ const RevenueLeadEdit = () => {
                     name="website"
                     value={formData.website}
                     onChange={handleBasicChange}
-                    className="w-full h-11 pl-10 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 pl-10 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="https://example.com"
                   />
                 </div>
@@ -1825,7 +1825,7 @@ const RevenueLeadEdit = () => {
                   name="industry"
                   value={formData.business.industry}
                   onChange={handleBusinessChange}
-                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="Industry"
                 />
               </Field>
@@ -1839,7 +1839,7 @@ const RevenueLeadEdit = () => {
                       value={formData.description}
                       onChange={handleBasicChange}
                       rows={3}
-                      className="w-full px-4 py-3 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-4 py-3 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="Short description about the company..."
                     />
                   </div>
@@ -1862,7 +1862,7 @@ const RevenueLeadEdit = () => {
                     name="country"
                     value={formData.address.country}
                     onChange={handleAddressChange}
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="Country"
                   />
                 </Field>
@@ -1872,7 +1872,7 @@ const RevenueLeadEdit = () => {
                     name="state"
                     value={formData.address.state}
                     onChange={handleAddressChange}
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="State"
                   />
                 </Field>
@@ -1883,7 +1883,7 @@ const RevenueLeadEdit = () => {
                       name="street"
                       value={formData.address.street}
                       onChange={handleAddressChange}
-                      className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="Street"
                     />
                   </Field>
@@ -1894,7 +1894,7 @@ const RevenueLeadEdit = () => {
                     name="city"
                     value={formData.address.city}
                     onChange={handleAddressChange}
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="City"
                   />
                 </Field>
@@ -1904,7 +1904,7 @@ const RevenueLeadEdit = () => {
                     name="postal_code"
                     value={formData.address.postal_code}
                     onChange={handleAddressChange}
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="Postal Code"
                   />
                 </Field>
@@ -1921,7 +1921,7 @@ const RevenueLeadEdit = () => {
               <button
                 type="button"
                 onClick={addContact}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] transition"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] transition"
               >
                 <Plus className="h-4 w-4" />
                 Add Contact
@@ -1935,18 +1935,16 @@ const RevenueLeadEdit = () => {
                 return (
                   <div
                     key={idx}
-                    className={`rounded-xl border overflow-hidden ${
-                      isPrimary
+                    className={`rounded-xl border overflow-hidden ${isPrimary
                         ? "border-blue-200 bg-blue-50/30"
                         : "border-gray-200 bg-white"
-                    }`}
+                      }`}
                   >
                     <div
-                      className={`px-5 py-4 flex items-center justify-between gap-4 ${
-                        isPrimary
+                      className={`px-5 py-4 flex items-center justify-between gap-4 ${isPrimary
                           ? "border-b border-blue-200/70"
                           : "border-b border-gray-200"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-2">
                         {isPrimary ? (
@@ -1995,7 +1993,7 @@ const RevenueLeadEdit = () => {
                               e.target.value,
                             )
                           }
-                          className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                          className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                         />
                       </Field>
 
@@ -2006,7 +2004,7 @@ const RevenueLeadEdit = () => {
                           onChange={(e) =>
                             handleContactChange(idx, "role", e.target.value)
                           }
-                          className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                          className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                         />
                       </Field>
 
@@ -2017,7 +2015,7 @@ const RevenueLeadEdit = () => {
                           onChange={(e) =>
                             handleContactChange(idx, "email", e.target.value)
                           }
-                          className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                          className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                         />
                       </Field>
 
@@ -2028,7 +2026,7 @@ const RevenueLeadEdit = () => {
                           onChange={(e) =>
                             handleContactChange(idx, "phone", e.target.value)
                           }
-                          className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                          className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                         />
                       </Field>
                     </div>
@@ -2047,7 +2045,7 @@ const RevenueLeadEdit = () => {
                     name="employees"
                     value={formData.business.employees}
                     onChange={handleBusinessChange}
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="Employees"
                   />
                 </Field>
@@ -2057,7 +2055,7 @@ const RevenueLeadEdit = () => {
                     name="annual_revenue"
                     value={formData.business.annual_revenue}
                     onChange={handleBusinessChange}
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="Annual revenue"
                   />
                 </Field>
@@ -2067,7 +2065,7 @@ const RevenueLeadEdit = () => {
                     name="lead_source"
                     value={formData.business.lead_source}
                     onChange={handleBusinessChange}
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   >
                     <option value="inbound">Inbound</option>
                     <option value="outbound">Outbound</option>
@@ -2085,7 +2083,7 @@ const RevenueLeadEdit = () => {
                     name="assigned_to"
                     value={formData.business.assigned_to}
                     onChange={handleBusinessChange}
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="Assigned to"
                   />
                 </Field>
@@ -2101,7 +2099,7 @@ const RevenueLeadEdit = () => {
                     value={formData.estimated_deal_value}
                     onChange={handleDealChange}
                     min="0"
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   />
                   <p className="text-xs text-gray-500 mt-2">
                     Preview:{" "}
@@ -2116,7 +2114,7 @@ const RevenueLeadEdit = () => {
                     name="expected_timeline"
                     value={formData.expected_timeline}
                     onChange={handleChange}
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   >
                     <option value="0-3 months">0-3 months</option>
                     <option value="3-6 months">3-6 months</option>
@@ -2145,11 +2143,10 @@ const RevenueLeadEdit = () => {
                   {["yes", "no", "unknown"].map((val) => (
                     <label
                       key={val}
-                      className={`px-3 py-2 rounded-lg border text-sm cursor-pointer transition ${
-                        formData.budget_mentioned === val
-                          ? "border-[#3A4E63] bg-blue-50 text-[#3A4E63]"
+                      className={`px-3 py-2 rounded-lg border text-sm cursor-pointer transition ${formData.budget_mentioned === val
+                          ? "border-[#033F99] bg-blue-50 text-[#033F99]"
                           : "border-gray-200 hover:bg-gray-50 text-gray-600"
-                      }`}
+                        }`}
                     >
                       <input
                         type="radio"
@@ -2190,7 +2187,7 @@ const RevenueLeadEdit = () => {
                   name="next_action"
                   value={formData.next_action}
                   onChange={handleChange}
-                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="e.g., Schedule demo, Follow up call"
                 />
               </Field>
@@ -2201,7 +2198,7 @@ const RevenueLeadEdit = () => {
                   value={formData.notes}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="Additional notes about this lead..."
                 />
               </Field>
@@ -2247,7 +2244,7 @@ function CheckboxRow({ name, checked, onChange, label }) {
         name={name}
         checked={checked}
         onChange={onChange}
-        className="w-5 h-5 rounded border-gray-300 text-[#3A4E63] focus:ring-[#3A4E63]"
+        className="w-5 h-5 rounded border-gray-300 text-[#033F99] focus:ring-[#033F99]"
       />
       <span className="text-sm font-medium text-gray-700">{label}</span>
     </label>

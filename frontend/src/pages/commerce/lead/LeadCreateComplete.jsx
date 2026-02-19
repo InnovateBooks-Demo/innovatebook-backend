@@ -77,9 +77,9 @@ const LeadCreateComplete = () => {
           : null,
         tags: formData.tags
           ? formData.tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter(Boolean)
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
           : [],
       };
 
@@ -122,14 +122,14 @@ const LeadCreateComplete = () => {
         {/* Section 1: Lead Identification */}
         <div className="bg-white rounded-lg border-2 border-[#6B9FE6] p-6 shadow-sm hover:shadow-md hover:border-[#0558CC] transition-all">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#6B9FE6]">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] flex items-center justify-center shadow-lg shadow-[#3A4E63]/50">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#033F99] to-[#033F99] flex items-center justify-center shadow-lg shadow-[#033F99]/50">
               <Building2 className="w-6 h-6 text-white" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-white">
                 1. Lead Identification
               </h3>
-              <p className="text-sm text-[#3A4E63]">
+              <p className="text-sm text-[#033F99]">
                 Basic company and source information
               </p>
             </div>
@@ -168,14 +168,14 @@ const LeadCreateComplete = () => {
         {/* Section 2: Contact Person */}
         <div className="bg-white rounded-lg border-2 border-[#6B9FE6] p-6 shadow-sm hover:shadow-md hover:border-[#0558CC] transition-all">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#6B9FE6]">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] flex items-center justify-center shadow-lg shadow-[#3A4E63]/50">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#033F99] to-[#033F99] flex items-center justify-center shadow-lg shadow-[#033F99]/50">
               <User className="w-6 h-6 text-white" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-white">
                 2. Contact Person
               </h3>
-              <p className="text-sm text-[#3A4E63]">
+              <p className="text-sm text-[#033F99]">
                 Primary point of contact details
               </p>
             </div>
@@ -230,14 +230,14 @@ const LeadCreateComplete = () => {
         {/* Section 3: Company Information */}
         <div className="bg-white rounded-lg border-2 border-[#6B9FE6] p-6 shadow-sm hover:shadow-md hover:border-[#0558CC] transition-all">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#6B9FE6]">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] flex items-center justify-center shadow-lg shadow-[#3A4E63]/50">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#033F99] to-[#033F99] flex items-center justify-center shadow-lg shadow-[#033F99]/50">
               <Globe className="w-6 h-6 text-white" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-white">
                 3. Company Information
               </h3>
-              <p className="text-sm text-[#3A4E63]">
+              <p className="text-sm text-[#033F99]">
                 Location and business details
               </p>
             </div>
@@ -320,14 +320,14 @@ const LeadCreateComplete = () => {
         {/* Section 4: Business Interest */}
         <div className="bg-white rounded-lg border-2 border-[#6B9FE6] p-6 shadow-sm hover:shadow-md hover:border-[#0558CC] transition-all">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#6B9FE6]">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] flex items-center justify-center shadow-lg shadow-[#3A4E63]/50">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#033F99] to-[#033F99] flex items-center justify-center shadow-lg shadow-[#033F99]/50">
               <Target className="w-6 h-6 text-white" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-white">
                 4. Business Interest
               </h3>
-              <p className="text-sm text-[#3A4E63]">
+              <p className="text-sm text-[#033F99]">
                 What they're looking for and deal potential
               </p>
             </div>
@@ -381,14 +381,14 @@ const LeadCreateComplete = () => {
         {/* Section 5: Internal Tagging */}
         <div className="bg-white rounded-lg border-2 border-[#6B9FE6] p-6 shadow-sm hover:shadow-md hover:border-[#0558CC] transition-all">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#6B9FE6]">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] flex items-center justify-center shadow-lg shadow-[#3A4E63]/50">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#033F99] to-[#033F99] flex items-center justify-center shadow-lg shadow-[#033F99]/50">
               <Tag className="w-6 h-6 text-white" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-white">
                 5. Internal Tagging
               </h3>
-              <p className="text-sm text-[#3A4E63]">
+              <p className="text-sm text-[#033F99]">
                 Optional campaign and tag information
               </p>
             </div>

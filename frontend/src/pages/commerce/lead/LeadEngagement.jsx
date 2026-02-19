@@ -137,8 +137,8 @@ const LeadEngagement = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#3A4E63] border-r-transparent"></div>
-          <p className="mt-4 text-[#3A4E63] font-semibold text-lg">
+          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#033F99] border-r-transparent"></div>
+          <p className="mt-4 text-[#033F99] font-semibold text-lg">
             Loading...
           </p>
         </div>
@@ -152,31 +152,31 @@ const LeadEngagement = () => {
         <div className="mb-6 flex items-center justify-between">
           <button
             onClick={() => navigate(`/commerce/lead/${leadId}`)}
-            className="flex items-center gap-2 text-[#3A4E63] hover:text-[#3A4E63] font-semibold transition-colors"
+            className="flex items-center gap-2 text-[#033F99] hover:text-[#033F99] font-semibold transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
             Back to Lead Details
           </button>
         </div>
 
-        <div className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] rounded-3xl p-6 mb-6 shadow-2xl">
+        <div className="bg-gradient-to-r from-[#033F99] to-[#033F99] rounded-3xl p-6 mb-6 shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-white">
             <div>
-              <p className="text-[#3A4E63] text-sm font-medium mb-1">Company</p>
+              <p className="text-[#033F99] text-sm font-medium mb-1">Company</p>
               <p className="text-xl font-bold">{lead?.company_name}</p>
             </div>
             <div>
-              <p className="text-[#3A4E63] text-sm font-medium mb-1">Contact</p>
+              <p className="text-[#033F99] text-sm font-medium mb-1">Contact</p>
               <p className="text-lg font-semibold">{lead?.contact_name}</p>
             </div>
             <div>
-              <p className="text-[#3A4E63] text-sm font-medium mb-1">Status</p>
+              <p className="text-[#033F99] text-sm font-medium mb-1">Status</p>
               <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-sm font-bold">
                 {lead?.lead_status || "New"}
               </span>
             </div>
             <div>
-              <p className="text-[#3A4E63] text-sm font-medium mb-1">Score</p>
+              <p className="text-[#033F99] text-sm font-medium mb-1">Score</p>
               <p className="text-3xl font-black">
                 {lead?.lead_score || 0}
                 <span className="text-lg">/100</span>
@@ -189,7 +189,7 @@ const LeadEngagement = () => {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white font-bold rounded-xl hover:shadow-xl transition-all"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white font-bold rounded-xl hover:shadow-xl transition-all"
             >
               <Plus className="h-5 w-5" />
               Add Activity
@@ -198,7 +198,7 @@ const LeadEngagement = () => {
         </div>
 
         {showAddForm && (
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 mb-6 shadow-2xl border-2 border-[#3A4E63]">
+          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 mb-6 shadow-2xl border-2 border-[#033F99]">
             <h3 className="text-2xl font-bold text-slate-900 mb-6">
               Log New Engagement
             </h3>
@@ -322,7 +322,7 @@ const LeadEngagement = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white font-bold rounded-xl"
+                  className="px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white font-bold rounded-xl"
                 >
                   Save
                 </button>
@@ -333,7 +333,7 @@ const LeadEngagement = () => {
 
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border-2 border-slate-200">
           <div className="flex items-center gap-3 mb-6">
-            <Clock className="h-6 w-6 text-[#3A4E63]" />
+            <Clock className="h-6 w-6 text-[#033F99]" />
             <h2 className="text-2xl font-bold text-slate-900">
               Activity Timeline
             </h2>
@@ -353,9 +353,9 @@ const LeadEngagement = () => {
                 return (
                   <div
                     key={`item-${index}`}
-                    className="border-l-4 border-[#3A4E63] pl-6 pb-6 relative"
+                    className="border-l-4 border-[#033F99] pl-6 pb-6 relative"
                   >
-                    <div className="absolute -left-3 top-0 w-6 h-6 bg-[#3A4E63] rounded-full flex items-center justify-center">
+                    <div className="absolute -left-3 top-0 w-6 h-6 bg-[#033F99] rounded-full flex items-center justify-center">
                       <Icon className="h-3 w-3 text-white" />
                     </div>
 

@@ -781,13 +781,13 @@ const IBCommerceSolution = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full opacity-10 pointer-events-none">
-          <div className="absolute top-20 right-20 w-96 h-96 bg-[#3A4E63] rounded-full blur-3xl"></div>
+          <div className="absolute top-20 right-20 w-96 h-96 bg-[#033F99] rounded-full blur-3xl"></div>
         </div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <Link
             to="/solutions"
-            className="inline-flex items-center gap-2 text-[#3A4E63] hover:text-[#3A4E63] font-semibold mb-8 transition-colors"
+            className="inline-flex items-center gap-2 text-[#033F99] hover:text-[#033F99] font-semibold mb-8 transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
             Back to Solutions
@@ -795,8 +795,8 @@ const IBCommerceSolution = () => {
 
           <div className="text-center max-w-5xl mx-auto">
             <div className="inline-flex items-center gap-3 bg-[#EBF3FC] px-6 py-3 rounded-full mb-6">
-              <ShoppingCart className="h-6 w-6 text-[#3A4E63]" />
-              <span className="text-[#3A4E63] font-bold text-lg">
+              <ShoppingCart className="h-6 w-6 text-[#033F99]" />
+              <span className="text-[#033F99] font-bold text-lg">
                 IB Commerce
               </span>
             </div>
@@ -805,7 +805,7 @@ const IBCommerceSolution = () => {
               className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
               style={{ fontFamily: "Inter, system-ui, sans-serif" }}
             >
-              <span className="bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent">
                 Commercial Intelligence
               </span>
               <br />
@@ -820,13 +820,13 @@ const IBCommerceSolution = () => {
 
             <div className="flex justify-center items-center gap-6 mb-12 flex-wrap">
               <Link to="/auth/signup">
-                <button className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold px-10 py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-2">
+                <button className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold px-10 py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-2">
                   <Sparkles className="h-5 w-5" />
                   Start Free Trial
                 </button>
               </Link>
               <Link to="/solutions/commerce/overview">
-                <button className="bg-white border-2 border-[#3A4E63] text-[#3A4E63] hover:bg-[#3A4E63] hover:text-white font-bold px-10 py-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-lg flex items-center gap-2">
+                <button className="bg-white border-2 border-[#033F99] text-[#033F99] hover:bg-[#033F99] hover:text-white font-bold px-10 py-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-lg flex items-center gap-2">
                   <Package className="h-5 w-5" />
                   Explore Modules
                   <ChevronRight className="h-5 w-5" />
@@ -850,7 +850,7 @@ const IBCommerceSolution = () => {
                   key={`item-${index}`}
                   className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-[#C4D9F4]"
                 >
-                  <p className="text-3xl font-bold text-[#3A4E63] mb-1">
+                  <p className="text-3xl font-bold text-[#033F99] mb-1">
                     {stat.metric}
                   </p>
                   <p className="text-sm text-slate-600 font-medium">
@@ -907,7 +907,7 @@ const IBCommerceSolution = () => {
                   key={`item-${index}`}
                   className="bg-slate-50 p-8 rounded-3xl border border-slate-200 hover:border-[#0558CC] hover:shadow-xl transition-all"
                 >
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center mb-6">
                     <Icon className="h-8 w-8 text-white" />
                   </div>
                   <h3 className="font-bold text-xl mb-3 text-slate-900">
@@ -924,7 +924,7 @@ const IBCommerceSolution = () => {
             })}
           </div>
 
-          <div className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] rounded-3xl p-12 text-white text-center">
+          <div className="bg-gradient-to-r from-[#033F99] to-[#033F99] rounded-3xl p-12 text-white text-center">
             <h3 className="text-3xl font-bold mb-4">The Core Principle</h3>
             <p className="text-xl leading-relaxed max-w-4xl mx-auto">
               IB Commerce is <span className="font-bold underline">NOT</span>{" "}
@@ -983,14 +983,14 @@ const IBCommerceSolution = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-lg font-semibold text-[#3A4E63] mb-1">
+                        <p className="text-lg font-semibold text-[#033F99] mb-1">
                           {module.tagline}
                         </p>
                         <p className="text-slate-600">{module.description}</p>
                       </div>
                     </div>
                     <ChevronRight
-                      className={`h-8 w-8 text-[#3A4E63] transition-transform ${selectedModule === module.id ? "rotate-90" : ""}`}
+                      className={`h-8 w-8 text-[#033F99] transition-transform ${selectedModule === module.id ? "rotate-90" : ""}`}
                     />
                   </button>
 
@@ -1008,7 +1008,7 @@ const IBCommerceSolution = () => {
                               >
                                 <div className="flex items-start gap-4 mb-4">
                                   <div className="w-12 h-12 bg-[#C4D9F4] rounded-xl flex items-center justify-center flex-shrink-0">
-                                    <SubIcon className="h-6 w-6 text-[#3A4E63]" />
+                                    <SubIcon className="h-6 w-6 text-[#033F99]" />
                                   </div>
                                   <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-2">
@@ -1048,8 +1048,8 @@ const IBCommerceSolution = () => {
 
                                     {subModule.example &&
                                       subModule.example.data && (
-                                        <div className="bg-white p-4 rounded-xl border-2 border-[#3A4E63]">
-                                          <p className="font-bold text-[#3A4E63] mb-3">
+                                        <div className="bg-white p-4 rounded-xl border-2 border-[#033F99]">
+                                          <p className="font-bold text-[#033F99] mb-3">
                                             💡 Real Example:{" "}
                                             {subModule.example.scenario}
                                           </p>
@@ -1083,34 +1083,34 @@ const IBCommerceSolution = () => {
                                                   <>
                                                     {subModule.example.result
                                                       .allowed && (
-                                                      <p className="text-green-600">
-                                                        ✅{" "}
-                                                        {
-                                                          subModule.example
-                                                            .result.allowed
-                                                        }
-                                                      </p>
-                                                    )}
+                                                        <p className="text-green-600">
+                                                          ✅{" "}
+                                                          {
+                                                            subModule.example
+                                                              .result.allowed
+                                                          }
+                                                        </p>
+                                                      )}
                                                     {subModule.example.result
                                                       .blocked && (
-                                                      <p className="text-red-600">
-                                                        ❌{" "}
-                                                        {
-                                                          subModule.example
-                                                            .result.blocked
-                                                        }
-                                                      </p>
-                                                    )}
+                                                        <p className="text-red-600">
+                                                          ❌{" "}
+                                                          {
+                                                            subModule.example
+                                                              .result.blocked
+                                                          }
+                                                        </p>
+                                                      )}
                                                     {subModule.example.result
                                                       .action && (
-                                                      <p className="text-blue-600">
-                                                        →{" "}
-                                                        {
-                                                          subModule.example
-                                                            .result.action
-                                                        }
-                                                      </p>
-                                                    )}
+                                                        <p className="text-blue-600">
+                                                          →{" "}
+                                                          {
+                                                            subModule.example
+                                                              .result.action
+                                                          }
+                                                        </p>
+                                                      )}
                                                   </>
                                                 )}
                                               </div>
@@ -1139,8 +1139,8 @@ const IBCommerceSolution = () => {
 
                                     {subModule.example &&
                                       subModule.example.item && (
-                                        <div className="bg-white p-4 rounded-xl border-2 border-[#3A4E63]">
-                                          <p className="font-bold text-[#3A4E63] mb-3">
+                                        <div className="bg-white p-4 rounded-xl border-2 border-[#033F99]">
+                                          <p className="font-bold text-[#033F99] mb-3">
                                             💡 Real Example:{" "}
                                             {subModule.example.scenario}
                                           </p>
@@ -1176,8 +1176,8 @@ const IBCommerceSolution = () => {
 
                                     {subModule.example &&
                                       subModule.example.breakdown && (
-                                        <div className="bg-white p-4 rounded-xl border-2 border-[#3A4E63]">
-                                          <p className="font-bold text-[#3A4E63] mb-3">
+                                        <div className="bg-white p-4 rounded-xl border-2 border-[#033F99]">
+                                          <p className="font-bold text-[#033F99] mb-3">
                                             💡 Real Example:{" "}
                                             {subModule.example.scenario}
                                           </p>
@@ -1218,9 +1218,9 @@ const IBCommerceSolution = () => {
                               const StageIcon = stage.icon;
                               return (
                                 <React.Fragment key={stageIndex}>
-                                  <div className="flex-shrink-0 w-64 bg-gradient-to-br from-slate-50 to-white p-4 rounded-2xl border-2 border-[#3A4E63]">
+                                  <div className="flex-shrink-0 w-64 bg-gradient-to-br from-slate-50 to-white p-4 rounded-2xl border-2 border-[#033F99]">
                                     <div className="flex items-center gap-3 mb-3">
-                                      <div className="w-10 h-10 bg-[#3A4E63] rounded-full flex items-center justify-center text-white font-bold">
+                                      <div className="w-10 h-10 bg-[#033F99] rounded-full flex items-center justify-center text-white font-bold">
                                         {stage.stage}
                                       </div>
                                       <div>
@@ -1242,7 +1242,7 @@ const IBCommerceSolution = () => {
                                     )}
                                   </div>
                                   {stageIndex < module.stages.length - 1 && (
-                                    <ArrowRight className="h-8 w-8 text-[#3A4E63] flex-shrink-0" />
+                                    <ArrowRight className="h-8 w-8 text-[#033F99] flex-shrink-0" />
                                   )}
                                 </React.Fragment>
                               );
@@ -1261,7 +1261,7 @@ const IBCommerceSolution = () => {
                                 className="bg-slate-50 p-6 rounded-2xl border border-slate-200"
                               >
                                 <div className="flex items-center gap-3 mb-4">
-                                  <CompIcon className="h-8 w-8 text-[#3A4E63]" />
+                                  <CompIcon className="h-8 w-8 text-[#033F99]" />
                                   <div>
                                     <h4 className="font-bold text-lg text-slate-900">
                                       {component.name}
@@ -1284,7 +1284,7 @@ const IBCommerceSolution = () => {
                                           key={`item-${i}`}
                                           className="bg-white p-3 rounded-lg text-sm"
                                         >
-                                          <p className="font-semibold text-[#3A4E63] mb-1">
+                                          <p className="font-semibold text-[#033F99] mb-1">
                                             {ex.rule || ex.policy}
                                           </p>
                                           <p className="text-slate-600">
@@ -1308,7 +1308,7 @@ const IBCommerceSolution = () => {
                             return (
                               <div
                                 key={outIndex}
-                                className="bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] p-4 rounded-2xl text-white text-center"
+                                className="bg-gradient-to-br from-[#033F99] to-[#033F99] p-4 rounded-2xl text-white text-center"
                               >
                                 <OutIcon className="h-8 w-8 mx-auto mb-2" />
                                 <p className="text-3xl font-bold mb-1">
@@ -1354,18 +1354,18 @@ const IBCommerceSolution = () => {
                 >
                   {/* Step Number & Line */}
                   <div className="flex flex-col items-center flex-shrink-0">
-                    <div className="w-16 h-16 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                    <div className="w-16 h-16 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
                       {step.step}
                     </div>
                     {index < fullFlow.length - 1 && (
-                      <div className="w-1 h-16 bg-gradient-to-b from-[#3A4E63] to-[#C4D9F4] mt-2"></div>
+                      <div className="w-1 h-16 bg-gradient-to-b from-[#033F99] to-[#C4D9F4] mt-2"></div>
                     )}
                   </div>
 
                   {/* Step Content */}
                   <div className="flex-1 bg-gradient-to-r from-slate-50 to-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#0558CC] transition-all">
                     <div className="flex items-center gap-3 mb-2">
-                      <StepIcon className="h-6 w-6 text-[#3A4E63]" />
+                      <StepIcon className="h-6 w-6 text-[#033F99]" />
                       <h3 className="text-xl font-bold text-slate-900">
                         {step.name}
                       </h3>
@@ -1410,7 +1410,7 @@ const IBCommerceSolution = () => {
                   key={`item-${index}`}
                   className="bg-white p-8 rounded-3xl border border-slate-200 hover:border-[#0558CC] hover:shadow-xl transition-all"
                 >
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center mb-6">
                     <BenIcon className="h-8 w-8 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 mb-3">
@@ -1418,7 +1418,7 @@ const IBCommerceSolution = () => {
                   </h3>
                   <p className="text-slate-600 mb-4">{benefit.description}</p>
                   <div className="pt-4 border-t border-slate-200">
-                    <p className="text-3xl font-bold text-[#3A4E63]">
+                    <p className="text-3xl font-bold text-[#033F99]">
                       {benefit.metric}
                     </p>
                   </div>
@@ -1430,7 +1430,7 @@ const IBCommerceSolution = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-[#3A4E63] via-[#3A4E63] to-[#3A4E63]">
+      <section className="py-20 px-4 bg-gradient-to-br from-[#033F99] via-[#033F99] to-[#033F99]">
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-4xl sm:text-5xl font-bold mb-6">
             Ready to Eliminate Commercial Failures?
@@ -1441,7 +1441,7 @@ const IBCommerceSolution = () => {
           </p>
           <div className="flex justify-center items-center gap-6 flex-wrap">
             <Link to="/auth/signup">
-              <button className="bg-white text-[#3A4E63] font-bold px-10 py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-2">
+              <button className="bg-white text-[#033F99] font-bold px-10 py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-2">
                 <Sparkles className="h-5 w-5" />
                 Start Free Trial
               </button>

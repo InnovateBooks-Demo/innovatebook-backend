@@ -46,7 +46,7 @@ def send_invite_email(to_email: str, invite_token: str, org_name: str):
         <p>You have been invited to join <b>{org_name}</b>.</p>
         <p>Click below to accept:</p>
         <a href="{invite_link}" 
-           style="background:#3A4E63;color:white;padding:10px 20px;text-decoration:none;border-radius:6px;">
+           style="background:#033F99;color:white;padding:10px 20px;text-decoration:none;border-radius:6px;">
            Accept Invitation
         </a>
         <p>This link expires in 7 days.</p>

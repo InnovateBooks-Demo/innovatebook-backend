@@ -49,7 +49,7 @@ const OwnerDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -87,7 +87,7 @@ const OwnerDetail = () => {
           </div>
           <Link
             to={`/ib-capital/ownership/${owner_id}/edit`}
-            className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
+            className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
           >
             <Edit className="w-4 h-4" />
             Edit
@@ -105,7 +105,7 @@ const OwnerDetail = () => {
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
           <p className="text-sm text-gray-500 mb-1">Ownership %</p>
-          <p className="text-2xl font-bold text-[#3A4E63]">
+          <p className="text-2xl font-bold text-[#033F99]">
             {owner.ownership_percentage}%
           </p>
         </div>
@@ -182,11 +182,10 @@ const OwnerDetail = () => {
                     </p>
                   </div>
                   <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      holding.status === "active"
+                    className={`px-2 py-1 text-xs rounded-full ${holding.status === "active"
                         ? "bg-green-100 text-green-700"
                         : "bg-gray-100 text-gray-700"
-                    }`}
+                      }`}
                   >
                     {holding.status}
                   </span>

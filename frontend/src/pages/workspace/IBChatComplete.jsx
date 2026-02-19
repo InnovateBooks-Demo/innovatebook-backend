@@ -734,9 +734,9 @@ const IBChatComplete = () => {
 
       {/* Drag & Drop Overlay */}
       {isDragActive && (
-        <div className="fixed inset-0 bg-[#3A4E63]/20 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-[#033F99]/20 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-3xl p-12 shadow-2xl">
-            <div className="w-24 h-24 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <div className="w-24 h-24 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-3xl flex items-center justify-center mx-auto mb-6">
               <Paperclip className="h-12 w-12 text-white" />
             </div>
             <h3 className="text-2xl font-black text-slate-900 text-center">
@@ -753,7 +753,7 @@ const IBChatComplete = () => {
       {incomingCall && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
           <div className="bg-white rounded-3xl p-8 w-96 shadow-2xl text-center">
-            <div className="w-24 h-24 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-24 h-24 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center mx-auto mb-6">
               {incomingCall.call_type === "video" ? (
                 <VideoIcon className="h-12 w-12 text-white" />
               ) : (
@@ -849,9 +849,9 @@ const IBChatComplete = () => {
       )}
 
       {/* Sidebar */}
-      <div className="w-64 bg-[#3A4E63]/5 border-r-2 border-[#3A4E63]/20 flex flex-col">
-        <div className="p-4 border-b-2 border-[#3A4E63]/20">
-          <h2 className="text-xl font-black bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent">
+      <div className="w-64 bg-[#033F99]/5 border-r-2 border-[#033F99]/20 flex flex-col">
+        <div className="p-4 border-b-2 border-[#033F99]/20">
+          <h2 className="text-xl font-black bg-gradient-to-r from-[#033F99] to-[#033F99] bg-clip-text text-transparent">
             IB Chat
           </h2>
           <p className="text-xs text-slate-600 font-medium mt-1">
@@ -867,7 +867,7 @@ const IBChatComplete = () => {
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-sm border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none"
+              className="w-full pl-9 pr-3 py-2 text-sm border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none"
             />
           </div>
         </div>
@@ -880,9 +880,9 @@ const IBChatComplete = () => {
               </span>
               <button
                 onClick={() => setShowNewChannelModal(true)}
-                className="p-1 hover:bg-[#3A4E63]/10 rounded"
+                className="p-1 hover:bg-[#033F99]/10 rounded"
               >
-                <Plus className="h-4 w-4 text-[#3A4E63]" />
+                <Plus className="h-4 w-4 text-[#033F99]" />
               </button>
             </div>
 
@@ -893,8 +893,8 @@ const IBChatComplete = () => {
                   key={channel.id}
                   onClick={() => setActiveChannel(channel)}
                   className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${activeChannel?.id === channel.id
-                    ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-lg"
-                    : "hover:bg-[#3A4E63]/10 text-slate-700"
+                    ? "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white shadow-lg"
+                    : "hover:bg-[#033F99]/10 text-slate-700"
                     }`}
                 >
                   {channel.type === "private" ? (
@@ -914,9 +914,9 @@ const IBChatComplete = () => {
               </span>
               <button
                 onClick={() => setShowNewDMModal(true)}
-                className="p-1 hover:bg-[#3A4E63]/10 rounded"
+                className="p-1 hover:bg-[#033F99]/10 rounded"
               >
-                <Plus className="h-4 w-4 text-[#3A4E63]" />
+                <Plus className="h-4 w-4 text-[#033F99]" />
               </button>
             </div>
 
@@ -927,11 +927,11 @@ const IBChatComplete = () => {
                   key={channel.id}
                   onClick={() => setActiveChannel(channel)}
                   className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all ${activeChannel?.id === channel.id
-                    ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-lg"
-                    : "hover:bg-[#3A4E63]/10 text-slate-700"
+                    ? "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white shadow-lg"
+                    : "hover:bg-[#033F99]/10 text-slate-700"
                     }`}
                 >
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center">
                     <span className="text-white font-bold text-xs">
                       {channel.name?.charAt(0)}
                     </span>
@@ -949,20 +949,20 @@ const IBChatComplete = () => {
       <div className="flex-1 flex flex-col">
         {activeChannel ? (
           <>
-            <div className="h-16 border-b-2 border-[#3A4E63]/20 px-6 flex items-center justify-between">
+            <div className="h-16 border-b-2 border-[#033F99]/20 px-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {activeChannel.type === "private" ? (
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-xl flex items-center justify-center">
                     <Lock className="h-5 w-5 text-white" />
                   </div>
                 ) : activeChannel.type === "direct" ? (
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center">
                     <span className="text-white font-bold">
                       {activeChannel.name?.charAt(0)}
                     </span>
                   </div>
                 ) : (
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-xl flex items-center justify-center">
                     <Hash className="h-5 w-5 text-white" />
                   </div>
                 )}
@@ -982,15 +982,15 @@ const IBChatComplete = () => {
                   <>
                     <button
                       onClick={() => initiateCall("audio")}
-                      className="p-2 hover:bg-[#3A4E63]/10 rounded-lg"
+                      className="p-2 hover:bg-[#033F99]/10 rounded-lg"
                     >
-                      <Phone className="h-5 w-5 text-[#3A4E63]" />
+                      <Phone className="h-5 w-5 text-[#033F99]" />
                     </button>
                     <button
                       onClick={() => initiateCall("video")}
-                      className="p-2 hover:bg-[#3A4E63]/10 rounded-lg"
+                      className="p-2 hover:bg-[#033F99]/10 rounded-lg"
                     >
-                      <VideoIcon className="h-5 w-5 text-[#3A4E63]" />
+                      <VideoIcon className="h-5 w-5 text-[#033F99]" />
                     </button>
                   </>
                 )}
@@ -1000,7 +1000,7 @@ const IBChatComplete = () => {
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {messages.map((message) => (
                 <div key={message.id} className="flex gap-3 group">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-xl flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-xl flex items-center justify-center flex-shrink-0">
                     <span className="text-white font-bold text-sm">
                       {message.user_name?.charAt(0)}
                     </span>
@@ -1029,7 +1029,7 @@ const IBChatComplete = () => {
                     )}
                     {message.type === "file" && message.file_url && (
                       <div className="mt-2 flex items-center gap-3 p-3 bg-slate-100 rounded-xl max-w-md">
-                        <File className="h-8 w-8 text-[#3A4E63]" />
+                        <File className="h-8 w-8 text-[#033F99]" />
                         <div className="flex-1">
                           <p className="text-sm font-bold">
                             {message.file_name}
@@ -1040,7 +1040,7 @@ const IBChatComplete = () => {
                           download
                           className="p-2 hover:bg-white rounded-lg"
                         >
-                          <Download className="h-5 w-5 text-[#3A4E63]" />
+                          <Download className="h-5 w-5 text-[#033F99]" />
                         </a>
                       </div>
                     )}
@@ -1065,31 +1065,31 @@ const IBChatComplete = () => {
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 mt-2">
                       <button
                         onClick={() => setReplyToMessage(message)}
-                        className="p-1.5 hover:bg-[#3A4E63]/10 rounded text-[#3A4E63]"
+                        className="p-1.5 hover:bg-[#033F99]/10 rounded text-[#033F99]"
                       >
                         <Reply className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => openThread(message)}
-                        className="p-1.5 hover:bg-[#3A4E63]/10 rounded text-[#3A4E63]"
+                        className="p-1.5 hover:bg-[#033F99]/10 rounded text-[#033F99]"
                       >
                         <Hash className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setShowEmojiPicker(message.id)}
-                        className="p-1.5 hover:bg-[#3A4E63]/10 rounded text-[#3A4E63]"
+                        className="p-1.5 hover:bg-[#033F99]/10 rounded text-[#033F99]"
                       >
                         <Smile className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => pinMessage(message.id)}
-                        className="p-1.5 hover:bg-[#3A4E63]/10 rounded text-[#3A4E63]"
+                        className="p-1.5 hover:bg-[#033F99]/10 rounded text-[#033F99]"
                       >
                         <Pin className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => starMessage(message.id)}
-                        className="p-1.5 hover:bg-[#3A4E63]/10 rounded text-[#3A4E63]"
+                        className="p-1.5 hover:bg-[#033F99]/10 rounded text-[#033F99]"
                       >
                         <Star className="h-4 w-4" />
                       </button>
@@ -1109,14 +1109,14 @@ const IBChatComplete = () => {
               {uploadingFiles.map((file, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-3 p-3 bg-[#3A4E63]/10 rounded-xl"
+                  className="flex items-center gap-3 p-3 bg-[#033F99]/10 rounded-xl"
                 >
-                  <Paperclip className="h-5 w-5 text-[#3A4E63]" />
+                  <Paperclip className="h-5 w-5 text-[#033F99]" />
                   <div className="flex-1">
                     <p className="text-sm font-bold">{file.name}</p>
                     <div className="w-full bg-slate-200 rounded-full h-2 mt-1">
                       <div
-                        className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] h-2 rounded-full"
+                        className="bg-gradient-to-r from-[#033F99] to-[#033F99] h-2 rounded-full"
                         style={{ width: `${file.progress}%` }}
                       ></div>
                     </div>
@@ -1128,9 +1128,9 @@ const IBChatComplete = () => {
             </div>
 
             {replyToMessage && (
-              <div className="px-6 py-2 bg-[#3A4E63]/10 flex items-center justify-between">
+              <div className="px-6 py-2 bg-[#033F99]/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Reply className="h-4 w-4 text-[#3A4E63]" />
+                  <Reply className="h-4 w-4 text-[#033F99]" />
                   <span className="text-sm">
                     Replying to{" "}
                     <span className="font-bold">
@@ -1147,15 +1147,15 @@ const IBChatComplete = () => {
               </div>
             )}
 
-            <div className="border-t-2 border-[#3A4E63]/20 p-4">
+            <div className="border-t-2 border-[#033F99]/20 p-4">
               <div className="flex gap-3">
                 <button
                   onClick={() =>
                     document.querySelector('input[type="file"]').click()
                   }
-                  className="p-3 hover:bg-[#3A4E63]/10 rounded-xl"
+                  className="p-3 hover:bg-[#033F99]/10 rounded-xl"
                 >
-                  <Paperclip className="h-5 w-5 text-[#3A4E63]" />
+                  <Paperclip className="h-5 w-5 text-[#033F99]" />
                 </button>
                 <input
                   type="text"
@@ -1167,14 +1167,14 @@ const IBChatComplete = () => {
                     !e.shiftKey &&
                     (e.preventDefault(), sendMessage())
                   }
-                  className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none"
+                  className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none"
                 />
                 <div className="relative" ref={emojiPickerRef}>
                   <button
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                    className="p-3 hover:bg-[#3A4E63]/10 rounded-xl"
+                    className="p-3 hover:bg-[#033F99]/10 rounded-xl"
                   >
-                    <Smile className="h-5 w-5 text-[#3A4E63]" />
+                    <Smile className="h-5 w-5 text-[#033F99]" />
                   </button>
                   {showEmojiPicker && (
                     <div className="absolute bottom-full right-0 mb-2">
@@ -1193,7 +1193,7 @@ const IBChatComplete = () => {
                 </div>
                 <button
                   onClick={sendMessage}
-                  className="px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white font-bold rounded-xl shadow-lg"
+                  className="px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white font-bold rounded-xl shadow-lg"
                 >
                   <Send className="h-5 w-5" />
                 </button>
@@ -1203,7 +1203,7 @@ const IBChatComplete = () => {
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-3xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-20 h-20 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-3xl flex items-center justify-center mx-auto mb-4">
                 <Hash className="h-10 w-10 text-white" />
               </div>
               <h3 className="text-xl font-black text-slate-900 mb-2">
@@ -1244,7 +1244,7 @@ const NewChannelModal = ({ onClose, onCreate }) => {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-2xl font-black bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent">
+          <h3 className="text-2xl font-black bg-gradient-to-r from-[#033F99] to-[#033F99] bg-clip-text text-transparent">
             Create Channel
           </h3>
           <button
@@ -1263,7 +1263,7 @@ const NewChannelModal = ({ onClose, onCreate }) => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 border-2 rounded-xl focus:border-[#3A4E63] focus:outline-none"
+              className="w-full px-4 py-3 border-2 rounded-xl focus:border-[#033F99] focus:outline-none"
             />
           </div>
           <div>
@@ -1274,12 +1274,12 @@ const NewChannelModal = ({ onClose, onCreate }) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full px-4 py-3 border-2 rounded-xl focus:border-[#3A4E63] focus:outline-none resize-none"
+              className="w-full px-4 py-3 border-2 rounded-xl focus:border-[#033F99] focus:outline-none resize-none"
             />
           </div>
           <button
             onClick={() => name.trim() && onCreate(name, description, type)}
-            className="w-full px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white font-bold rounded-xl"
+            className="w-full px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white font-bold rounded-xl"
           >
             Create
           </button>
@@ -1324,7 +1324,7 @@ const NewDMModal = ({ onClose, onCreate, token }) => {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-2xl font-black bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent">
+          <h3 className="text-2xl font-black bg-gradient-to-r from-[#033F99] to-[#033F99] bg-clip-text text-transparent">
             New DM
           </h3>
           <button
@@ -1342,7 +1342,7 @@ const NewDMModal = ({ onClose, onCreate, token }) => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search..."
-              className="w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:border-[#3A4E63] focus:outline-none"
+              className="w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:border-[#033F99] focus:outline-none"
             />
           </div>
           <div className="max-h-64 overflow-y-auto space-y-2">
@@ -1350,9 +1350,9 @@ const NewDMModal = ({ onClose, onCreate, token }) => {
               <button
                 key={user.id}
                 onClick={() => onCreate(user.id)}
-                className="w-full flex items-center gap-3 p-3 hover:bg-[#3A4E63]/10 rounded-xl"
+                className="w-full flex items-center gap-3 p-3 hover:bg-[#033F99]/10 rounded-xl"
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center">
                   <span className="text-white font-bold">
                     {user.full_name?.charAt(0)}
                   </span>

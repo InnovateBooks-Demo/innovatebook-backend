@@ -20,12 +20,12 @@ const WorkspaceDashboardPremium = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1
-              className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+              className="text-4xl font-bold bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
               style={{ fontFamily: "Poppins" }}
             >
               Welcome to Your Workspace
             </h1>
-            <p className="text-[#3A4E63] mt-2 font-medium text-lg">
+            <p className="text-[#033F99] mt-2 font-medium text-lg">
               Your central hub for collaboration and productivity
             </p>
           </div>
@@ -34,18 +34,18 @@ const WorkspaceDashboardPremium = () => {
         {/* Premium KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Active Tasks */}
-          <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl hover:shadow-2xl hover:border-[#3A4E63] transition-all duration-300">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#3A4E63]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
+          <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl hover:shadow-2xl hover:border-[#033F99] transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#033F99]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-3">
-                <div className="p-3 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl shadow-lg">
+                <div className="p-3 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl shadow-lg">
                   <Activity className="h-6 w-6 text-white" />
                 </div>
               </div>
-              <p className="text-sm font-bold text-[#3A4E63] uppercase tracking-wider mb-1">
+              <p className="text-sm font-bold text-[#033F99] uppercase tracking-wider mb-1">
                 Active Tasks
               </p>
-              <p className="text-4xl font-black text-[#3A4E63]">24</p>
+              <p className="text-4xl font-black text-[#033F99]">24</p>
             </div>
           </div>
 
@@ -103,9 +103,9 @@ const WorkspaceDashboardPremium = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Activity */}
         <div className="lg:col-span-2">
-          <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-[#3A4E63]/20 overflow-hidden">
-            <div className="p-6 bg-gradient-to-r from-[#3A4E63]/5 to-[#3A4E63]/10 border-b-2 border-[#3A4E63]/20">
-              <h2 className="text-2xl font-bold text-[#3A4E63]">
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-[#033F99]/20 overflow-hidden">
+            <div className="p-6 bg-gradient-to-r from-[#033F99]/5 to-[#033F99]/10 border-b-2 border-[#033F99]/20">
+              <h2 className="text-2xl font-bold text-[#033F99]">
                 Recent Activity
               </h2>
             </div>
@@ -145,7 +145,7 @@ const WorkspaceDashboardPremium = () => {
                 ].map((activity, index) => (
                   <div
                     key={`item-${index}`}
-                    className="flex items-start gap-4 p-4 rounded-2xl hover:bg-[#3A4E63]/5 transition-all duration-300"
+                    className="flex items-start gap-4 p-4 rounded-2xl hover:bg-[#033F99]/5 transition-all duration-300"
                   >
                     <div
                       className={`p-2 bg-gradient-to-br ${activity.color} rounded-xl shadow-md`}
@@ -153,10 +153,10 @@ const WorkspaceDashboardPremium = () => {
                       <activity.icon className="h-5 w-5 text-white" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-[#3A4E63]">
+                      <p className="font-semibold text-[#033F99]">
                         {activity.text}
                       </p>
-                      <p className="text-sm text-[#3A4E63]/60 mt-1">
+                      <p className="text-sm text-[#033F99]/60 mt-1">
                         {activity.time}
                       </p>
                     </div>
@@ -169,9 +169,9 @@ const WorkspaceDashboardPremium = () => {
 
         {/* Quick Actions */}
         <div>
-          <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-[#3A4E63]/20 overflow-hidden">
-            <div className="p-6 bg-gradient-to-r from-[#3A4E63]/5 to-[#3A4E63]/10 border-b-2 border-[#3A4E63]/20">
-              <h2 className="text-2xl font-bold text-[#3A4E63]">
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-[#033F99]/20 overflow-hidden">
+            <div className="p-6 bg-gradient-to-r from-[#033F99]/5 to-[#033F99]/10 border-b-2 border-[#033F99]/20">
+              <h2 className="text-2xl font-bold text-[#033F99]">
                 Quick Actions
               </h2>
             </div>
@@ -181,7 +181,7 @@ const WorkspaceDashboardPremium = () => {
                   {
                     icon: FileText,
                     text: "Create Document",
-                    color: "from-[#3A4E63] to-[#3A4E63]",
+                    color: "from-[#033F99] to-[#033F99]",
                   },
                   {
                     icon: Users,

@@ -3,8 +3,18 @@
     "identity": {
       "name": "ClearTax Enterprise",
       "tone": "Professional, Trustworthy, Efficient, Modern, Interactive",
-      "core_values": ["Simplicity", "Accuracy", "Speed", "Security"],
-      "target_audience": ["CFOs", "Finance Leaders", "Founders", "Enterprise Decision Makers"]
+      "core_values": [
+        "Simplicity",
+        "Accuracy",
+        "Speed",
+        "Security"
+      ],
+      "target_audience": [
+        "CFOs",
+        "Finance Leaders",
+        "Founders",
+        "Enterprise Decision Makers"
+      ]
     },
     "theme": {
       "mode": "light",
@@ -12,10 +22,10 @@
     },
     "colors": {
       "primary": {
-        "brand": "#3A4E63",
+        "brand": "#033F99",
         "hover": "#023075",
         "light": "#E6F0FF",
-        "gradient_start": "#3A4E63",
+        "gradient_start": "#033F99",
         "gradient_end": "#025bb5"
       },
       "secondary": {
@@ -75,9 +85,9 @@
   },
   "components": {
     "buttons": {
-      "primary": "bg-[#3A4E63] hover:bg-[#023075] text-white font-medium px-6 py-3 rounded-lg transition-all shadow-sm hover:shadow-md",
-      "secondary": "bg-white border border-[#3A4E63] text-[#3A4E63] hover:bg-[#F0F7FF] font-medium px-6 py-3 rounded-lg transition-all",
-      "ghost": "text-[#3A4E63] hover:bg-[#F0F7FF] font-medium px-4 py-2 rounded-lg transition-all"
+      "primary": "bg-[#033F99] hover:bg-[#023075] text-white font-medium px-6 py-3 rounded-lg transition-all shadow-sm hover:shadow-md",
+      "secondary": "bg-white border border-[#033F99] text-[#033F99] hover:bg-[#F0F7FF] font-medium px-6 py-3 rounded-lg transition-all",
+      "ghost": "text-[#033F99] hover:bg-[#F0F7FF] font-medium px-4 py-2 rounded-lg transition-all"
     },
     "cards": {
       "feature": "bg-white p-8 rounded-xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-100 transition-all duration-300 group",
@@ -85,7 +95,7 @@
       "testimonial": "bg-[#F8FAFC] p-8 rounded-2xl border border-slate-100 relative"
     },
     "inputs": {
-      "default": "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3A4E63] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      "default": "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#033F99] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
     }
   },
   "interactive_patterns": {
@@ -130,7 +140,7 @@
     }
   },
   "instructions_to_main_agent": [
-    "1. Apply the 'Enterprise Trust' theme to all pages. Use white backgrounds, generous spacing, and the primary blue (#3A4E63) for actions.",
+    "1. Apply the 'Enterprise Trust' theme to all pages. Use white backgrounds, generous spacing, and the primary blue (#033F99) for actions.",
     "2. Implement the 'Interactive Patterns' defined above. Every page must have at least one interactive element (hover card, animated stat, or accordion).",
     "3. Use Shadcn components for base interactivity but style them according to the 'components' section.",
     "4. Ensure all text meets WCAG AA contrast ratios. The primary blue on white is safe.",

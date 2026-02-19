@@ -98,7 +98,7 @@ const LeadList = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <RefreshCw className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <RefreshCw className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   }
@@ -120,7 +120,7 @@ const LeadList = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl p-6 border border-slate-200">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-[#3A4E63] rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#033F99] rounded-lg flex items-center justify-center">
                 <Users className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -183,7 +183,7 @@ const LeadList = () => {
             <h2 className="text-xl font-bold text-slate-900">All Leads</h2>
             <button
               onClick={() => navigate("/commerce/lead/create")}
-              className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg font-medium hover:bg-[#3A4E63] transition-all"
+              className="px-4 py-2 bg-[#033F99] text-white rounded-lg font-medium hover:bg-[#033F99] transition-all"
               data-testid="create-lead-btn"
             >
               + New Lead
@@ -200,7 +200,7 @@ const LeadList = () => {
                   placeholder="Search leads..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
               </div>
             </div>
@@ -262,7 +262,7 @@ const LeadList = () => {
                   >
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-[#3A4E63] rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                        <div className="w-9 h-9 bg-[#033F99] rounded-lg flex items-center justify-center text-white text-xs font-bold">
                           {lead.first_name?.charAt(0)}
                           {lead.last_name?.charAt(0)}
                         </div>

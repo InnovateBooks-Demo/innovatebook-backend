@@ -202,7 +202,7 @@ const Invoices = () => {
         <div>
           <h1
             className="text-3xl font-semibold mb-2"
-            style={{ fontFamily: "Inter", color: "#3A4E63" }}
+            style={{ fontFamily: "Inter", color: "#033F99" }}
           >
             Invoices
           </h1>
@@ -261,8 +261,8 @@ const Invoices = () => {
         </div>
       </Card>
 
-      <div className="table-wrapper">
-        <table className="data-table" data-testid="invoices-table">
+      <div className="w-full overflow-x-auto"> {/* RESPONSIVE CHANGE */}
+        <table className="data-table min-w-[800px]" data-testid="invoices-table"> {/* RESPONSIVE CHANGE */}
           <thead>
             <tr>
               <th className="w-12">
@@ -346,13 +346,12 @@ const Invoices = () => {
                   onClick={() => navigate(`/invoices/${invoice.id}`)}
                 >
                   <span
-                    className={`badge ${
-                      invoice.status === "Paid"
-                        ? "badge-success"
-                        : invoice.status === "Partially Paid"
-                          ? "badge-warning"
-                          : "badge-danger"
-                    }`}
+                    className={`badge ${invoice.status === "Paid"
+                      ? "badge-success"
+                      : invoice.status === "Partially Paid"
+                        ? "badge-warning"
+                        : "badge-danger"
+                      }`}
                   >
                     {invoice.status}
                   </span>
@@ -422,7 +421,7 @@ const Invoices = () => {
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle style={{ color: "#3A4E63" }}>Edit Invoice</DialogTitle>
+            <DialogTitle style={{ color: "#033F99" }}>Edit Invoice</DialogTitle>
             <DialogDescription>
               Update the invoice information below
             </DialogDescription>
@@ -526,7 +525,7 @@ const Invoices = () => {
             </Button>
             <Button
               onClick={confirmEdit}
-              style={{ backgroundColor: "#3A4E63" }}
+              style={{ backgroundColor: "#033F99" }}
             >
               Save Changes
             </Button>

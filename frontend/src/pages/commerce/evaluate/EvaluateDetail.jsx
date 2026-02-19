@@ -108,7 +108,7 @@ const EvaluateDetail = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-screen">
         <div className="flex items-center gap-3 text-slate-600">
-          <div className="w-6 h-6 border-2 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-6 h-6 border-2 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
           Loading evaluation details...
         </div>
       </div>
@@ -168,7 +168,7 @@ const EvaluateDetail = () => {
 
         <div className="flex items-center gap-3">
           <Link to={`/commerce/evaluate/${evaluationId}/edit`}>
-            <Button className="gap-2 bg-[#3A4E63] hover:bg-[#3A4E63]">
+            <Button className="gap-2 bg-[#033F99] hover:bg-[#033F99]">
               <Edit2 className="h-4 w-4" />
               Edit Evaluation
             </Button>
@@ -198,11 +198,10 @@ const EvaluateDetail = () => {
               <React.Fragment key={status}>
                 <div className="flex flex-col items-center gap-2">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      isCompleted
-                        ? "bg-[#3A4E63] text-white"
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${isCompleted
+                        ? "bg-[#033F99] text-white"
                         : "bg-slate-200 text-slate-400"
-                    } ${isCurrent ? "ring-4 ring-[#6B9FE6]" : ""}`}
+                      } ${isCurrent ? "ring-4 ring-[#6B9FE6]" : ""}`}
                   >
                     {isCompleted ? (
                       <CheckCircle className="h-5 w-5" />
@@ -211,14 +210,14 @@ const EvaluateDetail = () => {
                     )}
                   </div>
                   <span
-                    className={`text-xs font-medium ${isCompleted ? "text-[#3A4E63]" : "text-slate-500"}`}
+                    className={`text-xs font-medium ${isCompleted ? "text-[#033F99]" : "text-slate-500"}`}
                   >
                     {status}
                   </span>
                 </div>
                 {index < statusWorkflow.length - 1 && (
                   <div
-                    className={`flex-1 h-1 mx-2 ${isCompleted ? "bg-[#3A4E63]" : "bg-slate-200"}`}
+                    className={`flex-1 h-1 mx-2 ${isCompleted ? "bg-[#033F99]" : "bg-slate-200"}`}
                   ></div>
                 )}
               </React.Fragment>
@@ -271,7 +270,7 @@ const EvaluateDetail = () => {
           <Card className="p-6 bg-white border-slate-200">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-[#C4D9F4] rounded-lg flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-[#3A4E63]" />
+                <TrendingUp className="h-5 w-5 text-[#033F99]" />
               </div>
               <h3 className="text-lg font-bold text-slate-900">
                 Deal Information
@@ -293,7 +292,7 @@ const EvaluateDetail = () => {
               </div>
               <div>
                 <p className="text-sm text-slate-600 mb-1">Linked Lead</p>
-                <p className="text-sm font-medium text-[#3A4E63]">
+                <p className="text-sm font-medium text-[#033F99]">
                   {evaluation.linked_lead_id}
                 </p>
               </div>
@@ -347,7 +346,7 @@ const EvaluateDetail = () => {
                     fill="transparent"
                     strokeDasharray={`${2 * Math.PI * 56}`}
                     strokeDashoffset={`${2 * Math.PI * 56 * (1 - evaluation.deal_score / 100)}`}
-                    className="text-[#3A4E63]"
+                    className="text-[#033F99]"
                     strokeLinecap="round"
                   />
                 </svg>
@@ -359,7 +358,7 @@ const EvaluateDetail = () => {
               </div>
               <p className="text-xs text-slate-600">Out of 100</p>
               <div className="mt-4">
-                <span className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-[#C4D9F4] text-[#3A4E63]">
+                <span className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-[#C4D9F4] text-[#033F99]">
                   Grade {evaluation.deal_grade}
                 </span>
               </div>
@@ -390,13 +389,12 @@ const EvaluateDetail = () => {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-600">Approval Status</span>
                 <span
-                  className={`text-sm font-semibold ${
-                    evaluation.approval_status === "Approved"
+                  className={`text-sm font-semibold ${evaluation.approval_status === "Approved"
                       ? "text-emerald-600"
                       : evaluation.approval_status === "Rejected"
                         ? "text-red-600"
                         : "text-amber-600"
-                  }`}
+                    }`}
                 >
                   {evaluation.approval_status}
                 </span>

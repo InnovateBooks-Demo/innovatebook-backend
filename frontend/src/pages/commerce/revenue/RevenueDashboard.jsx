@@ -136,7 +136,7 @@ const RevenueDashboard = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#3A4E63]"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#033F99]"></div>
           <p className="text-sm text-gray-500">Loading dashboard...</p>
         </div>
       </div>
@@ -199,7 +199,7 @@ const RevenueDashboard = () => {
             <div
               key={idx}
               onClick={() => navigate(module.path)}
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg hover:border-[#3A4E63]/30 transition-all cursor-pointer group"
+              className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg hover:border-[#033F99]/30 transition-all cursor-pointer group"
             >
               <div
                 className={`h-12 w-12 rounded-lg bg-${module.color}-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
@@ -214,7 +214,7 @@ const RevenueDashboard = () => {
                 <span className="text-3xl font-bold text-gray-900">
                   {module.count}
                 </span>
-                <span className="text-sm text-[#3A4E63] font-medium group-hover:underline">
+                <span className="text-sm text-[#033F99] font-medium group-hover:underline">
                   View all →
                 </span>
               </div>
@@ -273,7 +273,7 @@ const RevenueDashboard = () => {
             <div className="space-y-4">
               {stats.contracts.slice(0, 4).map((contract, idx) => (
                 <div key={idx} className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#3A4E63] to-[#0550c8] flex items-center justify-center text-white text-xs font-semibold">
+                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#033F99] to-[#0550c8] flex items-center justify-center text-white text-xs font-semibold">
                     {contract.contract_name?.charAt(0) || "C"}
                   </div>
                   <div className="flex-1 min-w-0">

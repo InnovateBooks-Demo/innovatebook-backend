@@ -197,12 +197,12 @@ const ProjectsPage = () => {
       <div className="max-w-5xl">
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center">
               <Building2 className="h-7 w-7 text-white" />
             </div>
             <div>
               <h1 className="text-4xl font-bold text-slate-900">Projects</h1>
-              <p className="text-lg text-[#3A4E63] font-semibold">
+              <p className="text-lg text-[#033F99] font-semibold">
                 Financial Project Management
               </p>
             </div>
@@ -219,7 +219,7 @@ const ProjectsPage = () => {
             {benefits.map((b, i) => (
               <div
                 key={i}
-                className="bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] p-6 rounded-2xl text-white text-center"
+                className="bg-gradient-to-br from-[#033F99] to-[#033F99] p-6 rounded-2xl text-white text-center"
               >
                 <p className="text-4xl font-bold mb-2">{b.metric}</p>
                 <p className="text-lg font-semibold mb-1">{b.label}</p>
@@ -238,7 +238,7 @@ const ProjectsPage = () => {
             {features.map((f, i) => (
               <div
                 key={i}
-                className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#3A4E63] transition-all hover:shadow-lg"
+                className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#033F99] transition-all hover:shadow-lg"
               >
                 <h3 className="text-xl font-bold text-slate-900 mb-2">
                   {f.title}
@@ -274,7 +274,7 @@ const ProjectsPage = () => {
         {/* Interactive Demo */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <Play className="h-6 w-6 text-[#3A4E63]" />
+            <Play className="h-6 w-6 text-[#033F99]" />
             <h2 className="text-3xl font-bold text-slate-900">
               Interactive Demo
             </h2>
@@ -290,11 +290,10 @@ const ProjectsPage = () => {
                 <button
                   key={i}
                   onClick={() => setSelectedProject(i)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    selectedProject === i
-                      ? "bg-[#3A4E63] text-white"
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedProject === i
+                      ? "bg-[#033F99] text-white"
                       : "bg-white text-slate-700 hover:bg-slate-200"
-                  }`}
+                    }`}
                 >
                   {p.name.split(" - ")[1]}
                 </button>
@@ -313,11 +312,10 @@ const ProjectsPage = () => {
                   </p>
                 </div>
                 <span
-                  className={`px-4 py-2 rounded-full font-semibold ${
-                    selected.status === "On Track"
+                  className={`px-4 py-2 rounded-full font-semibold ${selected.status === "On Track"
                       ? "bg-green-100 text-green-700"
                       : "bg-amber-100 text-amber-700"
-                  }`}
+                    }`}
                 >
                   {selected.status === "At Risk" && (
                     <AlertTriangle className="h-4 w-4 inline mr-1" />
@@ -336,11 +334,10 @@ const ProjectsPage = () => {
                 </div>
                 <div className="h-3 bg-slate-200 rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all ${
-                      selected.status === "On Track"
+                    className={`h-full rounded-full transition-all ${selected.status === "On Track"
                         ? "bg-green-500"
                         : "bg-amber-500"
-                    }`}
+                      }`}
                     style={{ width: `${selected.progress}%` }}
                   />
                 </div>
@@ -375,8 +372,8 @@ const ProjectsPage = () => {
                   </p>
                 </div>
                 <div className="bg-[#EBF3FC] p-4 rounded-xl border border-[#C4D9F4]">
-                  <p className="text-sm text-[#3A4E63] mb-1">Current Margin</p>
-                  <p className="text-2xl font-bold text-[#3A4E63]">{margin}%</p>
+                  <p className="text-sm text-[#033F99] mb-1">Current Margin</p>
+                  <p className="text-2xl font-bold text-[#033F99]">{margin}%</p>
                   <p className="text-xs text-slate-600">
                     ₹{((selected.revenue - selected.spent) / 100000).toFixed(1)}
                     L profit
@@ -411,7 +408,7 @@ const ProjectsPage = () => {
         <TestimonialSection testimonials={testimonials} />
 
         {/* CTA */}
-        <section className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] p-8 rounded-3xl text-white">
+        <section className="bg-gradient-to-r from-[#033F99] to-[#033F99] p-8 rounded-3xl text-white">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold mb-2">
@@ -422,7 +419,7 @@ const ProjectsPage = () => {
               </p>
             </div>
             <Link to="/auth/signup">
-              <button className="bg-white text-[#3A4E63] font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
+              <button className="bg-white text-[#033F99] font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
                 <Zap className="h-5 w-5" /> Start Free Trial
               </button>
             </Link>

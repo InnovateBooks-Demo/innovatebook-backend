@@ -127,7 +127,7 @@ const CustomerDetailNew = () => {
         <Card
           className="mb-4 md:mb-6 overflow-hidden shadow-2xl border-0"
           style={{
-            background: "linear-gradient(135deg, #3A4E63 0%, #0066FF 100%)",
+            background: "linear-gradient(135deg, #033F99 0%, #0066FF 100%)",
           }}
         >
           <CardContent className="p-4 md:p-6 lg:p-8">
@@ -151,11 +151,10 @@ const CustomerDetailNew = () => {
                       {customer?.customer_id}
                     </span>
                     <span
-                      className={`px-4 py-1.5 rounded-full font-bold ${
-                        customer?.status === "Active"
+                      className={`px-4 py-1.5 rounded-full font-bold ${customer?.status === "Active"
                           ? "bg-green-500 text-white"
                           : "bg-red-500 text-white"
-                      }`}
+                        }`}
                     >
                       {customer?.status}
                     </span>
@@ -225,7 +224,7 @@ const CustomerDetailNew = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
           <Card className="overflow-hidden shadow-xl border-0 hover:shadow-2xl transition-all duration-300 hover:scale-105">
-            <div className="h-2 bg-gradient-to-r from-blue-500 to-[#3A4E63]"></div>
+            <div className="h-2 bg-gradient-to-r from-blue-500 to-[#033F99]"></div>
             <CardContent className="pt-6">
               <div className="flex justify-between items-start mb-2">
                 <div>
@@ -236,7 +235,7 @@ const CustomerDetailNew = () => {
                     {totalInvoices}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-[#3A4E63] flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-[#033F99] flex items-center justify-center shadow-lg">
                   <FileText className="h-6 w-6 text-white" />
                 </div>
               </div>
@@ -282,7 +281,7 @@ const CustomerDetailNew = () => {
           </Card>
 
           <Card className="overflow-hidden shadow-xl border-0 hover:shadow-2xl transition-all duration-300 hover:scale-105">
-            <div className="h-2 bg-gradient-to-r from-purple-500 to-[#3A4E63]"></div>
+            <div className="h-2 bg-gradient-to-r from-purple-500 to-[#033F99]"></div>
             <CardContent className="pt-6">
               <div className="flex justify-between items-start mb-2">
                 <div>
@@ -293,7 +292,7 @@ const CustomerDetailNew = () => {
                     {formatCurrency(customer?.closing_balance)}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-[#3A4E63] flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-[#033F99] flex items-center justify-center shadow-lg">
                   <DollarSign className="h-6 w-6 text-white" />
                 </div>
               </div>
@@ -308,7 +307,7 @@ const CustomerDetailNew = () => {
             <CardHeader className="bg-gradient-to-r from-blue-50 to-[#EBF3FC]">
               <CardTitle
                 className="flex items-center gap-3 text-2xl"
-                style={{ color: "#3A4E63" }}
+                style={{ color: "#033F99" }}
               >
                 <Edit className="h-6 w-6" />
                 Edit Customer Information
@@ -444,7 +443,7 @@ const CustomerDetailNew = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
           {/* Contact Information */}
           <Card className="shadow-2xl border-0 overflow-hidden">
-            <div className="h-3 bg-gradient-to-r from-blue-600 to-[#3A4E63]"></div>
+            <div className="h-3 bg-gradient-to-r from-blue-600 to-[#033F99]"></div>
             <CardHeader className="bg-gradient-to-br from-blue-50 to-[#C4D9F4]">
               <CardTitle className="flex items-center gap-3 text-2xl font-bold text-blue-900">
                 <div className="w-12 h-12 rounded-xl bg-white shadow-lg flex items-center justify-center">
@@ -508,7 +507,7 @@ const CustomerDetailNew = () => {
 
           {/* Business Information */}
           <Card className="shadow-2xl border-0 overflow-hidden">
-            <div className="h-3 bg-gradient-to-r from-green-600 to-[#3A4E63]"></div>
+            <div className="h-3 bg-gradient-to-r from-green-600 to-[#033F99]"></div>
             <CardHeader className="bg-gradient-to-br from-green-50 to-teal-50">
               <CardTitle className="flex items-center gap-3 text-2xl font-bold text-green-900">
                 <div className="w-12 h-12 rounded-xl bg-white shadow-lg flex items-center justify-center">
@@ -592,7 +591,7 @@ const CustomerDetailNew = () => {
                     onClick={() => navigate(`/invoices/${invoice.id}`)}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-[#3A4E63] flex items-center justify-center text-white font-bold shadow-lg">
+                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-[#033F99] flex items-center justify-center text-white font-bold shadow-lg">
                         <FileText className="h-7 w-7" />
                       </div>
                       <div>
@@ -609,15 +608,14 @@ const CustomerDetailNew = () => {
                         {formatCurrency(invoice.total_amount)}
                       </p>
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${
-                          invoice.status === "Paid"
+                        className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${invoice.status === "Paid"
                             ? "bg-green-100 text-green-700"
                             : invoice.status === "Partially Paid"
                               ? "bg-yellow-100 text-yellow-700"
                               : invoice.status === "Overdue"
                                 ? "bg-red-100 text-red-700"
                                 : "bg-gray-100 text-gray-700"
-                        }`}
+                          }`}
                       >
                         {invoice.status}
                       </span>

@@ -72,7 +72,7 @@ const MasterDashboard = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[#3A4E63] mb-2">
+          <h1 className="text-4xl font-bold text-[#033F99] mb-2">
             Master Data Management
           </h1>
           <p className="text-slate-600 text-lg">
@@ -85,9 +85,9 @@ const MasterDashboard = () => {
           {masterCategories.map((category, index) => (
             <div
               key={`item-${index}`}
-              className="bg-white rounded-2xl shadow-xl p-6 border-2 border-[#3A4E63]/20"
+              className="bg-white rounded-2xl shadow-xl p-6 border-2 border-[#033F99]/20"
             >
-              <h2 className="text-2xl font-bold text-[#3A4E63] mb-4 flex items-center gap-3">
+              <h2 className="text-2xl font-bold text-[#033F99] mb-4 flex items-center gap-3">
                 <span className="text-3xl">{category.icon}</span>
                 {category.category}
               </h2>
@@ -99,10 +99,10 @@ const MasterDashboard = () => {
                     onClick={() =>
                       navigate(`/commerce/manufacturing/masters/${master.type}`)
                     }
-                    className="p-6 bg-gradient-to-br from-[#C4D9F4] to-[#F0F5FF] rounded-xl hover:from-[#3A4E63] hover:to-[#0147CC] hover:text-white transition-all duration-300 text-left group border-2 border-[#3A4E63]/20 hover:border-[#3A4E63]"
+                    className="p-6 bg-gradient-to-br from-[#C4D9F4] to-[#F0F5FF] rounded-xl hover:from-[#033F99] hover:to-[#0147CC] hover:text-white transition-all duration-300 text-left group border-2 border-[#033F99]/20 hover:border-[#033F99]"
                   >
                     <div className="text-4xl mb-2">{master.icon}</div>
-                    <div className="font-bold text-[#3A4E63] group-hover:text-white">
+                    <div className="font-bold text-[#033F99] group-hover:text-white">
                       {master.title}
                     </div>
                   </button>

@@ -61,7 +61,7 @@ const TaxDetail = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="w-16 h-16 border-4 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-16 h-16 border-4 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -195,7 +195,7 @@ const TaxDetail = () => {
               </p>
               <p className="text-xs text-slate-500">@ {tax.tax_rate}%</p>
             </div>
-            <TrendingUp className="h-8 w-8 text-[#3A4E63]" />
+            <TrendingUp className="h-8 w-8 text-[#033F99]" />
           </div>
         </Card>
 
@@ -216,14 +216,14 @@ const TaxDetail = () => {
         <Card className="p-4 bg-gradient-to-br from-[#EBF3FC] to-[#C4D9F4] border-[#6B9FE6]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[#3A4E63]">
+              <p className="text-sm font-medium text-[#033F99]">
                 Net Tax Payable
               </p>
               <p className="text-2xl font-bold text-white">
                 ₹{(tax.net_tax_payable / 100000).toFixed(2)}L
               </p>
             </div>
-            <FileText className="h-8 w-8 text-[#3A4E63]" />
+            <FileText className="h-8 w-8 text-[#033F99]" />
           </div>
         </Card>
       </div>
@@ -233,7 +233,7 @@ const TaxDetail = () => {
         {/* Basic Information */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <FileText className="h-5 w-5 text-[#3A4E63]" />
+            <FileText className="h-5 w-5 text-[#033F99]" />
             Tax Information
           </h3>
           <div className="space-y-3">
@@ -330,39 +330,39 @@ const TaxDetail = () => {
         tax.reviewed_by ||
         tax.approved_by ||
         tax.filed_by) && (
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <User className="h-5 w-5 text-[#3A4E63]" />
-            Audit Trail
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {tax.prepared_by && (
-              <div>
-                <p className="text-sm text-slate-600">Prepared By</p>
-                <p className="font-medium text-slate-900">{tax.prepared_by}</p>
-              </div>
-            )}
-            {tax.reviewed_by && (
-              <div>
-                <p className="text-sm text-slate-600">Reviewed By</p>
-                <p className="font-medium text-slate-900">{tax.reviewed_by}</p>
-              </div>
-            )}
-            {tax.approved_by && (
-              <div>
-                <p className="text-sm text-slate-600">Approved By</p>
-                <p className="font-medium text-slate-900">{tax.approved_by}</p>
-              </div>
-            )}
-            {tax.filed_by && (
-              <div>
-                <p className="text-sm text-slate-600">Filed By</p>
-                <p className="font-medium text-slate-900">{tax.filed_by}</p>
-              </div>
-            )}
-          </div>
-        </Card>
-      )}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <User className="h-5 w-5 text-[#033F99]" />
+              Audit Trail
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {tax.prepared_by && (
+                <div>
+                  <p className="text-sm text-slate-600">Prepared By</p>
+                  <p className="font-medium text-slate-900">{tax.prepared_by}</p>
+                </div>
+              )}
+              {tax.reviewed_by && (
+                <div>
+                  <p className="text-sm text-slate-600">Reviewed By</p>
+                  <p className="font-medium text-slate-900">{tax.reviewed_by}</p>
+                </div>
+              )}
+              {tax.approved_by && (
+                <div>
+                  <p className="text-sm text-slate-600">Approved By</p>
+                  <p className="font-medium text-slate-900">{tax.approved_by}</p>
+                </div>
+              )}
+              {tax.filed_by && (
+                <div>
+                  <p className="text-sm text-slate-600">Filed By</p>
+                  <p className="font-medium text-slate-900">{tax.filed_by}</p>
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
     </div>
   );
 };

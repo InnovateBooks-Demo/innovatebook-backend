@@ -94,7 +94,7 @@ const RiskPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 text-[#3A4E63] animate-spin" />
+        <RefreshCw className="w-8 h-8 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -126,21 +126,19 @@ const RiskPage = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setView("list")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  view === "list"
-                    ? "bg-[#3A4E63] text-white"
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${view === "list"
+                    ? "bg-[#033F99] text-white"
                     : "bg-slate-100 text-slate-600"
-                }`}
+                  }`}
               >
                 List View
               </button>
               <button
                 onClick={() => setView("heatmap")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  view === "heatmap"
-                    ? "bg-[#3A4E63] text-white"
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${view === "heatmap"
+                    ? "bg-[#033F99] text-white"
                     : "bg-slate-100 text-slate-600"
-                }`}
+                  }`}
               >
                 Heatmap
               </button>
@@ -218,13 +216,12 @@ const RiskPage = () => {
               {["high_low", "high_medium", "high_high"].map((key) => (
                 <div
                   key={key}
-                  className={`p-3 rounded-lg min-h-[80px] ${
-                    key === "high_high"
+                  className={`p-3 rounded-lg min-h-[80px] ${key === "high_high"
                       ? "bg-red-100"
                       : key === "high_medium"
                         ? "bg-amber-100"
                         : "bg-yellow-50"
-                  }`}
+                    }`}
                 >
                   <span className="text-xs font-medium text-slate-600">
                     {heatmap?.heatmap?.[key]?.length || 0} risks
@@ -239,13 +236,12 @@ const RiskPage = () => {
               {["medium_low", "medium_medium", "medium_high"].map((key) => (
                 <div
                   key={key}
-                  className={`p-3 rounded-lg min-h-[80px] ${
-                    key === "medium_high"
+                  className={`p-3 rounded-lg min-h-[80px] ${key === "medium_high"
                       ? "bg-amber-100"
                       : key === "medium_medium"
                         ? "bg-yellow-50"
                         : "bg-green-50"
-                  }`}
+                    }`}
                 >
                   <span className="text-xs font-medium text-slate-600">
                     {heatmap?.heatmap?.[key]?.length || 0} risks
@@ -260,9 +256,8 @@ const RiskPage = () => {
               {["low_low", "low_medium", "low_high"].map((key) => (
                 <div
                   key={key}
-                  className={`p-3 rounded-lg min-h-[80px] ${
-                    key === "low_high" ? "bg-yellow-50" : "bg-green-50"
-                  }`}
+                  className={`p-3 rounded-lg min-h-[80px] ${key === "low_high" ? "bg-yellow-50" : "bg-green-50"
+                    }`}
                 >
                   <span className="text-xs font-medium text-slate-600">
                     {heatmap?.heatmap?.[key]?.length || 0} risks
@@ -302,11 +297,10 @@ const RiskPage = () => {
                   <button
                     key={status}
                     onClick={() => setStatusFilter(status)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      statusFilter === status
-                        ? "bg-[#3A4E63] text-white"
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === status
+                        ? "bg-[#033F99] text-white"
                         : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
-                    }`}
+                      }`}
                   >
                     {status.charAt(0).toUpperCase() + status.slice(1)}
                   </button>

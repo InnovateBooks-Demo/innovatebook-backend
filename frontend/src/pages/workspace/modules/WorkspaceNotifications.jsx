@@ -137,7 +137,7 @@ const WorkspaceNotifications = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   }
@@ -158,7 +158,7 @@ const WorkspaceNotifications = () => {
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+            className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
           >
             <option value="all">All Notifications</option>
             <option value="unread">Unread Only</option>
@@ -166,7 +166,7 @@ const WorkspaceNotifications = () => {
           {unreadCount > 0 && (
             <button
               onClick={markAllAsRead}
-              className="flex items-center gap-2 px-4 py-2 text-[#3A4E63] hover:bg-[#3A4E63]/10 rounded-lg"
+              className="flex items-center gap-2 px-4 py-2 text-[#033F99] hover:bg-[#033F99]/10 rounded-lg"
             >
               <Check className="h-4 w-4" />
               Mark all read
@@ -188,9 +188,8 @@ const WorkspaceNotifications = () => {
             {notifications.map((notification) => (
               <div
                 key={notification.notification_id}
-                className={`p-4 flex items-start gap-4 hover:bg-gray-50 transition-colors ${
-                  !notification.read_status ? "bg-blue-50/30" : ""
-                }`}
+                className={`p-4 flex items-start gap-4 hover:bg-gray-50 transition-colors ${!notification.read_status ? "bg-blue-50/30" : ""
+                  }`}
               >
                 <div
                   className={`w-10 h-10 rounded-lg flex items-center justify-center ${getEventColor(notification.event_type)}`}
@@ -215,7 +214,7 @@ const WorkspaceNotifications = () => {
                           onClick={() =>
                             markAsRead(notification.notification_id)
                           }
-                          className="p-1.5 text-gray-400 hover:text-[#3A4E63] hover:bg-[#3A4E63]/10 rounded"
+                          className="p-1.5 text-gray-400 hover:text-[#033F99] hover:bg-[#033F99]/10 rounded"
                           title="Mark as read"
                         >
                           <Check className="h-4 w-4" />

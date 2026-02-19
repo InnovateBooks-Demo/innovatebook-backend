@@ -49,7 +49,7 @@ const TreasuryAccountDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -95,7 +95,7 @@ const TreasuryAccountDetail = () => {
               </p>
             </div>
           </div>
-          <button className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2">
+          <button className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2">
             <Edit className="w-4 h-4" />
             Edit Account
           </button>
@@ -152,13 +152,12 @@ const TreasuryAccountDetail = () => {
             <div className="flex justify-between py-2 border-b border-gray-100">
               <span className="text-gray-500">Account Type</span>
               <span
-                className={`px-2 py-1 text-xs rounded-full capitalize ${
-                  account.account_type === "operating"
+                className={`px-2 py-1 text-xs rounded-full capitalize ${account.account_type === "operating"
                     ? "bg-blue-100 text-blue-700"
                     : account.account_type === "capital"
                       ? "bg-green-100 text-green-700"
                       : "bg-orange-100 text-orange-700"
-                }`}
+                  }`}
               >
                 {account.account_type}
               </span>
@@ -172,11 +171,10 @@ const TreasuryAccountDetail = () => {
             <div className="flex justify-between py-2">
               <span className="text-gray-500">Status</span>
               <span
-                className={`px-2 py-1 text-xs rounded-full ${
-                  account.status === "active"
+                className={`px-2 py-1 text-xs rounded-full ${account.status === "active"
                     ? "bg-green-100 text-green-700"
                     : "bg-gray-100 text-gray-700"
-                }`}
+                  }`}
               >
                 {account.status}
               </span>
@@ -277,13 +275,12 @@ const TreasuryAccountDetail = () => {
                   </td>
                   <td className="py-3 px-4">
                     <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        inflow.source_type === "equity"
+                      className={`px-2 py-1 text-xs rounded-full ${inflow.source_type === "equity"
                           ? "bg-green-100 text-green-700"
                           : inflow.source_type === "debt"
                             ? "bg-orange-100 text-orange-700"
                             : "bg-blue-100 text-blue-700"
-                      }`}
+                        }`}
                     >
                       {inflow.source_type}
                     </span>
@@ -345,13 +342,12 @@ const TreasuryAccountDetail = () => {
                   </td>
                   <td className="py-3 px-4">
                     <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        outflow.purpose_type === "debt_repayment"
+                      className={`px-2 py-1 text-xs rounded-full ${outflow.purpose_type === "debt_repayment"
                           ? "bg-orange-100 text-orange-700"
                           : outflow.purpose_type === "capex"
                             ? "bg-purple-100 text-purple-700"
                             : "bg-blue-100 text-blue-700"
-                      }`}
+                        }`}
                     >
                       {outflow.purpose_type?.replace("_", " ")}
                     </span>
@@ -377,15 +373,14 @@ const TreasuryAccountDetail = () => {
                         <XCircle className="w-4 h-4 text-red-500" />
                       )}
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          outflow.status === "executed"
+                        className={`px-2 py-1 text-xs rounded-full ${outflow.status === "executed"
                             ? "bg-green-100 text-green-700"
                             : outflow.status === "approved"
                               ? "bg-blue-100 text-blue-700"
                               : outflow.status === "requested"
                                 ? "bg-yellow-100 text-yellow-700"
                                 : "bg-red-100 text-red-700"
-                        }`}
+                          }`}
                       >
                         {outflow.status}
                       </span>

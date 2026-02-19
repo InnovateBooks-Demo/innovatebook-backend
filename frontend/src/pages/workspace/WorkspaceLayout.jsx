@@ -132,7 +132,7 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
   const moduleGroups = [
     {
       label: "Revenue",
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       items: [
         {
           name: "Lead",
@@ -238,12 +238,12 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
     >
       {/* LEFT NAVIGATION - Fixed, No Scroll */}
       <aside
-        className={`fixed left-0 top-0 h-full bg-white/70 backdrop-blur-xl border-r-2 border-[#3A4E63]/30 flex flex-col transition-all duration-300 shadow-2xl z-40 ${leftNavCollapsed ? "w-20" : "w-64"}`}
+        className={`fixed left-0 top-0 h-full bg-white/70 backdrop-blur-xl border-r-2 border-[#033F99]/30 flex flex-col transition-all duration-300 shadow-2xl z-40 ${leftNavCollapsed ? "w-20" : "w-64"}`}
         onMouseEnter={() => setLeftNavCollapsed(false)}
         onMouseLeave={() => setLeftNavCollapsed(true)}
       >
         {/* Logo / Brand - Company name only when expanded */}
-        <div className="h-20 flex items-center justify-center px-4 border-b-2 border-[#3A4E63]/30">
+        <div className="h-20 flex items-center justify-center px-4 border-b-2 border-[#033F99]/30">
           <Link to="/workspace" className="flex items-center gap-3">
             <img
               src="/innovate-books-logo-new.png"
@@ -251,7 +251,7 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
               className="h-10 w-10 flex-shrink-0"
             />
             {!leftNavCollapsed && (
-              <span className="font-black text-xl bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent whitespace-nowrap">
+              <span className="font-black text-xl bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent whitespace-nowrap">
                 Innovate Books
               </span>
             )}
@@ -267,11 +267,10 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                 setActiveLeftNav("workspace");
                 navigate("/workspace");
               }}
-              className={`w-full flex items-center gap-3 px-4 py-4 rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 ${
-                activeLeftNav === "workspace"
-                  ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-2xl shadow-[#3A4E63]/50"
-                  : "text-[#3A4E63] hover:bg-white/50 hover:shadow-xl backdrop-blur-sm border-2 border-transparent hover:border-[#3A4E63]/30"
-              }`}
+              className={`w-full flex items-center gap-3 px-4 py-4 rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 ${activeLeftNav === "workspace"
+                  ? "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white shadow-2xl shadow-[#033F99]/50"
+                  : "text-[#033F99] hover:bg-white/50 hover:shadow-xl backdrop-blur-sm border-2 border-transparent hover:border-[#033F99]/30"
+                }`}
             >
               <MessageSquare className="h-6 w-6 flex-shrink-0" />
               {!leftNavCollapsed && (
@@ -279,7 +278,7 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
               )}
             </button>
             {leftNavCollapsed && (
-              <div className="absolute left-full ml-3 px-4 py-2 bg-[#3A4E63] text-white text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-2xl">
+              <div className="absolute left-full ml-3 px-4 py-2 bg-[#033F99] text-white text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-2xl">
                 Workspace
               </div>
             )}
@@ -292,11 +291,10 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                 setActiveLeftNav("solutions");
                 navigate("/commerce");
               }}
-              className={`w-full flex items-center gap-3 px-4 py-4 rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 ${
-                activeLeftNav === "solutions"
-                  ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-2xl shadow-[#3A4E63]/50"
-                  : "text-[#3A4E63] hover:bg-white/50 hover:shadow-xl backdrop-blur-sm border-2 border-transparent hover:border-[#3A4E63]/30"
-              }`}
+              className={`w-full flex items-center gap-3 px-4 py-4 rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 ${activeLeftNav === "solutions"
+                  ? "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white shadow-2xl shadow-[#033F99]/50"
+                  : "text-[#033F99] hover:bg-white/50 hover:shadow-xl backdrop-blur-sm border-2 border-transparent hover:border-[#033F99]/30"
+                }`}
             >
               <LayoutGrid className="h-6 w-6 flex-shrink-0" />
               {!leftNavCollapsed && (
@@ -304,7 +302,7 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
               )}
             </button>
             {leftNavCollapsed && (
-              <div className="absolute left-full ml-3 px-4 py-2 bg-[#3A4E63] text-white text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-2xl">
+              <div className="absolute left-full ml-3 px-4 py-2 bg-[#033F99] text-white text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-2xl">
                 Solutions
               </div>
             )}
@@ -317,17 +315,16 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                 setActiveLeftNav("reports");
                 navigate("/reports");
               }}
-              className={`w-full flex items-center gap-3 px-4 py-4 rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 ${
-                activeLeftNav === "reports"
-                  ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-2xl shadow-[#3A4E63]/50"
-                  : "text-[#3A4E63] hover:bg-white/50 hover:shadow-xl backdrop-blur-sm border-2 border-transparent hover:border-[#3A4E63]/30"
-              }`}
+              className={`w-full flex items-center gap-3 px-4 py-4 rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 ${activeLeftNav === "reports"
+                  ? "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white shadow-2xl shadow-[#033F99]/50"
+                  : "text-[#033F99] hover:bg-white/50 hover:shadow-xl backdrop-blur-sm border-2 border-transparent hover:border-[#033F99]/30"
+                }`}
             >
               <BarChart3 className="h-6 w-6 flex-shrink-0" />
               {!leftNavCollapsed && <span className="text-base">Reports</span>}
             </button>
             {leftNavCollapsed && (
-              <div className="absolute left-full ml-3 px-4 py-2 bg-[#3A4E63] text-white text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-2xl">
+              <div className="absolute left-full ml-3 px-4 py-2 bg-[#033F99] text-white text-sm font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-2xl">
                 Reports
               </div>
             )}
@@ -373,7 +370,7 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
               onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-100 transition-all ${leftNavCollapsed ? "justify-center" : ""}`}
             >
-              <div className="w-9 h-9 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-lg">
+              <div className="w-9 h-9 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-lg">
                 {user?.full_name?.charAt(0) || "U"}
               </div>
               {!leftNavCollapsed && (
@@ -403,14 +400,14 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                   to="/workspace/settings"
                   className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 text-slate-700 transition-colors"
                 >
-                  <User className="h-4 w-4 text-[#3A4E63]" />
+                  <User className="h-4 w-4 text-[#033F99]" />
                   <span className="text-sm font-medium">Profile</span>
                 </Link>
                 <Link
                   to="/workspace/settings"
                   className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 text-slate-700 transition-colors"
                 >
-                  <Settings className="h-4 w-4 text-[#3A4E63]" />
+                  <Settings className="h-4 w-4 text-[#033F99]" />
                   <span className="text-sm font-medium">Settings</span>
                 </Link>
                 <hr className="my-2 border-slate-200" />
@@ -433,7 +430,7 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
       >
         {/* TOP NAVIGATION - Fixed, No Scroll */}
         <header
-          className="fixed top-0 right-0 h-20 bg-white/70 backdrop-blur-xl border-b-2 border-[#3A4E63]/30 flex items-center px-8 justify-between shadow-2xl z-30"
+          className="fixed top-0 right-0 h-20 bg-white/70 backdrop-blur-xl border-b-2 border-[#033F99]/30 flex items-center px-8 justify-between shadow-2xl z-30"
           style={{
             left: leftNavCollapsed ? "80px" : "256px",
             transition: "left 300ms",
@@ -443,52 +440,52 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
           {activeLeftNav === "workspace" && (
             <>
               <div className="flex items-center gap-6">
-                <h2 className="text-2xl font-black bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent">
+                <h2 className="text-2xl font-black bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent">
                   Workspace
                 </h2>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => navigate("/workspace/chat")}
-                    className="px-5 py-2.5 text-sm font-bold text-[#3A4E63] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#3A4E63]/30 transition-all backdrop-blur-sm"
+                    className="px-5 py-2.5 text-sm font-bold text-[#033F99] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#033F99]/30 transition-all backdrop-blur-sm"
                   >
                     IB Chat
                   </button>
-                  <button className="px-5 py-2.5 text-sm font-bold text-[#3A4E63] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#3A4E63]/30 transition-all backdrop-blur-sm">
+                  <button className="px-5 py-2.5 text-sm font-bold text-[#033F99] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#033F99]/30 transition-all backdrop-blur-sm">
                     Approvals
                   </button>
-                  <button className="px-5 py-2.5 text-sm font-bold text-[#3A4E63] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#3A4E63]/30 transition-all backdrop-blur-sm">
+                  <button className="px-5 py-2.5 text-sm font-bold text-[#033F99] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#033F99]/30 transition-all backdrop-blur-sm">
                     Tasks
                   </button>
-                  <button className="px-5 py-2.5 text-sm font-bold text-[#3A4E63] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#3A4E63]/30 transition-all backdrop-blur-sm">
+                  <button className="px-5 py-2.5 text-sm font-bold text-[#033F99] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#033F99]/30 transition-all backdrop-blur-sm">
                     Notifications
                   </button>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <button className="px-5 py-2.5 text-sm font-bold text-[#3A4E63] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#3A4E63]/30 transition-all backdrop-blur-sm flex items-center gap-2">
+                <button className="px-5 py-2.5 text-sm font-bold text-[#033F99] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#033F99]/30 transition-all backdrop-blur-sm flex items-center gap-2">
                   <Filter className="h-5 w-5" />
                   Filters
                 </button>
                 <div className="relative dropdown-container">
                   <button
                     onClick={() => setCreateDropdownOpen(!createDropdownOpen)}
-                    className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold rounded-2xl shadow-2xl shadow-[#3A4E63]/50 hover:shadow-[#3A4E63]/60 transition-all duration-300 transform hover:scale-105"
+                    className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold rounded-2xl shadow-2xl shadow-[#033F99]/50 hover:shadow-[#033F99]/60 transition-all duration-300 transform hover:scale-105"
                   >
                     <Plus className="h-5 w-5" />
                     <span>Create</span>
                   </button>
                   {createDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border-2 border-[#3A4E63]/30 py-3 z-[9999]">
-                      <button className="w-full text-left px-5 py-3 hover:bg-[#C4D9F4]/50 text-[#3A4E63] text-sm font-bold transition-all">
+                    <div className="absolute right-0 mt-2 w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border-2 border-[#033F99]/30 py-3 z-[9999]">
+                      <button className="w-full text-left px-5 py-3 hover:bg-[#C4D9F4]/50 text-[#033F99] text-sm font-bold transition-all">
                         Create Task
                       </button>
-                      <button className="w-full text-left px-5 py-3 hover:bg-[#C4D9F4]/50 text-[#3A4E63] text-sm font-bold transition-all">
+                      <button className="w-full text-left px-5 py-3 hover:bg-[#C4D9F4]/50 text-[#033F99] text-sm font-bold transition-all">
                         Create Announcement
                       </button>
-                      <button className="w-full text-left px-5 py-3 hover:bg-[#C4D9F4]/50 text-[#3A4E63] text-sm font-bold transition-all">
+                      <button className="w-full text-left px-5 py-3 hover:bg-[#C4D9F4]/50 text-[#033F99] text-sm font-bold transition-all">
                         Create SOP Trigger
                       </button>
-                      <button className="w-full text-left px-5 py-3 hover:bg-[#C4D9F4]/50 text-[#3A4E63] text-sm font-bold transition-all">
+                      <button className="w-full text-left px-5 py-3 hover:bg-[#C4D9F4]/50 text-[#033F99] text-sm font-bold transition-all">
                         Create Note
                       </button>
                     </div>
@@ -551,11 +548,10 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                                 setSelectedSolution(solution.id);
                                 setSolutionDropdownOpen(false);
                               }}
-                              className={`flex items-center gap-3 mx-2 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                                selectedSolution === solution.id
-                                  ? "bg-gradient-to-r from-[#C4D9F4]/70 to-[#C4D9F4]/50 border border-[#3A4E63] shadow-md"
-                                  : "hover:bg-[#C4D9F4]/40 border border-transparent hover:border-[#3A4E63]/30"
-                              }`}
+                              className={`flex items-center gap-3 mx-2 px-3 py-2.5 rounded-xl transition-all duration-200 group ${selectedSolution === solution.id
+                                  ? "bg-gradient-to-r from-[#C4D9F4]/70 to-[#C4D9F4]/50 border border-[#033F99] shadow-md"
+                                  : "hover:bg-[#C4D9F4]/40 border border-transparent hover:border-[#033F99]/30"
+                                }`}
                             >
                               <div
                                 className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-200"
@@ -571,7 +567,7 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                                 </p>
                               </div>
                               {selectedSolution === solution.id && (
-                                <div className="w-2 h-2 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full"></div>
+                                <div className="w-2 h-2 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full"></div>
                               )}
                             </Link>
                           );
@@ -597,21 +593,20 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                                 : group.label,
                             )
                           }
-                          className={`flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 ${
-                            group.items.some((item) => isActive(item.path))
+                          className={`flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 ${group.items.some((item) => isActive(item.path))
                               ? "text-white shadow-xl"
                               : "hover:bg-white/70 hover:shadow-lg border-2 border-transparent backdrop-blur-sm"
-                          }`}
+                            }`}
                           style={
                             group.items.some((item) => isActive(item.path))
                               ? {
-                                  background: `linear-gradient(to right, ${themeColor}, ${themeColorDark})`,
-                                  boxShadow: `0 20px 25px -5px ${themeColor}40, 0 8px 10px -6px ${themeColor}40`,
-                                }
+                                background: `linear-gradient(to right, ${themeColor}, ${themeColorDark})`,
+                                boxShadow: `0 20px 25px -5px ${themeColor}40, 0 8px 10px -6px ${themeColor}40`,
+                              }
                               : {
-                                  color: themeColor,
-                                  borderColor: `${themeColor}30`,
-                                }
+                                color: themeColor,
+                                borderColor: `${themeColor}30`,
+                              }
                           }
                         >
                           <span>{group.label}</span>
@@ -654,13 +649,13 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                                     style={
                                       isActive(item.path)
                                         ? {
-                                            background: `linear-gradient(to right, ${themeColor}10, ${themeColor}30)`,
-                                            borderColor: themeColor,
-                                          }
+                                          background: `linear-gradient(to right, ${themeColor}10, ${themeColor}30)`,
+                                          borderColor: themeColor,
+                                        }
                                         : {
-                                            background: "transparent",
-                                            borderColor: "transparent",
-                                          }
+                                          background: "transparent",
+                                          borderColor: "transparent",
+                                        }
                                     }
                                   >
                                     <div
@@ -709,11 +704,11 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                 )}
               </div>
               <div className="flex items-center gap-3">
-                <button className="px-5 py-2.5 text-sm font-bold text-[#3A4E63] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#3A4E63]/30 transition-all backdrop-blur-sm flex items-center gap-2">
+                <button className="px-5 py-2.5 text-sm font-bold text-[#033F99] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#033F99]/30 transition-all backdrop-blur-sm flex items-center gap-2">
                   <Filter className="h-5 w-5" />
                   Filters
                 </button>
-                <button className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold rounded-2xl shadow-2xl shadow-[#3A4E63]/50 hover:shadow-[#3A4E63]/60 transition-all duration-300 transform hover:scale-105">
+                <button className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold rounded-2xl shadow-2xl shadow-[#033F99]/50 hover:shadow-[#033F99]/60 transition-all duration-300 transform hover:scale-105">
                   <Plus className="h-5 w-5" />
                   <span>Add</span>
                 </button>
@@ -725,26 +720,26 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
           {activeLeftNav === "reports" && (
             <>
               <div className="flex items-center gap-6">
-                <h2 className="text-2xl font-black bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent">
+                <h2 className="text-2xl font-black bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent">
                   Reports
                 </h2>
                 <div className="flex items-center gap-2">
-                  <button className="px-5 py-2.5 text-sm font-bold text-[#3A4E63] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#3A4E63]/30 transition-all backdrop-blur-sm">
+                  <button className="px-5 py-2.5 text-sm font-bold text-[#033F99] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#033F99]/30 transition-all backdrop-blur-sm">
                     Favorites
                   </button>
-                  <button className="px-5 py-2.5 text-sm font-bold text-[#3A4E63] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#3A4E63]/30 transition-all backdrop-blur-sm">
+                  <button className="px-5 py-2.5 text-sm font-bold text-[#033F99] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#033F99]/30 transition-all backdrop-blur-sm">
                     Builder
                   </button>
-                  <button className="px-5 py-2.5 text-sm font-bold text-[#3A4E63] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#3A4E63]/30 transition-all backdrop-blur-sm">
+                  <button className="px-5 py-2.5 text-sm font-bold text-[#033F99] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#033F99]/30 transition-all backdrop-blur-sm">
                     Schedule
                   </button>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <button className="px-5 py-2.5 text-sm font-bold text-[#3A4E63] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#3A4E63]/30 transition-all backdrop-blur-sm">
+                <button className="px-5 py-2.5 text-sm font-bold text-[#033F99] hover:bg-white/70 hover:shadow-lg rounded-xl border-2 border-transparent hover:border-[#033F99]/30 transition-all backdrop-blur-sm">
                   Date Range
                 </button>
-                <button className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold rounded-2xl shadow-2xl shadow-[#3A4E63]/50 hover:shadow-[#3A4E63]/60 transition-all duration-300 transform hover:scale-105">
+                <button className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold rounded-2xl shadow-2xl shadow-[#033F99]/50 hover:shadow-[#033F99]/60 transition-all duration-300 transform hover:scale-105">
                   Export
                 </button>
               </div>

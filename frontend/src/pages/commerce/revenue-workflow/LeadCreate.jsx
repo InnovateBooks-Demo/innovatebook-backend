@@ -445,7 +445,7 @@ const RevenueLeadCreate = () => {
                       value={formData.lead_id}
                       readOnly
                       title={formData.lead_id}
-                      className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       style={{ fontVariantLigatures: "none" }}
                     />
                     <button
@@ -483,7 +483,7 @@ const RevenueLeadCreate = () => {
                         lead_status: e.target.value,
                       }))
                     }
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   >
                     {statusOptions.map((o) => (
                       <option key={o.value} value={o.value}>
@@ -503,7 +503,7 @@ const RevenueLeadCreate = () => {
                     name="lead_name"
                     value={formData.lead_name}
                     onChange={handleBasicChange}
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="e.g., Q2 Renewal - ABC"
                   />
                 </div>
@@ -518,7 +518,7 @@ const RevenueLeadCreate = () => {
                     value={formData.company_name}
                     onChange={handleBasicChange}
                     required
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="Registered/Trading name"
                   />
                 </div>
@@ -532,7 +532,7 @@ const RevenueLeadCreate = () => {
                     name="website"
                     value={formData.website}
                     onChange={handleBasicChange}
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="https://"
                   />
                 </div>
@@ -547,7 +547,7 @@ const RevenueLeadCreate = () => {
                     value={formData.description}
                     onChange={handleBasicChange}
                     rows={4}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="Notes for finance review / underwriting / deal details…"
                   />
                 </div>
@@ -565,7 +565,7 @@ const RevenueLeadCreate = () => {
                       value={formData.expected_deal_value}
                       onChange={handleBasicChange}
                       min="0"
-                      className="w-full h-11 pl-11 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full h-11 pl-11 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="0"
                     />
                   </div>
@@ -601,7 +601,7 @@ const RevenueLeadCreate = () => {
                 <button
                   type="button"
                   onClick={addContact}
-                  className="h-11 px-5 rounded-xl bg-[#3A4E63] text-white font-semibold hover:bg-[#022d6e] transition inline-flex items-center gap-2 shadow-sm"
+                  className="h-11 px-5 rounded-xl bg-[#033F99] text-white font-semibold hover:bg-[#022d6e] transition inline-flex items-center gap-2 shadow-sm"
                 >
                   <Plus className="h-4 w-4" />
                   Add Contact
@@ -616,19 +616,17 @@ const RevenueLeadCreate = () => {
                   return (
                     <div
                       key={idx}
-                      className={`rounded-2xl border overflow-hidden ${
-                        isPrimary
+                      className={`rounded-2xl border overflow-hidden ${isPrimary
                           ? "border-blue-200 bg-blue-50/30"
                           : "border-gray-200 bg-white"
-                      }`}
+                        }`}
                     >
                       {/* Card header row */}
                       <div
-                        className={`px-6 py-4 flex items-center justify-between gap-4 ${
-                          isPrimary
+                        className={`px-6 py-4 flex items-center justify-between gap-4 ${isPrimary
                             ? "border-b border-blue-200/70"
                             : "border-b border-gray-200"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-2">
                           {isPrimary ? (
@@ -685,7 +683,7 @@ const RevenueLeadCreate = () => {
                                   e.target.value,
                                 )
                               }
-                              className="w-full h-11 px-4 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                              className="w-full h-11 px-4 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                             />
                           </div>
 
@@ -702,7 +700,7 @@ const RevenueLeadCreate = () => {
                               onChange={(e) =>
                                 handleContactChange(idx, "role", e.target.value)
                               }
-                              className="w-full h-11 px-4 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                              className="w-full h-11 px-4 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                             />
                           </div>
 
@@ -723,7 +721,7 @@ const RevenueLeadCreate = () => {
                                   e.target.value,
                                 )
                               }
-                              className="w-full h-11 px-4 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                              className="w-full h-11 px-4 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                             />
                           </div>
 
@@ -744,7 +742,7 @@ const RevenueLeadCreate = () => {
                                   e.target.value,
                                 )
                               }
-                              className="w-full h-11 px-4 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                              className="w-full h-11 px-4 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                             />
                           </div>
                         </div>
@@ -779,35 +777,35 @@ const RevenueLeadCreate = () => {
                   value={formData.address.country}
                   onChange={handleAddressChange}
                   placeholder="Country"
-                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
                 <input
                   name="state"
                   value={formData.address.state}
                   onChange={handleAddressChange}
                   placeholder="State/Province"
-                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
                 <input
                   name="street"
                   value={formData.address.street}
                   onChange={handleAddressChange}
                   placeholder="Street"
-                  className="md:col-span-2 w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="md:col-span-2 w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
                 <input
                   name="city"
                   value={formData.address.city}
                   onChange={handleAddressChange}
                   placeholder="City"
-                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
                 <input
                   name="postal_code"
                   value={formData.address.postal_code}
                   onChange={handleAddressChange}
                   placeholder="Zip/Postal Code"
-                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
               </div>
             </div>
@@ -826,27 +824,27 @@ const RevenueLeadCreate = () => {
                   value={formData.business.industry}
                   onChange={handleBusinessChange}
                   placeholder="Industry"
-                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
                 <input
                   name="employees"
                   value={formData.business.employees}
                   onChange={handleBusinessChange}
                   placeholder="Employees"
-                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
                 <input
                   name="annual_revenue"
                   value={formData.business.annual_revenue}
                   onChange={handleBusinessChange}
                   placeholder="Annual revenue"
-                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
                 <select
                   name="lead_source"
                   value={formData.business.lead_source}
                   onChange={handleBusinessChange}
-                  className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 >
                   <option value="inbound">Inbound</option>
                   <option value="outbound">Outbound</option>
@@ -867,7 +865,7 @@ const RevenueLeadCreate = () => {
                     value={formData.business.assigned_to}
                     onChange={handleBusinessChange}
                     placeholder="Assigned to"
-                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full h-11 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   />
                 </div>
               </div>
@@ -888,7 +886,7 @@ const RevenueLeadCreate = () => {
             <button
               type="submit"
               disabled={loading}
-              className="h-11 px-7 rounded-lg bg-[#3A4E63] text-white font-semibold hover:bg-[#022d6e] transition disabled:opacity-50"
+              className="h-11 px-7 rounded-lg bg-[#033F99] text-white font-semibold hover:bg-[#022d6e] transition disabled:opacity-50"
             >
               <Save className="h-4 w-4 inline mr-2" />
               {loading ? "Creating..." : "Create Lead"}

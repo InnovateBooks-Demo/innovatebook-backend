@@ -20,6 +20,7 @@ import {
   Video as VideoIcon,
   VideoOff,
   PhoneOff,
+  ChevronLeft, // RESPONSIVE CHANGE
 } from "lucide-react";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -64,6 +65,7 @@ const SecureImage = ({ src, alt, className }) => {
 const WorkspaceChats = () => {
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
+  const [showChatMobile, setShowChatMobile] = useState(false); // RESPONSIVE CHANGE
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -167,6 +169,10 @@ const WorkspaceChats = () => {
       setChats(data);
       if (data.length > 0 && !selectedChat) {
         setSelectedChat(data[0]);
+        // Don't auto-open on mobile to avoid jumping to chat immediately
+        if (window.innerWidth >= 1024) {
+          setShowChatMobile(true);
+        }
       }
     } catch (error) {
       console.error("Error fetching chats:", error);
@@ -674,21 +680,21 @@ const WorkspaceChats = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   }
 
   return (
-    <div className="flex h-[calc(100vh-120px)] bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className="flex h-[calc(100vh-120px)] bg-white rounded-xl border border-gray-200 overflow-hidden relative"> {/* RESPONSIVE CHANGE: added relative */}
       {/* Chats Sidebar */}
-      <div className="w-80 border-r border-gray-200 flex flex-col">
+      <div className={`${showChatMobile ? "hidden lg:flex" : "flex"} w-full lg:w-80 border-r border-gray-200 flex-col`}> {/* RESPONSIVE CHANGE */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-semibold text-gray-900">Context Chats</h2>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="w-7 h-7 rounded-lg bg-[#3A4E63] text-white flex items-center justify-center hover:bg-[#3A4E63]"
+              className="w-7 h-7 rounded-lg bg-[#033F99] text-white flex items-center justify-center hover:bg-[#033F99]"
             >
               <Plus className="h-4 w-4" />
             </button>
@@ -698,7 +704,7 @@ const WorkspaceChats = () => {
             <input
               type="text"
               placeholder="Search chats"
-              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#033F99]"
             />
           </div>
         </div>
@@ -716,9 +722,12 @@ const WorkspaceChats = () => {
             chats.map((chat) => (
               <button
                 key={chat.chat_id}
-                onClick={() => setSelectedChat(chat)}
+                onClick={() => {
+                  setSelectedChat(chat);
+                  setShowChatMobile(true); // RESPONSIVE CHANGE
+                }}
                 className={`w-full flex items-center gap-3 p-4 text-left border-b border-gray-100 transition-colors ${selectedChat?.chat_id === chat.chat_id
-                  ? "bg-[#3A4E63]/5"
+                  ? "bg-[#033F99]/5"
                   : "hover:bg-gray-50"
                   }`}
               >
@@ -756,12 +765,19 @@ const WorkspaceChats = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className={`${!showChatMobile ? "hidden lg:flex" : "flex"} flex-1 flex-col h-full overflow-hidden`}> {/* RESPONSIVE CHANGE */}
         {selectedChat ? (
           <>
             {/* Chat Header */}
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10"> {/* RESPONSIVE CHANGE: added sticky */}
               <div className="flex items-center gap-3">
+                {/* Back Button for Mobile */}
+                <button
+                  onClick={() => setShowChatMobile(false)}
+                  className="lg:hidden p-2 -ml-2 text-gray-400 hover:text-gray-600"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
                 <div
                   className={`w-10 h-10 rounded-full ${getChatTypeColor(selectedChat.chat_type)} flex items-center justify-center text-white`}
                 >
@@ -815,7 +831,7 @@ const WorkspaceChats = () => {
               ) : (
                 messages.map((message) => (
                   <div key={message.message_id} className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[#3A4E63] flex items-center justify-center text-white font-medium text-xs">
+                    <div className="w-8 h-8 rounded-full bg-[#033F99] flex items-center justify-center text-white font-medium text-xs">
                       {message.sender_name?.charAt(0) || "U"}
                     </div>
                     <div className="flex-1">
@@ -878,7 +894,7 @@ const WorkspaceChats = () => {
             </div>
 
             {/* Message Input */}
-            <div className="p-4 border-t border-gray-200 bg-white">
+            <div className="p-4 border-t border-gray-200 bg-white sticky bottom-0"> {/* RESPONSIVE CHANGE: added sticky bottom */}
               <div className="flex items-center gap-2">
                 <input
                   type="file"
@@ -915,7 +931,7 @@ const WorkspaceChats = () => {
                       ? `${Object.keys(typingUsers).length} person(s) typing...`
                       : "Type a message..."
                   }
-                  className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                  className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                 />
                 {Object.keys(typingUsers).length > 0 && (
                   <div className="absolute bottom-16 left-20 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-75">
@@ -928,7 +944,7 @@ const WorkspaceChats = () => {
                 <button
                   onClick={sendMessage}
                   disabled={!newMessage.trim()}
-                  className="p-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#3A4E63] disabled:opacity-50"
+                  className="p-2 bg-[#033F99] text-white rounded-lg hover:bg-[#033F99] disabled:opacity-50"
                 >
                   <Send className="h-5 w-5" />
                 </button>
@@ -936,22 +952,21 @@ const WorkspaceChats = () => {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-400">
+          <div className="flex-1 hidden lg:flex items-center justify-center text-gray-400"> {/* RESPONSIVE CHANGE: hidden on mobile */}
             <div className="text-center">
               <MessageSquare className="h-16 w-16 mx-auto mb-4" />
               <p className="font-medium">Select a chat to start messaging</p>
               <p className="text-sm mt-1">or create a new context-bound chat</p>
             </div>
           </div>
-        )
-        }
-      </div >
+        )}
+      </div>
 
       {/* Create Chat Modal */}
       {
         showCreateModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl w-full max-w-md mx-4">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"> {/* RESPONSIVE CHANGE */}
+            <div className="bg-white rounded-xl w-[95vw] sm:w-[90vw] md:w-[700px] max-w-full max-h-[85vh] overflow-y-auto"> {/* RESPONSIVE CHANGE */}
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold text-gray-900">
@@ -977,7 +992,7 @@ const WorkspaceChats = () => {
                     onChange={(e) =>
                       setNewChat({ ...newChat, context_id: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                     placeholder="e.g., CTX-XXXXXXXX"
                   />
                   <p className="text-xs text-gray-500 mt-1">
@@ -994,7 +1009,7 @@ const WorkspaceChats = () => {
                     onChange={(e) =>
                       setNewChat({ ...newChat, chat_type: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                   >
                     <option value="internal">Internal</option>
                     <option value="client">Client</option>
@@ -1011,7 +1026,7 @@ const WorkspaceChats = () => {
                     onChange={(e) =>
                       setNewChat({ ...newChat, visibility_scope: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                   >
                     <option value="internal_only">Internal Only</option>
                     <option value="client_visible">Client Visible</option>
@@ -1028,7 +1043,7 @@ const WorkspaceChats = () => {
                     placeholder="Search members..."
                     value={userSearchQuery}
                     onChange={(e) => setUserSearchQuery(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63] mb-2 text-sm"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99] mb-2 text-sm"
                   />
                   <div className="border border-gray-200 rounded-lg max-h-48 overflow-y-auto">
                     {availableUsers
@@ -1039,7 +1054,7 @@ const WorkspaceChats = () => {
                       .map(user => (
                         <div
                           key={user.user_id}
-                          className={`p-2 flex items-center gap-3 hover:bg-gray-50 cursor-pointer ${selectedParticipants.includes(user.user_id) ? 'bg-[#3A4E63]/5' : ''}`}
+                          className={`p-2 flex items-center gap-3 hover:bg-gray-50 cursor-pointer ${selectedParticipants.includes(user.user_id) ? 'bg-[#033F99]/5' : ''}`}
                           onClick={() => {
                             if (selectedParticipants.includes(user.user_id)) {
                               setSelectedParticipants(prev => prev.filter(id => id !== user.user_id));
@@ -1048,7 +1063,7 @@ const WorkspaceChats = () => {
                             }
                           }}
                         >
-                          <div className={`w-4 h-4 border rounded flex items-center justify-center ${selectedParticipants.includes(user.user_id) ? 'bg-[#3A4E63] border-[#3A4E63]' : 'border-gray-300'}`}>
+                          <div className={`w-4 h-4 border rounded flex items-center justify-center ${selectedParticipants.includes(user.user_id) ? 'bg-[#033F99] border-[#033F99]' : 'border-gray-300'}`}>
                             {selectedParticipants.includes(user.user_id) && <span className="text-white text-[10px]">✓</span>}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -1064,7 +1079,7 @@ const WorkspaceChats = () => {
                 </div>
 
               </div>
-              <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+              <div className="p-6 border-t border-gray-200 flex flex-col sm:flex-row justify-end gap-3"> {/* RESPONSIVE CHANGE */}
                 <button
                   onClick={() => setShowCreateModal(false)}
                   className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
@@ -1074,7 +1089,7 @@ const WorkspaceChats = () => {
                 <button
                   onClick={createChat}
                   disabled={!newChat.context_id}
-                  className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#3A4E63] disabled:opacity-50"
+                  className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#033F99] disabled:opacity-50"
                 >
                   Create Chat
                 </button>
@@ -1087,8 +1102,8 @@ const WorkspaceChats = () => {
       {/* Participants Modal */}
       {
         showParticipantsModal && selectedChat && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl w-full max-w-md mx-4">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"> {/* RESPONSIVE CHANGE */}
+            <div className="bg-white rounded-xl w-[95vw] sm:w-[90vw] md:w-[700px] max-w-full max-h-[85vh] overflow-y-auto"> {/* RESPONSIVE CHANGE */}
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold text-gray-900">
@@ -1107,7 +1122,7 @@ const WorkspaceChats = () => {
                   const user = availableUsers.find(u => u.user_id === participantId) || { full_name: "Unknown User", email: "", user_id: participantId };
                   return (
                     <div key={participantId} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg">
-                      <div className="w-10 h-10 rounded-full bg-[#3A4E63] text-white flex items-center justify-center font-medium">
+                      <div className="w-10 h-10 rounded-full bg-[#033F99] text-white flex items-center justify-center font-medium">
                         {user.full_name.charAt(0)}
                       </div>
                       <div>

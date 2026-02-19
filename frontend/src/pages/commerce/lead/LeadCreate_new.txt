@@ -250,15 +250,15 @@ const LeadCreate = () => {
         <div className="mb-8">
           <button 
             onClick={() => navigate('/commerce/lead')} 
-            className="flex items-center gap-2 text-[#3A4E63] hover:text-[#022E75] font-semibold mb-4 transition-all"
+            className="flex items-center gap-2 text-[#033F99] hover:text-[#022E75] font-semibold mb-4 transition-all"
           >
             <ArrowLeft className="h-5 w-5" />
             Back to Leads
           </button>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent mb-2" style={{ fontFamily: 'Poppins' }}>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent mb-2" style={{ fontFamily: 'Poppins' }}>
             Create New Lead
           </h1>
-          <p className="text-[#3A4E63] font-medium text-lg">Capture manufacturing opportunity details</p>
+          <p className="text-[#033F99] font-medium text-lg">Capture manufacturing opportunity details</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

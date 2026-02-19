@@ -78,7 +78,7 @@ const CashFlowVariance = () => {
           <div>
             <h2
               className="text-2xl font-semibold"
-              style={{ fontFamily: "Inter", color: "#3A4E63" }}
+              style={{ fontFamily: "Inter", color: "#033F99" }}
             >
               Budget vs Actual Variance Analysis
             </h2>
@@ -121,7 +121,7 @@ const CashFlowVariance = () => {
                 <CardContent>
                   <p
                     className="text-2xl font-semibold"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     {formatCurrency(variance.budget_inflow)}
                   </p>
@@ -156,7 +156,7 @@ const CashFlowVariance = () => {
                 <CardContent>
                   <p
                     className="text-2xl font-semibold"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     {formatCurrency(variance.budget_outflow)}
                   </p>
@@ -186,7 +186,7 @@ const CashFlowVariance = () => {
             {/* Net Variance Summary */}
             <Card className="chart-container">
               <CardHeader>
-                <CardTitle style={{ color: "#3A4E63" }}>
+                <CardTitle style={{ color: "#033F99" }}>
                   Net Cash Flow Variance
                 </CardTitle>
               </CardHeader>
@@ -198,7 +198,7 @@ const CashFlowVariance = () => {
                     </p>
                     <p
                       className="text-3xl font-bold"
-                      style={{ color: "#3A4E63" }}
+                      style={{ color: "#033F99" }}
                     >
                       {formatCurrency(variance.budget_net_flow)}
                     </p>
@@ -231,7 +231,7 @@ const CashFlowVariance = () => {
             {/* Detailed Variance Breakdown */}
             <Card className="chart-container">
               <CardHeader>
-                <CardTitle style={{ color: "#3A4E63" }}>
+                <CardTitle style={{ color: "#033F99" }}>
                   Category-wise Variance Breakdown
                 </CardTitle>
               </CardHeader>
@@ -363,7 +363,7 @@ const CashFlowVariance = () => {
                 <CardHeader>
                   <CardTitle
                     className="flex items-center gap-2"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     <Sparkles className="h-5 w-5" />
                     AI Variance Analysis
@@ -383,7 +383,7 @@ const CashFlowVariance = () => {
                     {variance.ai_analysis.recommendations && (
                       <div
                         className="p-4 bg-white rounded-lg border-l-4"
-                        style={{ borderLeftColor: "#3A4E63" }}
+                        style={{ borderLeftColor: "#033F99" }}
                       >
                         <h4 className="font-semibold text-gray-700 mb-2">
                           Recommendations:
@@ -405,7 +405,7 @@ const CashFlowVariance = () => {
             {/* Performance Indicators */}
             <Card className="chart-container">
               <CardHeader>
-                <CardTitle style={{ color: "#3A4E63" }}>
+                <CardTitle style={{ color: "#033F99" }}>
                   Performance Indicators
                 </CardTitle>
               </CardHeader>

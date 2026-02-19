@@ -49,7 +49,7 @@ const ProcureHandoffsList = () => {
   if (loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
 
@@ -164,7 +164,7 @@ const ProcureHandoffsList = () => {
                     }
                   >
                     <td className="px-6 py-4">
-                      <span className="font-mono text-[#3A4E63]">
+                      <span className="font-mono text-[#033F99]">
                         {handoff.handoff_id}
                       </span>
                     </td>

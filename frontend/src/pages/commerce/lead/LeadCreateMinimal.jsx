@@ -48,9 +48,9 @@ const LeadCreateMinimal = () => {
           : null,
         tags: formData.tags
           ? formData.tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter(Boolean)
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
           : [],
       };
 
@@ -99,7 +99,7 @@ const LeadCreateMinimal = () => {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#3A4E63] text-white text-sm font-medium rounded-lg hover:bg-[#3A4E63] transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#033F99] text-white text-sm font-medium rounded-lg hover:bg-[#033F99] transition-colors disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               {loading ? "Saving..." : "Save Lead"}
@@ -127,7 +127,7 @@ const LeadCreateMinimal = () => {
                   value={formData.company_name}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                   placeholder="e.g., Acme Robotics Pvt Ltd"
                 />
               </div>
@@ -140,7 +140,7 @@ const LeadCreateMinimal = () => {
                   value={formData.lead_source}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 >
                   <option value="Website">Website</option>
                   <option value="Referral">Referral</option>
@@ -170,7 +170,7 @@ const LeadCreateMinimal = () => {
                   value={formData.contact_name}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="e.g., Priya Nair"
                 />
               </div>
@@ -184,7 +184,7 @@ const LeadCreateMinimal = () => {
                   value={formData.email_address}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="e.g., priya@acmerobo.com"
                 />
               </div>
@@ -197,7 +197,7 @@ const LeadCreateMinimal = () => {
                   name="phone_number"
                   value={formData.phone_number}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="e.g., +91 9812345678"
                 />
               </div>
@@ -210,7 +210,7 @@ const LeadCreateMinimal = () => {
                   name="designation"
                   value={formData.designation}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="e.g., Procurement Manager"
                 />
               </div>
@@ -231,7 +231,7 @@ const LeadCreateMinimal = () => {
                   name="industry_type"
                   value={formData.industry_type}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 >
                   <option value="">Select Industry</option>
                   <option value="Manufacturing">Manufacturing</option>
@@ -251,7 +251,7 @@ const LeadCreateMinimal = () => {
                   name="company_size"
                   value={formData.company_size}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 >
                   <option value="">Select Size</option>
                   <option value="Small">Small (1-50)</option>
@@ -268,7 +268,7 @@ const LeadCreateMinimal = () => {
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="e.g., Mumbai"
                 />
               </div>
@@ -281,7 +281,7 @@ const LeadCreateMinimal = () => {
                   name="website_url"
                   value={formData.website_url}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="e.g., https://www.acmerobo.com"
                 />
               </div>
@@ -305,7 +305,7 @@ const LeadCreateMinimal = () => {
                   value={formData.product_or_solution_interested_in}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="e.g., ERP System, Accounting Software"
                 />
               </div>
@@ -318,7 +318,7 @@ const LeadCreateMinimal = () => {
                   name="estimated_deal_value"
                   value={formData.estimated_deal_value}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder="e.g., 500000"
                 />
               </div>
@@ -330,7 +330,7 @@ const LeadCreateMinimal = () => {
                   name="decision_timeline"
                   value={formData.decision_timeline}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 >
                   <option value="">Select Timeline</option>
                   <option value="0-3 months">0-3 months</option>
@@ -347,7 +347,7 @@ const LeadCreateMinimal = () => {
                   value={formData.notes}
                   onChange={handleChange}
                   rows={3}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] resize-none"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] resize-none"
                   placeholder="Any additional information..."
                 />
               </div>
@@ -366,7 +366,7 @@ const LeadCreateMinimal = () => {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#3A4E63] text-white text-sm font-medium rounded-lg hover:bg-[#3A4E63] transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#033F99] text-white text-sm font-medium rounded-lg hover:bg-[#033F99] transition-colors disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               {loading ? "Saving..." : "Save Lead"}

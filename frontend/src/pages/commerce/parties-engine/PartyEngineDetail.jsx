@@ -124,7 +124,7 @@ const PartyEngineDetail = () => {
   if (loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   if (!party)
@@ -196,7 +196,7 @@ const PartyEngineDetail = () => {
                 onClick={() =>
                   navigate(`/commerce/parties-engine/${party_id}/edit`)
                 }
-                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e]"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e]"
               >
                 <Edit2 className="h-4 w-4" />
                 Edit
@@ -211,11 +211,10 @@ const PartyEngineDetail = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? "border-[#3A4E63] text-[#3A4E63]"
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                  ? "border-[#033F99] text-[#033F99]"
                   : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
+                }`}
             >
               <tab.icon className="h-4 w-4" />
               {tab.label}
@@ -406,7 +405,7 @@ const PartyEngineDetail = () => {
                                   onClick={() =>
                                     handleVerifyProfile(profile.key)
                                   }
-                                  className="px-3 py-1.5 text-sm font-medium text-[#3A4E63] bg-blue-50 rounded-lg hover:bg-blue-100"
+                                  className="px-3 py-1.5 text-sm font-medium text-[#033F99] bg-blue-50 rounded-lg hover:bg-blue-100"
                                 >
                                   Verify
                                 </button>
@@ -641,24 +640,22 @@ const PartyEngineDetail = () => {
                       {/* Risk Score */}
                       <div className="text-center">
                         <div
-                          className={`inline-flex items-center justify-center w-24 h-24 rounded-full text-3xl font-bold ${
-                            profiles.risk.risk_score >= 70
+                          className={`inline-flex items-center justify-center w-24 h-24 rounded-full text-3xl font-bold ${profiles.risk.risk_score >= 70
                               ? "bg-red-100 text-red-700"
                               : profiles.risk.risk_score >= 40
                                 ? "bg-yellow-100 text-yellow-700"
                                 : "bg-green-100 text-green-700"
-                          }`}
+                            }`}
                         >
                           {profiles.risk.risk_score}
                         </div>
                         <p
-                          className={`mt-2 font-semibold capitalize ${
-                            profiles.risk.risk_level === "high"
+                          className={`mt-2 font-semibold capitalize ${profiles.risk.risk_level === "high"
                               ? "text-red-600"
                               : profiles.risk.risk_level === "medium"
                                 ? "text-yellow-600"
                                 : "text-green-600"
-                          }`}
+                            }`}
                         >
                           {profiles.risk.risk_level} Risk
                         </p>
@@ -868,7 +865,7 @@ const PartyEngineDetail = () => {
               <div className="p-6 space-y-4">
                 <div>
                   <p className="text-sm text-gray-500">Party ID</p>
-                  <p className="font-mono text-[#3A4E63]">{party.party_id}</p>
+                  <p className="font-mono text-[#033F99]">{party.party_id}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Status</p>

@@ -232,9 +232,9 @@ const LeadCreate = () => {
           : null,
         tags: formData.tags
           ? formData.tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter(Boolean)
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
           : [],
       };
 
@@ -284,7 +284,7 @@ const LeadCreate = () => {
             </button>
             <div>
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-[#3A4E63] rounded-lg">
+                <div className="p-2 bg-[#033F99] rounded-lg">
                   <Users className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -312,23 +312,21 @@ const LeadCreate = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === tab.id
-                  ? "border-[#3A4E63] text-[#3A4E63]"
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id
+                  ? "border-[#033F99] text-[#033F99]"
                   : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
+                }`}
             >
               <tab.icon className="h-4 w-4" />
               {tab.label}
               {tab.platform && (
                 <span
-                  className={`ml-1 text-[9px] px-1 py-0.5 rounded ${
-                    tab.platform === "HubSpot"
+                  className={`ml-1 text-[9px] px-1 py-0.5 rounded ${tab.platform === "HubSpot"
                       ? "bg-orange-100 text-orange-600"
                       : tab.platform === "Salesforce"
                         ? "bg-blue-100 text-blue-600"
                         : "bg-orange-100 text-orange-700"
-                  }`}
+                    }`}
                 >
                   {tab.platform}
                 </span>
@@ -362,7 +360,7 @@ const LeadCreate = () => {
                       name="lead_owner"
                       value={formData.lead_owner}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                       placeholder="Assign lead owner"
                     />
                   </div>
@@ -374,7 +372,7 @@ const LeadCreate = () => {
                       name="salutation"
                       value={formData.salutation}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                     >
                       <option value="">Select</option>
                       {salutations.map((s) => (
@@ -393,7 +391,7 @@ const LeadCreate = () => {
                       name="first_name"
                       value={formData.first_name}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="First name"
                     />
                   </div>
@@ -407,7 +405,7 @@ const LeadCreate = () => {
                       value={formData.last_name}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="Last name"
                     />
                   </div>
@@ -420,7 +418,7 @@ const LeadCreate = () => {
                       name="title"
                       value={formData.title}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="e.g. CEO, Manager"
                     />
                   </div>
@@ -448,7 +446,7 @@ const LeadCreate = () => {
                       name="lead_source"
                       value={formData.lead_source}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                     >
                       <option value="">Select Source</option>
                       {leadSources.map((s) => (
@@ -466,7 +464,7 @@ const LeadCreate = () => {
                       name="lead_status"
                       value={formData.lead_status}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                     >
                       {leadStatuses.map((s) => (
                         <option key={s} value={s}>
@@ -483,7 +481,7 @@ const LeadCreate = () => {
                       name="rating"
                       value={formData.rating}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                     >
                       <option value="">Select Rating</option>
                       {ratings.map((r) => (
@@ -508,7 +506,7 @@ const LeadCreate = () => {
                       name="lifecycle_stage"
                       value={formData.lifecycle_stage}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                     >
                       {lifecycleStages.map((s) => (
                         <option key={s} value={s}>
@@ -525,7 +523,7 @@ const LeadCreate = () => {
                       name="lead_priority"
                       value={formData.lead_priority}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                     >
                       {priorities.map((p) => (
                         <option key={p} value={p}>
@@ -559,7 +557,7 @@ const LeadCreate = () => {
                     value={formData.company}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="Company name"
                   />
                 </div>
@@ -571,7 +569,7 @@ const LeadCreate = () => {
                     name="company_type"
                     value={formData.company_type}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                   >
                     <option value="">Select Type</option>
                     {companyTypes.map((t) => (
@@ -589,7 +587,7 @@ const LeadCreate = () => {
                     name="industry"
                     value={formData.industry}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                   >
                     <option value="">Select Industry</option>
                     {industries.map((i) => (
@@ -608,7 +606,7 @@ const LeadCreate = () => {
                     name="annual_revenue"
                     value={formData.annual_revenue}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="e.g. 10000000"
                   />
                 </div>
@@ -621,7 +619,7 @@ const LeadCreate = () => {
                     name="no_of_employees"
                     value={formData.no_of_employees}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="e.g. 50"
                   />
                 </div>
@@ -634,7 +632,7 @@ const LeadCreate = () => {
                     name="current_vendor"
                     value={formData.current_vendor}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="e.g. Zoho CRM, Salesforce"
                   />
                 </div>
@@ -662,7 +660,7 @@ const LeadCreate = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="+91 XXXXX XXXXX"
                     />
                   </div>
@@ -675,7 +673,7 @@ const LeadCreate = () => {
                       name="mobile"
                       value={formData.mobile}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="+91 XXXXX XXXXX"
                     />
                   </div>
@@ -688,7 +686,7 @@ const LeadCreate = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="email@example.com"
                     />
                   </div>
@@ -701,7 +699,7 @@ const LeadCreate = () => {
                       name="secondary_email"
                       value={formData.secondary_email}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="secondary@example.com"
                     />
                   </div>
@@ -714,7 +712,7 @@ const LeadCreate = () => {
                       name="fax"
                       value={formData.fax}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="Fax number"
                     />
                   </div>
@@ -727,7 +725,7 @@ const LeadCreate = () => {
                       name="skype_id"
                       value={formData.skype_id}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="Skype username"
                     />
                   </div>
@@ -740,7 +738,7 @@ const LeadCreate = () => {
                       name="website"
                       value={formData.website}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="https://www.example.com"
                     />
                   </div>
@@ -764,7 +762,7 @@ const LeadCreate = () => {
                       value={formData.street}
                       onChange={handleChange}
                       rows={2}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="Street address"
                     />
                   </div>
@@ -777,7 +775,7 @@ const LeadCreate = () => {
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="City"
                     />
                   </div>
@@ -790,7 +788,7 @@ const LeadCreate = () => {
                       name="state"
                       value={formData.state}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="State"
                     />
                   </div>
@@ -803,7 +801,7 @@ const LeadCreate = () => {
                       name="zip_code"
                       value={formData.zip_code}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="Postal code"
                     />
                   </div>
@@ -816,7 +814,7 @@ const LeadCreate = () => {
                       name="country"
                       value={formData.country}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       placeholder="Country"
                     />
                   </div>
@@ -847,7 +845,7 @@ const LeadCreate = () => {
                     name="linkedin_url"
                     value={formData.linkedin_url}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="https://linkedin.com/in/username"
                   />
                 </div>
@@ -861,7 +859,7 @@ const LeadCreate = () => {
                     name="twitter_handle"
                     value={formData.twitter_handle}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="@username"
                   />
                 </div>
@@ -875,7 +873,7 @@ const LeadCreate = () => {
                     name="facebook_url"
                     value={formData.facebook_url}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="https://facebook.com/page"
                   />
                 </div>
@@ -904,7 +902,7 @@ const LeadCreate = () => {
                     name="campaign_source"
                     value={formData.campaign_source}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="e.g. Google, Facebook"
                   />
                 </div>
@@ -917,7 +915,7 @@ const LeadCreate = () => {
                     name="campaign_name"
                     value={formData.campaign_name}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="e.g. Q1 Lead Gen"
                   />
                 </div>
@@ -929,7 +927,7 @@ const LeadCreate = () => {
                     name="campaign_medium"
                     value={formData.campaign_medium}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                   >
                     <option value="">Select Medium</option>
                     {campaignMediums.map((m) => (
@@ -964,7 +962,7 @@ const LeadCreate = () => {
                     name="deal_value"
                     value={formData.deal_value}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="e.g. 1000000"
                   />
                 </div>
@@ -976,7 +974,7 @@ const LeadCreate = () => {
                     name="deal_stage"
                     value={formData.deal_stage}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                   >
                     <option value="">Select Stage</option>
                     {dealStages.map((s) => (
@@ -995,7 +993,7 @@ const LeadCreate = () => {
                     name="deal_probability"
                     value={formData.deal_probability}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="0-100"
                     min="0"
                     max="100"
@@ -1010,7 +1008,7 @@ const LeadCreate = () => {
                     name="expected_close_date"
                     value={formData.expected_close_date}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   />
                 </div>
               </div>
@@ -1036,7 +1034,7 @@ const LeadCreate = () => {
                     value={formData.description}
                     onChange={handleChange}
                     rows={3}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="Add notes about this lead..."
                   />
                 </div>
@@ -1053,7 +1051,7 @@ const LeadCreate = () => {
                     name="tags"
                     value={formData.tags}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                     placeholder="e.g. enterprise, high-value, tech"
                   />
                 </div>
@@ -1064,7 +1062,7 @@ const LeadCreate = () => {
                       name="email_opt_out"
                       checked={formData.email_opt_out}
                       onChange={handleChange}
-                      className="h-4 w-4 rounded border-gray-300 text-[#3A4E63] focus:ring-[#3A4E63]"
+                      className="h-4 w-4 rounded border-gray-300 text-[#033F99] focus:ring-[#033F99]"
                     />
                     <label className="text-xs text-gray-700">
                       Email Opt Out - Do not send marketing emails
@@ -1076,7 +1074,7 @@ const LeadCreate = () => {
                       name="do_not_call"
                       checked={formData.do_not_call}
                       onChange={handleChange}
-                      className="h-4 w-4 rounded border-gray-300 text-[#3A4E63] focus:ring-[#3A4E63]"
+                      className="h-4 w-4 rounded border-gray-300 text-[#033F99] focus:ring-[#033F99]"
                     />
                     <label className="text-xs text-gray-700">
                       Do Not Call - Exclude from phone campaigns
@@ -1108,7 +1106,7 @@ const LeadCreate = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex items-center gap-1.5 px-5 py-2 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-5 py-2 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] disabled:opacity-50"
               >
                 <Save className="h-4 w-4" />
                 {loading ? "Creating..." : "Create Lead"}

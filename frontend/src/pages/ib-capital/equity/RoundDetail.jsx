@@ -53,7 +53,7 @@ const RoundDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -87,15 +87,14 @@ const RoundDetail = () => {
                 {round.round_name}
               </h1>
               <span
-                className={`px-3 py-1 text-sm rounded-full ${
-                  round.status === "closed"
+                className={`px-3 py-1 text-sm rounded-full ${round.status === "closed"
                     ? "bg-green-100 text-green-700"
                     : round.status === "open"
                       ? "bg-blue-100 text-blue-700"
                       : round.status === "planned"
                         ? "bg-gray-100 text-gray-700"
                         : "bg-red-100 text-red-700"
-                }`}
+                  }`}
               >
                 {round.status}
               </span>
@@ -128,7 +127,7 @@ const RoundDetail = () => {
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
           <p className="text-sm text-gray-500 mb-1">Post-Money Valuation</p>
-          <p className="text-2xl font-bold text-[#3A4E63]">
+          <p className="text-2xl font-bold text-[#033F99]">
             {formatCurrency(round.post_money_valuation)}
           </p>
         </div>
@@ -151,7 +150,7 @@ const RoundDetail = () => {
         {dilution && (
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <PieChart className="w-5 h-5 text-[#3A4E63]" />
+              <PieChart className="w-5 h-5 text-[#033F99]" />
               Dilution Analysis
             </h2>
             <div className="space-y-4">
@@ -186,7 +185,7 @@ const RoundDetail = () => {
         {/* Equity Issues */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-[#3A4E63]" />
+            <Users className="w-5 h-5 text-[#033F99]" />
             Equity Issues ({round.equity_issues?.length || 0})
           </h2>
           {round.equity_issues?.length > 0 ? (

@@ -160,7 +160,7 @@ const WorkspaceChannels = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   }
@@ -174,7 +174,7 @@ const WorkspaceChannels = () => {
             <h2 className="font-semibold text-gray-900">Channels</h2>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="w-7 h-7 rounded-lg bg-[#3A4E63] text-white flex items-center justify-center hover:bg-[#3A4E63]"
+              className="w-7 h-7 rounded-lg bg-[#033F99] text-white flex items-center justify-center hover:bg-[#033F99]"
             >
               <Plus className="h-4 w-4" />
             </button>
@@ -184,7 +184,7 @@ const WorkspaceChannels = () => {
             <input
               type="text"
               placeholder="Search channels"
-              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#033F99]"
             />
           </div>
         </div>
@@ -199,11 +199,10 @@ const WorkspaceChannels = () => {
               <button
                 key={channel.channel_id}
                 onClick={() => setSelectedChannel(channel)}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${
-                  selectedChannel?.channel_id === channel.channel_id
-                    ? "bg-[#3A4E63]/10 text-[#3A4E63]"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${selectedChannel?.channel_id === channel.channel_id
+                  ? "bg-[#033F99]/10 text-[#033F99]"
+                  : "text-gray-700 hover:bg-gray-100"
+                  }`}
               >
                 <span className="text-lg">
                   {getChannelTypeIcon(channel.channel_type)}
@@ -262,7 +261,7 @@ const WorkspaceChannels = () => {
               ) : (
                 messages.map((message) => (
                   <div key={message.message_id} className="flex gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[#3A4E63] flex items-center justify-center text-white font-medium text-sm">
+                    <div className="w-9 h-9 rounded-full bg-[#033F99] flex items-center justify-center text-white font-medium text-sm">
                       {message.sender_name?.charAt(0) || "U"}
                     </div>
                     <div className="flex-1">
@@ -296,7 +295,7 @@ const WorkspaceChannels = () => {
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && sendMessage()}
                   placeholder={`Message #${selectedChannel.name}`}
-                  className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                  className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                 />
                 <button className="p-2 text-gray-400 hover:text-gray-600">
                   <AtSign className="h-5 w-5" />
@@ -307,7 +306,7 @@ const WorkspaceChannels = () => {
                 <button
                   onClick={sendMessage}
                   disabled={!newMessage.trim()}
-                  className="p-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#3A4E63] disabled:opacity-50"
+                  className="p-2 bg-[#033F99] text-white rounded-lg hover:bg-[#033F99] disabled:opacity-50"
                 >
                   <Send className="h-5 w-5" />
                 </button>
@@ -326,8 +325,8 @@ const WorkspaceChannels = () => {
 
       {/* Create Channel Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-full max-w-md mx-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"> {/* RESPONSIVE CHANGE */}
+          <div className="bg-white rounded-xl w-[95vw] sm:w-[90vw] md:w-[700px] max-w-full max-h-[85vh] overflow-y-auto"> {/* RESPONSIVE CHANGE */}
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-900">
@@ -352,7 +351,7 @@ const WorkspaceChannels = () => {
                   onChange={(e) =>
                     setNewChannel({ ...newChannel, name: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                   placeholder="e.g., sales-team"
                 />
               </div>
@@ -368,7 +367,7 @@ const WorkspaceChannels = () => {
                       description: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                   rows={3}
                   placeholder="What's this channel about?"
                 />
@@ -385,7 +384,7 @@ const WorkspaceChannels = () => {
                       channel_type: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#033F99]"
                 >
                   <option value="general">General</option>
                   <option value="deal">Deal</option>
@@ -396,7 +395,7 @@ const WorkspaceChannels = () => {
                 </select>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+            <div className="p-6 border-t border-gray-200 flex flex-col sm:flex-row justify-end gap-3"> {/* RESPONSIVE CHANGE */}
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
@@ -406,7 +405,7 @@ const WorkspaceChannels = () => {
               <button
                 onClick={createChannel}
                 disabled={!newChannel.name}
-                className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#3A4E63] disabled:opacity-50"
+                className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#033F99] disabled:opacity-50"
               >
                 Create Channel
               </button>

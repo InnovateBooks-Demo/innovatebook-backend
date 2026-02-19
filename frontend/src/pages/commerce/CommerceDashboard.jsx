@@ -51,7 +51,7 @@ const CommerceDashboard = () => {
       name: "Lead",
       description: "Capture and qualify new business opportunities",
       icon: UserPlus,
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       path: "/commerce/lead",
       workflow: "Customer Revenue Cycle",
     },
@@ -60,7 +60,7 @@ const CommerceDashboard = () => {
       name: "Evaluate",
       description: "Analyze commercial feasibility and risk",
       icon: Search,
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       path: "/commerce/evaluate",
       workflow: "Customer Revenue Cycle",
     },
@@ -69,7 +69,7 @@ const CommerceDashboard = () => {
       name: "Commit",
       description: "Formalize the commercial relationship",
       icon: FileText,
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       path: "/commerce/commit",
       workflow: "Customer Revenue Cycle",
     },
@@ -78,7 +78,7 @@ const CommerceDashboard = () => {
       name: "Execute",
       description: "Deliver what was promised",
       icon: CheckCircle,
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       path: "/commerce/execute",
       workflow: "Customer Revenue Cycle",
     },
@@ -87,7 +87,7 @@ const CommerceDashboard = () => {
       name: "Bill",
       description: "Generate and validate invoices",
       icon: FileCheck,
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       path: "/commerce/bills",
       workflow: "Customer Revenue Cycle",
     },
@@ -96,7 +96,7 @@ const CommerceDashboard = () => {
       name: "Collect",
       description: "Ensure cash comes in — on time",
       icon: DollarSign,
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       path: "/commerce/collect",
       workflow: "Customer Revenue Cycle",
     },
@@ -159,7 +159,7 @@ const CommerceDashboard = () => {
   const workflows = [
     {
       name: "Customer Revenue Cycle",
-      color: "bg-[#3A4E63] text-white border-[#0558CC]",
+      color: "bg-[#033F99] text-white border-[#0558CC]",
     },
     {
       name: "Vendor Procurement Cycle",
@@ -174,7 +174,7 @@ const CommerceDashboard = () => {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white">
+      <div className="bg-gradient-to-r from-[#033F99] to-[#033F99] text-white">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center gap-4 mb-2">
             <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
@@ -187,12 +187,12 @@ const CommerceDashboard = () => {
               >
                 IB Commerce
               </h1>
-              <p className="text-[#3A4E63] text-sm">
+              <p className="text-[#033F99] text-sm">
                 SOP-Driven Commercial Lifecycle Management
               </p>
             </div>
           </div>
-          <p className="text-[#3A4E63] mt-2 max-w-3xl">
+          <p className="text-[#033F99] mt-2 max-w-3xl">
             Complete financial flow from lead capture to payment reconciliation
             — structured, verified, and SOP-governed across 12 intelligent
             modules
@@ -230,7 +230,7 @@ const CommerceDashboard = () => {
               value: stats?.govern?.active || 0,
               icon: Shield,
               change: "100%",
-              color: "bg-[#C4D9F4] text-[#3A4E63]",
+              color: "bg-[#C4D9F4] text-[#033F99]",
             },
           ].map((stat, index) => {
             const Icon = stat.icon;
@@ -292,7 +292,7 @@ const CommerceDashboard = () => {
                           <Icon className="h-7 w-7 text-white" />
                         </div>
                         <h3
-                          className="text-lg font-bold mb-2 text-slate-900 group-hover:text-[#3A4E63] transition-colors"
+                          className="text-lg font-bold mb-2 text-slate-900 group-hover:text-[#033F99] transition-colors"
                           style={{ fontFamily: "Poppins" }}
                         >
                           {module.name}
@@ -310,7 +310,7 @@ const CommerceDashboard = () => {
                             </div>
                           </div>
                         )}
-                        <div className="flex items-center text-[#3A4E63] font-medium text-sm mt-3 group-hover:gap-2 transition-all">
+                        <div className="flex items-center text-[#033F99] font-medium text-sm mt-3 group-hover:gap-2 transition-all">
                           Open <ArrowRight className="ml-1 h-4 w-4" />
                         </div>
                       </Card>
@@ -329,14 +329,14 @@ const CommerceDashboard = () => {
             className="text-2xl font-bold mb-6 text-slate-900 flex items-center gap-2"
             style={{ fontFamily: "Poppins" }}
           >
-            <Activity className="h-6 w-6 text-[#3A4E63]" />
+            <Activity className="h-6 w-6 text-[#033F99]" />
             Complete Business Flow
           </h2>
           <div className="flex flex-wrap gap-2 items-center justify-center text-sm">
             {["Lead", "Evaluate", "Commit", "Execute", "Bill", "Collect"].map(
               (step, index, arr) => (
                 <React.Fragment key={`item-${index}`}>
-                  <div className="px-4 py-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white rounded-lg font-semibold shadow-md">
+                  <div className="px-4 py-2 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white rounded-lg font-semibold shadow-md">
                     {step}
                   </div>
                   {index < arr.length - 1 && (
@@ -347,7 +347,7 @@ const CommerceDashboard = () => {
             )}
           </div>
           <div className="my-4 text-center">
-            <div className="inline-block px-4 py-1 bg-[#3A4E63] text-white rounded-full text-xs font-semibold">
+            <div className="inline-block px-4 py-1 bg-[#033F99] text-white rounded-full text-xs font-semibold">
               Revenue Cycle
             </div>
           </div>
@@ -419,12 +419,12 @@ const CommerceDashboard = () => {
 
           <Card className="p-5 bg-white border border-slate-200">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-[#3A4E63] rounded-lg flex items-center justify-center">
-                <Activity className="h-5 w-5 text-[#3A4E63]" />
+              <div className="w-10 h-10 bg-[#033F99] rounded-lg flex items-center justify-center">
+                <Activity className="h-5 w-5 text-[#033F99]" />
               </div>
               <div>
                 <p className="text-sm text-slate-600">SOP Compliance</p>
-                <p className="text-lg font-bold text-[#3A4E63]">98.5%</p>
+                <p className="text-lg font-bold text-[#033F99]">98.5%</p>
               </div>
             </div>
           </Card>

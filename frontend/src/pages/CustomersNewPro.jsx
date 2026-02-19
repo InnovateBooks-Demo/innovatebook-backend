@@ -179,7 +179,7 @@ const CustomersNewPro = () => {
             <Button
               onClick={() => navigate("/customers/new")}
               style={{
-                backgroundColor: "#3A4E63",
+                backgroundColor: "#033F99",
                 fontFamily: "Inter, sans-serif",
               }}
               className="text-white hover:opacity-90"
@@ -258,9 +258,8 @@ const CustomersNewPro = () => {
               {filteredCustomers.map((customer, index) => (
                 <tr
                   key={customer.id}
-                  className={`border-b border-gray-100 hover:bg-blue-50 transition-colors ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  }`}
+                  className={`border-b border-gray-100 hover:bg-blue-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    }`}
                 >
                   <td
                     className="px-6 py-4"

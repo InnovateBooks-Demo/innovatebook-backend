@@ -72,7 +72,7 @@ const LandingPage = ({ setIsAuthenticated }) => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 px-4">
         <Card
-          className="w-full max-w-md shadow-2xl border-2 border-[#3A4E63]/50 rounded-3xl"
+          className="w-full max-w-md shadow-2xl border-2 border-[#033F99]/50 rounded-3xl"
           data-testid="auth-card"
         >
           <CardHeader>
@@ -87,12 +87,12 @@ const LandingPage = ({ setIsAuthenticated }) => {
               />
               <div className="text-center">
                 <h2
-                  className="text-3xl font-black bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+                  className="text-3xl font-black bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
                   style={{ fontFamily: "Poppins" }}
                 >
                   IB Finance
                 </h2>
-                <p className="text-sm text-[#3A4E63] font-bold">
+                <p className="text-sm text-[#033F99] font-bold">
                   Financial Intelligence OS
                 </p>
               </div>
@@ -100,18 +100,18 @@ const LandingPage = ({ setIsAuthenticated }) => {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-[#3A4E63] rounded-xl p-1">
+              <TabsList className="grid w-full grid-cols-2 bg-[#033F99] rounded-xl p-1">
                 <TabsTrigger
                   value="login"
                   data-testid="login-tab"
-                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#3A4E63] data-[state=active]:to-[#3A4E63] data-[state=active]:text-white font-bold rounded-lg"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#033F99] data-[state=active]:to-[#033F99] data-[state=active]:text-white font-bold rounded-lg"
                 >
                   Login
                 </TabsTrigger>
                 <TabsTrigger
                   value="register"
                   data-testid="register-tab"
-                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#3A4E63] data-[state=active]:to-[#3A4E63] data-[state=active]:text-white font-bold rounded-lg"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#033F99] data-[state=active]:to-[#033F99] data-[state=active]:text-white font-bold rounded-lg"
                 >
                   Register
                 </TabsTrigger>
@@ -125,7 +125,7 @@ const LandingPage = ({ setIsAuthenticated }) => {
                   <div>
                     <Label
                       htmlFor="login-email"
-                      className="text-[#3A4E63] font-bold"
+                      className="text-[#033F99] font-bold"
                     >
                       Email
                     </Label>
@@ -139,13 +139,13 @@ const LandingPage = ({ setIsAuthenticated }) => {
                         setLoginData({ ...loginData, email: e.target.value })
                       }
                       required
-                      className="border-2 border-[#3A4E63] focus:border-[#3A4E63] rounded-xl mt-2"
+                      className="border-2 border-[#033F99] focus:border-[#033F99] rounded-xl mt-2"
                     />
                   </div>
                   <div>
                     <Label
                       htmlFor="login-password"
-                      className="text-[#3A4E63] font-bold"
+                      className="text-[#033F99] font-bold"
                     >
                       Password
                     </Label>
@@ -159,12 +159,12 @@ const LandingPage = ({ setIsAuthenticated }) => {
                         setLoginData({ ...loginData, password: e.target.value })
                       }
                       required
-                      className="border-2 border-[#3A4E63] focus:border-[#3A4E63] rounded-xl mt-2"
+                      className="border-2 border-[#033F99] focus:border-[#033F99] rounded-xl mt-2"
                     />
                   </div>
                   <Button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-black py-6 rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-105"
+                    className="w-full bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-black py-6 rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-105"
                     disabled={loading}
                     data-testid="login-submit-btn"
                   >
@@ -181,7 +181,7 @@ const LandingPage = ({ setIsAuthenticated }) => {
                   <div>
                     <Label
                       htmlFor="register-name"
-                      className="text-[#3A4E63] font-bold"
+                      className="text-[#033F99] font-bold"
                     >
                       Full Name
                     </Label>
@@ -198,13 +198,13 @@ const LandingPage = ({ setIsAuthenticated }) => {
                         })
                       }
                       required
-                      className="border-2 border-[#3A4E63] focus:border-[#3A4E63] rounded-xl mt-2"
+                      className="border-2 border-[#033F99] focus:border-[#033F99] rounded-xl mt-2"
                     />
                   </div>
                   <div>
                     <Label
                       htmlFor="register-email"
-                      className="text-[#3A4E63] font-bold"
+                      className="text-[#033F99] font-bold"
                     >
                       Email
                     </Label>
@@ -221,13 +221,13 @@ const LandingPage = ({ setIsAuthenticated }) => {
                         })
                       }
                       required
-                      className="border-2 border-[#3A4E63] focus:border-[#3A4E63] rounded-xl mt-2"
+                      className="border-2 border-[#033F99] focus:border-[#033F99] rounded-xl mt-2"
                     />
                   </div>
                   <div>
                     <Label
                       htmlFor="register-password"
-                      className="text-[#3A4E63] font-bold"
+                      className="text-[#033F99] font-bold"
                     >
                       Password
                     </Label>
@@ -244,12 +244,12 @@ const LandingPage = ({ setIsAuthenticated }) => {
                         })
                       }
                       required
-                      className="border-2 border-[#3A4E63] focus:border-[#3A4E63] rounded-xl mt-2"
+                      className="border-2 border-[#033F99] focus:border-[#033F99] rounded-xl mt-2"
                     />
                   </div>
                   <Button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-black py-6 rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-105"
+                    className="w-full bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-black py-6 rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-105"
                     disabled={loading}
                     data-testid="register-submit-btn"
                   >
@@ -263,7 +263,7 @@ const LandingPage = ({ setIsAuthenticated }) => {
                 variant="ghost"
                 onClick={() => setShowAuth(false)}
                 data-testid="back-to-home-btn"
-                className="text-[#3A4E63] hover:text-[#3A4E63] font-bold"
+                className="text-[#033F99] hover:text-[#033F99] font-bold"
               >
                 ← Back to Home
               </Button>
@@ -282,7 +282,7 @@ const LandingPage = ({ setIsAuthenticated }) => {
           {/* Trust Badge */}
           <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-6 py-2 rounded-full mb-8 shadow-sm">
             <CheckCircle className="h-5 w-5 text-green-600" />
-            <span className="text-sm font-medium" style={{ color: "#3A4E63" }}>
+            <span className="text-sm font-medium" style={{ color: "#033F99" }}>
               Trusted by 500+ finance teams
             </span>
           </div>
@@ -299,7 +299,7 @@ const LandingPage = ({ setIsAuthenticated }) => {
           {/* Main Heading */}
           <h1
             className="text-5xl sm:text-6xl lg:text-7xl font-semibold mb-6 leading-tight"
-            style={{ fontFamily: "Poppins", color: "#3A4E63" }}
+            style={{ fontFamily: "Poppins", color: "#033F99" }}
             data-testid="hero-heading"
           >
             A Financial Intelligence OS for the Modern World.
@@ -327,7 +327,7 @@ const LandingPage = ({ setIsAuthenticated }) => {
             <Button
               size="lg"
               className="text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl"
-              style={{ background: "#3A4E63" }}
+              style={{ background: "#033F99" }}
               onClick={() => setShowAuth(true)}
               data-testid="get-started-btn"
             >
@@ -340,11 +340,11 @@ const LandingPage = ({ setIsAuthenticated }) => {
             <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg card-hover">
               <TrendingUp
                 className="h-10 w-10 mb-4"
-                style={{ color: "#3A4E63" }}
+                style={{ color: "#033F99" }}
               />
               <h3
                 className="text-xl font-semibold mb-2"
-                style={{ fontFamily: "Inter", color: "#3A4E63" }}
+                style={{ fontFamily: "Inter", color: "#033F99" }}
               >
                 Real-time Insights
               </h3>
@@ -355,11 +355,11 @@ const LandingPage = ({ setIsAuthenticated }) => {
             <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg card-hover">
               <TrendingUp
                 className="h-10 w-10 mb-4"
-                style={{ color: "#3A4E63" }}
+                style={{ color: "#033F99" }}
               />
               <h3
                 className="text-xl font-semibold mb-2"
-                style={{ fontFamily: "Inter", color: "#3A4E63" }}
+                style={{ fontFamily: "Inter", color: "#033F99" }}
               >
                 Smart Automation
               </h3>
@@ -370,11 +370,11 @@ const LandingPage = ({ setIsAuthenticated }) => {
             <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg card-hover">
               <TrendingUp
                 className="h-10 w-10 mb-4"
-                style={{ color: "#3A4E63" }}
+                style={{ color: "#033F99" }}
               />
               <h3
                 className="text-xl font-semibold mb-2"
-                style={{ fontFamily: "Inter", color: "#3A4E63" }}
+                style={{ fontFamily: "Inter", color: "#033F99" }}
               >
                 Complete Visibility
               </h3>

@@ -102,7 +102,7 @@ const RoleCreate = () => {
                   name="role_name"
                   value={formData.role_name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                   placeholder="e.g., Finance Approver, Project Manager"
                   required
                   data-testid="role-name-input"
@@ -117,7 +117,7 @@ const RoleCreate = () => {
                   name="role_category"
                   value={formData.role_category}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   data-testid="category-select"
                 >
                   <option value="operational">Operational</option>
@@ -141,7 +141,7 @@ const RoleCreate = () => {
                   value={formData.description}
                   onChange={handleChange}
                   rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                   placeholder="Describe the responsibilities and scope of this role"
                   data-testid="description-input"
                 />
@@ -161,7 +161,7 @@ const RoleCreate = () => {
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] disabled:opacity-50"
               data-testid="submit-btn"
             >
               {loading ? (

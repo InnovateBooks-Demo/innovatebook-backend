@@ -109,7 +109,7 @@ const ExecutiveDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 text-[#3A4E63] animate-spin" />
+        <RefreshCw className="w-8 h-8 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -127,7 +127,7 @@ const ExecutiveDashboard = () => {
               >
                 <ArrowLeft className="w-5 h-5 text-slate-600" />
               </Link>
-              <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
                 <Gauge className="h-7 w-7 text-white" />
               </div>
               <div>
@@ -141,11 +141,10 @@ const ExecutiveDashboard = () => {
             </div>
             <div className="flex items-center gap-3">
               <div
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
-                  refreshing
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${refreshing
                     ? "bg-amber-100 text-amber-700"
                     : "bg-green-100 text-green-700"
-                }`}
+                  }`}
               >
                 <div
                   className={`w-2 h-2 rounded-full ${refreshing ? "bg-amber-500 animate-pulse" : "bg-green-500"}`}
@@ -210,7 +209,7 @@ const ExecutiveDashboard = () => {
                 <p className="text-xs text-slate-500 mt-1">Open Risks</p>
               </div>
               <div className="text-center px-6 py-3 bg-white rounded-xl border border-slate-200">
-                <div className="text-2xl font-bold text-[#3A4E63]">
+                <div className="text-2xl font-bold text-[#033F99]">
                   {data?.recommendations?.counts?.pending || 0}
                 </div>
                 <p className="text-xs text-slate-500 mt-1">Pending Actions</p>
@@ -284,7 +283,7 @@ const ExecutiveDashboard = () => {
               <h3 className="font-semibold text-slate-900">Risk Heatmap</h3>
               <Link
                 to="/intelligence/risk"
-                className="text-sm text-[#3A4E63] hover:underline flex items-center gap-1 font-medium"
+                className="text-sm text-[#033F99] hover:underline flex items-center gap-1 font-medium"
               >
                 View Details <ChevronRight className="w-4 h-4" />
               </Link>
@@ -314,26 +313,24 @@ const ExecutiveDashboard = () => {
                     return (
                       <div
                         key={key}
-                        className={`aspect-square rounded-xl flex flex-col items-center justify-center transition-all border ${
-                          intensity === "high"
+                        className={`aspect-square rounded-xl flex flex-col items-center justify-center transition-all border ${intensity === "high"
                             ? "bg-red-100 border-red-300"
                             : intensity === "medium"
                               ? "bg-orange-100 border-orange-300"
                               : intensity === "low"
                                 ? "bg-amber-50 border-amber-200"
                                 : "bg-slate-50 border-slate-200"
-                        }`}
+                          }`}
                       >
                         <span
-                          className={`text-2xl font-bold ${
-                            intensity === "high"
+                          className={`text-2xl font-bold ${intensity === "high"
                               ? "text-red-700"
                               : intensity === "medium"
                                 ? "text-orange-700"
                                 : intensity === "low"
                                   ? "text-amber-700"
                                   : "text-slate-400"
-                          }`}
+                            }`}
                         >
                           {count}
                         </span>
@@ -361,7 +358,7 @@ const ExecutiveDashboard = () => {
               </h3>
               <Link
                 to="/intelligence/signals"
-                className="text-sm text-[#3A4E63] hover:underline flex items-center gap-1 font-medium"
+                className="text-sm text-[#033F99] hover:underline flex items-center gap-1 font-medium"
               >
                 View All <ChevronRight className="w-4 h-4" />
               </Link>
@@ -435,11 +432,11 @@ const ExecutiveDashboard = () => {
               ))}
               {(!data?.signals?.recent_critical ||
                 data.signals.recent_critical.length === 0) && (
-                <div className="text-center py-6">
-                  <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-2" />
-                  <p className="text-slate-500 text-sm">No critical signals</p>
-                </div>
-              )}
+                  <div className="text-center py-6">
+                    <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-2" />
+                    <p className="text-slate-500 text-sm">No critical signals</p>
+                  </div>
+                )}
             </div>
           </div>
 
@@ -451,7 +448,7 @@ const ExecutiveDashboard = () => {
               </h3>
               <Link
                 to="/intelligence/recommendations"
-                className="text-sm text-[#3A4E63] hover:underline flex items-center gap-1 font-medium"
+                className="text-sm text-[#033F99] hover:underline flex items-center gap-1 font-medium"
               >
                 View All <ChevronRight className="w-4 h-4" />
               </Link>
@@ -463,9 +460,8 @@ const ExecutiveDashboard = () => {
                   className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200"
                 >
                   <div
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      rec.priority === 1 ? "bg-red-100" : "bg-amber-100"
-                    }`}
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${rec.priority === 1 ? "bg-red-100" : "bg-amber-100"
+                      }`}
                   >
                     <span
                       className={`text-sm font-bold ${rec.priority === 1 ? "text-red-700" : "text-amber-700"}`}
@@ -482,11 +478,10 @@ const ExecutiveDashboard = () => {
                     </p>
                   </div>
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      rec.confidence_score >= 0.8
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${rec.confidence_score >= 0.8
                         ? "bg-green-100 text-green-700"
                         : "bg-slate-100 text-slate-600"
-                    }`}
+                      }`}
                   >
                     {Math.round((rec.confidence_score || 0) * 100)}% confident
                   </span>
@@ -494,13 +489,13 @@ const ExecutiveDashboard = () => {
               ))}
               {(!data?.recommendations?.high_priority ||
                 data.recommendations.high_priority.length === 0) && (
-                <div className="text-center py-8">
-                  <Target className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-                  <p className="text-slate-500">
-                    No high priority recommendations
-                  </p>
-                </div>
-              )}
+                  <div className="text-center py-8">
+                    <Target className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+                    <p className="text-slate-500">
+                      No high priority recommendations
+                    </p>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -511,7 +506,7 @@ const ExecutiveDashboard = () => {
             <h3 className="font-semibold text-slate-900">Metrics by Domain</h3>
             <Link
               to="/intelligence/metrics"
-              className="text-sm text-[#3A4E63] hover:underline flex items-center gap-1 font-medium"
+              className="text-sm text-[#033F99] hover:underline flex items-center gap-1 font-medium"
             >
               View All <ChevronRight className="w-4 h-4" />
             </Link>

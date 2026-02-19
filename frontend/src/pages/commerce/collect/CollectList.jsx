@@ -124,7 +124,7 @@ const CollectList = () => {
           </p>
         </div>
         <Link to="/commerce/collect/new">
-          <Button className="gap-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63]">
+          <Button className="gap-2 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99]">
             <Plus className="h-4 w-4" />
             New Collection
           </Button>
@@ -146,7 +146,7 @@ const CollectList = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+            className="px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99]"
           >
             <option value="all">All Status</option>
             <option value="Pending">Pending</option>
@@ -248,7 +248,7 @@ const CollectList = () => {
                 <tr>
                   <td colSpan="6" className="px-6 py-12 text-center">
                     <div className="flex items-center justify-center gap-2 text-slate-500">
-                      <div className="w-5 h-5 border-2 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-5 h-5 border-2 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
                       Loading collections...
                     </div>
                   </td>
@@ -272,7 +272,7 @@ const CollectList = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Link
                         to={`/commerce/collect/${coll.collection_id}`}
-                        className="text-sm font-medium text-[#3A4E63] hover:text-[#3A4E63]"
+                        className="text-sm font-medium text-[#033F99] hover:text-[#033F99]"
                       >
                         {coll.collection_id}
                       </Link>

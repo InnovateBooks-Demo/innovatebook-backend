@@ -114,7 +114,7 @@ const SignalsPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 text-[#3A4E63] animate-spin" />
+        <RefreshCw className="w-8 h-8 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -208,14 +208,14 @@ const SignalsPage = () => {
                 placeholder="Search signals..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               />
             </div>
 
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
             >
               <option value="all">All Severities</option>
               <option value="critical">Critical</option>
@@ -226,7 +226,7 @@ const SignalsPage = () => {
             <select
               value={sourceFilter}
               onChange={(e) => setSourceFilter(e.target.value)}
-              className="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
             >
               <option value="all">All Sources</option>
               {sources.map((s) => (
@@ -252,23 +252,21 @@ const SignalsPage = () => {
             filteredSignals.map((signal) => (
               <div
                 key={signal.signal_id}
-                className={`bg-white rounded-xl border p-5 transition-all hover:shadow-md ${
-                  signal.severity === "critical"
+                className={`bg-white rounded-xl border p-5 transition-all hover:shadow-md ${signal.severity === "critical"
                     ? "border-l-4 border-l-red-500"
                     : signal.severity === "warning"
                       ? "border-l-4 border-l-amber-500"
                       : "border-l-4 border-l-blue-500"
-                }`}
+                  }`}
               >
                 <div className="flex items-start gap-4">
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      signal.severity === "critical"
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${signal.severity === "critical"
                         ? "bg-red-100"
                         : signal.severity === "warning"
                           ? "bg-amber-100"
                           : "bg-blue-100"
-                    }`}
+                      }`}
                   >
                     {getSeverityIcon(signal.severity)}
                   </div>
@@ -317,7 +315,7 @@ const SignalsPage = () => {
                     ) : (
                       <button
                         onClick={() => acknowledgeSignal(signal.signal_id)}
-                        className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm font-medium"
+                        className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm font-medium"
                       >
                         Acknowledge
                       </button>

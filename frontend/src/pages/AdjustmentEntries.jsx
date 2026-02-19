@@ -154,7 +154,7 @@ const AdjustmentEntries = () => {
           </div>
           <Button
             onClick={() => navigate("/adjustment-entries/create")}
-            className="bg-[#3A4E63] hover:bg-[#022b6b] text-white"
+            className="bg-[#033F99] hover:bg-[#022b6b] text-white"
             style={{ fontFamily: "Inter, sans-serif" }}
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -174,7 +174,7 @@ const AdjustmentEntries = () => {
               placeholder="Search by number or description..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               style={{ fontFamily: "Inter, sans-serif" }}
             />
           </div>
@@ -184,7 +184,7 @@ const AdjustmentEntries = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               style={{ fontFamily: "Inter, sans-serif" }}
             >
               <option value="All">All Statuses</option>
@@ -283,7 +283,7 @@ const AdjustmentEntries = () => {
       <Card className="p-6">
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63] mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99] mx-auto"></div>
             <p
               className="text-gray-600 mt-4"
               style={{ fontFamily: "Inter, sans-serif" }}
@@ -302,7 +302,7 @@ const AdjustmentEntries = () => {
             </p>
             <Button
               onClick={() => navigate("/adjustment-entries/create")}
-              className="mt-4 bg-[#3A4E63] hover:bg-[#022b6b] text-white"
+              className="mt-4 bg-[#033F99] hover:bg-[#022b6b] text-white"
               style={{ fontFamily: "Inter, sans-serif" }}
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -366,7 +366,7 @@ const AdjustmentEntries = () => {
                   >
                     <td className="py-4 px-4">
                       <span
-                        className="font-medium text-[#3A4E63]"
+                        className="font-medium text-[#033F99]"
                         style={{ fontFamily: "Inter, sans-serif" }}
                       >
                         {entry.entry_number}

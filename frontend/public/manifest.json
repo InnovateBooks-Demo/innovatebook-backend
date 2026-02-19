@@ -5,7 +5,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#3A4E63",
+  "theme_color": "#033F99",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -57,7 +57,11 @@
       "purpose": "maskable any"
     }
   ],
-  "categories": ["business", "productivity", "finance"],
+  "categories": [
+    "business",
+    "productivity",
+    "finance"
+  ],
   "screenshots": [
     {
       "src": "/screenshots/dashboard.png",

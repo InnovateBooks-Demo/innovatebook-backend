@@ -50,7 +50,7 @@ const ReturnsDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -92,7 +92,7 @@ const ReturnsDashboard = () => {
           </div>
           <Link
             to="/ib-capital/returns/declare"
-            className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
+            className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Declare Return
@@ -136,11 +136,10 @@ const ReturnsDashboard = () => {
               <button
                 key={type}
                 onClick={() => setFilter(type)}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors capitalize ${
-                  filter === type
-                    ? "bg-[#3A4E63] text-white"
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors capitalize ${filter === type
+                    ? "bg-[#033F99] text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 {type === "all" ? "All Returns" : type}
               </button>
@@ -184,15 +183,14 @@ const ReturnsDashboard = () => {
                 >
                   <td className="py-3 px-4">
                     <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        ret.return_type === "dividend"
+                      className={`px-2 py-1 text-xs rounded-full ${ret.return_type === "dividend"
                           ? "bg-purple-100 text-purple-700"
                           : ret.return_type === "interest"
                             ? "bg-orange-100 text-orange-700"
                             : ret.return_type === "buyback"
                               ? "bg-blue-100 text-blue-700"
                               : "bg-gray-100 text-gray-700"
-                      }`}
+                        }`}
                     >
                       {ret.return_type}
                     </span>
@@ -224,15 +222,14 @@ const ReturnsDashboard = () => {
                         <XCircle className="w-4 h-4 text-red-500" />
                       )}
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          ret.status === "settled"
+                        className={`px-2 py-1 text-xs rounded-full ${ret.status === "settled"
                             ? "bg-green-100 text-green-700"
                             : ret.status === "approved"
                               ? "bg-blue-100 text-blue-700"
                               : ret.status === "declared"
                                 ? "bg-yellow-100 text-yellow-700"
                                 : "bg-red-100 text-red-700"
-                        }`}
+                          }`}
                       >
                         {ret.status}
                       </span>

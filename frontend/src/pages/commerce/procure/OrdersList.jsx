@@ -72,7 +72,7 @@ const OrdersList = () => {
         </div>
         <Link to="/commerce/procure/orders/create">
           <button
-            className="flex items-center gap-2 bg-[#3A4E63] text-white px-4 py-2.5 rounded-xl hover:bg-[#3A4E63] font-semibold text-sm"
+            className="flex items-center gap-2 bg-[#033F99] text-white px-4 py-2.5 rounded-xl hover:bg-[#033F99] font-semibold text-sm"
             data-testid="new-order-btn"
           >
             <Plus className="h-4 w-4" />

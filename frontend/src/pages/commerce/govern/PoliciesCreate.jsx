@@ -101,7 +101,7 @@ const PoliciesCreate = () => {
                   value={formData.policy_name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                   placeholder="Enter policy name"
                 />
               </div>
@@ -113,7 +113,7 @@ const PoliciesCreate = () => {
                   name="policy_type"
                   value={formData.policy_type}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                 >
                   <option value="commercial">Commercial</option>
                   <option value="procurement">Procurement</option>
@@ -130,7 +130,7 @@ const PoliciesCreate = () => {
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
                 >
                   <option value="active">Active</option>
                   <option value="draft">Draft</option>
@@ -146,7 +146,7 @@ const PoliciesCreate = () => {
                   value={formData.description}
                   onChange={handleChange}
                   rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                   placeholder="Enter policy description..."
                 />
               </div>
@@ -159,7 +159,7 @@ const PoliciesCreate = () => {
                   name="effective_date"
                   value={formData.effective_date}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 />
               </div>
               <div>
@@ -171,7 +171,7 @@ const PoliciesCreate = () => {
                   name="expiry_date"
                   value={formData.expiry_date}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 />
               </div>
               <div className="md:col-span-2">
@@ -181,7 +181,7 @@ const PoliciesCreate = () => {
                     name="approval_required"
                     checked={formData.approval_required}
                     onChange={handleChange}
-                    className="w-5 h-5 rounded border-gray-300 text-[#3A4E63] focus:ring-[#3A4E63]"
+                    className="w-5 h-5 rounded border-gray-300 text-[#033F99] focus:ring-[#033F99]"
                   />
                   <span className="text-sm font-medium text-gray-700">
                     Approval Required
@@ -203,7 +203,7 @@ const PoliciesCreate = () => {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {loading ? "Creating..." : "Create Policy"}

@@ -147,8 +147,8 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#3A4E63] border-r-transparent"></div>
-          <p className="mt-4 text-[#3A4E63] font-semibold text-lg">
+          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#033F99] border-r-transparent"></div>
+          <p className="mt-4 text-[#033F99] font-semibold text-lg">
             Loading...
           </p>
         </div>
@@ -163,23 +163,23 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
         <div className="flex items-center justify-between mb-2">
           <div>
             <h1
-              className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+              className="text-4xl font-bold bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
               style={{ fontFamily: "Poppins" }}
             >
               {viewMode === "channels" ? "Team Channels" : "Direct Messages"}
             </h1>
-            <p className="text-[#3A4E63] mt-2 font-medium text-lg">
+            <p className="text-[#033F99] mt-2 font-medium text-lg">
               {viewMode === "channels"
                 ? "Collaborate in organized team spaces"
                 : "Connect directly with team members"}
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#3A4E63] text-[#3A4E63] font-semibold rounded-xl hover:bg-[#C4D9F4] transition-all duration-200">
+            <button className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#033F99] text-[#033F99] font-semibold rounded-xl hover:bg-[#C4D9F4] transition-all duration-200">
               <Calendar className="h-5 w-5" />
               <span>This Month</span>
             </button>
-            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white font-bold rounded-xl shadow-xl transition-all duration-200">
+            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white font-bold rounded-xl shadow-xl transition-all duration-200">
               <Plus className="h-5 w-5" />
               <span>
                 {viewMode === "channels" ? "New Channel" : "New Message"}
@@ -191,16 +191,16 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
 
       {/* Stats Cards - Matching Lead Module */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl hover:shadow-2xl transition-all duration-300">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#3A4E63]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
+        <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl hover:shadow-2xl transition-all duration-300">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#033F99]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
           <div className="relative">
-            <div className="p-3 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl shadow-lg inline-block mb-3">
+            <div className="p-3 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl shadow-lg inline-block mb-3">
               <MessageSquare className="h-6 w-6 text-white" />
             </div>
-            <p className="text-sm font-bold text-[#3A4E63] uppercase tracking-wider mb-1">
+            <p className="text-sm font-bold text-[#033F99] uppercase tracking-wider mb-1">
               Total {viewMode === "channels" ? "Channels" : "Chats"}
             </p>
-            <p className="text-4xl font-black text-[#3A4E63]">
+            <p className="text-4xl font-black text-[#033F99]">
               {filteredChannels.length}
             </p>
           </div>
@@ -255,7 +255,7 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
       {/* Search Section - Matching Lead Module */}
       <div className="mb-6">
         <h2
-          className="text-2xl font-bold text-[#3A4E63] mb-4"
+          className="text-2xl font-bold text-[#033F99] mb-4"
           style={{ fontFamily: "Poppins" }}
         >
           {viewMode === "channels" ? "Browse Channels" : "Your Conversations"}
@@ -268,7 +268,7 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
               placeholder={`Search ${viewMode === "channels" ? "channels" : "conversations"}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent transition-all text-slate-900 font-medium"
+              className="w-full pl-12 pr-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent transition-all text-slate-900 font-medium"
             />
           </div>
         </div>
@@ -278,7 +278,7 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
       <div className="space-y-3">
         {filteredChannels.length === 0 ? (
           <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-16 border-2 border-slate-200 shadow-xl text-center">
-            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] rounded-3xl flex items-center justify-center shadow-lg">
+            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-[#033F99] to-[#0147CC] rounded-3xl flex items-center justify-center shadow-lg">
               <MessageSquare className="w-10 h-10 text-white" />
             </div>
             <h3 className="text-2xl font-bold text-slate-900 mb-3">
@@ -289,7 +289,7 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
                 ? "Try adjusting your search"
                 : "Get started by creating your first one"}
             </p>
-            <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#0147CC] text-white font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all">
+            <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#0147CC] text-white font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all">
               <Plus className="w-5 h-5" />
               Create {viewMode === "channels" ? "Channel" : "Message"}
             </button>
@@ -299,23 +299,21 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
             <div
               key={channel.id}
               onClick={() => handleChannelSelect(channel)}
-              className={`group flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-lg ${
-                activeChannel?.id === channel.id
-                  ? "bg-gradient-to-r from-[#3A4E63] to-[#0147CC] border-[#3A4E63] text-white"
-                  : "bg-gradient-to-r from-slate-50 to-white hover:from-[#C4D9F4] hover:to-white border-slate-200 hover:border-[#3A4E63]"
-              }`}
+              className={`group flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-lg ${activeChannel?.id === channel.id
+                  ? "bg-gradient-to-r from-[#033F99] to-[#0147CC] border-[#033F99] text-white"
+                  : "bg-gradient-to-r from-slate-50 to-white hover:from-[#C4D9F4] hover:to-white border-slate-200 hover:border-[#033F99]"
+                }`}
             >
               {/* Left - Channel/User Info */}
               <div className="flex items-center gap-4 flex-1 min-w-0">
                 <div className="flex-shrink-0 relative">
                   <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg font-bold text-lg ${
-                      activeChannel?.id === channel.id
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg font-bold text-lg ${activeChannel?.id === channel.id
                         ? "bg-white/20 text-white"
                         : channel.type === "direct"
-                          ? "bg-gradient-to-br from-[#3A4E63] to-[#0147CC] text-white"
+                          ? "bg-gradient-to-br from-[#033F99] to-[#0147CC] text-white"
                           : "bg-gradient-to-br from-purple-600 to-purple-700 text-white"
-                    }`}
+                      }`}
                   >
                     {channel.type === "direct" ? (
                       <span>
@@ -342,20 +340,18 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
 
                 <div className="flex-1 min-w-0">
                   <h3
-                    className={`font-bold text-lg mb-1 truncate transition-colors ${
-                      activeChannel?.id === channel.id
+                    className={`font-bold text-lg mb-1 truncate transition-colors ${activeChannel?.id === channel.id
                         ? "text-white"
-                        : "text-slate-900 group-hover:text-[#3A4E63]"
-                    }`}
+                        : "text-slate-900 group-hover:text-[#033F99]"
+                      }`}
                   >
                     {channel.name || "Unnamed"}
                   </h3>
                   <div
-                    className={`flex items-center gap-3 text-sm ${
-                      activeChannel?.id === channel.id
+                    className={`flex items-center gap-3 text-sm ${activeChannel?.id === channel.id
                         ? "text-white/80"
                         : "text-slate-600"
-                    }`}
+                      }`}
                   >
                     {channel.description && (
                       <span className="font-medium truncate max-w-[300px]">
@@ -384,20 +380,18 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
                 {channel.last_activity && (
                   <div className="text-center min-w-[80px]">
                     <div
-                      className={`text-xs font-bold uppercase mb-1 ${
-                        activeChannel?.id === channel.id
+                      className={`text-xs font-bold uppercase mb-1 ${activeChannel?.id === channel.id
                           ? "text-white/80"
                           : "text-slate-500"
-                      }`}
+                        }`}
                     >
                       Last Active
                     </div>
                     <div
-                      className={`text-sm font-bold ${
-                        activeChannel?.id === channel.id
+                      className={`text-sm font-bold ${activeChannel?.id === channel.id
                           ? "text-white"
-                          : "text-[#3A4E63]"
-                      }`}
+                          : "text-[#033F99]"
+                        }`}
                     >
                       {formatTime(channel.last_activity)}
                     </div>
@@ -421,7 +415,7 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
                           e.stopPropagation();
                           toast.success("Starting video call...");
                         }}
-                        className="p-2.5 bg-[#3A4E63] text-white rounded-xl hover:shadow-xl transition-all hover:scale-110"
+                        className="p-2.5 bg-[#033F99] text-white rounded-xl hover:shadow-xl transition-all hover:scale-110"
                       >
                         <Video className="w-4 h-4" />
                       </button>
@@ -429,11 +423,10 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
                   )}
 
                 <ChevronRight
-                  className={`h-5 w-5 transition-all duration-200 ${
-                    activeChannel?.id === channel.id
+                  className={`h-5 w-5 transition-all duration-200 ${activeChannel?.id === channel.id
                       ? "text-white translate-x-1"
-                      : "text-slate-400 group-hover:text-[#3A4E63] group-hover:translate-x-1"
-                  }`}
+                      : "text-slate-400 group-hover:text-[#033F99] group-hover:translate-x-1"
+                    }`}
                 />
               </div>
             </div>
@@ -444,22 +437,21 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
       {/* Active Conversation View - Premium Modal Style */}
       {activeChannel && (
         <div
-          className="fixed inset-0 bg-[#3A4E63]/20 backdrop-blur-sm flex items-center justify-center z-50 p-8"
+          className="fixed inset-0 bg-[#033F99]/20 backdrop-blur-sm flex items-center justify-center z-50 p-8"
           onClick={() => setActiveChannel(null)}
         >
           <div
-            className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl max-w-4xl w-full h-[600px] flex flex-col border-2 border-[#3A4E63]/30"
+            className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl max-w-4xl w-full h-[600px] flex flex-col border-2 border-[#033F99]/30"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b-2 border-[#3A4E63]/20">
+            <div className="flex items-center justify-between p-6 border-b-2 border-[#033F99]/20">
               <div className="flex items-center gap-4">
                 <div
-                  className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-xl shadow-lg ${
-                    activeChannel.type === "direct"
-                      ? "bg-gradient-to-br from-[#3A4E63] to-[#0147CC] text-white"
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-xl shadow-lg ${activeChannel.type === "direct"
+                      ? "bg-gradient-to-br from-[#033F99] to-[#0147CC] text-white"
                       : "bg-gradient-to-br from-purple-600 to-purple-700 text-white"
-                  }`}
+                    }`}
                 >
                   {activeChannel.type === "direct" ? (
                     activeChannel.name?.charAt(0)?.toUpperCase()
@@ -469,13 +461,13 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
                 </div>
                 <div>
                   <h2
-                    className="text-xl font-black text-[#3A4E63]"
+                    className="text-xl font-black text-[#033F99]"
                     style={{ fontFamily: "Poppins" }}
                   >
                     {activeChannel.name}
                   </h2>
                   {activeChannel.description && (
-                    <p className="text-sm text-[#3A4E63]/70 font-medium">
+                    <p className="text-sm text-[#033F99]/70 font-medium">
                       {activeChannel.description}
                     </p>
                   )}
@@ -484,19 +476,19 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
               <div className="flex items-center gap-2">
                 {activeChannel.type === "direct" && (
                   <>
-                    <button className="p-3 hover:bg-[#3A4E63]/10 rounded-xl transition-all">
-                      <Phone className="h-5 w-5 text-[#3A4E63]" />
+                    <button className="p-3 hover:bg-[#033F99]/10 rounded-xl transition-all">
+                      <Phone className="h-5 w-5 text-[#033F99]" />
                     </button>
-                    <button className="p-3 hover:bg-[#3A4E63]/10 rounded-xl transition-all">
-                      <Video className="h-5 w-5 text-[#3A4E63]" />
+                    <button className="p-3 hover:bg-[#033F99]/10 rounded-xl transition-all">
+                      <Video className="h-5 w-5 text-[#033F99]" />
                     </button>
                   </>
                 )}
                 <button
                   onClick={() => setActiveChannel(null)}
-                  className="p-3 hover:bg-[#3A4E63]/10 rounded-xl transition-all"
+                  className="p-3 hover:bg-[#033F99]/10 rounded-xl transition-all"
                 >
-                  <MoreVertical className="h-5 w-5 text-[#3A4E63]" />
+                  <MoreVertical className="h-5 w-5 text-[#033F99]" />
                 </button>
               </div>
             </div>
@@ -506,8 +498,8 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
               {messages.length === 0 ? (
                 <div className="h-full flex items-center justify-center">
                   <div className="text-center">
-                    <MessageSquare className="w-16 h-16 text-[#3A4E63]/30 mx-auto mb-3" />
-                    <p className="text-[#3A4E63]/60 font-medium">
+                    <MessageSquare className="w-16 h-16 text-[#033F99]/30 mx-auto mb-3" />
+                    <p className="text-[#033F99]/60 font-medium">
                       No messages yet. Start the conversation!
                     </p>
                   </div>
@@ -521,11 +513,10 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
                       className={`flex gap-3 ${isOwn ? "flex-row-reverse" : "flex-row"}`}
                     >
                       <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-md ${
-                          isOwn
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-md ${isOwn
                             ? "bg-gradient-to-br from-emerald-600 to-emerald-700 text-white"
-                            : "bg-gradient-to-br from-[#3A4E63] to-[#0147CC] text-white"
-                        }`}
+                            : "bg-gradient-to-br from-[#033F99] to-[#0147CC] text-white"
+                          }`}
                       >
                         {(message.user_name || "U").charAt(0).toUpperCase()}
                       </div>
@@ -535,19 +526,18 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
                         <div
                           className={`flex items-center gap-2 mb-1 ${isOwn ? "justify-end" : "justify-start"}`}
                         >
-                          <span className="text-sm font-bold text-[#3A4E63]">
+                          <span className="text-sm font-bold text-[#033F99]">
                             {message.user_name || "Unknown"}
                           </span>
-                          <span className="text-xs text-[#3A4E63]/50 font-medium">
+                          <span className="text-xs text-[#033F99]/50 font-medium">
                             {formatTime(message.created_at)}
                           </span>
                         </div>
                         <div
-                          className={`inline-block px-4 py-3 rounded-2xl shadow-md ${
-                            isOwn
-                              ? "bg-gradient-to-br from-[#3A4E63] to-[#0147CC] text-white"
+                          className={`inline-block px-4 py-3 rounded-2xl shadow-md ${isOwn
+                              ? "bg-gradient-to-br from-[#033F99] to-[#0147CC] text-white"
                               : "bg-slate-100 text-slate-900"
-                          }`}
+                            }`}
                         >
                           <p className="text-sm font-medium whitespace-pre-wrap">
                             {message.content}
@@ -562,10 +552,10 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t-2 border-[#3A4E63]/20">
+            <div className="p-4 border-t-2 border-[#033F99]/20">
               <div className="flex items-end gap-3">
-                <button className="p-3 hover:bg-[#3A4E63]/10 rounded-xl transition-all">
-                  <Paperclip className="h-5 w-5 text-[#3A4E63]" />
+                <button className="p-3 hover:bg-[#033F99]/10 rounded-xl transition-all">
+                  <Paperclip className="h-5 w-5 text-[#033F99]" />
                 </button>
                 <textarea
                   value={newMessage}
@@ -578,15 +568,15 @@ const IBChatPremiumNew = ({ viewMode = "chat" }) => {
                   }}
                   placeholder="Type a message..."
                   rows="1"
-                  className="flex-1 px-4 py-3 bg-slate-50 border-2 border-slate-200 focus:border-[#3A4E63] rounded-xl resize-none transition-all text-slate-900 font-medium"
+                  className="flex-1 px-4 py-3 bg-slate-50 border-2 border-slate-200 focus:border-[#033F99] rounded-xl resize-none transition-all text-slate-900 font-medium"
                 />
-                <button className="p-3 hover:bg-[#3A4E63]/10 rounded-xl transition-all">
-                  <Smile className="h-5 w-5 text-[#3A4E63]" />
+                <button className="p-3 hover:bg-[#033F99]/10 rounded-xl transition-all">
+                  <Smile className="h-5 w-5 text-[#033F99]" />
                 </button>
                 <button
                   onClick={sendMessage}
                   disabled={!newMessage.trim()}
-                  className="p-3 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] hover:scale-105 disabled:opacity-50 text-white rounded-xl transition-all shadow-lg"
+                  className="p-3 bg-gradient-to-br from-[#033F99] to-[#0147CC] hover:scale-105 disabled:opacity-50 text-white rounded-xl transition-all shadow-lg"
                 >
                   <Send className="h-5 w-5" />
                 </button>

@@ -36,7 +36,7 @@ const ReportsDashboard = () => {
                 key={`item-${index}`}
                 className="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-lg transition-all cursor-pointer"
               >
-                <div className="w-12 h-12 bg-[#3A4E63] rounded-lg flex items-center justify-center mb-4">
+                <div className="w-12 h-12 bg-[#033F99] rounded-lg flex items-center justify-center mb-4">
                   <Icon className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 mb-2">

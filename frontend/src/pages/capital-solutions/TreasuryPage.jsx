@@ -191,12 +191,12 @@ const TreasuryPage = () => {
       <div className="max-w-5xl">
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center">
               <Wallet className="h-7 w-7 text-white" />
             </div>
             <div>
               <h1 className="text-4xl font-bold text-slate-900">Treasury</h1>
-              <p className="text-lg text-[#3A4E63] font-semibold">
+              <p className="text-lg text-[#033F99] font-semibold">
                 Investment Management
               </p>
             </div>
@@ -212,7 +212,7 @@ const TreasuryPage = () => {
             {benefits.map((b, i) => (
               <div
                 key={i}
-                className="bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] p-6 rounded-2xl text-white text-center"
+                className="bg-gradient-to-br from-[#033F99] to-[#033F99] p-6 rounded-2xl text-white text-center"
               >
                 <p className="text-4xl font-bold mb-2">{b.metric}</p>
                 <p className="text-lg font-semibold mb-1">{b.label}</p>
@@ -234,7 +234,7 @@ const TreasuryPage = () => {
         {/* Interactive Demo */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <Play className="h-6 w-6 text-[#3A4E63]" />
+            <Play className="h-6 w-6 text-[#033F99]" />
             <h2 className="text-3xl font-bold text-slate-900">
               Interactive Demo
             </h2>
@@ -247,7 +247,7 @@ const TreasuryPage = () => {
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="bg-white p-4 rounded-xl border border-slate-200">
                 <p className="text-sm text-slate-600">Total Fixed Deposits</p>
-                <p className="text-3xl font-bold text-[#3A4E63]">
+                <p className="text-3xl font-bold text-[#033F99]">
                   ₹{(totalFD / 10000000).toFixed(2)} Cr
                 </p>
               </div>
@@ -262,13 +262,13 @@ const TreasuryPage = () => {
             <div className="flex gap-3 mb-6">
               <button
                 onClick={() => setSelectedTab("fd")}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedTab === "fd" ? "bg-[#3A4E63] text-white" : "bg-white text-slate-700 border border-slate-300 hover:border-[#3A4E63]"}`}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedTab === "fd" ? "bg-[#033F99] text-white" : "bg-white text-slate-700 border border-slate-300 hover:border-[#033F99]"}`}
               >
                 Fixed Deposits
               </button>
               <button
                 onClick={() => setSelectedTab("mf")}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedTab === "mf" ? "bg-[#3A4E63] text-white" : "bg-white text-slate-700 border border-slate-300 hover:border-[#3A4E63]"}`}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedTab === "mf" ? "bg-[#033F99] text-white" : "bg-white text-slate-700 border border-slate-300 hover:border-[#033F99]"}`}
               >
                 Mutual Funds
               </button>
@@ -411,7 +411,7 @@ const TreasuryPage = () => {
             {features.map((f, i) => (
               <div
                 key={i}
-                className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#3A4E63] transition-all"
+                className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#033F99] transition-all"
               >
                 <h3 className="text-xl font-bold text-slate-900 mb-3">
                   {f.title}
@@ -436,7 +436,7 @@ const TreasuryPage = () => {
         <CaseStudy data={caseStudy} />
         <TestimonialSection testimonials={testimonials} />
 
-        <section className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] p-8 rounded-3xl text-white">
+        <section className="bg-gradient-to-r from-[#033F99] to-[#033F99] p-8 rounded-3xl text-white">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold mb-2">
@@ -445,7 +445,7 @@ const TreasuryPage = () => {
               <p className="opacity-90">Never miss a maturity date again</p>
             </div>
             <Link to="/auth/signup">
-              <button className="bg-white text-[#3A4E63] font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
+              <button className="bg-white text-[#033F99] font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
                 <Zap className="h-5 w-5" />
                 Start Free Trial
               </button>

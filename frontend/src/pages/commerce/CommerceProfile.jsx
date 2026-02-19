@@ -77,7 +77,7 @@ const CommerceProfile = () => {
         {/* Profile Overview */}
         <Card className="p-6 bg-white border-slate-200">
           <div className="text-center">
-            <div className="w-24 h-24 bg-gradient-to-br from-[#3A4E63] to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-24 h-24 bg-gradient-to-br from-[#033F99] to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-white text-3xl font-bold">
                 {formData.full_name?.charAt(0) || "U"}
               </span>
@@ -213,7 +213,7 @@ const CommerceProfile = () => {
             >
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-[#C4D9F4] rounded-xl flex items-center justify-center">
-                  <Icon className="h-6 w-6 text-[#3A4E63]" />
+                  <Icon className="h-6 w-6 text-[#033F99]" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-slate-900">

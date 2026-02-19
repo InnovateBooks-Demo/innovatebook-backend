@@ -242,7 +242,7 @@ const CreateAdjustmentEntry = () => {
               onChange={(e) =>
                 setFormData({ ...formData, entry_date: e.target.value })
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               style={{ fontFamily: "Inter, sans-serif" }}
             />
           </div>
@@ -262,7 +262,7 @@ const CreateAdjustmentEntry = () => {
                 setFormData({ ...formData, description: e.target.value })
               }
               placeholder="e.g., Year-end depreciation adjustment"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               style={{ fontFamily: "Inter, sans-serif" }}
             />
           </div>
@@ -283,7 +283,7 @@ const CreateAdjustmentEntry = () => {
             }
             placeholder="Additional notes about this adjustment..."
             rows="3"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#033F99]"
             style={{ fontFamily: "Inter, sans-serif" }}
           />
         </div>
@@ -300,7 +300,7 @@ const CreateAdjustmentEntry = () => {
           </h2>
           <Button
             onClick={handleAddLineItem}
-            className="bg-[#3A4E63] hover:bg-[#022b6b] text-white"
+            className="bg-[#033F99] hover:bg-[#022b6b] text-white"
             style={{ fontFamily: "Inter, sans-serif" }}
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -354,7 +354,7 @@ const CreateAdjustmentEntry = () => {
                       onChange={(e) =>
                         handleLineItemChange(index, "account", e.target.value)
                       }
-                      className="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       style={{ fontFamily: "Inter, sans-serif" }}
                     >
                       <option value="">Select Account</option>
@@ -377,7 +377,7 @@ const CreateAdjustmentEntry = () => {
                         )
                       }
                       placeholder="Line item description"
-                      className="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       style={{ fontFamily: "Inter, sans-serif" }}
                     />
                   </td>
@@ -390,7 +390,7 @@ const CreateAdjustmentEntry = () => {
                       }
                       step="0.01"
                       min="0"
-                      className="w-full px-2 py-2 border border-gray-300 rounded-md text-sm text-right focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-2 py-2 border border-gray-300 rounded-md text-sm text-right focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       style={{ fontFamily: "Inter, sans-serif" }}
                     />
                   </td>
@@ -403,7 +403,7 @@ const CreateAdjustmentEntry = () => {
                       }
                       step="0.01"
                       min="0"
-                      className="w-full px-2 py-2 border border-gray-300 rounded-md text-sm text-right focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                      className="w-full px-2 py-2 border border-gray-300 rounded-md text-sm text-right focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                       style={{ fontFamily: "Inter, sans-serif" }}
                     />
                   </td>
@@ -489,7 +489,7 @@ const CreateAdjustmentEntry = () => {
         <Button
           onClick={handleSubmit}
           disabled={loading || Math.abs(difference) > 0.01}
-          className="bg-[#3A4E63] hover:bg-[#022b6b] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-[#033F99] hover:bg-[#022b6b] text-white disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ fontFamily: "Inter, sans-serif" }}
         >
           <Save className="h-4 w-4 mr-2" />

@@ -39,7 +39,7 @@ export const SectionHeader = ({
       data-testid="section-header"
     >
       {badge && (
-        <span className="inline-block px-4 py-1.5 bg-[#3A4E63]/10 text-[#3A4E63] text-sm font-semibold rounded-full mb-4">
+        <span className="inline-block px-4 py-1.5 bg-[#033F99]/10 text-[#033F99] text-sm font-semibold rounded-full mb-4">
           {badge}
         </span>
       )}

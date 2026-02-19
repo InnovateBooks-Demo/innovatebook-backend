@@ -17,13 +17,13 @@ export const AwardsMarquee = ({
   const AwardCard = ({ award, index }) => (
     <div
       key={`award-${award.title}-${index}`}
-      className="flex-shrink-0 bg-white rounded-2xl p-6 border border-slate-100 hover:border-[#3A4E63]/30 hover:shadow-lg transition-all duration-300 w-72 mx-3"
+      className="flex-shrink-0 bg-white rounded-2xl p-6 border border-slate-100 hover:border-[#033F99]/30 hover:shadow-lg transition-all duration-300 w-72 mx-3"
     >
       <div className="flex items-center gap-3 mb-3">
         <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center">
           <Trophy className="h-5 w-5 text-yellow-600" />
         </div>
-        <span className="text-sm font-semibold text-[#3A4E63] bg-[#3A4E63]/10 px-2 py-1 rounded-full">
+        <span className="text-sm font-semibold text-[#033F99] bg-[#033F99]/10 px-2 py-1 rounded-full">
           {award.year}
         </span>
       </div>

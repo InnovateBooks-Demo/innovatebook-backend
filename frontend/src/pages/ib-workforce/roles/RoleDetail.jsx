@@ -69,7 +69,7 @@ const RoleDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -139,11 +139,10 @@ const RoleDetail = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === tab.id
-                    ? "border-[#3A4E63] text-[#3A4E63]"
+                className={`pb-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                    ? "border-[#033F99] text-[#033F99]"
                     : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -260,7 +259,7 @@ const RoleDetail = () => {
               <h3 className="text-lg font-semibold text-gray-900">
                 Permissions
               </h3>
-              <button className="text-sm text-[#3A4E63] hover:underline flex items-center gap-1">
+              <button className="text-sm text-[#033F99] hover:underline flex items-center gap-1">
                 <Plus className="h-4 w-4" /> Add Permission
               </button>
             </div>
@@ -299,7 +298,7 @@ const RoleDetail = () => {
               <h3 className="text-lg font-semibold text-gray-900">
                 Role Assignments
               </h3>
-              <button className="text-sm text-[#3A4E63] hover:underline flex items-center gap-1">
+              <button className="text-sm text-[#033F99] hover:underline flex items-center gap-1">
                 <Plus className="h-4 w-4" /> Assign to Person
               </button>
             </div>
@@ -324,11 +323,10 @@ const RoleDetail = () => {
                       </div>
                     </div>
                     <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        assignment.status === "active"
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${assignment.status === "active"
                           ? "bg-emerald-100 text-emerald-700"
                           : "bg-gray-100 text-gray-700"
-                      }`}
+                        }`}
                     >
                       {assignment.status}
                     </span>

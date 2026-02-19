@@ -363,13 +363,13 @@ const EmailCampaigns = () => {
       <div className="flex gap-4 mb-6 border-b">
         <button
           onClick={() => setActiveTab("campaigns")}
-          className={`pb-2 px-1 ${activeTab === "campaigns" ? "border-b-2 border-[#3A4E63] text-[#3A4E63]" : "text-gray-500"}`}
+          className={`pb-2 px-1 ${activeTab === "campaigns" ? "border-b-2 border-[#033F99] text-[#033F99]" : "text-gray-500"}`}
         >
           Campaigns
         </button>
         <button
           onClick={() => setActiveTab("templates")}
-          className={`pb-2 px-1 ${activeTab === "templates" ? "border-b-2 border-[#3A4E63] text-[#3A4E63]" : "text-gray-500"}`}
+          className={`pb-2 px-1 ${activeTab === "templates" ? "border-b-2 border-[#033F99] text-[#033F99]" : "text-gray-500"}`}
         >
           Templates
         </button>
@@ -383,7 +383,7 @@ const EmailCampaigns = () => {
               <h2 className="font-semibold">All Campaigns</h2>
               <button
                 onClick={() => setShowNewCampaign(true)}
-                className="px-3 py-1 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e] flex items-center gap-1 text-sm"
+                className="px-3 py-1 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e] flex items-center gap-1 text-sm"
               >
                 <Plus className="h-4 w-4" />
                 New
@@ -401,11 +401,10 @@ const EmailCampaigns = () => {
                   <div
                     key={campaign.campaign_id}
                     onClick={() => fetchCampaignDetails(campaign.campaign_id)}
-                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      selectedCampaign?.campaign_id === campaign.campaign_id
-                        ? "border-[#3A4E63] bg-blue-50"
+                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${selectedCampaign?.campaign_id === campaign.campaign_id
+                        ? "border-[#033F99] bg-blue-50"
                         : "hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <div className="flex justify-between items-start">
                       <div>
@@ -549,13 +548,12 @@ const EmailCampaigns = () => {
                               <td className="p-2">{recipient.email}</td>
                               <td className="p-2">
                                 <span
-                                  className={`px-2 py-0.5 rounded-full text-xs ${
-                                    recipient.status === "sent"
+                                  className={`px-2 py-0.5 rounded-full text-xs ${recipient.status === "sent"
                                       ? "bg-green-100 text-green-700"
                                       : recipient.status === "failed"
                                         ? "bg-red-100 text-red-700"
                                         : "bg-gray-100 text-gray-700"
-                                  }`}
+                                    }`}
                                 >
                                   {recipient.status}
                                 </span>
@@ -619,7 +617,7 @@ const EmailCampaigns = () => {
               </button>
               <button
                 onClick={() => setShowNewTemplate(true)}
-                className="px-3 py-1 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e] flex items-center gap-1 text-sm"
+                className="px-3 py-1 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e] flex items-center gap-1 text-sm"
                 data-testid="new-template-btn"
               >
                 <Plus className="h-4 w-4" />
@@ -634,7 +632,7 @@ const EmailCampaigns = () => {
               <p>No templates yet</p>
               <button
                 onClick={seedTemplates}
-                className="text-[#3A4E63] underline text-sm mt-2"
+                className="text-[#033F99] underline text-sm mt-2"
               >
                 Load default templates
               </button>
@@ -738,7 +736,7 @@ const EmailCampaigns = () => {
             <div className="flex gap-2 mt-4">
               <button
                 onClick={createCampaign}
-                className="flex-1 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e]"
+                className="flex-1 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e]"
               >
                 Create
               </button>
@@ -831,7 +829,7 @@ const EmailCampaigns = () => {
             <div className="flex gap-2 mt-4">
               <button
                 onClick={createTemplate}
-                className="flex-1 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e]"
+                className="flex-1 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e]"
               >
                 Create
               </button>
@@ -871,7 +869,7 @@ const EmailCampaigns = () => {
             <div className="flex gap-2 mt-4">
               <button
                 onClick={addRecipients}
-                className="flex-1 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e]"
+                className="flex-1 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e]"
               >
                 Add Recipients
               </button>

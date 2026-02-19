@@ -310,7 +310,7 @@ const GeneralLedger = () => {
               <Button
                 onClick={loadReport}
                 disabled={loading}
-                style={{ backgroundColor: "#3A4E63" }}
+                style={{ backgroundColor: "#033F99" }}
                 className="text-white w-full"
               >
                 {loading ? (
@@ -354,9 +354,9 @@ const GeneralLedger = () => {
             {filters.account && data.account
               ? renderLedger(data.account, data)
               : Object.entries(data.ledger || {}).map(
-                  ([accountName, ledgerData]) =>
-                    renderLedger(accountName, ledgerData),
-                )}
+                ([accountName, ledgerData]) =>
+                  renderLedger(accountName, ledgerData),
+              )}
 
             {(!data.ledger || Object.keys(data.ledger).length === 0) &&
               !filters.account && (

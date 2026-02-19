@@ -2,7 +2,7 @@
 
 ## 🎨 Color Scheme Updated
 
-✅ **Primary Color:** #3A4E63 (Your brand blue)
+✅ **Primary Color:** #033F99 (Your brand blue)
 ✅ **Secondary Color:** #022D6E (Darker blue)
 ✅ All IB Chat components now use your brand colors
 
@@ -131,7 +131,7 @@ All users below can login with password: **Demo1234**
 
 ### Color Scheme
 
-- Primary: #3A4E63
+- Primary: #033F99
 - Secondary: #022D6E
 - All gradients updated to match brand
 

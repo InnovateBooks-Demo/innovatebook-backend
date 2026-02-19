@@ -128,7 +128,7 @@ const CommitEdit = () => {
     return (
       <div className="p-6 flex items-center justify-center min-h-screen">
         <div className="flex items-center gap-3 text-slate-600">
-          <div className="w-6 h-6 border-2 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-6 h-6 border-2 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
           Loading commitment details...
         </div>
       </div>
@@ -161,7 +161,7 @@ const CommitEdit = () => {
         <Card className="p-6 bg-white border-slate-200">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-[#C4D9F4] rounded-lg flex items-center justify-center">
-              <FileText className="h-5 w-5 text-[#3A4E63]" />
+              <FileText className="h-5 w-5 text-[#033F99]" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-900">
@@ -182,7 +182,7 @@ const CommitEdit = () => {
                 value={formData.evaluation_id}
                 onChange={handleChange}
                 required
-                className="w-full mt-2 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full mt-2 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="">Select Evaluation</option>
                 {evaluations.map((evaluation) => (
@@ -214,7 +214,7 @@ const CommitEdit = () => {
                 value={formData.commit_type}
                 onChange={handleChange}
                 required
-                className="w-full mt-2 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full mt-2 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="Customer Contract">Customer Contract</option>
                 <option value="Vendor PO">Vendor PO</option>
@@ -286,7 +286,7 @@ const CommitEdit = () => {
                 value={formData.payment_terms}
                 onChange={handleChange}
                 required
-                className="w-full mt-2 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full mt-2 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="Net 15">Net 15</option>
                 <option value="Net 30">Net 30</option>
@@ -307,7 +307,7 @@ const CommitEdit = () => {
           <Button
             type="submit"
             disabled={saving}
-            className="gap-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63]"
+            className="gap-2 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99]"
           >
             {saving ? (
               <>

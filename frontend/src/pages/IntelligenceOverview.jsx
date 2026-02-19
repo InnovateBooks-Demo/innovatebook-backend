@@ -208,7 +208,7 @@ const IntelligenceOverview = () => {
       <SharedNavigation />
 
       {/* Hero Section - Full Color */}
-      <section className="pt-24 pb-20 px-4 relative overflow-hidden bg-[#3A4E63]">
+      <section className="pt-24 pb-20 px-4 relative overflow-hidden bg-[#033F99]">
         <div className="absolute inset-0 overflow-hidden opacity-10">
           <div className="absolute top-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl" />
           <div className="absolute bottom-10 left-20 w-80 h-80 bg-white rounded-full blur-3xl" />
@@ -236,7 +236,7 @@ const IntelligenceOverview = () => {
 
             <div className="flex justify-center items-center gap-6 mb-12 flex-wrap">
               <Link to="/auth/signup">
-                <button className="bg-white text-[#3A4E63] font-bold px-10 py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-lg flex items-center gap-2">
+                <button className="bg-white text-[#033F99] font-bold px-10 py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-lg flex items-center gap-2">
                   <Sparkles className="h-5 w-5" />
                   Start Free Trial
                 </button>
@@ -276,9 +276,9 @@ const IntelligenceOverview = () => {
               return (
                 <div
                   key={index}
-                  className="bg-gradient-to-br from-[#3A4E63]/10 to-[#3A4E63]/5 p-6 rounded-2xl border border-[#3A4E63]/20 text-center"
+                  className="bg-gradient-to-br from-[#033F99]/10 to-[#033F99]/5 p-6 rounded-2xl border border-[#033F99]/20 text-center"
                 >
-                  <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-xl flex items-center justify-center mx-auto mb-4">
                     <Icon className="h-7 w-7 text-white" />
                   </div>
                   <h3 className="font-bold text-lg text-slate-900 mb-2">
@@ -313,18 +313,18 @@ const IntelligenceOverview = () => {
               return (
                 <div
                   key={module.id}
-                  className="bg-white rounded-3xl border-2 border-slate-200 hover:border-[#3A4E63] transition-all overflow-hidden"
+                  className="bg-white rounded-3xl border-2 border-slate-200 hover:border-[#033F99] transition-all overflow-hidden"
                 >
                   <div className="p-8">
                     <div className="flex items-start gap-6 mb-6">
-                      <div className="w-16 h-16 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center flex-shrink-0">
+                      <div className="w-16 h-16 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center flex-shrink-0">
                         <Icon className="h-8 w-8 text-white" />
                       </div>
                       <div className="flex-1">
                         <h3 className="text-2xl font-bold text-slate-900 mb-1">
                           {module.name}
                         </h3>
-                        <p className="text-[#3A4E63] font-semibold mb-3">
+                        <p className="text-[#033F99] font-semibold mb-3">
                           {module.tagline}
                         </p>
                         <p className="text-slate-600">{module.description}</p>
@@ -343,7 +343,7 @@ const IntelligenceOverview = () => {
                               key={i}
                               className="flex items-start gap-2 text-sm text-slate-700"
                             >
-                              <CheckCircle className="h-4 w-4 text-[#3A4E63] flex-shrink-0 mt-0.5" />
+                              <CheckCircle className="h-4 w-4 text-[#033F99] flex-shrink-0 mt-0.5" />
                               {feature}
                             </li>
                           ))}
@@ -361,13 +361,12 @@ const IntelligenceOverview = () => {
                               {module.examples.map((ex, i) => (
                                 <div
                                   key={i}
-                                  className={`p-3 rounded-lg text-sm ${
-                                    ex.severity === "success"
-                                      ? "bg-[#3A4E63]/10 border-l-4 border-[#3A4E63]"
+                                  className={`p-3 rounded-lg text-sm ${ex.severity === "success"
+                                      ? "bg-[#033F99]/10 border-l-4 border-[#033F99]"
                                       : ex.severity === "warning"
                                         ? "bg-yellow-50 border-l-4 border-yellow-500"
                                         : "bg-red-50 border-l-4 border-red-500"
-                                  }`}
+                                    }`}
                                 >
                                   <span className="font-semibold">
                                     {ex.type}:
@@ -396,7 +395,7 @@ const IntelligenceOverview = () => {
                                   <p className="text-lg font-bold text-slate-900">
                                     {m.value}
                                   </p>
-                                  <p className="text-xs text-[#3A4E63]">
+                                  <p className="text-xs text-[#033F99]">
                                     {m.trend}
                                   </p>
                                 </div>
@@ -422,24 +421,22 @@ const IntelligenceOverview = () => {
                                   <div className="flex items-center gap-2">
                                     <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
                                       <div
-                                        className={`h-full rounded-full ${
-                                          r.status === "Low"
-                                            ? "bg-[#3A4E63]/100"
+                                        className={`h-full rounded-full ${r.status === "Low"
+                                            ? "bg-[#033F99]/100"
                                             : r.status === "Medium"
                                               ? "bg-yellow-500"
                                               : "bg-red-500"
-                                        }`}
+                                          }`}
                                         style={{ width: `${r.score}%` }}
                                       />
                                     </div>
                                     <span
-                                      className={`text-xs font-semibold ${
-                                        r.status === "Low"
-                                          ? "text-[#3A4E63]"
+                                      className={`text-xs font-semibold ${r.status === "Low"
+                                          ? "text-[#033F99]"
                                           : r.status === "Medium"
                                             ? "text-yellow-600"
                                             : "text-red-600"
-                                      }`}
+                                        }`}
                                     >
                                       {r.status}
                                     </span>
@@ -459,13 +456,13 @@ const IntelligenceOverview = () => {
                               {module.forecasts.map((f, i) => (
                                 <div
                                   key={i}
-                                  className="flex items-center justify-between p-3 bg-gradient-to-r from-[#3A4E63]/10 to-[#3A4E63]/5 rounded-lg"
+                                  className="flex items-center justify-between p-3 bg-gradient-to-r from-[#033F99]/10 to-[#033F99]/5 rounded-lg"
                                 >
                                   <span className="text-sm font-medium">
                                     {f.period}
                                   </span>
                                   <div className="text-right">
-                                    <p className="text-lg font-bold text-[#3A4E63]">
+                                    <p className="text-lg font-bold text-[#033F99]">
                                       {f.revenue}
                                     </p>
                                     <p className="text-xs text-slate-500">
@@ -489,7 +486,7 @@ const IntelligenceOverview = () => {
                                   key={i}
                                   className="flex items-start gap-2 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg"
                                 >
-                                  <Target className="h-4 w-4 text-[#3A4E63] flex-shrink-0 mt-0.5" />
+                                  <Target className="h-4 w-4 text-[#033F99] flex-shrink-0 mt-0.5" />
                                   <span className="text-sm text-slate-700">
                                     {rec}
                                   </span>
@@ -517,8 +514,8 @@ const IntelligenceOverview = () => {
                                     <span className="text-sm text-slate-500">
                                       {imp.before}
                                     </span>
-                                    <ArrowRight className="h-4 w-4 text-[#3A4E63]" />
-                                    <span className="text-sm font-bold text-[#3A4E63]">
+                                    <ArrowRight className="h-4 w-4 text-[#033F99]" />
+                                    <span className="text-sm font-bold text-[#033F99]">
                                       {imp.after}
                                     </span>
                                   </div>
@@ -579,18 +576,18 @@ const IntelligenceOverview = () => {
               const Icon = item.icon;
               return (
                 <div key={index} className="relative">
-                  <div className="bg-gradient-to-br from-[#3A4E63]/10 to-[#3A4E63]/5 p-6 rounded-2xl border border-[#3A4E63]/20 text-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold">
+                  <div className="bg-gradient-to-br from-[#033F99]/10 to-[#033F99]/5 p-6 rounded-2xl border border-[#033F99]/20 text-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold">
                       {item.step}
                     </div>
-                    <Icon className="h-8 w-8 text-[#3A4E63] mx-auto mb-3" />
+                    <Icon className="h-8 w-8 text-[#033F99] mx-auto mb-3" />
                     <h3 className="font-bold text-lg text-slate-900 mb-2">
                       {item.title}
                     </h3>
                     <p className="text-sm text-slate-600">{item.desc}</p>
                   </div>
                   {index < 3 && (
-                    <ChevronRight className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2 h-6 w-6 text-[#3A4E63]/40" />
+                    <ChevronRight className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2 h-6 w-6 text-[#033F99]/40" />
                   )}
                 </div>
               );
@@ -600,7 +597,7 @@ const IntelligenceOverview = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-[#3A4E63] via-[#3A4E63] to-[#3A4E63]">
+      <section className="py-20 px-4 bg-gradient-to-br from-[#033F99] via-[#033F99] to-[#033F99]">
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-4xl sm:text-5xl font-bold mb-6">
             Ready for Intelligent Business Insights?
@@ -611,7 +608,7 @@ const IntelligenceOverview = () => {
           </p>
           <div className="flex justify-center items-center gap-6 flex-wrap">
             <Link to="/auth/signup">
-              <button className="bg-white text-[#3A4E63] font-bold px-10 py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-2">
+              <button className="bg-white text-[#033F99] font-bold px-10 py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-2">
                 <Sparkles className="h-5 w-5" />
                 Start Free Trial
               </button>

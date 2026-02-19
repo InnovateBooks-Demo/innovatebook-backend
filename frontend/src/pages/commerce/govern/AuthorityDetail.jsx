@@ -56,7 +56,7 @@ const AuthorityDetail = () => {
   if (loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   if (!authority)
@@ -66,7 +66,7 @@ const AuthorityDetail = () => {
         <p className="text-gray-500 mb-4">Authority not found</p>
         <button
           onClick={() => navigate("/commerce/govern/authority")}
-          className="text-[#3A4E63] hover:underline"
+          className="text-[#033F99] hover:underline"
         >
           Back to Authorities
         </button>
@@ -88,8 +88,8 @@ const AuthorityDetail = () => {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-[#3A4E63]/10 rounded-xl flex items-center justify-center">
-                <UserCog className="h-7 w-7 text-[#3A4E63]" />
+              <div className="w-14 h-14 bg-[#033F99]/10 rounded-xl flex items-center justify-center">
+                <UserCog className="h-7 w-7 text-[#033F99]" />
               </div>
               <div>
                 <h1 className="text-2xl font-semibold text-gray-900">

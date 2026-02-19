@@ -82,7 +82,7 @@ const ItemsDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#3A4E63]"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#033F99]"></div>
       </div>
     );
   }
@@ -110,7 +110,7 @@ const ItemsDetail = () => {
                 <ArrowLeft className="h-5 w-5" />
               </button>
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#3A4E63] to-[#0550c8] flex items-center justify-center text-white font-semibold text-lg">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#033F99] to-[#0550c8] flex items-center justify-center text-white font-semibold text-lg">
                   {item.name?.charAt(0) || "I"}
                 </div>
                 <div>

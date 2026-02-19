@@ -182,12 +182,12 @@ const BenefitsPage = () => {
       <div className="max-w-5xl">
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center">
               <Heart className="h-7 w-7 text-white" />
             </div>
             <div>
               <h1 className="text-4xl font-bold text-slate-900">Benefits</h1>
-              <p className="text-lg text-[#3A4E63] font-semibold">
+              <p className="text-lg text-[#033F99] font-semibold">
                 Employee Benefits & Equity
               </p>
             </div>
@@ -204,7 +204,7 @@ const BenefitsPage = () => {
             {benefits.map((b, i) => (
               <div
                 key={i}
-                className="bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] p-6 rounded-2xl text-white text-center"
+                className="bg-gradient-to-br from-[#033F99] to-[#033F99] p-6 rounded-2xl text-white text-center"
               >
                 <p className="text-4xl font-bold mb-2">{b.metric}</p>
                 <p className="text-lg font-semibold mb-1">{b.label}</p>
@@ -223,7 +223,7 @@ const BenefitsPage = () => {
             {features.map((f, i) => (
               <div
                 key={i}
-                className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#3A4E63] transition-all hover:shadow-lg"
+                className="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#033F99] transition-all hover:shadow-lg"
               >
                 <h3 className="text-xl font-bold text-slate-900 mb-3">
                   {f.title}
@@ -259,7 +259,7 @@ const BenefitsPage = () => {
         {/* Interactive Demo */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <Play className="h-6 w-6 text-[#3A4E63]" />
+            <Play className="h-6 w-6 text-[#033F99]" />
             <h2 className="text-3xl font-bold text-slate-900">
               Interactive Demo
             </h2>
@@ -269,7 +269,7 @@ const BenefitsPage = () => {
           </div>
           <div className="bg-gradient-to-br from-[#EBF3FC] to-white p-6 rounded-3xl border-2 border-[#C4D9F4]">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center text-white font-bold">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center text-white font-bold">
                 RM
               </div>
               <div>
@@ -278,7 +278,7 @@ const BenefitsPage = () => {
                 </h3>
                 <p className="text-slate-600">
                   Total Compensation:{" "}
-                  <span className="font-bold text-[#3A4E63]">
+                  <span className="font-bold text-[#033F99]">
                     ₹18,50,000/year
                   </span>
                 </p>
@@ -289,11 +289,10 @@ const BenefitsPage = () => {
                 <button
                   key={key}
                   onClick={() => setActiveSection(key)}
-                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
-                    activeSection === key
-                      ? "bg-[#3A4E63] text-white"
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${activeSection === key
+                      ? "bg-[#033F99] text-white"
                       : "bg-white text-slate-700 hover:bg-slate-100"
-                  }`}
+                    }`}
                 >
                   {benefitsDemo[key].title}
                 </button>
@@ -302,7 +301,7 @@ const BenefitsPage = () => {
             <div className="bg-white rounded-2xl p-6 border border-slate-200">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-[#EBF3FC] rounded-lg flex items-center justify-center">
-                  <ActiveIcon className="h-5 w-5 text-[#3A4E63]" />
+                  <ActiveIcon className="h-5 w-5 text-[#033F99]" />
                 </div>
                 <h4 className="text-lg font-bold text-slate-900">
                   {benefitsDemo[activeSection].title}
@@ -332,7 +331,7 @@ const BenefitsPage = () => {
         <TestimonialSection testimonials={testimonials} />
 
         {/* CTA */}
-        <section className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] p-8 rounded-3xl text-white">
+        <section className="bg-gradient-to-r from-[#033F99] to-[#033F99] p-8 rounded-3xl text-white">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold mb-2">
@@ -343,7 +342,7 @@ const BenefitsPage = () => {
               </p>
             </div>
             <Link to="/auth/signup">
-              <button className="bg-white text-[#3A4E63] font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
+              <button className="bg-white text-[#033F99] font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
                 <Zap className="h-5 w-5" /> Start Free Trial
               </button>
             </Link>

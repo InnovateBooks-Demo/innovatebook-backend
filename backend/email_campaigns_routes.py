@@ -619,7 +619,7 @@ async def seed_default_templates(current_user: dict = Depends(get_current_user))
             "subject": "Welcome to {{company_name}}!",
             "body_html": """
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h1 style="color: #3A4E63;">Welcome, {{first_name}}!</h1>
+                <h1 style="color: #033F99;">Welcome, {{first_name}}!</h1>
                 <p>Thank you for joining {{company_name}}. We're excited to have you on board.</p>
                 <p>Here's what you can do next:</p>
                 <ul>
@@ -627,7 +627,7 @@ async def seed_default_templates(current_user: dict = Depends(get_current_user))
                     <li>Explore our features</li>
                     <li>Connect with your team</li>
                 </ul>
-                <a href="{{cta_url}}" style="display: inline-block; padding: 12px 24px; background: #3A4E63; color: white; text-decoration: none; border-radius: 6px;">Get Started</a>
+                <a href="{{cta_url}}" style="display: inline-block; padding: 12px 24px; background: #033F99; color: white; text-decoration: none; border-radius: 6px;">Get Started</a>
                 <p style="margin-top: 24px; color: #666;">Best regards,<br>The {{company_name}} Team</p>
             </div>
             """,
@@ -639,7 +639,7 @@ async def seed_default_templates(current_user: dict = Depends(get_current_user))
             "subject": "Reminder: Invoice #{{invoice_number}} is due",
             "body_html": """
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #3A4E63;">Invoice Reminder</h2>
+                <h2 style="color: #033F99;">Invoice Reminder</h2>
                 <p>Dear {{customer_name}},</p>
                 <p>This is a friendly reminder that invoice #{{invoice_number}} for {{amount}} is due on {{due_date}}.</p>
                 <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 16px 0;">
@@ -647,7 +647,7 @@ async def seed_default_templates(current_user: dict = Depends(get_current_user))
                     <p><strong>Amount:</strong> {{amount}}</p>
                     <p><strong>Due Date:</strong> {{due_date}}</p>
                 </div>
-                <a href="{{payment_url}}" style="display: inline-block; padding: 12px 24px; background: #3A4E63; color: white; text-decoration: none; border-radius: 6px;">Pay Now</a>
+                <a href="{{payment_url}}" style="display: inline-block; padding: 12px 24px; background: #033F99; color: white; text-decoration: none; border-radius: 6px;">Pay Now</a>
                 <p style="margin-top: 24px; color: #666;">If you've already made this payment, please disregard this reminder.</p>
             </div>
             """,
@@ -659,13 +659,13 @@ async def seed_default_templates(current_user: dict = Depends(get_current_user))
             "subject": "{{month}} Newsletter - Updates from {{company_name}}",
             "body_html": """
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h1 style="color: #3A4E63;">{{month}} Newsletter</h1>
+                <h1 style="color: #033F99;">{{month}} Newsletter</h1>
                 <p>Hello {{first_name}},</p>
                 <p>Here's what's new this month:</p>
-                <div style="border-left: 4px solid #3A4E63; padding-left: 16px; margin: 16px 0;">
+                <div style="border-left: 4px solid #033F99; padding-left: 16px; margin: 16px 0;">
                     {{content}}
                 </div>
-                <a href="{{read_more_url}}" style="display: inline-block; padding: 12px 24px; background: #3A4E63; color: white; text-decoration: none; border-radius: 6px;">Read More</a>
+                <a href="{{read_more_url}}" style="display: inline-block; padding: 12px 24px; background: #033F99; color: white; text-decoration: none; border-radius: 6px;">Read More</a>
             </div>
             """,
             "category": "newsletter",
@@ -676,7 +676,7 @@ async def seed_default_templates(current_user: dict = Depends(get_current_user))
             "subject": "Special Offer: {{offer_title}}",
             "body_html": """
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <div style="background: linear-gradient(135deg, #3A4E63 0%, #0055cc 100%); color: white; padding: 32px; text-align: center; border-radius: 8px 8px 0 0;">
+                <div style="background: linear-gradient(135deg, #033F99 0%, #0055cc 100%); color: white; padding: 32px; text-align: center; border-radius: 8px 8px 0 0;">
                     <h1>{{offer_title}}</h1>
                     <p style="font-size: 24px; font-weight: bold;">{{discount}}% OFF</p>
                 </div>
@@ -684,7 +684,7 @@ async def seed_default_templates(current_user: dict = Depends(get_current_user))
                     <p>Dear {{first_name}},</p>
                     <p>{{offer_description}}</p>
                     <p style="font-size: 14px; color: #666;">Offer valid until {{expiry_date}}</p>
-                    <a href="{{cta_url}}" style="display: inline-block; padding: 12px 24px; background: #3A4E63; color: white; text-decoration: none; border-radius: 6px;">Claim Offer</a>
+                    <a href="{{cta_url}}" style="display: inline-block; padding: 12px 24px; background: #033F99; color: white; text-decoration: none; border-radius: 6px;">Claim Offer</a>
                 </div>
             </div>
             """,

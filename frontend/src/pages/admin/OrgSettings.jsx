@@ -30,7 +30,7 @@ const OrgSettings = () => {
     language: "en",
     website: "",
     logo_url: "",
-    primary_color: "#3A4E63",
+    primary_color: "#033F99",
     notification_email: true,
     notification_push: true,
     notification_sms: false,
@@ -94,7 +94,7 @@ const OrgSettings = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   }
@@ -132,7 +132,7 @@ const OrgSettings = () => {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] disabled:opacity-50"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -150,11 +150,10 @@ const OrgSettings = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? "border-[#3A4E63] text-[#3A4E63]"
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                  ? "border-[#033F99] text-[#033F99]"
                   : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
+                }`}
             >
               <tab.icon className="h-4 w-4" />
               {tab.label}
@@ -178,7 +177,7 @@ const OrgSettings = () => {
                   onChange={(e) =>
                     setSettings({ ...settings, company_name: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 />
               </div>
               <div>
@@ -190,7 +189,7 @@ const OrgSettings = () => {
                   onChange={(e) =>
                     setSettings({ ...settings, business_type: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 >
                   <option value="private_limited">Private Limited</option>
                   <option value="public_limited">Public Limited</option>
@@ -208,7 +207,7 @@ const OrgSettings = () => {
                   onChange={(e) =>
                     setSettings({ ...settings, industry: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 >
                   <option value="manufacturing">Manufacturing</option>
                   <option value="services">Services</option>
@@ -227,7 +226,7 @@ const OrgSettings = () => {
                   onChange={(e) =>
                     setSettings({ ...settings, country: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 >
                   <option value="IN">India</option>
                   <option value="US">United States</option>
@@ -245,7 +244,7 @@ const OrgSettings = () => {
                   onChange={(e) =>
                     setSettings({ ...settings, timezone: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 >
                   <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
                   <option value="America/New_York">
@@ -266,7 +265,7 @@ const OrgSettings = () => {
                     setSettings({ ...settings, website: e.target.value })
                   }
                   placeholder="https://www.example.com"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 />
               </div>
             </div>
@@ -292,7 +291,7 @@ const OrgSettings = () => {
                     <Building2 className="h-10 w-10 text-gray-400" />
                   )}
                 </div>
-                <button className="px-4 py-2 text-sm font-medium text-[#3A4E63] border border-[#3A4E63] rounded-lg hover:bg-blue-50">
+                <button className="px-4 py-2 text-sm font-medium text-[#033F99] border border-[#033F99] rounded-lg hover:bg-blue-50">
                   Upload Logo
                 </button>
               </div>
@@ -345,7 +344,7 @@ const OrgSettings = () => {
                   }
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3A4E63]"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#033F99]"></div>
               </label>
             </div>
             <div className="flex items-center justify-between py-3 border-b border-gray-100">
@@ -367,7 +366,7 @@ const OrgSettings = () => {
                   }
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3A4E63]"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#033F99]"></div>
               </label>
             </div>
             <div className="flex items-center justify-between py-3">
@@ -389,7 +388,7 @@ const OrgSettings = () => {
                   }
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3A4E63]"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#033F99]"></div>
               </label>
             </div>
           </div>
@@ -419,7 +418,7 @@ const OrgSettings = () => {
                   }
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3A4E63]"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#033F99]"></div>
               </label>
             </div>
             <div>
@@ -434,7 +433,7 @@ const OrgSettings = () => {
                     session_timeout: parseInt(e.target.value),
                   })
                 }
-                className="w-48 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                className="w-48 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
               >
                 <option value={15}>15 minutes</option>
                 <option value={30}>30 minutes</option>

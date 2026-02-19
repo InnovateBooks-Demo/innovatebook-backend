@@ -97,9 +97,9 @@ const ProcureEvaluationsList = () => {
   const avgScore =
     evaluations.length > 0
       ? Math.round(
-          evaluations.reduce((sum, e) => sum + (e.score || 0), 0) /
-            evaluations.length,
-        )
+        evaluations.reduce((sum, e) => sum + (e.score || 0), 0) /
+        evaluations.length,
+      )
       : 0;
 
   return (
@@ -126,7 +126,7 @@ const ProcureEvaluationsList = () => {
               </button>
               <button
                 onClick={() => navigate("/commerce/procure/evaluate/create")}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm"
                 data-testid="new-procure-evaluation-btn"
               >
                 <Plus className="h-4 w-4" />
@@ -228,7 +228,7 @@ const ProcureEvaluationsList = () => {
                   placeholder="Search evaluations..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                 />
               </div>
               <button className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
@@ -239,7 +239,7 @@ const ProcureEvaluationsList = () => {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+              className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
             >
               <option value="all">All Status</option>
               <option value="pending">Pending</option>
@@ -309,7 +309,7 @@ const ProcureEvaluationsList = () => {
                       onClick={() =>
                         navigate("/commerce/procure/evaluate/create")
                       }
-                      className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e]"
+                      className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e]"
                     >
                       <Plus className="h-4 w-4" />
                       New Evaluation
@@ -331,7 +331,7 @@ const ProcureEvaluationsList = () => {
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#3A4E63] to-[#0550c8] flex items-center justify-center text-white font-semibold text-sm">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#033F99] to-[#0550c8] flex items-center justify-center text-white font-semibold text-sm">
                             {item.name?.charAt(0) || "E"}
                           </div>
                           <div>

@@ -199,21 +199,19 @@ const NotificationCenter = ({ isOpen, onClose, onNotificationCountChange }) => {
         <div className="flex items-center gap-2 mt-2">
           <button
             onClick={() => setFilter("all")}
-            className={`px-3 py-1 text-xs rounded-full transition-colors ${
-              filter === "all"
-                ? "bg-[#3A4E63] text-white"
+            className={`px-3 py-1 text-xs rounded-full transition-colors ${filter === "all"
+                ? "bg-[#033F99] text-white"
                 : "bg-slate-200 text-slate-600"
-            }`}
+              }`}
           >
             All
           </button>
           <button
             onClick={() => setFilter("unread")}
-            className={`px-3 py-1 text-xs rounded-full transition-colors ${
-              filter === "unread"
-                ? "bg-[#3A4E63] text-white"
+            className={`px-3 py-1 text-xs rounded-full transition-colors ${filter === "unread"
+                ? "bg-[#033F99] text-white"
                 : "bg-slate-200 text-slate-600"
-            }`}
+              }`}
           >
             Unread ({notifications.filter((n) => !n.read).length})
           </button>
@@ -224,7 +222,7 @@ const NotificationCenter = ({ isOpen, onClose, onNotificationCountChange }) => {
       <div className="max-h-[400px] overflow-y-auto">
         {loading ? (
           <div className="p-8 text-center">
-            <div className="w-6 h-6 border-2 border-slate-300 border-t-[#3A4E63] rounded-full animate-spin mx-auto" />
+            <div className="w-6 h-6 border-2 border-slate-300 border-t-[#033F99] rounded-full animate-spin mx-auto" />
           </div>
         ) : filteredNotifications.length > 0 ? (
           <div className="divide-y divide-slate-100">
@@ -235,9 +233,8 @@ const NotificationCenter = ({ isOpen, onClose, onNotificationCountChange }) => {
               return (
                 <div
                   key={notification.notification_id}
-                  className={`px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer ${
-                    !notification.read ? "bg-blue-50/50" : ""
-                  }`}
+                  className={`px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer ${!notification.read ? "bg-blue-50/50" : ""
+                    }`}
                   onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="flex items-start gap-3">
@@ -254,7 +251,7 @@ const NotificationCenter = ({ isOpen, onClose, onNotificationCountChange }) => {
                           {notification.title}
                         </p>
                         {!notification.read && (
-                          <div className="w-2 h-2 rounded-full bg-[#3A4E63] flex-shrink-0 mt-1.5" />
+                          <div className="w-2 h-2 rounded-full bg-[#033F99] flex-shrink-0 mt-1.5" />
                         )}
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">
@@ -300,7 +297,7 @@ const NotificationCenter = ({ isOpen, onClose, onNotificationCountChange }) => {
             navigate("/workspace/notifications");
             onClose();
           }}
-          className="w-full text-center text-sm text-[#3A4E63] hover:underline"
+          className="w-full text-center text-sm text-[#033F99] hover:underline"
         >
           View all notifications
         </button>

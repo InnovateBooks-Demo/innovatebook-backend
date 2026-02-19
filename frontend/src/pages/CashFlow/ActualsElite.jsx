@@ -78,8 +78,8 @@ const CashFlowActualsElite = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#3A4E63] border-r-transparent"></div>
-          <p className="mt-4 text-[#3A4E63] font-semibold text-lg">
+          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#033F99] border-r-transparent"></div>
+          <p className="mt-4 text-[#033F99] font-semibold text-lg">
             Loading cash flow...
           </p>
         </div>
@@ -100,24 +100,24 @@ const CashFlowActualsElite = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1
-              className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#022E75] bg-clip-text text-transparent"
+              className="text-4xl font-bold bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#022E75] bg-clip-text text-transparent"
               style={{ fontFamily: "Poppins" }}
             >
               Cash Flow Actuals
             </h1>
-            <p className="text-[#3A4E63] mt-2 font-medium text-lg">
+            <p className="text-[#033F99] mt-2 font-medium text-lg">
               Direct Method - Companies Act 2013 Compliant
             </p>
           </div>
           <div className="flex items-center gap-4">
             <button
               onClick={loadData}
-              className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#3A4E63] text-[#3A4E63] hover:bg-[#C4D9F4] font-bold rounded-2xl shadow-lg transition-all"
+              className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#033F99] text-[#033F99] hover:bg-[#C4D9F4] font-bold rounded-2xl shadow-lg transition-all"
             >
               <RefreshCw className="h-5 w-5" />
               Refresh
             </button>
-            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#022E75] text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all">
+            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#022E75] text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all">
               <Download className="h-5 w-5" />
               Export Report
             </button>
@@ -125,13 +125,13 @@ const CashFlowActualsElite = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl">
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl">
           <div className="flex items-center gap-4">
-            <Calendar className="h-6 w-6 text-[#3A4E63]" />
+            <Calendar className="h-6 w-6 text-[#033F99]" />
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(Number(e.target.value))}
-              className="px-4 py-3 bg-white border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 text-[#3A4E63] font-medium"
+              className="px-4 py-3 bg-white border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 text-[#033F99] font-medium"
             >
               {months.map((month, idx) => (
                 <option key={idx} value={idx + 1}>
@@ -142,7 +142,7 @@ const CashFlowActualsElite = () => {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="px-4 py-3 bg-white border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 text-[#3A4E63] font-medium"
+              className="px-4 py-3 bg-white border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 text-[#033F99] font-medium"
             >
               {years.map((year) => (
                 <option key={year} value={year}>
@@ -153,21 +153,19 @@ const CashFlowActualsElite = () => {
             <div className="flex gap-2 ml-auto">
               <button
                 onClick={() => setViewMode("transactions")}
-                className={`px-6 py-3 rounded-2xl font-bold transition-all ${
-                  viewMode === "transactions"
-                    ? "bg-gradient-to-r from-[#3A4E63] to-[#022E75] text-white shadow-lg"
-                    : "bg-white border-2 border-[#3A4E63] text-[#3A4E63]"
-                }`}
+                className={`px-6 py-3 rounded-2xl font-bold transition-all ${viewMode === "transactions"
+                    ? "bg-gradient-to-r from-[#033F99] to-[#022E75] text-white shadow-lg"
+                    : "bg-white border-2 border-[#033F99] text-[#033F99]"
+                  }`}
               >
                 Transactions
               </button>
               <button
                 onClick={() => setViewMode("statement")}
-                className={`px-6 py-3 rounded-2xl font-bold transition-all ${
-                  viewMode === "statement"
-                    ? "bg-gradient-to-r from-[#3A4E63] to-[#022E75] text-white shadow-lg"
-                    : "bg-white border-2 border-[#3A4E63] text-[#3A4E63]"
-                }`}
+                className={`px-6 py-3 rounded-2xl font-bold transition-all ${viewMode === "statement"
+                    ? "bg-gradient-to-r from-[#033F99] to-[#022E75] text-white shadow-lg"
+                    : "bg-white border-2 border-[#033F99] text-[#033F99]"
+                  }`}
               >
                 Statement
               </button>
@@ -232,18 +230,18 @@ const CashFlowActualsElite = () => {
           </div>
         </div>
 
-        <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl hover:shadow-2xl transition-all">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#3A4E63]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
+        <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl hover:shadow-2xl transition-all">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#033F99]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
           <div className="relative">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-3 bg-gradient-to-br from-[#3A4E63] to-[#022E75] rounded-2xl shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-[#033F99] to-[#022E75] rounded-2xl shadow-lg">
                 <TrendingUp className="h-6 w-6 text-white" />
               </div>
             </div>
-            <p className="text-sm font-bold text-[#3A4E63] uppercase tracking-wider mb-1">
+            <p className="text-sm font-bold text-[#033F99] uppercase tracking-wider mb-1">
               NET FLOW
             </p>
-            <p className="text-3xl font-black text-[#3A4E63]">
+            <p className="text-3xl font-black text-[#033F99]">
               ₹{(netFlow / 10000000).toFixed(2)}Cr
             </p>
             <p className="text-xs text-emerald-700 mt-1">Period change</p>
@@ -270,16 +268,16 @@ const CashFlowActualsElite = () => {
       </div>
 
       {/* Main Content */}
-      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border-2 border-[#3A4E63]/50 shadow-2xl">
+      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border-2 border-[#033F99]/50 shadow-2xl">
         {viewMode === "transactions" && (
           <div>
-            <h2 className="text-2xl font-bold text-[#3A4E63] mb-6">
+            <h2 className="text-2xl font-bold text-[#033F99] mb-6">
               Transaction Details
             </h2>
             {transactions.length === 0 ? (
               <div className="text-center py-16">
-                <AlertCircle className="h-16 w-16 text-[#3A4E63]/30 mx-auto mb-4" />
-                <p className="text-[#3A4E63] text-lg">
+                <AlertCircle className="h-16 w-16 text-[#033F99]/30 mx-auto mb-4" />
+                <p className="text-[#033F99] text-lg">
                   No transactions for this period
                 </p>
               </div>
@@ -287,7 +285,7 @@ const CashFlowActualsElite = () => {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-gradient-to-r from-[#3A4E63] to-[#022E75] text-white">
+                    <tr className="bg-gradient-to-r from-[#033F99] to-[#022E75] text-white">
                       <th className="px-6 py-4 text-left font-bold text-sm uppercase">
                         Date
                       </th>
@@ -308,20 +306,20 @@ const CashFlowActualsElite = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#3A4E63]/20">
+                  <tbody className="divide-y divide-[#033F99]/20">
                     {transactions.map((txn, idx) => (
                       <tr
                         key={idx}
                         className="hover:bg-[#C4D9F4]/30 transition-all"
                       >
-                        <td className="px-6 py-4 text-sm text-[#3A4E63] font-medium">
+                        <td className="px-6 py-4 text-sm text-[#033F99] font-medium">
                           {new Date(txn.date).toLocaleDateString()}
                         </td>
-                        <td className="px-6 py-4 text-sm text-[#3A4E63] font-medium">
+                        <td className="px-6 py-4 text-sm text-[#033F99] font-medium">
                           {txn.description}
                         </td>
                         <td className="px-6 py-4 text-sm">
-                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#C4D9F4] text-[#3A4E63]">
+                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#C4D9F4] text-[#033F99]">
                             {txn.category}
                           </span>
                         </td>
@@ -335,7 +333,7 @@ const CashFlowActualsElite = () => {
                             ? `₹${txn.amount.toLocaleString()}`
                             : "-"}
                         </td>
-                        <td className="px-6 py-4 text-right text-sm font-bold text-[#3A4E63]">
+                        <td className="px-6 py-4 text-right text-sm font-bold text-[#033F99]">
                           ₹{txn.balance?.toLocaleString() || "0"}
                         </td>
                       </tr>
@@ -349,7 +347,7 @@ const CashFlowActualsElite = () => {
 
         {viewMode === "statement" && (
           <div>
-            <h2 className="text-2xl font-bold text-[#3A4E63] mb-6">
+            <h2 className="text-2xl font-bold text-[#033F99] mb-6">
               Cash Flow Statement
             </h2>
             <div className="space-y-4">

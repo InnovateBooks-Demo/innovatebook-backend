@@ -52,14 +52,14 @@ const OrdersDetail = () => {
   if (loading)
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
-        <div className="w-8 h-8 border-4 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   if (!order)
     return (
       <div className="p-6 text-center">
         <p>Not found</p>
-        <Link to="/commerce/procure/orders" className="text-[#3A4E63]">
+        <Link to="/commerce/procure/orders" className="text-[#033F99]">
           Back
         </Link>
       </div>
@@ -76,8 +76,8 @@ const OrdersDetail = () => {
         </Link>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-[#3A4E63]/10 rounded-xl flex items-center justify-center">
-              <Truck className="w-6 h-6 text-[#3A4E63]" />
+            <div className="w-12 h-12 bg-[#033F99]/10 rounded-xl flex items-center justify-center">
+              <Truck className="w-6 h-6 text-[#033F99]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold font-mono">
@@ -112,7 +112,7 @@ const OrdersDetail = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Value</p>
-              <p className="text-2xl font-bold text-[#3A4E63]">
+              <p className="text-2xl font-bold text-[#033F99]">
                 ₹{order.total_value?.toLocaleString()}
               </p>
             </div>

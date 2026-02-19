@@ -121,7 +121,7 @@ const PartyEngineList = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   }
@@ -133,7 +133,7 @@ const PartyEngineList = () => {
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-[#0558CC] rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-[#0558CC] rounded-xl flex items-center justify-center shadow-lg">
                 <Building2 className="h-7 w-7 text-white" />
               </div>
               <div>
@@ -154,7 +154,7 @@ const PartyEngineList = () => {
               </button>
               <Link
                 to="/commerce/parties-engine/create"
-                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm"
               >
                 <Plus className="h-4 w-4" />
                 Add Party
@@ -234,14 +234,14 @@ const PartyEngineList = () => {
                   placeholder="Search parties..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
               </div>
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#033F99]"
             >
               <option value="">All Statuses</option>
               <option value="draft">Draft</option>
@@ -253,7 +253,7 @@ const PartyEngineList = () => {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#033F99]"
             >
               <option value="">All Roles</option>
               <option value="customer">Customer</option>
@@ -267,7 +267,7 @@ const PartyEngineList = () => {
                   setStatusFilter("");
                   setRoleFilter("");
                 }}
-                className="text-sm text-[#3A4E63] hover:underline"
+                className="text-sm text-[#033F99] hover:underline"
               >
                 Clear Filters
               </button>
@@ -349,7 +349,7 @@ const PartyEngineList = () => {
                     }
                   >
                     <td className="px-6 py-4">
-                      <span className="text-sm font-mono text-[#3A4E63]">
+                      <span className="text-sm font-mono text-[#033F99]">
                         {party.party_id}
                       </span>
                     </td>

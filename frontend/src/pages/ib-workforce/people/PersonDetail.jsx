@@ -159,7 +159,7 @@ const PersonDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -269,11 +269,10 @@ const PersonDetail = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === tab.id
-                    ? "border-[#3A4E63] text-[#3A4E63]"
+                className={`pb-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                    ? "border-[#033F99] text-[#033F99]"
                     : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -468,11 +467,10 @@ const PersonDetail = () => {
                 <div>
                   <p className="text-xs text-gray-500">Verification Status</p>
                   <span
-                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                      person.legal_profile.verification_status === "verified"
+                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${person.legal_profile.verification_status === "verified"
                         ? "bg-emerald-100 text-emerald-700"
                         : "bg-amber-100 text-amber-700"
-                    }`}
+                      }`}
                   >
                     {person.legal_profile.verification_status}
                   </span>
@@ -494,7 +492,7 @@ const PersonDetail = () => {
                 Role Assignments
               </h3>
               {person.status === "active" && (
-                <button className="text-sm text-[#3A4E63] hover:underline">
+                <button className="text-sm text-[#033F99] hover:underline">
                   + Assign Role
                 </button>
               )}
@@ -518,11 +516,10 @@ const PersonDetail = () => {
                       </div>
                     </div>
                     <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        ra.status === "active"
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${ra.status === "active"
                           ? "bg-emerald-100 text-emerald-700"
                           : "bg-gray-100 text-gray-700"
-                      }`}
+                        }`}
                     >
                       {ra.status}
                     </span>

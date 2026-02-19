@@ -695,7 +695,7 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
     >
       {/* LEFT NAVIGATION */}
       <aside
-        className="fixed top-0 left-0 h-screen flex flex-col z-50 transition-all duration-300 ease-out bg-gradient-to-b from-[#3A4E63] to-[#022B6B]"
+        className="fixed top-0 left-0 h-screen flex flex-col z-50 transition-all duration-300 ease-out bg-gradient-to-b from-[#033F99] to-[#022B6B]"
         style={{
           width: primaryNavWidth,
           boxShadow: "2px 0 20px rgba(3, 63, 153, 0.3)",
@@ -738,13 +738,11 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
               setSolutionsExpanded(false);
               navigate("/workspace");
             }}
-            className={`w-full flex items-center gap-3 rounded-xl font-semibold text-sm transition-all duration-200 ${
-              leftNavCollapsed ? "justify-center p-3" : "px-4 py-3"
-            } ${
-              activeLeftNav === "workspace"
-                ? "bg-white text-[#3A4E63] shadow-lg"
+            className={`w-full flex items-center gap-3 rounded-xl font-semibold text-sm transition-all duration-200 ${leftNavCollapsed ? "justify-center p-3" : "px-4 py-3"
+              } ${activeLeftNav === "workspace"
+                ? "bg-white text-[#033F99] shadow-lg"
                 : "text-white/80 hover:text-white hover:bg-white/10"
-            }`}
+              }`}
           >
             <MessageSquare className="h-5 w-5 flex-shrink-0" strokeWidth={2} />
             {!leftNavCollapsed && <span>Workspace</span>}
@@ -759,13 +757,11 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                   setSelectedSolution("commerce");
                 }
               }}
-              className={`w-full flex items-center gap-3 rounded-xl font-semibold text-sm transition-all duration-200 ${
-                leftNavCollapsed ? "justify-center p-3" : "px-4 py-3"
-              } ${
-                activeLeftNav === "solutions"
-                  ? "bg-white text-[#3A4E63] shadow-lg"
+              className={`w-full flex items-center gap-3 rounded-xl font-semibold text-sm transition-all duration-200 ${leftNavCollapsed ? "justify-center p-3" : "px-4 py-3"
+                } ${activeLeftNav === "solutions"
+                  ? "bg-white text-[#033F99] shadow-lg"
                   : "text-white/80 hover:text-white hover:bg-white/10"
-              }`}
+                }`}
             >
               <LayoutGrid className="h-5 w-5 flex-shrink-0" strokeWidth={2} />
               {!leftNavCollapsed && (
@@ -788,11 +784,10 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                     <button
                       key={solution.id}
                       onClick={() => handleSolutionSelect(solution.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
-                        isSelected
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${isSelected
                           ? "bg-white/20 text-white font-semibold"
                           : "text-white/70 hover:text-white hover:bg-white/10"
-                      }`}
+                        }`}
                     >
                       <div
                         className={`w-7 h-7 rounded-lg flex items-center justify-center ${isSelected ? "bg-white/30" : "bg-white/10"}`}
@@ -818,13 +813,11 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
               setSolutionsExpanded(false);
               navigate("/intelligence");
             }}
-            className={`w-full flex items-center gap-3 rounded-xl font-semibold text-sm transition-all duration-200 ${
-              leftNavCollapsed ? "justify-center p-3" : "px-4 py-3"
-            } ${
-              activeLeftNav === "intelligence"
-                ? "bg-white text-[#3A4E63] shadow-lg"
+            className={`w-full flex items-center gap-3 rounded-xl font-semibold text-sm transition-all duration-200 ${leftNavCollapsed ? "justify-center p-3" : "px-4 py-3"
+              } ${activeLeftNav === "intelligence"
+                ? "bg-white text-[#033F99] shadow-lg"
                 : "text-white/80 hover:text-white hover:bg-white/10"
-            }`}
+              }`}
           >
             <Brain className="h-5 w-5 flex-shrink-0" strokeWidth={2} />
             {!leftNavCollapsed && <span>Intelligence</span>}
@@ -860,7 +853,7 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
               onMouseEnter={() => setProfileDropdownOpen(true)}
               className={`w-full flex items-center gap-3 rounded-xl hover:bg-white/10 transition-all ${leftNavCollapsed ? "justify-center p-2" : "px-3 py-2"}`}
             >
-              <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center text-[#3A4E63] font-bold text-sm flex-shrink-0">
+              <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center text-[#033F99] font-bold text-sm flex-shrink-0">
                 {user?.full_name?.charAt(0) || "U"}
               </div>
               {!leftNavCollapsed && (
@@ -912,7 +905,7 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
       >
         {/* TOP NAVIGATION */}
         <header
-          className="h-16 bg-gradient-to-r from-[#3A4E63] via-[#0449B8] to-[#3A4E63] flex items-center px-6 justify-between sticky top-0 z-30"
+          className="h-16 bg-gradient-to-r from-[#033F99] via-[#0449B8] to-[#033F99] flex items-center px-6 justify-between sticky top-0 z-30"
           style={{ boxShadow: "0 4px 20px rgba(3, 63, 153, 0.3)" }}
         >
           <div className="flex items-center gap-3">
@@ -927,11 +920,10 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                     <Link
                       key={module.id}
                       to={module.path}
-                      className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${
-                        isModuleActive
-                          ? "bg-white text-[#3A4E63] shadow-lg"
+                      className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${isModuleActive
+                          ? "bg-white text-[#033F99] shadow-lg"
                           : "text-white/70 hover:text-white hover:bg-white/10"
-                      }`}
+                        }`}
                     >
                       <ModuleIcon className="h-4 w-4" strokeWidth={2} />
                       <span>{module.name}</span>
@@ -976,11 +968,10 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                         onClick={() =>
                           setExpandedModule(isExpanded ? null : module.id)
                         }
-                        className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${
-                          isModuleActive
-                            ? "bg-white text-[#3A4E63] shadow-lg"
+                        className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${isModuleActive
+                            ? "bg-white text-[#033F99] shadow-lg"
                             : "text-white/70 hover:text-white hover:bg-white/10"
-                        }`}
+                          }`}
                       >
                         <ModuleIcon className="h-4 w-4" strokeWidth={2} />
                         <span>{module.name}</span>
@@ -1005,11 +996,10 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                                 key={sub.path}
                                 to={sub.path}
                                 onClick={() => setExpandedModule(null)}
-                                className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${
-                                  isSubActive
-                                    ? "bg-[#3A4E63] text-white font-semibold"
+                                className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${isSubActive
+                                    ? "bg-[#033F99] text-white font-semibold"
                                     : "text-gray-700 hover:bg-gray-50"
-                                }`}
+                                  }`}
                               >
                                 <SubIcon
                                   className={`h-4 w-4 ${isSubActive ? "text-white" : "text-gray-500"}`}
@@ -1039,11 +1029,10 @@ const WorkspaceLayout = ({ setIsAuthenticated }) => {
                     <Link
                       key={module.id}
                       to={module.path}
-                      className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${
-                        isModuleActive
-                          ? "bg-white text-[#3A4E63] shadow-lg"
+                      className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${isModuleActive
+                          ? "bg-white text-[#033F99] shadow-lg"
                           : "text-white/70 hover:text-white hover:bg-white/10"
-                      }`}
+                        }`}
                     >
                       <ModuleIcon className="h-4 w-4" strokeWidth={2} />
                       <span>{module.name}</span>

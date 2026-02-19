@@ -112,7 +112,7 @@ const ProcureRequestsList = () => {
         </div>
         <button
           onClick={() => navigate("/commerce/procure-workflow/requests/create")}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e] transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e] transition-colors"
         >
           <Plus className="h-5 w-5" />
           New Request
@@ -181,13 +181,13 @@ const ProcureRequestsList = () => {
               placeholder="Search requests..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"
+            className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"
           >
             <option value="">All Status</option>
             <option value="draft">Draft</option>
@@ -252,7 +252,7 @@ const ProcureRequestsList = () => {
                     )
                   }
                 >
-                  <td className="px-6 py-4 text-sm font-medium text-[#3A4E63]">
+                  <td className="px-6 py-4 text-sm font-medium text-[#033F99]">
                     {req.request_id}
                   </td>
                   <td className="px-6 py-4">

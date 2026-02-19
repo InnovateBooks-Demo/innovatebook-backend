@@ -34,7 +34,7 @@ export const SecurityBadges = ({
               key={`badge-${badge.title}-${index}`}
               className="flex items-center gap-2 text-slate-600"
             >
-              <Icon className="h-5 w-5 text-[#3A4E63]" />
+              <Icon className="h-5 w-5 text-[#033F99]" />
               <span className="font-medium">{badge.title}</span>
             </div>
           );
@@ -66,8 +66,8 @@ export const SecurityBadges = ({
                 key={`badge-${badge.title}-${index}`}
                 className="text-center"
               >
-                <div className="w-14 h-14 mx-auto rounded-xl bg-[#3A4E63]/20 flex items-center justify-center mb-4">
-                  <Icon className="h-7 w-7 text-[#3A4E63]" />
+                <div className="w-14 h-14 mx-auto rounded-xl bg-[#033F99]/20 flex items-center justify-center mb-4">
+                  <Icon className="h-7 w-7 text-[#033F99]" />
                 </div>
                 <p className="font-semibold text-white mb-1">{badge.title}</p>
                 <p className="text-sm text-slate-400">{badge.description}</p>
@@ -88,10 +88,10 @@ export const SecurityBadges = ({
           return (
             <div
               key={`badge-${badge.title}-${index}`}
-              className="bg-white p-6 rounded-2xl border border-slate-100 hover:border-[#3A4E63]/30 hover:shadow-lg transition-all duration-300 text-center group"
+              className="bg-white p-6 rounded-2xl border border-slate-100 hover:border-[#033F99]/30 hover:shadow-lg transition-all duration-300 text-center group"
             >
-              <div className="w-14 h-14 mx-auto rounded-xl bg-[#3A4E63]/10 group-hover:bg-[#3A4E63]/20 flex items-center justify-center mb-4 transition-all duration-300">
-                <Icon className="h-7 w-7 text-[#3A4E63]" />
+              <div className="w-14 h-14 mx-auto rounded-xl bg-[#033F99]/10 group-hover:bg-[#033F99]/20 flex items-center justify-center mb-4 transition-all duration-300">
+                <Icon className="h-7 w-7 text-[#033F99]" />
               </div>
               <p className="font-bold text-slate-900 mb-1">{badge.title}</p>
               <p className="text-sm text-slate-500">{badge.description}</p>

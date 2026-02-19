@@ -42,7 +42,7 @@ const SuperAdminLogin = () => {
     } catch (err) {
       setError(
         err.response?.data?.detail ||
-          "Login failed. Please check your credentials.",
+        "Login failed. Please check your credentials.",
       );
     } finally {
       setLoading(false);
@@ -55,41 +55,41 @@ const SuperAdminLogin = () => {
         {/* Logo/Header */}
         <div className="text-center mb-8">
           <div className="inline-block relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#3A4E63]/20 to-transparent rounded-3xl blur-xl"></div>
-            <div className="relative p-6 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] rounded-3xl mb-4 shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#033F99]/20 to-transparent rounded-3xl blur-xl"></div>
+            <div className="relative p-6 bg-gradient-to-br from-[#033F99] to-[#0147CC] rounded-3xl mb-4 shadow-2xl">
               <Shield className="w-16 h-16 text-white" />
             </div>
           </div>
           <h1
-            className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent mb-2"
+            className="text-4xl font-bold bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent mb-2"
             style={{ fontFamily: "Poppins" }}
           >
             Super Admin Portal
           </h1>
-          <p className="text-[#3A4E63] font-semibold text-lg">
+          <p className="text-[#033F99] font-semibold text-lg">
             Platform Management Dashboard
           </p>
         </div>
 
         {/* Login Card */}
-        <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border-2 border-[#3A4E63]/30">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3A4E63]/10 to-transparent rounded-full -mr-20 -mt-20"></div>
+        <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border-2 border-[#033F99]/30">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#033F99]/10 to-transparent rounded-full -mr-20 -mt-20"></div>
 
           <form onSubmit={handleLogin} className="relative space-y-6">
             {/* Email */}
             <div>
-              <label className="block text-sm font-bold text-[#3A4E63] mb-2 uppercase tracking-wider">
+              <label className="block text-sm font-bold text-[#033F99] mb-2 uppercase tracking-wider">
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#3A4E63] w-5 h-5" />
+                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#033F99] w-5 h-5" />
                 <input
                   type="email"
                   value={credentials.email}
                   onChange={(e) =>
                     setCredentials({ ...credentials, email: e.target.value })
                   }
-                  className="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent transition-all"
+                  className="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent transition-all"
                   placeholder="admin@innovatebooks.in"
                   required
                 />
@@ -98,18 +98,18 @@ const SuperAdminLogin = () => {
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-bold text-[#3A4E63] mb-2 uppercase tracking-wider">
+              <label className="block text-sm font-bold text-[#033F99] mb-2 uppercase tracking-wider">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#3A4E63] w-5 h-5" />
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#033F99] w-5 h-5" />
                 <input
                   type="password"
                   value={credentials.password}
                   onChange={(e) =>
                     setCredentials({ ...credentials, password: e.target.value })
                   }
-                  className="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent transition-all"
+                  className="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent transition-all"
                   placeholder="••••••••"
                   required
                 />
@@ -128,7 +128,7 @@ const SuperAdminLogin = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-gradient-to-r from-[#3A4E63] to-[#0147CC] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full py-4 bg-gradient-to-r from-[#033F99] to-[#0147CC] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -172,7 +172,7 @@ const SuperAdminLogin = () => {
         <div className="mt-6 text-center">
           <button
             onClick={() => navigate("/")}
-            className="text-[#3A4E63] hover:text-[#0147CC] text-sm font-semibold transition-colors"
+            className="text-[#033F99] hover:text-[#0147CC] text-sm font-semibold transition-colors"
           >
             ← Back to Main Platform
           </button>

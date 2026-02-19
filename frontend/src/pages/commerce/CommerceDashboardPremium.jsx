@@ -59,9 +59,9 @@ const CommerceDashboardPremium = () => {
       value: `₹${(stats?.totalRevenue / 100000).toFixed(1)}M`,
       icon: TrendingUp,
       color: "cyan",
-      gradient: "from-[#3A4E63] to-[#3A4E63]",
-      borderColor: "border-[#3A4E63]",
-      bgGradient: "from-[#3A4E63]/10",
+      gradient: "from-[#033F99] to-[#033F99]",
+      borderColor: "border-[#033F99]",
+      bgGradient: "from-[#033F99]/10",
     },
     {
       title: "Active Leads",
@@ -70,7 +70,7 @@ const CommerceDashboardPremium = () => {
       color: "blue",
       gradient: "from-[#0147CC] to-blue-700",
       borderColor: "border-blue-200",
-      bgGradient: "from-[#3A4E63]/10",
+      bgGradient: "from-[#033F99]/10",
     },
     {
       title: "Outstanding Invoices",
@@ -97,14 +97,14 @@ const CommerceDashboardPremium = () => {
       title: "Create Lead",
       description: "Click to create",
       icon: UserPlus,
-      color: "from-[#3A4E63] to-[#3A4E63]",
+      color: "from-[#033F99] to-[#033F99]",
       path: "/commerce/lead/create",
     },
     {
       title: "New Invoice",
       description: "Click to create",
       icon: FileCheck,
-      color: "from-[#3A4E63] to-[#0147CC]",
+      color: "from-[#033F99] to-[#0147CC]",
       path: "/commerce/bill/create",
     },
     {
@@ -153,8 +153,8 @@ const CommerceDashboardPremium = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#3A4E63] border-r-transparent"></div>
-          <p className="mt-4 text-[#3A4E63] font-semibold text-lg">
+          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#033F99] border-r-transparent"></div>
+          <p className="mt-4 text-[#033F99] font-semibold text-lg">
             Loading dashboard...
           </p>
         </div>
@@ -169,21 +169,21 @@ const CommerceDashboardPremium = () => {
         <div className="flex items-center justify-between mb-2">
           <div>
             <h1
-              className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+              className="text-4xl font-bold bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
               style={{ fontFamily: "Poppins" }}
             >
               Commerce Dashboard
             </h1>
-            <p className="text-[#3A4E63] mt-2 font-medium text-lg">
+            <p className="text-[#033F99] mt-2 font-medium text-lg">
               Monitor and manage your business operations
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#3A4E63] text-[#3A4E63] font-semibold rounded-xl hover:bg-[#C4D9F4] hover:border-[#3A4E63] transition-all duration-200">
+            <button className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#033F99] text-[#033F99] font-semibold rounded-xl hover:bg-[#C4D9F4] hover:border-[#033F99] transition-all duration-200">
               <Calendar className="h-5 w-5" />
               <span>This Month</span>
             </button>
-            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold rounded-xl shadow-xl transition-all duration-200">
+            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold rounded-xl shadow-xl transition-all duration-200">
               <BarChart3 className="h-5 w-5" />
               <span>View Reports</span>
             </button>
@@ -228,7 +228,7 @@ const CommerceDashboardPremium = () => {
       {/* Quick Actions */}
       <div className="mb-8">
         <h2
-          className="text-2xl font-bold text-[#3A4E63] mb-6"
+          className="text-2xl font-bold text-[#033F99] mb-6"
           style={{ fontFamily: "Poppins" }}
         >
           Quick Actions
@@ -238,7 +238,7 @@ const CommerceDashboardPremium = () => {
             const Icon = action.icon;
             return (
               <Link key={idx} to={action.path}>
-                <div className="group relative overflow-hidden bg-white/80 backdrop-blur-xl rounded-2xl p-6 border-2 border-slate-200 hover:border-[#3A4E63] shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
+                <div className="group relative overflow-hidden bg-white/80 backdrop-blur-xl rounded-2xl p-6 border-2 border-slate-200 hover:border-[#033F99] shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
                   <div className="flex items-center gap-4">
                     <div
                       className={`p-4 bg-gradient-to-br ${action.color} rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300`}
@@ -253,7 +253,7 @@ const CommerceDashboardPremium = () => {
                         {action.description}
                       </p>
                     </div>
-                    <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-[#3A4E63] group-hover:translate-x-1 transition-all duration-200" />
+                    <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-[#033F99] group-hover:translate-x-1 transition-all duration-200" />
                   </div>
                 </div>
               </Link>
@@ -265,16 +265,16 @@ const CommerceDashboardPremium = () => {
       {/* Module Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Revenue Cycle */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl shadow-lg">
+            <div className="p-3 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl shadow-lg">
               <TrendingUp className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-[#3A4E63]">
+              <h3 className="text-xl font-bold text-[#033F99]">
                 Revenue Cycle
               </h3>
-              <p className="text-sm text-[#3A4E63] font-medium">
+              <p className="text-sm text-[#033F99] font-medium">
                 Customer lifecycle management
               </p>
             </div>
@@ -284,18 +284,18 @@ const CommerceDashboardPremium = () => {
               const Icon = module.icon;
               return (
                 <Link key={idx} to={module.path}>
-                  <div className="group flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-white hover:from-[#C4D9F4] hover:to-[#3A4E63] rounded-xl border border-slate-200 hover:border-[#3A4E63] transition-all duration-200 cursor-pointer">
+                  <div className="group flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-white hover:from-[#C4D9F4] hover:to-[#033F99] rounded-xl border border-slate-200 hover:border-[#033F99] transition-all duration-200 cursor-pointer">
                     <div className="flex items-center gap-3">
-                      <Icon className="h-5 w-5 text-[#3A4E63]" />
+                      <Icon className="h-5 w-5 text-[#033F99]" />
                       <span className="font-semibold text-slate-900">
                         {module.name}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="px-3 py-1 bg-[#3A4E63] text-white rounded-full text-sm font-bold">
+                      <span className="px-3 py-1 bg-[#033F99] text-white rounded-full text-sm font-bold">
                         {module.count}
                       </span>
-                      <ChevronRight className="h-5 w-5 text-slate-400 group-hover:text-[#3A4E63] group-hover:translate-x-1 transition-all duration-200" />
+                      <ChevronRight className="h-5 w-5 text-slate-400 group-hover:text-[#033F99] group-hover:translate-x-1 transition-all duration-200" />
                     </div>
                   </div>
                 </Link>

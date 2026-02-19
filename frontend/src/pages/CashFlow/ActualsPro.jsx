@@ -188,7 +188,7 @@ const CashFlowActualsPro = () => {
                 onClick={() => setViewMode("transactions")}
                 style={{
                   backgroundColor:
-                    viewMode === "transactions" ? "#3A4E63" : "transparent",
+                    viewMode === "transactions" ? "#033F99" : "transparent",
                   fontFamily: "Inter, sans-serif",
                 }}
               >
@@ -200,7 +200,7 @@ const CashFlowActualsPro = () => {
                 onClick={() => setViewMode("statement")}
                 style={{
                   backgroundColor:
-                    viewMode === "statement" ? "#3A4E63" : "transparent",
+                    viewMode === "statement" ? "#033F99" : "transparent",
                   fontFamily: "Inter, sans-serif",
                 }}
               >
@@ -702,7 +702,7 @@ const CashFlowActualsPro = () => {
                 {/* Financing Activities */}
                 <div>
                   <h3
-                    className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-[#3A4E63]"
+                    className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-[#033F99]"
                     style={{
                       fontFamily: "Poppins, sans-serif",
                       fontWeight: 600,

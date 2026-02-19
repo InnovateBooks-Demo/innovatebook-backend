@@ -193,7 +193,7 @@ const RevenueEvaluationWorkspace = () => {
   if (loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   if (!evaluation)
@@ -447,7 +447,7 @@ const RevenueEvaluationWorkspace = () => {
                   </div>
                   <button
                     onClick={addItem}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#3A4E63] bg-blue-50 rounded-lg hover:bg-blue-100"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#033F99] bg-blue-50 rounded-lg hover:bg-blue-100"
                   >
                     <Plus className="h-4 w-4" />
                     Add Item

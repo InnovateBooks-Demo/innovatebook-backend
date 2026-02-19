@@ -59,7 +59,7 @@ const BillDetail = () => {
           <div>
             <h1
               className="text-3xl font-semibold"
-              style={{ fontFamily: "Inter", color: "#3A4E63" }}
+              style={{ fontFamily: "Inter", color: "#033F99" }}
             >
               Bill {bill?.bill_number}
             </h1>
@@ -71,7 +71,7 @@ const BillDetail = () => {
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="chart-container">
           <CardHeader>
-            <CardTitle style={{ color: "#3A4E63" }}>Bill Details</CardTitle>
+            <CardTitle style={{ color: "#033F99" }}>Bill Details</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -103,7 +103,7 @@ const BillDetail = () => {
                 <span className="text-gray-600">Total Amount</span>
                 <span
                   className="font-semibold text-lg"
-                  style={{ color: "#3A4E63" }}
+                  style={{ color: "#033F99" }}
                 >
                   {formatCurrency(bill?.total_amount)}
                 </span>
@@ -120,7 +120,7 @@ const BillDetail = () => {
 
         <Card className="chart-container">
           <CardHeader>
-            <CardTitle style={{ color: "#3A4E63" }}>
+            <CardTitle style={{ color: "#033F99" }}>
               Payment Information
             </CardTitle>
           </CardHeader>
@@ -147,13 +147,12 @@ const BillDetail = () => {
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-600">Status</span>
                 <span
-                  className={`badge ${
-                    bill?.status === "Paid"
+                  className={`badge ${bill?.status === "Paid"
                       ? "badge-success"
                       : bill?.status === "Partially Paid"
                         ? "badge-warning"
                         : "badge-danger"
-                  }`}
+                    }`}
                 >
                   {bill?.status}
                 </span>

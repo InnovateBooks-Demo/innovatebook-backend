@@ -250,7 +250,7 @@ const BankingMatching = () => {
           <div>
             <h1
               className="text-3xl font-semibold"
-              style={{ fontFamily: "Inter", color: "#3A4E63" }}
+              style={{ fontFamily: "Inter", color: "#033F99" }}
             >
               {isFullyMatched ? "Matched Transaction" : "Match Transaction"}
             </h1>
@@ -266,7 +266,7 @@ const BankingMatching = () => {
       {/* Transaction Details */}
       <Card className="chart-container mb-8">
         <CardHeader>
-          <CardTitle style={{ color: "#3A4E63" }}>
+          <CardTitle style={{ color: "#033F99" }}>
             Transaction Details
           </CardTitle>
         </CardHeader>
@@ -287,11 +287,10 @@ const BankingMatching = () => {
             <div>
               <p className="text-sm text-gray-600 mb-1">Type</p>
               <span
-                className={`badge ${
-                  transaction?.transaction_type === "Credit"
+                className={`badge ${transaction?.transaction_type === "Credit"
                     ? "badge-success"
                     : "badge-warning"
-                }`}
+                  }`}
               >
                 {transaction?.transaction_type}
               </span>
@@ -299,11 +298,10 @@ const BankingMatching = () => {
             <div>
               <p className="text-sm text-gray-600 mb-1">Amount</p>
               <p
-                className={`font-semibold text-2xl ${
-                  transaction?.transaction_type === "Credit"
+                className={`font-semibold text-2xl ${transaction?.transaction_type === "Credit"
                     ? "text-green-600"
                     : "text-red-600"
-                }`}
+                  }`}
               >
                 {formatCurrency(transaction?.amount)}
               </p>
@@ -315,13 +313,12 @@ const BankingMatching = () => {
             <div>
               <p className="text-sm text-gray-600 mb-1">Status</p>
               <span
-                className={`badge ${
-                  transaction?.status === "Matched"
+                className={`badge ${transaction?.status === "Matched"
                     ? "badge-success"
                     : transaction?.status === "Partially Matched"
                       ? "badge-warning"
                       : "badge-secondary"
-                }`}
+                  }`}
               >
                 {transaction?.status || "Uncategorized"}
               </span>
@@ -341,7 +338,7 @@ const BankingMatching = () => {
           <CardHeader>
             <CardTitle
               className="flex items-center gap-2"
-              style={{ color: "#3A4E63" }}
+              style={{ color: "#033F99" }}
             >
               <CheckCircle2 className="h-6 w-6 text-green-600" />
               Matched Invoice/Bill Details
@@ -401,7 +398,7 @@ const BankingMatching = () => {
                     </p>
                     <p
                       className="text-2xl font-bold"
-                      style={{ color: "#3A4E63" }}
+                      style={{ color: "#033F99" }}
                     >
                       {formatCurrency(transaction?.amount)}
                     </p>
@@ -440,7 +437,7 @@ const BankingMatching = () => {
             <CardHeader>
               <CardTitle
                 className="flex items-center gap-2"
-                style={{ color: "#3A4E63" }}
+                style={{ color: "#033F99" }}
               >
                 <Sparkles className="h-5 w-5" />
                 AI-Powered Matching Suggestions
@@ -470,11 +467,10 @@ const BankingMatching = () => {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <span
-                              className={`badge ${
-                                suggestion.type === "invoice"
+                              className={`badge ${suggestion.type === "invoice"
                                   ? "badge-success"
                                   : "badge-warning"
-                              }`}
+                                }`}
                             >
                               {suggestion.type === "invoice"
                                 ? "Invoice"
@@ -513,55 +509,53 @@ const BankingMatching = () => {
                                 title={`Overall ${Math.round(suggestion.match_score)}% match`}
                               >
                                 <div
-                                  className={`h-full ${
-                                    suggestion.match_score >= 90
+                                  className={`h-full ${suggestion.match_score >= 90
                                       ? "bg-green-500"
                                       : suggestion.match_score >= 70
                                         ? "bg-blue-500"
                                         : suggestion.match_score >= 50
                                           ? "bg-yellow-500"
                                           : "bg-orange-500"
-                                  }`}
+                                    }`}
                                   style={{
                                     width: `${suggestion.match_score}%`,
                                   }}
                                 ></div>
                               </div>
                               <span
-                                className={`text-sm font-bold ${
-                                  suggestion.match_score >= 90
+                                className={`text-sm font-bold ${suggestion.match_score >= 90
                                     ? "text-green-600"
                                     : suggestion.match_score >= 70
                                       ? "text-blue-600"
                                       : suggestion.match_score >= 50
                                         ? "text-yellow-600"
                                         : "text-orange-600"
-                                }`}
+                                  }`}
                               >
                                 {Math.round(suggestion.match_score)}%
                               </span>
                             </div>
                             {(suggestion.name_match !== undefined ||
                               suggestion.amount_match !== undefined) && (
-                              <div className="text-xs text-gray-600 space-y-0.5">
-                                {suggestion.name_match !== undefined && (
-                                  <div className="flex justify-between gap-2">
-                                    <span>Name:</span>
-                                    <span className="font-semibold">
-                                      {Math.round(suggestion.name_match)}%
-                                    </span>
-                                  </div>
-                                )}
-                                {suggestion.amount_match !== undefined && (
-                                  <div className="flex justify-between gap-2">
-                                    <span>Amount:</span>
-                                    <span className="font-semibold">
-                                      {Math.round(suggestion.amount_match)}%
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                                <div className="text-xs text-gray-600 space-y-0.5">
+                                  {suggestion.name_match !== undefined && (
+                                    <div className="flex justify-between gap-2">
+                                      <span>Name:</span>
+                                      <span className="font-semibold">
+                                        {Math.round(suggestion.name_match)}%
+                                      </span>
+                                    </div>
+                                  )}
+                                  {suggestion.amount_match !== undefined && (
+                                    <div className="flex justify-between gap-2">
+                                      <span>Amount:</span>
+                                      <span className="font-semibold">
+                                        {Math.round(suggestion.amount_match)}%
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                           </div>
                           <Button size="sm" variant="outline">
                             <LinkIcon className="h-3 w-3 mr-1" />
@@ -579,7 +573,7 @@ const BankingMatching = () => {
           {/* Manual Matching */}
           <Card className="chart-container">
             <CardHeader>
-              <CardTitle style={{ color: "#3A4E63" }}>
+              <CardTitle style={{ color: "#033F99" }}>
                 Manual Matching
               </CardTitle>
               <CardDescription>
@@ -614,11 +608,10 @@ const BankingMatching = () => {
                       {filteredEntities.map((entity) => (
                         <div
                           key={entity.id}
-                          className={`p-3 cursor-pointer hover:bg-blue-50 ${
-                            selectedEntity?.id === entity.id
+                          className={`p-3 cursor-pointer hover:bg-blue-50 ${selectedEntity?.id === entity.id
                               ? "bg-blue-100 border-l-4 border-blue-500"
                               : ""
-                          }`}
+                            }`}
                           onClick={() => {
                             handleEntitySelect(
                               entity.id,

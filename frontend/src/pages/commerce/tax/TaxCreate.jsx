@@ -95,7 +95,7 @@ const TaxCreate = () => {
                   name="tax_type"
                   value={formData.tax_type}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
                   required
                 >
                   <option value="GST">GST</option>
@@ -140,7 +140,7 @@ const TaxCreate = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white"
+                className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white"
               >
                 {loading ? (
                   <span className="flex items-center gap-2">

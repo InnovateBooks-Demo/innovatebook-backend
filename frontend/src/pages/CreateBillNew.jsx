@@ -340,7 +340,7 @@ const CreateBillNew = () => {
       ...base,
       minHeight: "42px",
       borderColor: "#e5e7eb",
-      "&:hover": { borderColor: "#3A4E63" },
+      "&:hover": { borderColor: "#033F99" },
     }),
     menu: (base) => ({ ...base, zIndex: 9999 }),
   };

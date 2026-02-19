@@ -48,7 +48,7 @@ const AgingDPO = () => {
       <div className="mb-8">
         <h1
           className="text-3xl font-semibold mb-2"
-          style={{ fontFamily: "Inter", color: "#3A4E63" }}
+          style={{ fontFamily: "Inter", color: "#033F99" }}
         >
           Aging & DPO
         </h1>
@@ -62,7 +62,7 @@ const AgingDPO = () => {
           <CardHeader>
             <CardTitle
               className="text-xl font-semibold"
-              style={{ color: "#3A4E63" }}
+              style={{ color: "#033F99" }}
             >
               Aging Buckets
             </CardTitle>
@@ -74,7 +74,7 @@ const AgingDPO = () => {
                 <span className="text-gray-600">0-30 Days</span>
                 <span
                   className="text-lg font-semibold"
-                  style={{ color: "#3A4E63" }}
+                  style={{ color: "#033F99" }}
                 >
                   {formatCurrency(aging?.["0-30"])}
                 </span>
@@ -98,12 +98,12 @@ const AgingDPO = () => {
                 </span>
               </div>
               <div className="flex justify-between items-center py-3 bg-blue-50 rounded-lg px-4">
-                <span className="font-semibold" style={{ color: "#3A4E63" }}>
+                <span className="font-semibold" style={{ color: "#033F99" }}>
                   Total Outstanding
                 </span>
                 <span
                   className="text-xl font-semibold"
-                  style={{ color: "#3A4E63" }}
+                  style={{ color: "#033F99" }}
                 >
                   {formatCurrency(total)}
                 </span>
@@ -116,7 +116,7 @@ const AgingDPO = () => {
           <CardHeader>
             <CardTitle
               className="text-xl font-semibold"
-              style={{ color: "#3A4E63" }}
+              style={{ color: "#033F99" }}
             >
               DPO Metrics
             </CardTitle>
@@ -128,7 +128,7 @@ const AgingDPO = () => {
                 <p className="text-sm text-gray-600 mb-2">Overall DPO</p>
                 <p
                   className="text-5xl font-semibold"
-                  style={{ color: "#3A4E63" }}
+                  style={{ color: "#033F99" }}
                 >
                   38.2
                 </p>
@@ -139,7 +139,7 @@ const AgingDPO = () => {
                   <span className="text-gray-600">AP Turnover Ratio</span>
                   <span
                     className="text-lg font-semibold"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     9.5x
                   </span>

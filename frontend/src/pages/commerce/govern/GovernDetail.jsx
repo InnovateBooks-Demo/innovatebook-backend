@@ -62,7 +62,7 @@ const GovernDetail = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="w-16 h-16 border-4 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-16 h-16 border-4 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -146,7 +146,7 @@ const GovernDetail = () => {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-slate-600">Type:</span>
-              <span className="text-sm font-medium text-[#3A4E63]">
+              <span className="text-sm font-medium text-[#033F99]">
                 {govern.sop_type}
               </span>
             </div>
@@ -223,12 +223,12 @@ const GovernDetail = () => {
         <Card className="p-4 bg-gradient-to-br from-[#EBF3FC] to-[#C4D9F4] border-[#6B9FE6]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[#3A4E63]">Breach Count</p>
+              <p className="text-sm font-medium text-[#033F99]">Breach Count</p>
               <p className="text-2xl font-bold text-white">
                 {govern.breach_count}
               </p>
             </div>
-            <AlertCircle className="h-8 w-8 text-[#3A4E63]" />
+            <AlertCircle className="h-8 w-8 text-[#033F99]" />
           </div>
         </Card>
       </div>
@@ -238,7 +238,7 @@ const GovernDetail = () => {
         {/* Basic Information */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Shield className="h-5 w-5 text-[#3A4E63]" />
+            <Shield className="h-5 w-5 text-[#033F99]" />
             SOP Information
           </h3>
           <div className="space-y-3">
@@ -357,55 +357,55 @@ const GovernDetail = () => {
       {/* Control Objectives & Risks */}
       {(govern.control_objectives.length > 0 ||
         govern.risk_addressed.length > 0) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {govern.control_objectives.length > 0 && (
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-emerald-600" />
-                Control Objectives
-              </h3>
-              <ul className="space-y-2">
-                {govern.control_objectives.map((obj, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-emerald-600 mt-1">•</span>
-                    <span className="text-sm text-slate-700">{obj}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {govern.control_objectives.length > 0 && (
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-emerald-600" />
+                  Control Objectives
+                </h3>
+                <ul className="space-y-2">
+                  {govern.control_objectives.map((obj, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-emerald-600 mt-1">•</span>
+                      <span className="text-sm text-slate-700">{obj}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            )}
 
-          {govern.risk_addressed.length > 0 && (
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-amber-600" />
-                Risks Addressed
-              </h3>
-              <ul className="space-y-2">
-                {govern.risk_addressed.map((risk, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-amber-600 mt-1">•</span>
-                    <span className="text-sm text-slate-700">{risk}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          )}
-        </div>
-      )}
+            {govern.risk_addressed.length > 0 && (
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5 text-amber-600" />
+                  Risks Addressed
+                </h3>
+                <ul className="space-y-2">
+                  {govern.risk_addressed.map((risk, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-amber-600 mt-1">•</span>
+                      <span className="text-sm text-slate-700">{risk}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            )}
+          </div>
+        )}
 
       {/* Compliance Framework */}
       {govern.compliance_framework.length > 0 && (
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Award className="h-5 w-5 text-[#3A4E63]" />
+            <Award className="h-5 w-5 text-[#033F99]" />
             Compliance Framework
           </h3>
           <div className="flex flex-wrap gap-2">
             {govern.compliance_framework.map((framework, idx) => (
               <span
                 key={idx}
-                className="px-3 py-1 bg-[#C4D9F4] text-[#3A4E63] rounded-full text-sm font-medium"
+                className="px-3 py-1 bg-[#C4D9F4] text-[#033F99] rounded-full text-sm font-medium"
               >
                 {framework}
               </span>

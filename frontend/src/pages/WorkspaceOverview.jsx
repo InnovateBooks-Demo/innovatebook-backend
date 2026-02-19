@@ -146,7 +146,7 @@ const WorkspaceOverview = () => {
       <SharedNavigation />
 
       {/* Hero Section - Full Color */}
-      <section className="pt-24 pb-20 px-4 relative overflow-hidden bg-[#3A4E63]">
+      <section className="pt-24 pb-20 px-4 relative overflow-hidden bg-[#033F99]">
         <div className="absolute inset-0 overflow-hidden opacity-10">
           <div className="absolute top-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 left-20 w-80 h-80 bg-white rounded-full blur-3xl"></div>
@@ -173,7 +173,7 @@ const WorkspaceOverview = () => {
 
             <div className="flex justify-center items-center gap-6 mb-12 flex-wrap">
               <Link to="/auth/signup">
-                <button className="bg-white text-[#3A4E63] font-bold px-10 py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-lg flex items-center gap-2">
+                <button className="bg-white text-[#033F99] font-bold px-10 py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-lg flex items-center gap-2">
                   <Sparkles className="h-5 w-5" />
                   Start Free Trial
                 </button>
@@ -226,14 +226,14 @@ const WorkspaceOverview = () => {
                   className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-3xl border-2 border-slate-200 hover:border-[#0558CC] hover:shadow-xl transition-all"
                 >
                   <div className="flex items-start gap-4 mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <div className="w-16 h-16 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center flex-shrink-0">
                       <Icon className="h-8 w-8 text-white" />
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold text-slate-900 mb-1">
                         {module.name}
                       </h3>
-                      <p className="text-[#3A4E63] font-semibold">
+                      <p className="text-[#033F99] font-semibold">
                         {module.tagline}
                       </p>
                     </div>
@@ -251,7 +251,7 @@ const WorkspaceOverview = () => {
                           key={i}
                           className="flex items-start gap-2 text-sm text-slate-700"
                         >
-                          <CheckCircle className="h-4 w-4 text-[#3A4E63] flex-shrink-0 mt-0.5" />
+                          <CheckCircle className="h-4 w-4 text-[#033F99] flex-shrink-0 mt-0.5" />
                           {feature}
                         </li>
                       ))}
@@ -262,7 +262,7 @@ const WorkspaceOverview = () => {
                     {module.benefits.map((benefit, i) => (
                       <span
                         key={i}
-                        className="px-3 py-1 bg-[#EBF3FC] text-[#3A4E63] text-sm font-medium rounded-full"
+                        className="px-3 py-1 bg-[#EBF3FC] text-[#033F99] text-sm font-medium rounded-full"
                       >
                         {benefit}
                       </span>
@@ -296,7 +296,7 @@ const WorkspaceOverview = () => {
                   className="bg-white p-6 rounded-2xl border border-slate-200 hover:border-[#0558CC] hover:shadow-lg transition-all text-center"
                 >
                   <div className="w-14 h-14 bg-[#EBF3FC] rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <Icon className="h-7 w-7 text-[#3A4E63]" />
+                    <Icon className="h-7 w-7 text-[#033F99]" />
                   </div>
                   <h3 className="font-bold text-lg text-slate-900 mb-2">
                     {feature.title}
@@ -351,17 +351,17 @@ const WorkspaceOverview = () => {
               return (
                 <div key={index} className="relative">
                   <div className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-3xl border-2 border-slate-200 text-center">
-                    <div className="w-16 h-16 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold">
+                    <div className="w-16 h-16 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold">
                       {item.step}
                     </div>
-                    <Icon className="h-10 w-10 text-[#3A4E63] mx-auto mb-4" />
+                    <Icon className="h-10 w-10 text-[#033F99] mx-auto mb-4" />
                     <h3 className="text-xl font-bold text-slate-900 mb-3">
                       {item.title}
                     </h3>
                     <p className="text-slate-600">{item.description}</p>
                   </div>
                   {index < 2 && (
-                    <ArrowRight className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 h-8 w-8 text-[#3A4E63]" />
+                    <ArrowRight className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 h-8 w-8 text-[#033F99]" />
                   )}
                 </div>
               );
@@ -371,7 +371,7 @@ const WorkspaceOverview = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-[#3A4E63] via-[#3A4E63] to-[#3A4E63]">
+      <section className="py-20 px-4 bg-gradient-to-br from-[#033F99] via-[#033F99] to-[#033F99]">
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-4xl sm:text-5xl font-bold mb-6">
             Ready to Transform Your Workspace?
@@ -382,7 +382,7 @@ const WorkspaceOverview = () => {
           </p>
           <div className="flex justify-center items-center gap-6 flex-wrap">
             <Link to="/auth/signup">
-              <button className="bg-white text-[#3A4E63] font-bold px-10 py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-2">
+              <button className="bg-white text-[#033F99] font-bold px-10 py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg flex items-center gap-2">
                 <Sparkles className="h-5 w-5" />
                 Start Free Trial
               </button>

@@ -167,7 +167,7 @@ const GovernanceDashboard = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#3A4E63]"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#033F99]"></div>
           <p className="text-sm text-gray-500">Loading dashboard...</p>
         </div>
       </div>
@@ -230,7 +230,7 @@ const GovernanceDashboard = () => {
             <div
               key={idx}
               onClick={() => navigate(module.path)}
-              className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg hover:border-[#3A4E63]/30 transition-all cursor-pointer group"
+              className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg hover:border-[#033F99]/30 transition-all cursor-pointer group"
             >
               <div
                 className={`h-10 w-10 rounded-lg bg-${module.color}-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
@@ -255,7 +255,7 @@ const GovernanceDashboard = () => {
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-gray-100">
-                <span className="text-sm text-[#3A4E63] font-medium group-hover:underline">
+                <span className="text-sm text-[#033F99] font-medium group-hover:underline">
                   View all →
                 </span>
               </div>

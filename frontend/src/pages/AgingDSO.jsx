@@ -56,7 +56,7 @@ const AgingDSO = () => {
       <div className="mb-8">
         <h1
           className="text-3xl font-semibold mb-2"
-          style={{ fontFamily: "Inter", color: "#3A4E63" }}
+          style={{ fontFamily: "Inter", color: "#033F99" }}
         >
           Aging & DSO
         </h1>
@@ -69,7 +69,7 @@ const AgingDSO = () => {
         <CardHeader>
           <CardTitle
             className="text-xl font-semibold"
-            style={{ color: "#3A4E63" }}
+            style={{ color: "#033F99" }}
           >
             Aging Analysis
           </CardTitle>
@@ -106,7 +106,7 @@ const AgingDSO = () => {
                   </div>
                   <span
                     className="text-lg font-semibold"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     {formatCurrency(aging?.["0-30"]?.amount)}
                   </span>
@@ -145,12 +145,12 @@ const AgingDSO = () => {
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-3 bg-blue-50 rounded-lg px-4">
-                  <span className="font-semibold" style={{ color: "#3A4E63" }}>
+                  <span className="font-semibold" style={{ color: "#033F99" }}>
                     Total Outstanding
                   </span>
                   <span
                     className="text-xl font-semibold"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     {formatCurrency(total)}
                   </span>
@@ -205,7 +205,7 @@ const AgingDSO = () => {
           <CardHeader>
             <CardTitle
               className="text-xl font-semibold"
-              style={{ color: "#3A4E63" }}
+              style={{ color: "#033F99" }}
             >
               DSO Metrics
             </CardTitle>
@@ -217,7 +217,7 @@ const AgingDSO = () => {
                 <p className="text-sm text-gray-600 mb-2">Overall DSO</p>
                 <p
                   className="text-5xl font-semibold"
-                  style={{ color: "#3A4E63" }}
+                  style={{ color: "#033F99" }}
                 >
                   45.5
                 </p>
@@ -228,7 +228,7 @@ const AgingDSO = () => {
                   <span className="text-gray-600">AR Turnover Ratio</span>
                   <span
                     className="text-lg font-semibold"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     8.0x
                   </span>

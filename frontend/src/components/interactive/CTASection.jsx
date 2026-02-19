@@ -28,7 +28,7 @@ export const CTASection = ({
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               to={primaryLink}
-              className="inline-flex items-center gap-2 bg-[#3A4E63] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#3A4E63] transition-all"
+              className="inline-flex items-center gap-2 bg-[#033F99] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#033F99] transition-all"
             >
               {primaryCTA}
               <ArrowRight className="h-5 w-5" />
@@ -36,7 +36,7 @@ export const CTASection = ({
             {secondaryCTA && (
               <Link
                 to={secondaryLink}
-                className="inline-flex items-center gap-2 border-2 border-slate-300 text-slate-700 px-8 py-4 rounded-xl font-semibold hover:border-[#3A4E63] hover:text-[#3A4E63] transition-all"
+                className="inline-flex items-center gap-2 border-2 border-slate-300 text-slate-700 px-8 py-4 rounded-xl font-semibold hover:border-[#033F99] hover:text-[#033F99] transition-all"
               >
                 {secondaryCTA}
               </Link>
@@ -99,7 +99,7 @@ export const CTASection = ({
   // Default gradient variant
   return (
     <section
-      className={`py-24 px-4 bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] relative overflow-hidden ${className}`}
+      className={`py-24 px-4 bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] relative overflow-hidden ${className}`}
       data-testid="cta-section"
     >
       {/* Background pattern */}
@@ -121,7 +121,7 @@ export const CTASection = ({
         <div className="flex flex-wrap justify-center gap-4">
           <Link
             to={primaryLink}
-            className="inline-flex items-center gap-2 bg-white text-[#3A4E63] px-10 py-5 rounded-xl font-bold hover:bg-slate-100 transition-all transform hover:scale-105 shadow-xl"
+            className="inline-flex items-center gap-2 bg-white text-[#033F99] px-10 py-5 rounded-xl font-bold hover:bg-slate-100 transition-all transform hover:scale-105 shadow-xl"
           >
             <Zap className="h-5 w-5" />
             {primaryCTA}

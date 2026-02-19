@@ -78,7 +78,7 @@ const BillEdit = () => {
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-screen">
-        <div className="flex items-center gap-3 text-[#3A4E63]">
+        <div className="flex items-center gap-3 text-[#033F99]">
           <Loader className="h-6 w-6 animate-spin" />
           <span className="text-lg font-medium">Loading bill details...</span>
         </div>
@@ -110,7 +110,7 @@ const BillEdit = () => {
         <Button
           onClick={handleSubmit}
           disabled={saving}
-          className="gap-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63]"
+          className="gap-2 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99]"
         >
           <Save className="h-4 w-4" />
           {saving ? "Saving..." : "Save Changes"}
@@ -143,7 +143,7 @@ const BillEdit = () => {
                 name="invoice_type"
                 value={formData.invoice_type}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="Milestone">Milestone</option>
                 <option value="Time-based">Time-based</option>
@@ -160,7 +160,7 @@ const BillEdit = () => {
                 name="payment_terms"
                 value={formData.payment_terms}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="Net 15">Net 15</option>
                 <option value="Net 30">Net 30</option>

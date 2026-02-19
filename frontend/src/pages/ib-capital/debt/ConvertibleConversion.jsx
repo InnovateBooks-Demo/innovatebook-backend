@@ -144,7 +144,7 @@ const ConvertibleConversion = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -170,7 +170,7 @@ const ConvertibleConversion = () => {
           </p>
           <Link
             to="/ib-capital/debt"
-            className="text-[#3A4E63] hover:underline"
+            className="text-[#033F99] hover:underline"
           >
             Back to Debt Dashboard
           </Link>
@@ -192,7 +192,7 @@ const ConvertibleConversion = () => {
           </p>
           <Link
             to="/ib-capital/debt"
-            className="text-[#3A4E63] hover:underline"
+            className="text-[#033F99] hover:underline"
           >
             Back to Debt Dashboard
           </Link>
@@ -298,7 +298,7 @@ const ConvertibleConversion = () => {
                     })
                   }
                   placeholder="e.g., 100000000"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Maximum valuation for conversion calculation
@@ -318,7 +318,7 @@ const ConvertibleConversion = () => {
                     })
                   }
                   placeholder="e.g., 20"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Discount on price per share vs current round
@@ -336,7 +336,7 @@ const ConvertibleConversion = () => {
                       instrument_id: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 >
                   <option value="INS001">Common Shares</option>
                   <option value="INS002">Series A Preferred</option>
@@ -462,7 +462,7 @@ const ConvertibleConversion = () => {
               <button
                 onClick={handleConvert}
                 disabled={converting}
-                className="w-full px-4 py-3 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] disabled:opacity-50 flex items-center justify-center gap-2 text-lg font-medium"
+                className="w-full px-4 py-3 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] disabled:opacity-50 flex items-center justify-center gap-2 text-lg font-medium"
               >
                 <DollarSign className="w-5 h-5" />
                 {converting ? "Converting..." : "Execute Conversion"}

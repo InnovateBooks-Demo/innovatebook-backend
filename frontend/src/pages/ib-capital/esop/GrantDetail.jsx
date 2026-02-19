@@ -114,7 +114,7 @@ const GrantDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -237,11 +237,10 @@ const GrantDetail = () => {
             <div className="flex justify-between py-2">
               <span className="text-gray-500">Status</span>
               <span
-                className={`px-2 py-1 text-xs rounded-full ${
-                  grant.status === "active"
+                className={`px-2 py-1 text-xs rounded-full ${grant.status === "active"
                     ? "bg-green-100 text-green-700"
                     : "bg-gray-100 text-gray-700"
-                }`}
+                  }`}
               >
                 {grant.status}
               </span>
@@ -278,7 +277,7 @@ const GrantDetail = () => {
                   value={exerciseAmount}
                   onChange={(e) => setExerciseAmount(e.target.value)}
                   max={exercisable}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                   placeholder={`Max: ${formatNumber(exercisable)}`}
                 />
               </div>
@@ -295,7 +294,7 @@ const GrantDetail = () => {
               <button
                 onClick={handleExercise}
                 disabled={exercising || !exerciseAmount}
-                className="w-full px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <DollarSign className="w-4 h-4" />
                 {exercising ? "Processing..." : "Exercise Options"}
@@ -399,11 +398,10 @@ const GrantDetail = () => {
                     <td className="py-3 px-4 text-gray-900">{vest.date}</td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          vest.type === "cliff"
+                        className={`px-2 py-1 text-xs rounded-full ${vest.type === "cliff"
                             ? "bg-orange-100 text-orange-700"
                             : "bg-blue-100 text-blue-700"
-                        }`}
+                          }`}
                       >
                         {vest.type}
                       </span>

@@ -15,7 +15,7 @@ const TestimonialSection = ({ testimonials }) => {
   return (
     <section className="mb-12">
       <div className="flex items-center gap-3 mb-6">
-        <Quote className="h-6 w-6 text-[#3A4E63]" />
+        <Quote className="h-6 w-6 text-[#033F99]" />
         <h2 className="text-3xl font-bold text-slate-900">
           What Our Customers Say
         </h2>
@@ -42,7 +42,7 @@ const TestimonialSection = ({ testimonials }) => {
 
             {/* Author */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center text-white font-bold text-sm">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center text-white font-bold text-sm">
                 {testimonial.author
                   .split(" ")
                   .map((n) => n[0])

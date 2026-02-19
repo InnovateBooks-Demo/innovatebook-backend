@@ -128,18 +128,18 @@ const CreateInvoiceElite = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1
-              className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#022E75] bg-clip-text text-transparent"
+              className="text-4xl font-bold bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#022E75] bg-clip-text text-transparent"
               style={{ fontFamily: "Poppins" }}
             >
               Create Invoice
             </h1>
-            <p className="text-[#3A4E63] mt-2 font-medium text-lg">
+            <p className="text-[#033F99] mt-2 font-medium text-lg">
               Generate a new customer invoice
             </p>
           </div>
           <button
             onClick={() => navigate("/finance/invoices")}
-            className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#3A4E63] text-[#3A4E63] font-bold rounded-2xl hover:bg-[#C4D9F4] transition-all"
+            className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#033F99] text-[#033F99] font-bold rounded-2xl hover:bg-[#C4D9F4] transition-all"
           >
             <X className="h-5 w-5" />
             Cancel
@@ -148,20 +148,20 @@ const CreateInvoiceElite = () => {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border-2 border-[#3A4E63]/50 shadow-2xl mb-6">
-          <h2 className="text-2xl font-bold text-[#3A4E63] mb-6">
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border-2 border-[#033F99]/50 shadow-2xl mb-6">
+          <h2 className="text-2xl font-bold text-[#033F99] mb-6">
             Invoice Details
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-bold text-[#3A4E63] mb-2">
+              <label className="block text-sm font-bold text-[#033F99] mb-2">
                 Customer *
               </label>
               <select
                 required
                 value={formData.customer_id}
                 onChange={handleCustomerChange}
-                className="w-full px-4 py-3 bg-white border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 text-[#3A4E63] font-medium"
+                className="w-full px-4 py-3 bg-white border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 text-[#033F99] font-medium"
               >
                 <option value="">Select Customer</option>
                 {customers.map((customer) => (
@@ -172,7 +172,7 @@ const CreateInvoiceElite = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-bold text-[#3A4E63] mb-2">
+              <label className="block text-sm font-bold text-[#033F99] mb-2">
                 Invoice Date *
               </label>
               <input
@@ -182,11 +182,11 @@ const CreateInvoiceElite = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, invoice_date: e.target.value })
                 }
-                className="w-full px-4 py-3 bg-white border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 text-[#3A4E63] font-medium"
+                className="w-full px-4 py-3 bg-white border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 text-[#033F99] font-medium"
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-[#3A4E63] mb-2">
+              <label className="block text-sm font-bold text-[#033F99] mb-2">
                 Due Date *
               </label>
               <input
@@ -196,20 +196,20 @@ const CreateInvoiceElite = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, due_date: e.target.value })
                 }
-                className="w-full px-4 py-3 bg-white border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 text-[#3A4E63] font-medium"
+                className="w-full px-4 py-3 bg-white border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 text-[#033F99] font-medium"
               />
             </div>
           </div>
         </div>
 
         {/* Items */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border-2 border-[#3A4E63]/50 shadow-2xl mb-6">
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border-2 border-[#033F99]/50 shadow-2xl mb-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-[#3A4E63]">Line Items</h2>
+            <h2 className="text-2xl font-bold text-[#033F99]">Line Items</h2>
             <button
               type="button"
               onClick={addItem}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#022E75] text-white font-bold rounded-2xl hover:shadow-xl transition-all"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#022E75] text-white font-bold rounded-2xl hover:shadow-xl transition-all"
             >
               <Plus className="h-5 w-5" />
               Add Item
@@ -222,7 +222,7 @@ const CreateInvoiceElite = () => {
                 className="grid grid-cols-12 gap-4 items-end"
               >
                 <div className="col-span-5">
-                  <label className="block text-sm font-bold text-[#3A4E63] mb-2">
+                  <label className="block text-sm font-bold text-[#033F99] mb-2">
                     Description
                   </label>
                   <input
@@ -232,12 +232,12 @@ const CreateInvoiceElite = () => {
                     onChange={(e) =>
                       handleItemChange(index, "description", e.target.value)
                     }
-                    className="w-full px-4 py-3 bg-white border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 text-[#3A4E63] font-medium"
+                    className="w-full px-4 py-3 bg-white border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 text-[#033F99] font-medium"
                     placeholder="Item description"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-bold text-[#3A4E63] mb-2">
+                  <label className="block text-sm font-bold text-[#033F99] mb-2">
                     Quantity
                   </label>
                   <input
@@ -252,11 +252,11 @@ const CreateInvoiceElite = () => {
                         parseFloat(e.target.value),
                       )
                     }
-                    className="w-full px-4 py-3 bg-white border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 text-[#3A4E63] font-medium"
+                    className="w-full px-4 py-3 bg-white border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 text-[#033F99] font-medium"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-bold text-[#3A4E63] mb-2">
+                  <label className="block text-sm font-bold text-[#033F99] mb-2">
                     Rate
                   </label>
                   <input
@@ -272,18 +272,18 @@ const CreateInvoiceElite = () => {
                         parseFloat(e.target.value),
                       )
                     }
-                    className="w-full px-4 py-3 bg-white border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 text-[#3A4E63] font-medium"
+                    className="w-full px-4 py-3 bg-white border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 text-[#033F99] font-medium"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-bold text-[#3A4E63] mb-2">
+                  <label className="block text-sm font-bold text-[#033F99] mb-2">
                     Amount
                   </label>
                   <input
                     type="text"
                     readOnly
                     value={`₹${item.amount.toLocaleString()}`}
-                    className="w-full px-4 py-3 bg-gray-100 border-2 border-[#3A4E63] rounded-2xl text-[#3A4E63] font-bold"
+                    className="w-full px-4 py-3 bg-gray-100 border-2 border-[#033F99] rounded-2xl text-[#033F99] font-bold"
                   />
                 </div>
                 <div className="col-span-1">
@@ -302,23 +302,23 @@ const CreateInvoiceElite = () => {
           </div>
 
           {/* Totals */}
-          <div className="mt-8 border-t-2 border-[#3A4E63] pt-6">
+          <div className="mt-8 border-t-2 border-[#033F99] pt-6">
             <div className="max-w-md ml-auto space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-[#3A4E63] font-bold">Subtotal:</span>
-                <span className="text-[#3A4E63] font-bold text-xl">
+                <span className="text-[#033F99] font-bold">Subtotal:</span>
+                <span className="text-[#033F99] font-bold text-xl">
                   ₹{subtotal.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[#3A4E63] font-bold">Tax (18%):</span>
-                <span className="text-[#3A4E63] font-bold text-xl">
+                <span className="text-[#033F99] font-bold">Tax (18%):</span>
+                <span className="text-[#033F99] font-bold text-xl">
                   ₹{tax.toLocaleString()}
                 </span>
               </div>
-              <div className="flex justify-between items-center pt-3 border-t-2 border-[#3A4E63]">
-                <span className="text-[#3A4E63] font-bold text-lg">Total:</span>
-                <span className="text-[#3A4E63] font-black text-2xl">
+              <div className="flex justify-between items-center pt-3 border-t-2 border-[#033F99]">
+                <span className="text-[#033F99] font-bold text-lg">Total:</span>
+                <span className="text-[#033F99] font-black text-2xl">
                   ₹{total.toLocaleString()}
                 </span>
               </div>
@@ -327,15 +327,15 @@ const CreateInvoiceElite = () => {
         </div>
 
         {/* Notes */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border-2 border-[#3A4E63]/50 shadow-2xl mb-6">
-          <h2 className="text-2xl font-bold text-[#3A4E63] mb-4">Notes</h2>
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border-2 border-[#033F99]/50 shadow-2xl mb-6">
+          <h2 className="text-2xl font-bold text-[#033F99] mb-4">Notes</h2>
           <textarea
             value={formData.notes}
             onChange={(e) =>
               setFormData({ ...formData, notes: e.target.value })
             }
             rows={4}
-            className="w-full px-4 py-3 bg-white border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 text-[#3A4E63] font-medium"
+            className="w-full px-4 py-3 bg-white border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 text-[#033F99] font-medium"
             placeholder="Additional notes..."
           />
         </div>
@@ -345,14 +345,14 @@ const CreateInvoiceElite = () => {
           <button
             type="button"
             onClick={() => navigate("/finance/invoices")}
-            className="px-8 py-4 bg-white border-2 border-[#3A4E63] text-[#3A4E63] font-bold rounded-2xl hover:bg-[#C4D9F4] transition-all"
+            className="px-8 py-4 bg-white border-2 border-[#033F99] text-[#033F99] font-bold rounded-2xl hover:bg-[#C4D9F4] transition-all"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#3A4E63] to-[#022E75] text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 disabled:opacity-50"
+            className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#033F99] to-[#022E75] text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 disabled:opacity-50"
           >
             <Save className="h-6 w-6" />
             {loading ? "Creating..." : "Create Invoice"}

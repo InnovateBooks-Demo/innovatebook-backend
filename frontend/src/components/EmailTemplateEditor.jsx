@@ -27,7 +27,7 @@ const COLORS = [
   "#333333",
   "#666666",
   "#999999",
-  "#3A4E63",
+  "#033F99",
   "#2563eb",
   "#dc2626",
   "#16a34a",
@@ -56,10 +56,10 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }) => {
 
   function getDefaultTemplate() {
     return `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <h1 style="color: #3A4E63;">Email Title</h1>
+  <h1 style="color: #033F99;">Email Title</h1>
   <p>Hello {{first_name}},</p>
   <p>Your email content goes here...</p>
-  <a href="{{cta_url}}" style="display: inline-block; padding: 12px 24px; background: #3A4E63; color: white; text-decoration: none; border-radius: 6px;">Call to Action</a>
+  <a href="{{cta_url}}" style="display: inline-block; padding: 12px 24px; background: #033F99; color: white; text-decoration: none; border-radius: 6px;">Call to Action</a>
   <p style="margin-top: 24px; color: #666;">Best regards,<br>Your Team</p>
 </div>`;
   }
@@ -148,7 +148,7 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }) => {
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e] flex items-center gap-2"
+              className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e] flex items-center gap-2"
             >
               <Save className="h-4 w-4" />
               Save Template
@@ -379,7 +379,7 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }) => {
               <div
                 ref={editorRef}
                 contentEditable
-                className="min-h-full p-4 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="min-h-full p-4 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 onInput={handleContentChange}
                 dangerouslySetInnerHTML={{ __html: htmlContent }}
                 style={{ minHeight: "400px" }}

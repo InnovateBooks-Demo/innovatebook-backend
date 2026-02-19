@@ -248,7 +248,7 @@ const EditCustomerPage = () => {
               <Button
                 type="submit"
                 disabled={saving}
-                style={{ backgroundColor: "#3A4E63" }}
+                style={{ backgroundColor: "#033F99" }}
               >
                 {saving ? (
                   <>

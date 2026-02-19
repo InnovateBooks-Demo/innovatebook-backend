@@ -249,13 +249,12 @@ const CustomizableDashboard = () => {
                   className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg"
                 >
                   <div
-                    className={`w-2 h-2 rounded-full ${
-                      task.priority === "urgent"
+                    className={`w-2 h-2 rounded-full ${task.priority === "urgent"
                         ? "bg-red-500"
                         : task.priority === "high"
                           ? "bg-orange-500"
                           : "bg-blue-500"
-                    }`}
+                      }`}
                   />
                   <span className="text-sm text-slate-700 truncate flex-1">
                     {task.title}
@@ -270,7 +269,7 @@ const CustomizableDashboard = () => {
             </div>
             <button
               onClick={() => navigate("/workspace/tasks")}
-              className="mt-2 text-sm text-[#3A4E63] hover:underline flex items-center gap-1"
+              className="mt-2 text-sm text-[#033F99] hover:underline flex items-center gap-1"
             >
               View all <ArrowRight className="w-4 h-4" />
             </button>
@@ -288,13 +287,12 @@ const CustomizableDashboard = () => {
               {(data?.signals || []).slice(0, 5).map((signal, i) => (
                 <div
                   key={i}
-                  className={`p-2 rounded-lg border-l-2 ${
-                    signal.severity === "critical"
+                  className={`p-2 rounded-lg border-l-2 ${signal.severity === "critical"
                       ? "bg-red-50 border-red-500"
                       : signal.severity === "warning"
                         ? "bg-amber-50 border-amber-500"
                         : "bg-blue-50 border-blue-500"
-                  }`}
+                    }`}
                 >
                   <p className="text-sm text-slate-700 truncate">
                     {signal.title}
@@ -312,7 +310,7 @@ const CustomizableDashboard = () => {
             </div>
             <button
               onClick={() => navigate("/intelligence/signals")}
-              className="mt-2 text-sm text-[#3A4E63] hover:underline flex items-center gap-1"
+              className="mt-2 text-sm text-[#033F99] hover:underline flex items-center gap-1"
             >
               View all <ArrowRight className="w-4 h-4" />
             </button>
@@ -334,7 +332,7 @@ const CustomizableDashboard = () => {
                   </div>
                   <div className="flex-1 bg-slate-100 rounded-full h-3">
                     <div
-                      className="bg-[#3A4E63] h-3 rounded-full"
+                      className="bg-[#033F99] h-3 rounded-full"
                       style={{
                         width: `${Math.min((stage.count / (data?.stages?.[0]?.count || 1)) * 100, 100)}%`,
                       }}
@@ -348,7 +346,7 @@ const CustomizableDashboard = () => {
             </div>
             <button
               onClick={() => navigate("/commerce/revenue/leads")}
-              className="mt-2 text-sm text-[#3A4E63] hover:underline flex items-center gap-1"
+              className="mt-2 text-sm text-[#033F99] hover:underline flex items-center gap-1"
             >
               View pipeline <ArrowRight className="w-4 h-4" />
             </button>
@@ -387,7 +385,7 @@ const CustomizableDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#3A4E63] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -402,7 +400,7 @@ const CustomizableDashboard = () => {
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#3A4E63] to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#033F99] to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                 <LayoutGrid className="h-6 w-6 text-white" />
               </div>
               <div>
@@ -417,7 +415,7 @@ const CustomizableDashboard = () => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowAddWidget(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm font-medium"
               >
                 <Plus className="w-4 h-4" />
                 Add Widget
@@ -451,9 +449,8 @@ const CustomizableDashboard = () => {
             .map((widget) => (
               <div
                 key={widget.widget_id}
-                className={`bg-white rounded-xl border border-slate-200 p-5 relative ${
-                  editMode ? "ring-2 ring-blue-200 ring-offset-2" : ""
-                }`}
+                className={`bg-white rounded-xl border border-slate-200 p-5 relative ${editMode ? "ring-2 ring-blue-200 ring-offset-2" : ""
+                  }`}
                 style={{
                   gridColumn: `span ${widget.position?.w || 1}`,
                   gridRow: `span ${widget.position?.h || 1}`,
@@ -488,7 +485,7 @@ const CustomizableDashboard = () => {
             </p>
             <button
               onClick={() => setShowAddWidget(true)}
-              className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] text-sm"
+              className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] text-sm"
             >
               Add Your First Widget
             </button>
@@ -516,7 +513,7 @@ const CustomizableDashboard = () => {
                   <button
                     key={type}
                     onClick={() => addWidget(type)}
-                    className="p-4 border border-slate-200 rounded-xl hover:border-[#3A4E63] hover:bg-blue-50 transition-colors text-left"
+                    className="p-4 border border-slate-200 rounded-xl hover:border-[#033F99] hover:bg-blue-50 transition-colors text-left"
                   >
                     <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center mb-3">
                       <Icon className="w-5 h-5 text-slate-600" />

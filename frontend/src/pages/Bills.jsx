@@ -91,7 +91,7 @@ const Bills = () => {
         <div>
           <h1
             className="text-3xl font-semibold mb-2"
-            style={{ fontFamily: "Inter", color: "#3A4E63" }}
+            style={{ fontFamily: "Inter", color: "#033F99" }}
           >
             Bills
           </h1>
@@ -187,13 +187,12 @@ const Bills = () => {
                 </td>
                 <td>
                   <span
-                    className={`badge ${
-                      bill.status === "Paid"
+                    className={`badge ${bill.status === "Paid"
                         ? "badge-success"
                         : bill.status === "Partially Paid"
                           ? "badge-warning"
                           : "badge-danger"
-                    }`}
+                      }`}
                   >
                     {bill.status}
                   </span>

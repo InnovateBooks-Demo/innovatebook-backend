@@ -229,9 +229,9 @@ const LeadEdit = () => {
           : null,
         tags: formData.tags
           ? formData.tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter(Boolean)
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
           : [],
       };
 
@@ -271,13 +271,13 @@ const LeadEdit = () => {
   ];
 
   const inputClass =
-    "w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white";
+    "w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white";
   const labelClass = "block text-sm font-medium text-slate-700 mb-1.5";
 
   if (fetching)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <RefreshCw className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <RefreshCw className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
 
@@ -287,7 +287,7 @@ const LeadEdit = () => {
         {/* Header */}
         <button
           onClick={() => navigate(`/commerce/lead/${id}`)}
-          className="flex items-center gap-2 text-slate-600 hover:text-[#3A4E63] mb-4"
+          className="flex items-center gap-2 text-slate-600 hover:text-[#033F99] mb-4"
         >
           <ArrowLeft className="h-4 w-4" />
           <span className="text-sm font-medium">Back to Lead</span>
@@ -304,11 +304,10 @@ const LeadEdit = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-all ${
-                  activeTab === tab.id
-                    ? "border-[#3A4E63] text-[#3A4E63]"
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-all ${activeTab === tab.id
+                    ? "border-[#033F99] text-[#033F99]"
                     : "border-transparent text-slate-600 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 <tab.icon className="h-4 w-4" />
                 {tab.label}
@@ -867,7 +866,7 @@ const LeadEdit = () => {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#3A4E63] disabled:opacity-50"
+              className="px-6 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#033F99] disabled:opacity-50"
             >
               {loading ? "Saving..." : "Save Changes"}
             </button>

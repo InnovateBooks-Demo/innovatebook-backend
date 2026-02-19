@@ -231,7 +231,7 @@ export const ConflictResolutionModal = ({ onClose }) => {
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] text-sm"
+            className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] text-sm"
           >
             Done
           </button>

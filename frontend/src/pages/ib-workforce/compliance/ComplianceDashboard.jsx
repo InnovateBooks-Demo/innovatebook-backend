@@ -141,7 +141,7 @@ const ComplianceDashboard = () => {
             </div>
             <button
               onClick={() => toast.info("Add document feature coming soon")}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] transition-colors"
               data-testid="add-document-btn"
             >
               <Plus className="h-4 w-4" />
@@ -217,10 +217,10 @@ const ComplianceDashboard = () => {
                 <span className="text-sm font-semibold text-emerald-600">
                   {dashboardData.documents?.total > 0
                     ? Math.round(
-                        (dashboardData.documents?.verified /
-                          dashboardData.documents?.total) *
-                          100,
-                      )
+                      (dashboardData.documents?.verified /
+                        dashboardData.documents?.total) *
+                      100,
+                    )
                     : 0}
                   %
                 </span>
@@ -270,7 +270,7 @@ const ComplianceDashboard = () => {
               <h3 className="text-lg font-semibold text-gray-900">
                 Compliance Documents
               </h3>
-              <button className="text-sm text-[#3A4E63] hover:underline">
+              <button className="text-sm text-[#033F99] hover:underline">
                 View All
               </button>
             </div>
@@ -316,7 +316,7 @@ const ComplianceDashboard = () => {
               <h3 className="text-lg font-semibold text-gray-900">
                 Open Violations
               </h3>
-              <button className="text-sm text-[#3A4E63] hover:underline">
+              <button className="text-sm text-[#033F99] hover:underline">
                 View All
               </button>
             </div>
@@ -336,11 +336,10 @@ const ComplianceDashboard = () => {
                   >
                     <div className="flex items-center gap-3">
                       <AlertTriangle
-                        className={`h-5 w-5 ${
-                          viol.severity === "critical"
+                        className={`h-5 w-5 ${viol.severity === "critical"
                             ? "text-red-500"
                             : "text-amber-500"
-                        }`}
+                          }`}
                       />
                       <div>
                         <p className="text-sm font-medium text-gray-900">

@@ -155,7 +155,7 @@ const AboutPage = () => {
       <SharedNavigation />
 
       {/* Hero Section - Full Color */}
-      <section className="pt-24 pb-20 px-6 relative overflow-hidden bg-[#3A4E63]">
+      <section className="pt-24 pb-20 px-6 relative overflow-hidden bg-[#033F99]">
         <div className="absolute inset-0 overflow-hidden opacity-10">
           <div className="absolute top-20 left-10 w-96 h-96 bg-white rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 right-20 w-80 h-80 bg-white rounded-full blur-3xl"></div>
@@ -215,10 +215,10 @@ const AboutPage = () => {
               return (
                 <div
                   key={index}
-                  className="bg-gradient-to-br from-slate-50 to-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#3A4E63] transition-all hover:shadow-lg hover:-translate-y-1"
+                  className="bg-gradient-to-br from-slate-50 to-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#033F99] transition-all hover:shadow-lg hover:-translate-y-1"
                 >
-                  <div className="w-12 h-12 bg-[#3A4E63]/10 rounded-xl flex items-center justify-center mb-4">
-                    <Icon className="h-6 w-6 text-[#3A4E63]" />
+                  <div className="w-12 h-12 bg-[#033F99]/10 rounded-xl flex items-center justify-center mb-4">
+                    <Icon className="h-6 w-6 text-[#033F99]" />
                   </div>
                   <p className="font-semibold text-slate-900">{belief.title}</p>
                 </div>
@@ -226,7 +226,7 @@ const AboutPage = () => {
             })}
           </div>
 
-          <div className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] rounded-3xl p-8 text-white text-center">
+          <div className="bg-gradient-to-r from-[#033F99] to-[#033F99] rounded-3xl p-8 text-white text-center">
             <p className="text-xl md:text-2xl font-medium leading-relaxed">
               All in one connected system.
               <br />
@@ -311,7 +311,7 @@ const AboutPage = () => {
             </p>
           </div>
 
-          <div className="bg-gradient-to-r from-[#3A4E63]/10 to-purple-500/10 rounded-3xl p-8 mb-12 border border-[#3A4E63]/20">
+          <div className="bg-gradient-to-r from-[#033F99]/10 to-purple-500/10 rounded-3xl p-8 mb-12 border border-[#033F99]/20">
             <div className="flex flex-wrap items-center justify-center gap-3 text-lg">
               {[
                 "Lead",
@@ -323,7 +323,7 @@ const AboutPage = () => {
                 "Intelligence",
               ].map((step, i) => (
                 <React.Fragment key={i}>
-                  <span className="font-bold text-[#3A4E63]">{step}</span>
+                  <span className="font-bold text-[#033F99]">{step}</span>
                   {i < 6 && <ArrowRight className="h-5 w-5 text-slate-400" />}
                 </React.Fragment>
               ))}
@@ -335,19 +335,19 @@ const AboutPage = () => {
               (item, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-4 p-4 bg-[#3A4E63]/10 rounded-xl border border-[#3A4E63]/20"
+                  className="flex items-center gap-4 p-4 bg-[#033F99]/10 rounded-xl border border-[#033F99]/20"
                 >
-                  <CheckCircle className="h-6 w-6 text-[#3A4E63] flex-shrink-0" />
+                  <CheckCircle className="h-6 w-6 text-[#033F99] flex-shrink-0" />
                   <span className="text-lg font-semibold text-slate-900">
                     Every decision is{" "}
-                    <span className="text-[#3A4E63]">{item}</span>
+                    <span className="text-[#033F99]">{item}</span>
                   </span>
                 </div>
               ),
             )}
           </div>
 
-          <p className="text-center text-xl font-bold text-[#3A4E63] mt-8">
+          <p className="text-center text-xl font-bold text-[#033F99] mt-8">
             Nothing happens in isolation.
           </p>
         </div>
@@ -356,7 +356,7 @@ const AboutPage = () => {
       {/* Architecture Section */}
       <section
         ref={addToRefs}
-        className="py-20 px-6 bg-gradient-to-br from-slate-900 via-[#3A4E63]/90 to-slate-900"
+        className="py-20 px-6 bg-gradient-to-br from-slate-900 via-[#033F99]/90 to-slate-900"
         style={{ opacity: 0 }}
       >
         <div className="max-w-5xl mx-auto">
@@ -433,9 +433,9 @@ const AboutPage = () => {
               return (
                 <div
                   key={index}
-                  className="bg-gradient-to-br from-slate-50 to-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#3A4E63] transition-all text-center hover:shadow-lg"
+                  className="bg-gradient-to-br from-slate-50 to-white p-6 rounded-2xl border-2 border-slate-200 hover:border-[#033F99] transition-all text-center hover:shadow-lg"
                 >
-                  <div className="w-12 h-12 bg-[#3A4E63] rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <div className="w-12 h-12 bg-[#033F99] rounded-xl flex items-center justify-center mx-auto mb-4">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <p className="font-bold text-slate-900 mb-1">{item.title}</p>
@@ -466,7 +466,7 @@ const AboutPage = () => {
                 key={index}
                 className="bg-white p-6 rounded-2xl border-2 border-slate-200 flex items-center gap-4"
               >
-                <div className="w-10 h-10 bg-[#3A4E63] rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-[#033F99] rounded-full flex items-center justify-center flex-shrink-0">
                   <CheckCircle className="h-5 w-5 text-white" />
                 </div>
                 <p className="text-xl font-semibold text-slate-900">{item}</p>
@@ -475,11 +475,11 @@ const AboutPage = () => {
           </div>
 
           <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-3xl p-8 border border-purple-200 text-center">
-            <Heart className="h-12 w-12 text-[#3A4E63] mx-auto mb-4" />
+            <Heart className="h-12 w-12 text-[#033F99] mx-auto mb-4" />
             <p className="text-xl text-slate-700">
               We don't replace people.
               <br />
-              <span className="font-bold text-[#3A4E63]">
+              <span className="font-bold text-[#033F99]">
                 We make people better decision-makers.
               </span>
             </p>
@@ -490,7 +490,7 @@ const AboutPage = () => {
       {/* Vision Section */}
       <section
         ref={addToRefs}
-        className="py-20 px-6 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63]"
+        className="py-20 px-6 bg-gradient-to-r from-[#033F99] to-[#033F99]"
         style={{ opacity: 0 }}
       >
         <div className="max-w-4xl mx-auto text-center">
@@ -523,13 +523,13 @@ const AboutPage = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/auth/signup">
-              <button className="px-8 py-4 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white font-bold rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
+              <button className="px-8 py-4 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white font-bold rounded-xl hover:shadow-lg transition-all flex items-center gap-2">
                 <Zap className="h-5 w-5" />
                 Start Free Trial
               </button>
             </Link>
             <Link to="/contact">
-              <button className="px-8 py-4 border-2 border-slate-300 text-slate-700 font-bold rounded-xl hover:border-[#3A4E63] hover:text-[#3A4E63] transition-all flex items-center gap-2">
+              <button className="px-8 py-4 border-2 border-slate-300 text-slate-700 font-bold rounded-xl hover:border-[#033F99] hover:text-[#033F99] transition-all flex items-center gap-2">
                 <MessageSquare className="h-5 w-5" />
                 Contact Us
               </button>
@@ -544,7 +544,7 @@ const AboutPage = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
-                <span className="text-[#3A4E63] font-bold text-xl">IB</span>
+                <span className="text-[#033F99] font-bold text-xl">IB</span>
               </div>
               <span className="text-2xl font-bold">Innovate Books</span>
             </div>

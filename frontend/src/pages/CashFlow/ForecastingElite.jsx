@@ -42,19 +42,19 @@ const ForecastingElite = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1
-              className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#022E75] bg-clip-text text-transparent"
+              className="text-4xl font-bold bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#022E75] bg-clip-text text-transparent"
               style={{ fontFamily: "Poppins" }}
             >
               Cash Flow Forecasting
             </h1>
-            <p className="text-[#3A4E63] mt-2 font-medium text-lg flex items-center gap-2">
+            <p className="text-[#033F99] mt-2 font-medium text-lg flex items-center gap-2">
               <Brain className="h-5 w-5" />
               AI-Powered Predictive Analytics
             </p>
           </div>
           <button
             onClick={loadForecast}
-            className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#3A4E63] to-[#022E75] text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105"
+            className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#033F99] to-[#022E75] text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105"
           >
             <RefreshCw className="h-6 w-6" />
             <span className="text-lg">Regenerate</span>
@@ -62,16 +62,16 @@ const ForecastingElite = () => {
         </div>
 
         {/* Horizon Selector */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl mb-6">
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl mb-6">
           <div className="flex items-center gap-4">
-            <Calendar className="h-6 w-6 text-[#3A4E63]" />
-            <label className="text-[#3A4E63] font-bold">
+            <Calendar className="h-6 w-6 text-[#033F99]" />
+            <label className="text-[#033F99] font-bold">
               Forecast Horizon:
             </label>
             <select
               value={horizon}
               onChange={(e) => setHorizon(Number(e.target.value))}
-              className="px-4 py-3 bg-white border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 text-[#3A4E63] font-medium"
+              className="px-4 py-3 bg-white border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 text-[#033F99] font-medium"
             >
               <option value={3}>3 Months</option>
               <option value={6}>6 Months</option>
@@ -105,23 +105,23 @@ const ForecastingElite = () => {
       </div>
 
       {/* Forecast Chart */}
-      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border-2 border-[#3A4E63]/50 shadow-2xl">
-        <h2 className="text-2xl font-bold text-[#3A4E63] mb-6">
+      <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border-2 border-[#033F99]/50 shadow-2xl">
+        <h2 className="text-2xl font-bold text-[#033F99] mb-6">
           Forecasted Cash Position
         </h2>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={chartData}>
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="#3A4E63"
+              stroke="#033F99"
               opacity={0.2}
             />
-            <XAxis dataKey="month" stroke="#3A4E63" />
-            <YAxis stroke="#3A4E63" />
+            <XAxis dataKey="month" stroke="#033F99" />
+            <YAxis stroke="#033F99" />
             <Tooltip
               contentStyle={{
                 backgroundColor: "rgba(255, 255, 255, 0.95)",
-                border: "2px solid #3A4E63",
+                border: "2px solid #033F99",
                 borderRadius: "16px",
                 padding: "12px",
               }}
@@ -130,9 +130,9 @@ const ForecastingElite = () => {
             <Line
               type="monotone"
               dataKey="predicted"
-              stroke="#3A4E63"
+              stroke="#033F99"
               strokeWidth={3}
-              dot={{ fill: "#3A4E63", r: 6 }}
+              dot={{ fill: "#033F99", r: 6 }}
               name="Forecasted Balance"
             />
             <Line

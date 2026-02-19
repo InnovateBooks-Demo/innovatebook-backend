@@ -61,10 +61,10 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-50 via-white to-[#3A4E63]/5 flex overflow-hidden">
-      {/* Left Side - Form */}
-      <div className="w-full lg:w-[45%] flex items-center justify-center px-8">
-        <div className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[#F8FAFC]"> // RESPONSIVE CHANGE
+      {/* Left Side: Form */}
+      <div className="w-full lg:w-[55%] flex flex-col justify-center px-4 sm:px-6 md:px-8 py-12 relative overflow-hidden"> // RESPONSIVE CHANGE
+        <div className="w-full max-w-md min-w-0"> // RESPONSIVE CHANGE
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 mb-6">
             <img
@@ -96,8 +96,8 @@ const LoginPage = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-slate-700 font-semibold mb-1.5 text-sm">
-                  Work Email
+                <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> {/* RESPONSIVE CHANGE */}
+                  Email Address
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -109,13 +109,13 @@ const LoginPage = () => {
                     placeholder="you@company.com"
                     required
                     data-testid="login-email-input"
-                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:border-[#3A4E63] focus:ring-2 focus:ring-[#3A4E63]/20 outline-none text-slate-900 placeholder-slate-400"
+                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:border-[#033F99] focus:ring-2 focus:ring-[#033F99]/20 outline-none text-slate-900 placeholder-slate-400"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-700 font-semibold mb-1.5 text-sm">
+                <label className="block text-sm font-semibold text-slate-700 mb-2 break-words"> {/* RESPONSIVE CHANGE */}
                   Password
                 </label>
                 <div className="relative">
@@ -128,7 +128,7 @@ const LoginPage = () => {
                     placeholder="••••••••"
                     required
                     data-testid="login-password-input"
-                    className="w-full pl-10 pr-10 py-3 border border-slate-300 rounded-xl focus:border-[#3A4E63] focus:ring-2 focus:ring-[#3A4E63]/20 outline-none text-slate-900"
+                    className="w-full pl-10 pr-10 py-3 border border-slate-300 rounded-xl focus:border-[#033F99] focus:ring-2 focus:ring-[#033F99]/20 outline-none text-slate-900"
                   />
                   <button
                     type="button"
@@ -144,19 +144,25 @@ const LoginPage = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"> {/* RESPONSIVE CHANGE */}
+                <div className="flex items-center min-w-0"> {/* RESPONSIVE CHANGE */}
                   <input
                     type="checkbox"
+                    id="remember-me"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 border-slate-300 rounded text-[#3A4E63] focus:ring-[#3A4E63]"
+                    className="h-4 w-4 text-[#033F99] border-slate-300 rounded focus:ring-[#033F99] shrink-0"
                   />
-                  <span className="text-slate-600 text-sm">Remember me</span>
-                </label>
+                  <label
+                    htmlFor="remember-me"
+                    className="ml-2 block text-sm text-slate-600 break-words" // RESPONSIVE CHANGE
+                  >
+                    Remember me
+                  </label>
+                </div>
                 <Link
                   to="/auth/forgot-password"
-                  className="text-[#3A4E63] hover:text-[#3A4E63] font-semibold text-sm"
+                  className="text-sm font-semibold text-[#033F99] hover:text-[#022D6E] transition-colors shrink-0"
                 >
                   Forgot password?
                 </Link>
@@ -166,7 +172,7 @@ const LoginPage = () => {
                 type="submit"
                 disabled={loading}
                 data-testid="login-submit-btn"
-                className="w-full bg-[#3A4E63] hover:bg-[#3A4E63] text-white font-bold py-3 rounded-xl shadow-lg shadow-[#3A4E63]/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full bg-[#033F99] hover:bg-[#033F99] text-white font-bold py-3 rounded-xl shadow-lg shadow-[#033F99]/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
@@ -182,7 +188,7 @@ const LoginPage = () => {
               First time here?{" "}
               <Link
                 to="/auth/signup"
-                className="text-[#3A4E63] font-semibold hover:text-[#3A4E63]"
+                className="text-[#033F99] font-semibold hover:text-[#033F99]"
               >
                 Create your organization
               </Link>
@@ -192,15 +198,15 @@ const LoginPage = () => {
           {/* Security Badges */}
           <div className="mt-4 flex justify-center gap-4 text-xs text-slate-500">
             <div className="flex items-center gap-1">
-              <Lock className="h-3 w-3 text-[#3A4E63]" />
+              <Lock className="h-3 w-3 text-[#033F99]" />
               <span>Encrypted</span>
             </div>
             <div className="flex items-center gap-1">
-              <Shield className="h-3 w-3 text-[#3A4E63]" />
+              <Shield className="h-3 w-3 text-[#033F99]" />
               <span>Secure</span>
             </div>
             <div className="flex items-center gap-1">
-              <FileCheck className="h-3 w-3 text-[#3A4E63]" />
+              <FileCheck className="h-3 w-3 text-[#033F99]" />
               <span>Audited</span>
             </div>
           </div>
@@ -208,7 +214,7 @@ const LoginPage = () => {
       </div>
 
       {/* Right Side - Info Panel */}
-      <div className="hidden lg:flex w-[55%] bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] p-8 items-center justify-center relative overflow-hidden">
+      <div className="hidden lg:flex w-[55%] bg-gradient-to-br from-[#033F99] to-[#033F99] p-8 items-center justify-center relative overflow-hidden">
         <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-3xl" />
 

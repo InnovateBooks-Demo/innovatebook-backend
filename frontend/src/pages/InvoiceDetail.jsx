@@ -133,12 +133,12 @@ const InvoiceDetail = () => {
                   className="w-12 h-12 rounded-full flex items-center justify-center"
                   style={{ background: "#EEF4FF" }}
                 >
-                  <FileText className="h-6 w-6" style={{ color: "#3A4E63" }} />
+                  <FileText className="h-6 w-6" style={{ color: "#033F99" }} />
                 </div>
                 <div>
                   <h1
                     className="text-4xl font-bold"
-                    style={{ fontFamily: "Poppins", color: "#3A4E63" }}
+                    style={{ fontFamily: "Poppins", color: "#033F99" }}
                   >
                     {invoice?.invoice_number}
                   </h1>
@@ -159,15 +159,14 @@ const InvoiceDetail = () => {
             </div>
             <div className="flex gap-3 items-start">
               <span
-                className={`px-6 py-3 rounded-full font-semibold text-lg ${
-                  invoice?.status === "Paid"
+                className={`px-6 py-3 rounded-full font-semibold text-lg ${invoice?.status === "Paid"
                     ? "bg-green-100 text-green-700 border-2 border-green-300"
                     : invoice?.status === "Partially Paid"
                       ? "bg-yellow-100 text-yellow-700 border-2 border-yellow-300"
                       : invoice?.status === "Overdue"
                         ? "bg-red-100 text-red-700 border-2 border-red-300"
                         : "bg-gray-100 text-gray-700 border-2 border-gray-300"
-                }`}
+                  }`}
               >
                 {invoice?.status}
               </span>
@@ -175,7 +174,7 @@ const InvoiceDetail = () => {
                 <>
                   <Button
                     onClick={() => setIsEditing(true)}
-                    style={{ backgroundColor: "#3A4E63" }}
+                    style={{ backgroundColor: "#033F99" }}
                     className="h-12 px-6"
                   >
                     <Edit className="h-4 w-4 mr-2" />
@@ -183,7 +182,7 @@ const InvoiceDetail = () => {
                   </Button>
                   <Button
                     variant="outline"
-                    style={{ borderColor: "#3A4E63", color: "#3A4E63" }}
+                    style={{ borderColor: "#033F99", color: "#033F99" }}
                     className="h-12 px-6"
                   >
                     <FileText className="h-4 w-4 mr-2" />
@@ -243,7 +242,7 @@ const InvoiceDetail = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card
             className="border-t-4 shadow-lg hover:shadow-xl transition-shadow"
-            style={{ borderTopColor: "#3A4E63" }}
+            style={{ borderTopColor: "#033F99" }}
           >
             <CardContent className="pt-6">
               <div className="flex justify-between items-start mb-2">
@@ -256,13 +255,13 @@ const InvoiceDetail = () => {
                 >
                   <DollarSign
                     className="h-5 w-5"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   />
                 </div>
               </div>
               <p
                 className="text-3xl font-bold mb-1"
-                style={{ color: "#3A4E63" }}
+                style={{ color: "#033F99" }}
               >
                 {formatCurrency(invoice?.total_amount)}
               </p>
@@ -322,12 +321,12 @@ const InvoiceDetail = () => {
         {isEditing && (
           <Card
             className="mb-8 shadow-lg border-2"
-            style={{ borderColor: "#3A4E63" }}
+            style={{ borderColor: "#033F99" }}
           >
             <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b">
               <CardTitle
                 className="flex items-center gap-2"
-                style={{ color: "#3A4E63" }}
+                style={{ color: "#033F99" }}
               >
                 <Edit className="h-5 w-5" />
                 Edit Invoice Details
@@ -469,7 +468,7 @@ const InvoiceDetail = () => {
                   <span className="text-gray-700 font-medium flex items-center gap-2">
                     <div
                       className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: "#3A4E63" }}
+                      style={{ backgroundColor: "#033F99" }}
                     ></div>
                     Base Amount
                   </span>
@@ -550,15 +549,14 @@ const InvoiceDetail = () => {
                     Aging Bucket
                   </span>
                   <span
-                    className={`font-bold px-4 py-1 rounded-full ${
-                      bucket === "Current"
+                    className={`font-bold px-4 py-1 rounded-full ${bucket === "Current"
                         ? "bg-green-100 text-green-700"
                         : bucket === "1-30 Days"
                           ? "bg-yellow-100 text-yellow-700"
                           : bucket === "31-60 Days"
                             ? "bg-orange-100 text-orange-700"
                             : "bg-red-100 text-red-700"
-                    }`}
+                      }`}
                   >
                     {bucket}
                   </span>
@@ -598,19 +596,19 @@ const InvoiceDetail = () => {
                       `${activity.activity_type}-${activity.created_at}`
                     }
                     className="flex gap-4 border-l-4 pl-6 py-4 hover:bg-gray-50 transition-colors rounded-r-lg"
-                    style={{ borderLeftColor: "#3A4E63" }}
+                    style={{ borderLeftColor: "#033F99" }}
                   >
                     <div
                       className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
                       style={{ background: "#EEF4FF" }}
                     >
-                      <Clock className="h-6 w-6" style={{ color: "#3A4E63" }} />
+                      <Clock className="h-6 w-6" style={{ color: "#033F99" }} />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <p
                           className="font-bold text-lg"
-                          style={{ color: "#3A4E63" }}
+                          style={{ color: "#033F99" }}
                         >
                           {activity.activity_type}
                         </p>

@@ -48,7 +48,7 @@ const DebtDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -83,24 +83,22 @@ const DebtDetail = () => {
               </h1>
               <div className="flex items-center gap-2">
                 <span
-                  className={`px-2 py-1 text-xs rounded-full ${
-                    debt.debt_type === "term_loan"
+                  className={`px-2 py-1 text-xs rounded-full ${debt.debt_type === "term_loan"
                       ? "bg-blue-100 text-blue-700"
                       : debt.debt_type === "convertible_note"
                         ? "bg-purple-100 text-purple-700"
                         : "bg-gray-100 text-gray-700"
-                  }`}
+                    }`}
                 >
                   {debt.debt_type?.replace("_", " ")}
                 </span>
                 <span
-                  className={`px-2 py-1 text-xs rounded-full ${
-                    debt.status === "active"
+                  className={`px-2 py-1 text-xs rounded-full ${debt.status === "active"
                       ? "bg-green-100 text-green-700"
                       : debt.status === "repaid"
                         ? "bg-gray-100 text-gray-700"
                         : "bg-red-100 text-red-700"
-                  }`}
+                    }`}
                 >
                   {debt.status}
                 </span>
@@ -140,7 +138,7 @@ const DebtDetail = () => {
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
           <p className="text-sm text-gray-500 mb-1">Interest Rate</p>
-          <p className="text-2xl font-bold text-[#3A4E63]">
+          <p className="text-2xl font-bold text-[#033F99]">
             {debt.interest_rate}%{" "}
             <span className="text-sm font-normal text-gray-500">
               {debt.interest_type}
@@ -221,13 +219,12 @@ const DebtDetail = () => {
                         <AlertTriangle className="w-4 h-4 text-red-500" />
                       )}
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          cov.current_status === "compliant"
+                        className={`px-2 py-1 text-xs rounded-full ${cov.current_status === "compliant"
                             ? "bg-green-100 text-green-700"
                             : cov.current_status === "warning"
                               ? "bg-yellow-100 text-yellow-700"
                               : "bg-red-100 text-red-700"
-                        }`}
+                          }`}
                       >
                         {cov.current_status}
                       </span>
@@ -277,13 +274,12 @@ const DebtDetail = () => {
                   </td>
                   <td className="py-3 px-4 text-center">
                     <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        item.status === "paid"
+                      className={`px-2 py-1 text-xs rounded-full ${item.status === "paid"
                           ? "bg-green-100 text-green-700"
                           : item.status === "overdue"
                             ? "bg-red-100 text-red-700"
                             : "bg-yellow-100 text-yellow-700"
-                      }`}
+                        }`}
                     >
                       {item.status}
                     </span>

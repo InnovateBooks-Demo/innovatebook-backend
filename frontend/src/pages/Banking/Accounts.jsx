@@ -92,7 +92,7 @@ const BankingAccounts = () => {
         <div>
           <h1
             className="text-3xl font-semibold mb-2"
-            style={{ fontFamily: "Inter", color: "#3A4E63" }}
+            style={{ fontFamily: "Inter", color: "#033F99" }}
           >
             Banking
           </h1>
@@ -211,7 +211,7 @@ const BankingAccounts = () => {
             <Landmark className="h-16 w-16 text-gray-400 mb-4" />
             <h3
               className="text-xl font-semibold mb-2"
-              style={{ color: "#3A4E63" }}
+              style={{ color: "#033F99" }}
             >
               No Bank Accounts
             </h3>
@@ -243,19 +243,19 @@ const BankingAccounts = () => {
                       {bank.account_type === "Current" ? (
                         <Landmark
                           className="h-6 w-6"
-                          style={{ color: "#3A4E63" }}
+                          style={{ color: "#033F99" }}
                         />
                       ) : (
                         <CreditCard
                           className="h-6 w-6"
-                          style={{ color: "#3A4E63" }}
+                          style={{ color: "#033F99" }}
                         />
                       )}
                     </div>
                     <div>
                       <CardTitle
                         className="text-lg"
-                        style={{ color: "#3A4E63" }}
+                        style={{ color: "#033F99" }}
                       >
                         {bank.bank_name}
                       </CardTitle>
@@ -274,7 +274,7 @@ const BankingAccounts = () => {
                     <p className="text-sm text-gray-600">Current Balance</p>
                     <p
                       className="text-2xl font-semibold"
-                      style={{ color: "#3A4E63" }}
+                      style={{ color: "#033F99" }}
                     >
                       {formatCurrency(bank.current_balance)}
                     </p>

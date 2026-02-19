@@ -168,7 +168,7 @@ const CustomerDetailPro = () => {
                   </Button>
                   <Button
                     onClick={handleSaveEdit}
-                    style={{ backgroundColor: "#3A4E63", color: "white" }}
+                    style={{ backgroundColor: "#033F99", color: "white" }}
                     className="hover:opacity-90"
                   >
                     <Save className="h-4 w-4 mr-2" />
@@ -189,7 +189,7 @@ const CustomerDetailPro = () => {
             {/* Avatar */}
             <div
               className="w-16 h-16 rounded-xl flex items-center justify-center text-white text-2xl font-bold"
-              style={{ backgroundColor: "#3A4E63" }}
+              style={{ backgroundColor: "#033F99" }}
             >
               {customer?.name?.charAt(0)}
             </div>
@@ -207,11 +207,10 @@ const CustomerDetailPro = () => {
                   {customer?.customer_id}
                 </span>
                 <span
-                  className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                    customer?.status === "Active"
+                  className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${customer?.status === "Active"
                       ? "bg-green-50 text-green-700 border border-green-200"
                       : "bg-red-50 text-red-700 border border-red-200"
-                  }`}
+                    }`}
                 >
                   {customer?.status}
                 </span>
@@ -301,14 +300,13 @@ const CustomerDetailPro = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === tab
+                className={`py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === tab
                     ? "border-blue-600 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
+                  }`}
                 style={
                   activeTab === tab
-                    ? { borderColor: "#3A4E63", color: "#3A4E63" }
+                    ? { borderColor: "#033F99", color: "#033F99" }
                     : {}
                 }
               >
@@ -608,7 +606,7 @@ const CustomerDetailPro = () => {
                             >
                               <FileText
                                 className="h-5 w-5"
-                                style={{ color: "#3A4E63" }}
+                                style={{ color: "#033F99" }}
                               />
                             </div>
                             <div>
@@ -628,15 +626,14 @@ const CustomerDetailPro = () => {
                               <p className="text-sm text-gray-500">Total</p>
                             </div>
                             <span
-                              className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                invoice.status === "Paid"
+                              className={`px-3 py-1 rounded-full text-xs font-semibold ${invoice.status === "Paid"
                                   ? "bg-green-50 text-green-700 border border-green-200"
                                   : invoice.status === "Partially Paid"
                                     ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
                                     : invoice.status === "Overdue"
                                       ? "bg-red-50 text-red-700 border border-red-200"
                                       : "bg-gray-50 text-gray-700 border border-gray-200"
-                              }`}
+                                }`}
                             >
                               {invoice.status}
                             </span>

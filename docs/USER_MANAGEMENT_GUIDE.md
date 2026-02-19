@@ -220,7 +220,7 @@ The user management interface features:
 - **Role tags** with blue background
 - **Action buttons** with hover effects
 - **Modal form** for adding users with smooth transitions
-- **Consistent brand colors** (#3A4E63)
+- **Consistent brand colors** (#033F99)
 
 ---
 

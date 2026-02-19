@@ -277,7 +277,7 @@
 //   if (loading)
 //     return (
 //       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-//         <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+//         <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
 //       </div>
 //     );
 
@@ -306,8 +306,8 @@
 
 //           <div className="flex items-center justify-between">
 //             <div className="flex items-center gap-4">
-//               <div className="w-14 h-14 bg-[#3A4E63]/10 rounded-xl flex items-center justify-center">
-//                 <Target className="h-7 w-7 text-[#3A4E63]" />
+//               <div className="w-14 h-14 bg-[#033F99]/10 rounded-xl flex items-center justify-center">
+//                 <Target className="h-7 w-7 text-[#033F99]" />
 //               </div>
 //               <div>
 //                 <div className="flex items-center gap-3">
@@ -408,7 +408,7 @@
 //                     href={lead.website}
 //                     target="_blank"
 //                     rel="noopener noreferrer"
-//                     className="font-medium text-[#3A4E63] hover:underline"
+//                     className="font-medium text-[#033F99] hover:underline"
 //                   >
 //                     {lead.website || "-"}
 //                   </a>
@@ -1048,7 +1048,7 @@
 //   if (loading)
 //     return (
 //       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-//         <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+//         <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
 //       </div>
 //     );
 
@@ -1077,8 +1077,8 @@
 
 //           <div className="flex items-center justify-between">
 //             <div className="flex items-center gap-4">
-//               <div className="w-14 h-14 bg-[#3A4E63]/10 rounded-xl flex items-center justify-center">
-//                 <Target className="h-7 w-7 text-[#3A4E63]" />
+//               <div className="w-14 h-14 bg-[#033F99]/10 rounded-xl flex items-center justify-center">
+//                 <Target className="h-7 w-7 text-[#033F99]" />
 //               </div>
 //               <div>
 //                 <div className="flex items-center gap-3">
@@ -1239,7 +1239,7 @@
 //                       href={lead.website}
 //                       target="_blank"
 //                       rel="noopener noreferrer"
-//                       className="inline-flex items-center gap-2 font-semibold text-[#3A4E63] hover:underline"
+//                       className="inline-flex items-center gap-2 font-semibold text-[#033F99] hover:underline"
 //                     >
 //                       <Globe className="h-4 w-4" />
 //                       {lead.website}
@@ -1752,9 +1752,8 @@ const WorkflowStepper = ({ lead }) => {
 
               const isBig = BIG_STEPS.has(step.key);
 
-              const circleBase = `rounded-full flex items-center justify-center border-4 shadow-sm transition-all ${
-                isBig ? "h-16 w-16" : "h-12 w-12"
-              }`;
+              const circleBase = `rounded-full flex items-center justify-center border-4 shadow-sm transition-all ${isBig ? "h-16 w-16" : "h-12 w-12"
+                }`;
 
               const circleStyle =
                 state === "done"
@@ -1770,13 +1769,11 @@ const WorkflowStepper = ({ lead }) => {
 
               const iconSize = isBig ? "h-7 w-7" : "h-5 w-5";
 
-              const labelStyle = `font-semibold whitespace-nowrap ${
-                isBig ? "text-base" : "text-xs"
-              } ${
-                state === "current" || state === "done"
+              const labelStyle = `font-semibold whitespace-nowrap ${isBig ? "text-base" : "text-xs"
+                } ${state === "current" || state === "done"
                   ? "text-blue-700"
                   : "text-gray-400"
-              }`;
+                }`;
 
               return (
                 <div
@@ -1904,7 +1901,7 @@ const RevenueLeadDetail = () => {
   if (loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
 
@@ -1933,8 +1930,8 @@ const RevenueLeadDetail = () => {
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-[#3A4E63]/10 rounded-xl flex items-center justify-center">
-                <Target className="h-7 w-7 text-[#3A4E63]" />
+              <div className="w-14 h-14 bg-[#033F99]/10 rounded-xl flex items-center justify-center">
+                <Target className="h-7 w-7 text-[#033F99]" />
               </div>
               <div>
                 <div className="flex items-center gap-3">
@@ -2054,7 +2051,7 @@ const RevenueLeadDetail = () => {
                       href={lead.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 font-semibold text-[#3A4E63] hover:underline break-all"
+                      className="inline-flex items-center gap-2 font-semibold text-[#033F99] hover:underline break-all"
                     >
                       <Globe className="h-4 w-4" />
                       {lead.website}
@@ -2126,7 +2123,7 @@ const RevenueLeadDetail = () => {
                       href={lead.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 font-semibold text-[#3A4E63] hover:underline"
+                      className="inline-flex items-center gap-2 font-semibold text-[#033F99] hover:underline"
                     >
                       <Globe className="h-4 w-4" />
                       {lead.website}
@@ -2243,11 +2240,10 @@ const RevenueLeadDetail = () => {
                     <Clock className="h-5 w-5 text-gray-300" />
                   )}
                   <span
-                    className={`text-sm ${
-                      lead.problem_identified
+                    className={`text-sm ${lead.problem_identified
                         ? "text-blue-700 font-semibold"
                         : "text-gray-600"
-                    }`}
+                      }`}
                   >
                     Problem identified
                   </span>
@@ -2276,11 +2272,10 @@ const RevenueLeadDetail = () => {
                     <Clock className="h-5 w-5 text-gray-300" />
                   )}
                   <span
-                    className={`text-sm ${
-                      lead.authority_known
+                    className={`text-sm ${lead.authority_known
                         ? "text-blue-700 font-semibold"
                         : "text-gray-600"
-                    }`}
+                      }`}
                   >
                     Authority/Decision maker known
                   </span>
@@ -2293,11 +2288,10 @@ const RevenueLeadDetail = () => {
                     <Clock className="h-5 w-5 text-gray-300" />
                   )}
                   <span
-                    className={`text-sm ${
-                      lead.need_timeline
+                    className={`text-sm ${lead.need_timeline
                         ? "text-emerald-700 font-semibold"
                         : "text-gray-600"
-                    }`}
+                      }`}
                   >
                     Timeline need established
                   </span>
@@ -2347,26 +2341,24 @@ const RevenueLeadDetail = () => {
                     <p className="text-sm text-gray-500 mb-1">Health Status</p>
                     <div className="flex items-center gap-2 justify-end">
                       <AlertCircle
-                        className={`h-5 w-5 ${
-                          lead.health === "good"
+                        className={`h-5 w-5 ${lead.health === "good"
                             ? "text-green-500"
                             : lead.health === "warning"
                               ? "text-yellow-500"
                               : lead.health === "critical"
                                 ? "text-red-500"
                                 : "text-gray-400"
-                        }`}
+                          }`}
                       />
                       <span
-                        className={`text-sm font-semibold capitalize ${
-                          lead.health === "good"
+                        className={`text-sm font-semibold capitalize ${lead.health === "good"
                             ? "text-green-600"
                             : lead.health === "warning"
                               ? "text-yellow-600"
                               : lead.health === "critical"
                                 ? "text-red-600"
                                 : "text-gray-600"
-                        }`}
+                          }`}
                       >
                         {lead.health || "Unknown"}
                       </span>

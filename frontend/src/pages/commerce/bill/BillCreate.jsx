@@ -168,7 +168,7 @@ const BillCreate = () => {
         <Button
           onClick={handleSubmit}
           disabled={loading}
-          className="gap-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63]"
+          className="gap-2 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99]"
         >
           <Save className="h-4 w-4" />
           {loading ? "Creating..." : "Create Invoice"}
@@ -190,7 +190,7 @@ const BillCreate = () => {
                 name="linked_execution_id"
                 value={formData.linked_execution_id}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 required
               >
                 <option value="">Select Execution</option>
@@ -248,7 +248,7 @@ const BillCreate = () => {
                 name="invoice_type"
                 value={formData.invoice_type}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="Milestone">Milestone</option>
                 <option value="Time-based">Time-based</option>
@@ -265,7 +265,7 @@ const BillCreate = () => {
                 name="payment_terms"
                 value={formData.payment_terms}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="Net 15">Net 15</option>
                 <option value="Net 30">Net 30</option>
@@ -402,7 +402,7 @@ const BillCreate = () => {
                 </div>
                 <div className="flex justify-between text-lg font-bold border-t border-slate-200 pt-2">
                   <span className="text-slate-900">Total:</span>
-                  <span className="text-[#3A4E63]">
+                  <span className="text-[#033F99]">
                     ₹{netAmount.toFixed(2)}
                   </span>
                 </div>

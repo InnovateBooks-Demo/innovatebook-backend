@@ -153,7 +153,7 @@ const ActivityFeed = () => {
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#3A4E63] to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#033F99] to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                 <Activity className="h-6 w-6 text-white" />
               </div>
               <div>
@@ -171,7 +171,7 @@ const ActivityFeed = () => {
                 onChange={(e) =>
                   setFilter({ ...filter, module: e.target.value })
                 }
-                className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="">All Modules</option>
                 <option value="Commerce">Commerce</option>
@@ -186,7 +186,7 @@ const ActivityFeed = () => {
                 onChange={(e) =>
                   setFilter({ ...filter, days: parseInt(e.target.value) })
                 }
-                className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value={1}>Last 24 hours</option>
                 <option value={7}>Last 7 days</option>
@@ -358,7 +358,7 @@ const ActivityFeed = () => {
                 <p className="text-slate-500">No activities found</p>
                 <button
                   onClick={seedActivities}
-                  className="mt-4 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] text-sm"
+                  className="mt-4 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] text-sm"
                 >
                   Load Demo Activities
                 </button>

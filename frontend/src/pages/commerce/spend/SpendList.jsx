@@ -120,7 +120,7 @@ const SpendList = () => {
           </p>
         </div>
         <Link to="/commerce/spend/new">
-          <Button className="gap-2 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63]700 hover:from-[#3A4E63]700 hover:to-[#3A4E63]800">
+          <Button className="gap-2 bg-gradient-to-r from-[#033F99] to-[#033F99]700 hover:from-[#033F99]700 hover:to-[#033F99]800">
             <Plus className="h-4 w-4" />
             New Expense
           </Button>
@@ -141,7 +141,7 @@ const SpendList = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+            className="px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#033F99]"
           >
             <option value="all">All Status</option>
             <option value="Draft">Draft</option>
@@ -234,7 +234,7 @@ const SpendList = () => {
               {loading ? (
                 <tr>
                   <td colSpan="5" className="px-6 py-12 text-center">
-                    <div className="w-5 h-5 border-2 border-[#3A4E63] border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <div className="w-5 h-5 border-2 border-[#033F99] border-t-transparent rounded-full animate-spin mx-auto"></div>
                   </td>
                 </tr>
               ) : currentSpends.length === 0 ? (
@@ -255,7 +255,7 @@ const SpendList = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Link
                         to={`/commerce/spend/${spend.expense_id}`}
-                        className="text-sm font-medium text-[#3A4E63] hover:text-[#3A4E63]700"
+                        className="text-sm font-medium text-[#033F99] hover:text-[#033F99]700"
                       >
                         {spend.expense_id}
                       </Link>

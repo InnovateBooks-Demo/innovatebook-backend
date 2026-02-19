@@ -161,7 +161,7 @@ const CatalogDashboard = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#3A4E63]"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#033F99]"></div>
           <p className="text-sm text-gray-500">Loading dashboard...</p>
         </div>
       </div>
@@ -228,7 +228,7 @@ const CatalogDashboard = () => {
             <div
               key={idx}
               onClick={() => navigate(module.path)}
-              className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg hover:border-[#3A4E63]/30 transition-all cursor-pointer group"
+              className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg hover:border-[#033F99]/30 transition-all cursor-pointer group"
             >
               <div
                 className={`h-10 w-10 rounded-lg bg-${module.color}-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
@@ -253,7 +253,7 @@ const CatalogDashboard = () => {
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-gray-100">
-                <span className="text-sm text-[#3A4E63] font-medium group-hover:underline">
+                <span className="text-sm text-[#033F99] font-medium group-hover:underline">
                   View all →
                 </span>
               </div>
@@ -285,7 +285,7 @@ const CatalogDashboard = () => {
                       </div>
                       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-[#3A4E63] rounded-full"
+                          className="h-full bg-[#033F99] rounded-full"
                           style={{ width: `${pct}%` }}
                         ></div>
                       </div>
@@ -306,7 +306,7 @@ const CatalogDashboard = () => {
             <div className="space-y-4">
               {stats.items.slice(0, 5).map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#3A4E63] to-[#0550c8] flex items-center justify-center text-white text-xs font-semibold">
+                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#033F99] to-[#0550c8] flex items-center justify-center text-white text-xs font-semibold">
                     {item.name?.charAt(0) || "I"}
                   </div>
                   <div className="flex-1 min-w-0">

@@ -95,7 +95,7 @@ const LeadList = () => {
   const getStatusBadge = (status) => {
     const styles = {
       Active: "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white",
-      New: "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white",
+      New: "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white",
       Converted: "bg-gradient-to-r from-purple-500 to-purple-600 text-white",
       Lost: "bg-gradient-to-r from-red-500 to-red-600 text-white",
       "On Hold": "bg-gradient-to-r from-amber-500 to-amber-600 text-white",
@@ -107,7 +107,7 @@ const LeadList = () => {
 
   const getStageBadge = (stage) => {
     const styles = {
-      Intake: "bg-[#C4D9F4] text-[#3A4E63] border-[#3A4E63]",
+      Intake: "bg-[#C4D9F4] text-[#033F99] border-[#033F99]",
       Feasibility: "bg-amber-100 text-amber-900 border-amber-300",
       Costing: "bg-purple-100 text-purple-900 border-purple-300",
       Approval: "bg-orange-100 text-orange-900 border-orange-300",
@@ -120,8 +120,8 @@ const LeadList = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#C4D9F4] via-white to-[#C4D9F4]/50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#3A4E63] border-r-transparent"></div>
-          <p className="mt-4 text-[#3A4E63] font-semibold text-lg">
+          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#033F99] border-r-transparent"></div>
+          <p className="mt-4 text-[#033F99] font-semibold text-lg">
             Loading leads...
           </p>
         </div>
@@ -135,26 +135,26 @@ const LeadList = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1
-              className="text-4xl font-bold bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent"
+              className="text-4xl font-bold bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] bg-clip-text text-transparent"
               style={{ fontFamily: "Poppins" }}
             >
               Lead Management
             </h1>
-            <p className="text-[#3A4E63] mt-2 font-medium text-lg">
+            <p className="text-[#033F99] mt-2 font-medium text-lg">
               Manufacturing leads and opportunities
             </p>
           </div>
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate("/commerce/manufacturing/masters")}
-              className="flex items-center gap-3 px-6 py-4 bg-white border-2 border-[#3A4E63] text-[#3A4E63] hover:bg-[#C4D9F4] font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              className="flex items-center gap-3 px-6 py-4 bg-white border-2 border-[#033F99] text-[#033F99] hover:bg-[#C4D9F4] font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
               <Database className="h-5 w-5" />
               <span className="text-base">Masters</span>
             </button>
             <button
               onClick={() => navigate("/commerce/lead/create")}
-              className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#022E75] hover:to-[#022E75] text-white font-bold rounded-2xl shadow-2xl shadow-[#3A4E63]/50 hover:shadow-[#3A4E63]/60 transition-all duration-300 transform hover:scale-105"
+              className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#022E75] hover:to-[#022E75] text-white font-bold rounded-2xl shadow-2xl shadow-[#033F99]/50 hover:shadow-[#033F99]/60 transition-all duration-300 transform hover:scale-105"
             >
               <Plus className="h-6 w-6" />
               <span className="text-lg">Create Lead</span>
@@ -164,18 +164,18 @@ const LeadList = () => {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-          <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl hover:shadow-2xl hover:border-[#3A4E63] transition-all duration-300">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#3A4E63]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
+          <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl hover:shadow-2xl hover:border-[#033F99] transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#033F99]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-3">
-                <div className="p-3 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl shadow-lg">
+                <div className="p-3 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl shadow-lg">
                   <Users className="h-6 w-6 text-white" />
                 </div>
               </div>
-              <p className="text-sm font-bold text-[#3A4E63] uppercase tracking-wider mb-1">
+              <p className="text-sm font-bold text-[#033F99] uppercase tracking-wider mb-1">
                 Total Leads
               </p>
-              <p className="text-4xl font-black text-[#3A4E63]">{kpis.total}</p>
+              <p className="text-4xl font-black text-[#033F99]">{kpis.total}</p>
             </div>
           </div>
 
@@ -249,17 +249,17 @@ const LeadList = () => {
         </div>
 
         {/* Search & Filters */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#3A4E63]/50 shadow-xl">
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border-2 border-[#033F99]/50 shadow-xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             <div className="lg:col-span-5">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#3A4E63]" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#033F99]" />
                 <input
                   type="text"
                   placeholder="Search leads by customer, ID, or product..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-[#C4D9F4]/50 border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 focus:border-[#3A4E63] transition-all text-[#3A4E63] placeholder-[#3A4E63]/60 font-medium"
+                  className="w-full pl-12 pr-4 py-3.5 bg-[#C4D9F4]/50 border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 focus:border-[#033F99] transition-all text-[#033F99] placeholder-[#033F99]/60 font-medium"
                 />
               </div>
             </div>
@@ -269,7 +269,7 @@ const LeadList = () => {
                 onChange={(e) =>
                   setFilters({ ...filters, status: e.target.value })
                 }
-                className="w-full px-4 py-3.5 bg-[#C4D9F4]/50 border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 focus:border-[#3A4E63] transition-all text-[#3A4E63] font-medium cursor-pointer"
+                className="w-full px-4 py-3.5 bg-[#C4D9F4]/50 border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 focus:border-[#033F99] transition-all text-[#033F99] font-medium cursor-pointer"
               >
                 <option value="all">All Statuses</option>
                 <option value="Active">Active</option>
@@ -285,7 +285,7 @@ const LeadList = () => {
                 onChange={(e) =>
                   setFilters({ ...filters, stage: e.target.value })
                 }
-                className="w-full px-4 py-3.5 bg-[#C4D9F4]/50 border-2 border-[#3A4E63] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#3A4E63]/50 focus:border-[#3A4E63] transition-all text-[#3A4E63] font-medium cursor-pointer"
+                className="w-full px-4 py-3.5 bg-[#C4D9F4]/50 border-2 border-[#033F99] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#033F99]/50 focus:border-[#033F99] transition-all text-[#033F99] font-medium cursor-pointer"
               >
                 <option value="all">All Stages</option>
                 <option value="Intake">Intake</option>
@@ -301,7 +301,7 @@ const LeadList = () => {
                   setFilters({ status: "all", stage: "all" });
                   fetchLeads();
                 }}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#022E75] hover:to-[#022E75] text-white rounded-2xl font-semibold shadow-lg transition-all"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#022E75] hover:to-[#022E75] text-white rounded-2xl font-semibold shadow-lg transition-all"
               >
                 <RefreshCw className="h-5 w-5" />
               </button>
@@ -311,11 +311,11 @@ const LeadList = () => {
       </div>
 
       {/* Leads Table */}
-      <div className="bg-white/70 backdrop-blur-xl rounded-3xl border-2 border-[#3A4E63]/50 shadow-2xl overflow-hidden">
+      <div className="bg-white/70 backdrop-blur-xl rounded-3xl border-2 border-[#033F99]/50 shadow-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white">
+              <tr className="bg-gradient-to-r from-[#033F99] to-[#033F99] text-white">
                 <th className="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">
                   Lead ID
                 </th>
@@ -339,7 +339,7 @@ const LeadList = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#3A4E63]/20">
+            <tbody className="divide-y divide-[#033F99]/20">
               {filteredLeads.map((lead) => (
                 <tr
                   key={lead.lead_id}
@@ -347,28 +347,28 @@ const LeadList = () => {
                   onClick={() => navigate(`/commerce/lead/${lead.lead_id}`)}
                 >
                   <td className="px-6 py-5">
-                    <p className="font-bold text-[#3A4E63] text-base">
+                    <p className="font-bold text-[#033F99] text-base">
                       {lead.lead_id}
                     </p>
-                    <p className="text-sm text-[#3A4E63]/70 font-medium">
+                    <p className="text-sm text-[#033F99]/70 font-medium">
                       {new Date(lead.created_at).toLocaleDateString()}
                     </p>
                   </td>
                   <td className="px-6 py-5">
-                    <p className="font-bold text-[#3A4E63] text-base">
+                    <p className="font-bold text-[#033F99] text-base">
                       {lead.customer_name}
                     </p>
-                    <p className="text-sm text-[#3A4E63]/70 font-medium">
+                    <p className="text-sm text-[#033F99]/70 font-medium">
                       {lead.customer_industry || "N/A"}
                     </p>
                   </td>
                   <td className="px-6 py-5">
-                    <p className="text-[#3A4E63] font-medium text-sm max-w-xs truncate">
+                    <p className="text-[#033F99] font-medium text-sm max-w-xs truncate">
                       {lead.product_description}
                     </p>
                   </td>
                   <td className="px-6 py-5">
-                    <p className="text-[#3A4E63] font-bold">
+                    <p className="text-[#033F99] font-bold">
                       {lead.quantity?.toLocaleString()} {lead.uom}
                     </p>
                   </td>
@@ -387,10 +387,10 @@ const LeadList = () => {
                     </span>
                   </td>
                   <td className="px-6 py-5">
-                    <p className="text-[#3A4E63] font-medium">
+                    <p className="text-[#033F99] font-medium">
                       {lead.assigned_to_name || "Unassigned"}
                     </p>
-                    <p className="text-xs text-[#3A4E63]/70">
+                    <p className="text-xs text-[#033F99]/70">
                       {lead.assigned_to_role || ""}
                     </p>
                   </td>
@@ -402,17 +402,17 @@ const LeadList = () => {
         {filteredLeads.length === 0 && (
           <div className="p-16 text-center">
             <div className="inline-flex p-6 bg-[#C4D9F4] rounded-full mb-4">
-              <Users className="h-12 w-12 text-[#3A4E63]" />
+              <Users className="h-12 w-12 text-[#033F99]" />
             </div>
-            <h3 className="text-2xl font-bold text-[#3A4E63] mb-2">
+            <h3 className="text-2xl font-bold text-[#033F99] mb-2">
               No leads found
             </h3>
-            <p className="text-[#3A4E63] mb-6">
+            <p className="text-[#033F99] mb-6">
               Create your first manufacturing lead to get started
             </p>
             <button
               onClick={() => navigate("/commerce/lead/create")}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#022E75] hover:to-[#022E75] text-white font-bold rounded-xl shadow-lg transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#022E75] hover:to-[#022E75] text-white font-bold rounded-xl shadow-lg transition-all"
             >
               <Plus className="h-5 w-5" />
               Create Lead

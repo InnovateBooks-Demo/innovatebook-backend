@@ -96,7 +96,7 @@ const MetricsPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 text-[#3A4E63] animate-spin" />
+        <RefreshCw className="w-8 h-8 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -131,11 +131,10 @@ const MetricsPage = () => {
         <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
           <button
             onClick={() => setSelectedDomain("all")}
-            className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
-              selectedDomain === "all"
-                ? "bg-[#3A4E63] text-white"
+            className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${selectedDomain === "all"
+                ? "bg-[#033F99] text-white"
                 : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
-            }`}
+              }`}
           >
             All Domains
           </button>
@@ -143,11 +142,10 @@ const MetricsPage = () => {
             <button
               key={domain.id}
               onClick={() => setSelectedDomain(domain.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
-                selectedDomain === domain.id
-                  ? "bg-[#3A4E63] text-white"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${selectedDomain === domain.id
+                  ? "bg-[#033F99] text-white"
                   : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
-              }`}
+                }`}
             >
               <domain.icon className="w-4 h-4" />
               {domain.name}
@@ -197,13 +195,12 @@ const MetricsPage = () => {
                               {metric.name}
                             </p>
                             <span
-                              className={`text-xs px-2 py-0.5 rounded-full ${
-                                metric.confidence_level >= 0.9
+                              className={`text-xs px-2 py-0.5 rounded-full ${metric.confidence_level >= 0.9
                                   ? "bg-green-100 text-green-700"
                                   : metric.confidence_level >= 0.7
                                     ? "bg-amber-100 text-amber-700"
                                     : "bg-slate-100 text-slate-600"
-                              }`}
+                                }`}
                             >
                               {Math.round(
                                 (metric.confidence_level || 0.9) * 100,

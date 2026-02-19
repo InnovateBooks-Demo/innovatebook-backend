@@ -243,7 +243,7 @@ const WorkspaceSettings = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-black bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-black bg-gradient-to-r from-[#033F99] to-[#033F99] bg-clip-text text-transparent mb-2">
             Settings
           </h1>
           <p className="text-slate-600 font-medium">
@@ -252,10 +252,10 @@ const WorkspaceSettings = () => {
         </div>
 
         {/* Content */}
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-[#3A4E63]/20">
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-[#033F99]/20">
           <div className="flex">
             {/* Sidebar */}
-            <div className="w-64 bg-[#3A4E63]/5 border-r-2 border-[#3A4E63]/20 p-6">
+            <div className="w-64 bg-[#033F99]/5 border-r-2 border-[#033F99]/20 p-6">
               <nav className="space-y-2">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
@@ -263,11 +263,10 @@ const WorkspaceSettings = () => {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${
-                        activeTab === tab.id
-                          ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-xl"
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === tab.id
+                          ? "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white shadow-xl"
                           : "text-slate-700 hover:bg-white hover:shadow-lg"
-                      }`}
+                        }`}
                     >
                       <Icon className="h-5 w-5" />
                       <span>{tab.name}</span>
@@ -288,7 +287,7 @@ const WorkspaceSettings = () => {
 
                     {/* Avatar */}
                     <div className="flex items-center gap-6 mb-8">
-                      <div className="w-24 h-24 bg-gradient-to-br from-[#3A4E63] to-[#0147CC] rounded-full flex items-center justify-center text-white font-black text-3xl shadow-2xl overflow-hidden">
+                      <div className="w-24 h-24 bg-gradient-to-br from-[#033F99] to-[#0147CC] rounded-full flex items-center justify-center text-white font-black text-3xl shadow-2xl overflow-hidden">
                         {user?.profile_photo || profilePhoto ? (
                           <img
                             src={`${process.env.REACT_APP_BACKEND_URL || "http://localhost:8001"}${profilePhoto || user?.profile_photo}`}
@@ -313,11 +312,11 @@ const WorkspaceSettings = () => {
                         />
                         <label
                           htmlFor="photo-upload"
-                          className={`inline-block px-6 py-2.5 bg-gradient-to-r from-[#3A4E63] to-[#0147CC] text-white font-bold rounded-xl hover:shadow-xl transition-all shadow-lg cursor-pointer ${uploadingPhoto ? "opacity-50 cursor-not-allowed" : ""}`}
+                          className={`inline-block px-6 py-2.5 bg-gradient-to-r from-[#033F99] to-[#0147CC] text-white font-bold rounded-xl hover:shadow-xl transition-all shadow-lg cursor-pointer ${uploadingPhoto ? "opacity-50 cursor-not-allowed" : ""}`}
                         >
                           {uploadingPhoto ? "Uploading..." : "Change Photo"}
                         </label>
-                        <p className="text-sm text-[#3A4E63]/60 mt-2 font-medium">
+                        <p className="text-sm text-[#033F99]/60 mt-2 font-medium">
                           JPG, PNG or GIF. Max size 2MB.
                         </p>
                       </div>
@@ -336,7 +335,7 @@ const WorkspaceSettings = () => {
                             name="full_name"
                             value={formData.full_name}
                             onChange={handleInputChange}
-                            className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none font-medium"
+                            className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none font-medium"
                           />
                         </div>
                       </div>
@@ -352,7 +351,7 @@ const WorkspaceSettings = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
-                            className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none font-medium"
+                            className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none font-medium"
                           />
                         </div>
                       </div>
@@ -369,7 +368,7 @@ const WorkspaceSettings = () => {
                             value={formData.phone}
                             onChange={handleInputChange}
                             placeholder="+1 (555) 000-0000"
-                            className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none font-medium"
+                            className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none font-medium"
                           />
                         </div>
                       </div>
@@ -385,7 +384,7 @@ const WorkspaceSettings = () => {
                             name="title"
                             value={formData.title}
                             onChange={handleInputChange}
-                            className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none font-medium"
+                            className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none font-medium"
                           />
                         </div>
                       </div>
@@ -400,7 +399,7 @@ const WorkspaceSettings = () => {
                           value={formData.department}
                           onChange={handleInputChange}
                           placeholder="Engineering, Marketing, Sales, etc."
-                          className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none font-medium"
+                          className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none font-medium"
                         />
                       </div>
                     </div>
@@ -409,7 +408,7 @@ const WorkspaceSettings = () => {
                     <div className="flex justify-end mt-8">
                       <button
                         onClick={handleSaveProfile}
-                        className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white font-bold rounded-xl shadow-2xl hover:shadow-[#3A4E63]/50 transition-all"
+                        className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white font-bold rounded-xl shadow-2xl hover:shadow-[#033F99]/50 transition-all"
                       >
                         <Save className="h-5 w-5" />
                         Save Changes
@@ -423,17 +422,17 @@ const WorkspaceSettings = () => {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h2 className="text-2xl font-black text-[#3A4E63]">
+                      <h2 className="text-2xl font-black text-[#033F99]">
                         User Management
                       </h2>
-                      <p className="text-[#3A4E63]/60 mt-1 font-semibold">
+                      <p className="text-[#033F99]/60 mt-1 font-semibold">
                         {users.length} total users
                       </p>
                     </div>
                     {user?.role === "Admin" && (
                       <button
                         onClick={() => setShowAddUserModal(true)}
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#0147CC] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#0147CC] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
                       >
                         <User className="h-5 w-5" strokeWidth={2.5} />
                         Add User
@@ -443,7 +442,7 @@ const WorkspaceSettings = () => {
 
                   <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden">
                     <table className="w-full">
-                      <thead className="bg-[#3A4E63]/10">
+                      <thead className="bg-[#033F99]/10">
                         <tr>
                           <th className="px-6 py-4 text-left text-sm font-black text-slate-900">
                             Name
@@ -470,7 +469,7 @@ const WorkspaceSettings = () => {
                           >
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-full flex items-center justify-center text-white font-bold">
+                                <div className="w-10 h-10 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-full flex items-center justify-center text-white font-bold">
                                   {u.full_name?.charAt(0) || "U"}
                                 </div>
                                 <span className="font-bold text-slate-900">
@@ -482,17 +481,16 @@ const WorkspaceSettings = () => {
                               {u.email}
                             </td>
                             <td className="px-6 py-4">
-                              <span className="px-3 py-1 bg-[#3A4E63]/10 text-[#3A4E63] rounded-full text-sm font-bold">
+                              <span className="px-3 py-1 bg-[#033F99]/10 text-[#033F99] rounded-full text-sm font-bold">
                                 {u.role}
                               </span>
                             </td>
                             <td className="px-6 py-4">
                               <span
-                                className={`px-3 py-1 rounded-full text-sm font-bold ${
-                                  u.status === "active"
+                                className={`px-3 py-1 rounded-full text-sm font-bold ${u.status === "active"
                                     ? "bg-green-100 text-green-700"
                                     : "bg-red-100 text-red-700"
-                                }`}
+                                  }`}
                               >
                                 {u.status}
                               </span>
@@ -501,7 +499,7 @@ const WorkspaceSettings = () => {
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => setEditingUser(u)}
-                                  className="p-2 hover:bg-[#3A4E63]/10 rounded-lg text-[#3A4E63] transition-colors"
+                                  className="p-2 hover:bg-[#033F99]/10 rounded-lg text-[#033F99] transition-colors"
                                   title="Edit"
                                 >
                                   <Mail className="h-4 w-4" />
@@ -568,7 +566,7 @@ const WorkspaceSettings = () => {
                             className="sr-only peer"
                             defaultChecked
                           />
-                          <div className="w-14 h-8 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#3A4E63]"></div>
+                          <div className="w-14 h-8 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#033F99]"></div>
                         </label>
                       </div>
                     ))}
@@ -591,19 +589,19 @@ const WorkspaceSettings = () => {
                         <input
                           type="password"
                           placeholder="Current Password"
-                          className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none"
+                          className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none"
                         />
                         <input
                           type="password"
                           placeholder="New Password"
-                          className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none"
+                          className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none"
                         />
                         <input
                           type="password"
                           placeholder="Confirm New Password"
-                          className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none"
+                          className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none"
                         />
-                        <button className="px-6 py-3 bg-[#3A4E63] text-white font-bold rounded-xl hover:bg-[#3A4E63] transition-all">
+                        <button className="px-6 py-3 bg-[#033F99] text-white font-bold rounded-xl hover:bg-[#033F99] transition-all">
                           Update Password
                         </button>
                       </div>
@@ -637,16 +635,15 @@ const WorkspaceSettings = () => {
                         {["Light", "Dark", "Auto"].map((theme) => (
                           <button
                             key={theme}
-                            className="p-6 border-2 border-[#3A4E63] rounded-xl hover:bg-[#3A4E63]/5 transition-all"
+                            className="p-6 border-2 border-[#033F99] rounded-xl hover:bg-[#033F99]/5 transition-all"
                           >
                             <div
-                              className={`w-full h-24 rounded-lg mb-3 ${
-                                theme === "Light"
+                              className={`w-full h-24 rounded-lg mb-3 ${theme === "Light"
                                   ? "bg-white border-2 border-slate-200"
                                   : theme === "Dark"
                                     ? "bg-slate-900"
                                     : "bg-gradient-to-br from-white to-slate-900"
-                              }`}
+                                }`}
                             ></div>
                             <p className="font-bold text-slate-900">{theme}</p>
                           </button>
@@ -658,7 +655,7 @@ const WorkspaceSettings = () => {
                       <h3 className="font-bold text-slate-900 mb-4">
                         Font Size
                       </h3>
-                      <select className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none font-medium">
+                      <select className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none font-medium">
                         <option>Small</option>
                         <option selected>Medium</option>
                         <option>Large</option>
@@ -703,7 +700,7 @@ const WorkspaceSettings = () => {
                           </p>
                           <p className="text-sm text-slate-600">{item.desc}</p>
                         </div>
-                        <select className="px-4 py-2 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none font-medium">
+                        <select className="px-4 py-2 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none font-medium">
                           <option>Everyone</option>
                           <option>My Contacts</option>
                           <option>Nobody</option>
@@ -723,7 +720,7 @@ const WorkspaceSettings = () => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-black bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] bg-clip-text text-transparent">
+              <h3 className="text-2xl font-black bg-gradient-to-r from-[#033F99] to-[#033F99] bg-clip-text text-transparent">
                 Add New User
               </h3>
               <button
@@ -746,7 +743,7 @@ const WorkspaceSettings = () => {
                     setNewUser({ ...newUser, full_name: e.target.value })
                   }
                   placeholder="John Doe"
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none"
                 />
               </div>
 
@@ -761,7 +758,7 @@ const WorkspaceSettings = () => {
                     setNewUser({ ...newUser, email: e.target.value })
                   }
                   placeholder="john.doe@innovatebooks.com"
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none"
                 />
               </div>
 
@@ -776,7 +773,7 @@ const WorkspaceSettings = () => {
                     setNewUser({ ...newUser, password: e.target.value })
                   }
                   placeholder="Enter password"
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none"
                 />
               </div>
 
@@ -791,7 +788,7 @@ const WorkspaceSettings = () => {
                     setNewUser({ ...newUser, role: e.target.value })
                   }
                   placeholder="e.g., Developer, Manager, Designer"
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none"
                 />
               </div>
 
@@ -804,7 +801,7 @@ const WorkspaceSettings = () => {
                   onChange={(e) =>
                     setNewUser({ ...newUser, status: e.target.value })
                   }
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#3A4E63] focus:outline-none"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-[#033F99] focus:outline-none"
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
@@ -813,7 +810,7 @@ const WorkspaceSettings = () => {
 
               <button
                 onClick={handleCreateUser}
-                className="w-full px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white font-bold rounded-xl shadow-2xl hover:shadow-[#3A4E63]/50 transition-all"
+                className="w-full px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white font-bold rounded-xl shadow-2xl hover:shadow-[#033F99]/50 transition-all"
               >
                 Create User
               </button>

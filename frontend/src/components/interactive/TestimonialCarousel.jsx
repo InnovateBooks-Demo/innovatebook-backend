@@ -78,16 +78,16 @@ export const TestimonialCarousel = ({
           {testimonials.map((testimonial, index) => (
             <div
               key={`testimonial-${testimonial.name}-${index}`}
-              className="bg-white p-8 rounded-2xl border border-slate-100 hover:border-[#3A4E63]/30 hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
+              className="bg-white p-8 rounded-2xl border border-slate-100 hover:border-[#033F99]/30 hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
             >
-              <Quote className="h-8 w-8 text-[#3A4E63]/20 mb-4" />
+              <Quote className="h-8 w-8 text-[#033F99]/20 mb-4" />
               <p className="text-slate-600 leading-relaxed mb-6">
                 "{testimonial.content}"
               </p>
 
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#3A4E63]/10 flex items-center justify-center">
-                  <span className="font-bold text-[#3A4E63]">
+                <div className="w-12 h-12 rounded-full bg-[#033F99]/10 flex items-center justify-center">
+                  <span className="font-bold text-[#033F99]">
                     {testimonial.name
                       .split(" ")
                       .map((n) => n[0])
@@ -123,8 +123,8 @@ export const TestimonialCarousel = ({
       {/* Main testimonial */}
       <div className="relative bg-gradient-to-br from-slate-50 to-white rounded-3xl p-8 md:p-12 border border-slate-100 overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#3A4E63]/5 rounded-full blur-3xl" />
-        <Quote className="absolute top-8 right-8 h-16 w-16 text-[#3A4E63]/10" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#033F99]/5 rounded-full blur-3xl" />
+        <Quote className="absolute top-8 right-8 h-16 w-16 text-[#033F99]/10" />
 
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <div className="flex justify-center gap-1 mb-6">
@@ -141,8 +141,8 @@ export const TestimonialCarousel = ({
           </p>
 
           <div className="flex flex-col items-center">
-            <div className="w-16 h-16 rounded-full bg-[#3A4E63]/10 flex items-center justify-center mb-4">
-              <span className="text-xl font-bold text-[#3A4E63]">
+            <div className="w-16 h-16 rounded-full bg-[#033F99]/10 flex items-center justify-center mb-4">
+              <span className="text-xl font-bold text-[#033F99]">
                 {testimonials[activeIndex].name
                   .split(" ")
                   .map((n) => n[0])
@@ -153,7 +153,7 @@ export const TestimonialCarousel = ({
               {testimonials[activeIndex].name}
             </p>
             <p className="text-slate-500">{testimonials[activeIndex].role}</p>
-            <p className="text-[#3A4E63] font-medium">
+            <p className="text-[#033F99] font-medium">
               {testimonials[activeIndex].company}
             </p>
           </div>
@@ -164,7 +164,7 @@ export const TestimonialCarousel = ({
       <div className="flex items-center justify-center gap-4 mt-8">
         <button
           onClick={goToPrev}
-          className="w-10 h-10 rounded-full border border-slate-200 hover:border-[#3A4E63] hover:bg-[#3A4E63]/5 flex items-center justify-center transition-all duration-300"
+          className="w-10 h-10 rounded-full border border-slate-200 hover:border-[#033F99] hover:bg-[#033F99]/5 flex items-center justify-center transition-all duration-300"
           aria-label="Previous testimonial"
         >
           <ChevronLeft className="h-5 w-5 text-slate-600" />
@@ -175,11 +175,10 @@ export const TestimonialCarousel = ({
             <button
               key={`dot-${index}`}
               onClick={() => goToIndex(index)}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                index === activeIndex
-                  ? "bg-[#3A4E63] w-8"
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === activeIndex
+                  ? "bg-[#033F99] w-8"
                   : "bg-slate-300 hover:bg-slate-400"
-              }`}
+                }`}
               aria-label={`Go to testimonial ${index + 1}`}
             />
           ))}
@@ -187,7 +186,7 @@ export const TestimonialCarousel = ({
 
         <button
           onClick={goToNext}
-          className="w-10 h-10 rounded-full border border-slate-200 hover:border-[#3A4E63] hover:bg-[#3A4E63]/5 flex items-center justify-center transition-all duration-300"
+          className="w-10 h-10 rounded-full border border-slate-200 hover:border-[#033F99] hover:bg-[#033F99]/5 flex items-center justify-center transition-all duration-300"
           aria-label="Next testimonial"
         >
           <ChevronRight className="h-5 w-5 text-slate-600" />

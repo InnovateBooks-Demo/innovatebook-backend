@@ -194,7 +194,7 @@ const PricingPage = () => {
       ],
       cta: "Start Free Trial",
       popular: true,
-      gradient: "from-[#3A4E63] to-[#3A4E63]",
+      gradient: "from-[#033F99] to-[#033F99]",
       accent: "blue",
     },
     {
@@ -282,7 +282,7 @@ const PricingPage = () => {
       <SharedNavigation />
 
       {/* Hero Section - Full Color */}
-      <section className="pt-24 pb-20 px-6 relative overflow-hidden bg-[#3A4E63]">
+      <section className="pt-24 pb-20 px-6 relative overflow-hidden bg-[#033F99]">
         <div className="absolute inset-0 overflow-hidden opacity-10">
           <div className="absolute top-20 left-10 w-96 h-96 bg-white rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 right-20 w-80 h-80 bg-white rounded-full blur-3xl"></div>
@@ -293,12 +293,12 @@ const PricingPage = () => {
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-2.5 rounded-full text-white font-semibold text-sm mb-8">
             <Sparkles className="h-4 w-4" />
             Enterprise Operating System
-            <span className="px-2 py-0.5 bg-white text-[#3A4E63] text-xs rounded-full ml-1 font-bold">
+            <span className="px-2 py-0.5 bg-white text-[#033F99] text-xs rounded-full ml-1 font-bold">
               NEW
             </span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-4xl xs:text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"> // RESPONSIVE CHANGE
             Pricing built for
             <br />
             <span className="italic font-light">business maturity.</span>
@@ -313,24 +313,22 @@ const PricingPage = () => {
           </p>
 
           {/* Billing Toggle */}
-          <div className="inline-flex items-center gap-4 bg-white/20 backdrop-blur-sm p-2 rounded-2xl mb-8">
+          <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/20 backdrop-blur-sm p-2 rounded-2xl mb-8 w-full sm:w-auto"> // RESPONSIVE CHANGE
             <button
               onClick={() => setBillingCycle("monthly")}
-              className={`px-8 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                billingCycle === "monthly"
-                  ? "bg-white text-[#3A4E63] shadow-lg"
-                  : "text-white hover:bg-white/10"
-              }`}
+              className={`w-full sm:w-auto px-8 py-3 rounded-xl font-semibold transition-all duration-300 ${billingCycle === "monthly" // RESPONSIVE CHANGE
+                ? "bg-white text-[#033F99] shadow-lg"
+                : "text-white hover:bg-white/10"
+                }`}
             >
               Monthly
             </button>
             <button
               onClick={() => setBillingCycle("annual")}
-              className={`px-8 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 ${
-                billingCycle === "annual"
-                  ? "bg-white text-[#3A4E63] shadow-lg"
-                  : "text-white hover:bg-white/10"
-              }`}
+              className={`w-full sm:w-auto px-8 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${billingCycle === "annual" // RESPONSIVE CHANGE
+                ? "bg-white text-[#033F99] shadow-lg"
+                : "text-white hover:bg-white/10"
+                }`}
             >
               Annual
               <span className="bg-green-500 text-white text-xs px-2.5 py-1 rounded-full font-bold">
@@ -342,19 +340,17 @@ const PricingPage = () => {
       </section>
 
       {/* Plans Section with Hover Effects */}
-      <section className="py-16 px-6 relative">
+      <section className="py-16 px-4 sm:px-6 relative"> // RESPONSIVE CHANGE
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"> // RESPONSIVE CHANGE
             {plans.map((plan, index) => (
               <div
                 key={index}
-                className={`relative bg-white rounded-3xl border-2 transition-all duration-500 transform ${
-                  hoveredPlan === index ? "scale-105 shadow-2xl" : "shadow-lg"
-                } ${
-                  plan.popular
-                    ? "border-[#3A4E63] ring-4 ring-[#3A4E63]/20"
-                    : "border-slate-200 hover:border-[#3A4E63]/50"
-                }`}
+                className={`relative bg-white rounded-3xl border-2 transition-all duration-500 transform ${hoveredPlan === index ? "scale-105 shadow-2xl" : "shadow-lg"
+                  } ${plan.popular
+                    ? "border-[#033F99] ring-4 ring-[#033F99]/20"
+                    : "border-slate-200 hover:border-[#033F99]/50"
+                  }`}
                 onMouseEnter={() => setHoveredPlan(index)}
                 onMouseLeave={() => setHoveredPlan(null)}
                 style={{
@@ -364,7 +360,7 @@ const PricingPage = () => {
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                    <span className="bg-gradient-to-r from-[#3A4E63] to-purple-600 text-white px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg">
+                    <span className="bg-gradient-to-r from-[#033F99] to-purple-600 text-white px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg">
                       <Star className="h-4 w-4 fill-current" /> Most Popular
                     </span>
                   </div>
@@ -372,7 +368,7 @@ const PricingPage = () => {
 
                 {/* Plan Header */}
                 <div
-                  className={`p-8 ${plan.popular ? "bg-gradient-to-br from-[#3A4E63]/5 to-purple-500/5" : ""} rounded-t-3xl`}
+                  className={`p-8 ${plan.popular ? "bg-gradient-to-br from-[#033F99]/5 to-purple-500/5" : ""} rounded-t-3xl`}
                 >
                   <div className="mb-4">
                     <h3 className="text-2xl font-bold text-slate-900">
@@ -404,11 +400,10 @@ const PricingPage = () => {
                     }
                   >
                     <button
-                      className={`w-full py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 ${
-                        plan.popular
-                          ? "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white hover:shadow-lg hover:shadow-[#3A4E63]/30"
-                          : "bg-slate-100 text-slate-900 hover:bg-slate-200"
-                      }`}
+                      className={`w-full py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 ${plan.popular
+                        ? "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white hover:shadow-lg hover:shadow-[#033F99]/30"
+                        : "bg-slate-100 text-slate-900 hover:bg-slate-200"
+                        }`}
                     >
                       <Zap className="h-5 w-5" />
                       {plan.cta}
@@ -463,7 +458,7 @@ const PricingPage = () => {
       </section>
 
       {/* Interactive Pricing Calculator */}
-      <section className="py-20 px-6 bg-gradient-to-br from-slate-900 via-[#3A4E63]/90 to-slate-900">
+      <section className="py-20 px-6 bg-gradient-to-br from-slate-900 via-[#033F99]/90 to-slate-900">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-white mb-4">
@@ -474,8 +469,8 @@ const PricingPage = () => {
             </p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
-            <div className="grid md:grid-cols-2 gap-8">
+          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-4 sm:p-8 border border-white/20"> // RESPONSIVE CHANGE
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8"> // RESPONSIVE CHANGE
               {/* Solution Selector */}
               <div className="space-y-4">
                 {solutions.map((solution) => {
@@ -488,11 +483,10 @@ const PricingPage = () => {
                       key={solution.id}
                       onClick={() => toggleSolution(solution.id)}
                       disabled={isRequired}
-                      className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 border-2 ${
-                        isSelected
-                          ? "bg-white/20 border-white/40 shadow-lg"
-                          : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
-                      } ${isRequired ? "cursor-not-allowed" : "cursor-pointer"}`}
+                      className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 border-2 ${isSelected
+                        ? "bg-white/20 border-white/40 shadow-lg"
+                        : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
+                        } ${isRequired ? "cursor-not-allowed" : "cursor-pointer"}`}
                     >
                       <div
                         className={`w-12 h-12 rounded-xl bg-gradient-to-br ${solution.color} flex items-center justify-center flex-shrink-0`}
@@ -526,11 +520,10 @@ const PricingPage = () => {
                         <p className="text-xs text-slate-400">/month</p>
                       </div>
                       <div
-                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                          isSelected
-                            ? "bg-green-500 border-green-500"
-                            : "border-white/40"
-                        }`}
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected
+                          ? "bg-green-500 border-green-500"
+                          : "border-white/40"
+                          }`}
                       >
                         {isSelected && <Check className="h-4 w-4 text-white" />}
                       </div>
@@ -540,7 +533,7 @@ const PricingPage = () => {
               </div>
 
               {/* Price Summary */}
-              <div className="bg-white rounded-3xl p-8 sticky top-32">
+              <div className="bg-white rounded-3xl p-6 sm:p-8 sticky top-32 h-fit"> // RESPONSIVE CHANGE
                 <h3 className="text-2xl font-bold text-slate-900 mb-6">
                   Your Custom Plan
                 </h3>
@@ -556,7 +549,7 @@ const PricingPage = () => {
                           className="flex items-center justify-between py-2 border-b border-slate-100"
                         >
                           <div className="flex items-center gap-3">
-                            <Icon className="h-5 w-5 text-[#3A4E63]" />
+                            <Icon className="h-5 w-5 text-[#033F99]" />
                             <span className="text-slate-700">
                               {solution.name}
                             </span>
@@ -569,7 +562,7 @@ const PricingPage = () => {
                     })}
                 </div>
 
-                <div className="bg-gradient-to-r from-[#3A4E63]/10 to-purple-500/10 rounded-2xl p-6 mb-6">
+                <div className="bg-gradient-to-r from-[#033F99]/10 to-purple-500/10 rounded-2xl p-6 mb-6">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-slate-600">Monthly Total</span>
                     <span className="text-3xl font-bold text-slate-900">
@@ -592,7 +585,7 @@ const PricingPage = () => {
                 </div>
 
                 <Link to="/auth/signup">
-                  <button className="w-full py-4 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-[#3A4E63]/30 transition-all transform hover:scale-105 flex items-center justify-center gap-2">
+                  <button className="w-full py-4 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-[#033F99]/30 transition-all transform hover:scale-105 flex items-center justify-center gap-2">
                     <Rocket className="h-5 w-5" />
                     Start 14-Day Free Trial
                   </button>
@@ -608,9 +601,9 @@ const PricingPage = () => {
       </section>
 
       {/* Animated Stats Section */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-20 px-4 sm:px-6 bg-white"> // RESPONSIVE CHANGE
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"> // RESPONSIVE CHANGE
             <div
               ref={savedRef}
               className="text-center p-6 rounded-3xl bg-gradient-to-br from-green-50 to-green-100 border border-green-200"
@@ -663,8 +656,8 @@ const PricingPage = () => {
           </div>
 
           <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xl">
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto"> // RESPONSIVE CHANGE
+              <table className="w-full min-w-[600px] sm:min-w-full"> // RESPONSIVE CHANGE
                 <thead className="bg-gradient-to-r from-slate-50 to-slate-100">
                   <tr>
                     <th className="text-left p-6 font-bold text-slate-700">
@@ -687,7 +680,7 @@ const PricingPage = () => {
                         className="border-t border-slate-100 hover:bg-slate-50 transition-colors group"
                       >
                         <td className="p-6">
-                          <div className="flex items-center gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> // RESPONSIVE CHANGE
                             <div
                               className={`w-12 h-12 rounded-xl bg-gradient-to-br ${solution.color} flex items-center justify-center transform group-hover:scale-110 transition-transform`}
                             >
@@ -698,7 +691,7 @@ const PricingPage = () => {
                                 {solution.name}
                               </p>
                               {solution.included && (
-                                <span className="text-xs text-[#3A4E63] font-bold uppercase">
+                                <span className="text-xs text-[#033F99] font-bold uppercase">
                                   Mandatory
                                 </span>
                               )}
@@ -753,7 +746,7 @@ const PricingPage = () => {
       </section>
 
       {/* Value Proposition Section */}
-      <section className="py-20 px-6 bg-gradient-to-br from-[#3A4E63] via-[#3A4E63] to-slate-900 relative overflow-hidden">
+      <section className="py-20 px-6 bg-gradient-to-br from-[#033F99] via-[#033F99] to-slate-900 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl animate-pulse"></div>
           <div
@@ -772,7 +765,7 @@ const PricingPage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8"> // RESPONSIVE CHANGE
             {[
               {
                 icon: Calculator,
@@ -828,11 +821,10 @@ const PricingPage = () => {
             {faqs.map((faq, i) => (
               <div
                 key={i}
-                className={`bg-slate-50 rounded-2xl border-2 overflow-hidden transition-all duration-300 ${
-                  expandedFaq === i
-                    ? "border-[#3A4E63] shadow-lg"
-                    : "border-slate-200 hover:border-slate-300"
-                }`}
+                className={`bg-slate-50 rounded-2xl border-2 overflow-hidden transition-all duration-300 ${expandedFaq === i
+                  ? "border-[#033F99] shadow-lg"
+                  : "border-slate-200 hover:border-slate-300"
+                  }`}
               >
                 <button
                   onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
@@ -842,11 +834,10 @@ const PricingPage = () => {
                     {faq.q}
                   </span>
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                      expandedFaq === i
-                        ? "bg-[#3A4E63] rotate-180"
-                        : "bg-slate-200"
-                    }`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${expandedFaq === i
+                      ? "bg-[#033F99] rotate-180"
+                      : "bg-slate-200"
+                      }`}
                   >
                     <ChevronDown
                       className={`h-5 w-5 transition-colors ${expandedFaq === i ? "text-white" : "text-slate-600"}`}
@@ -854,9 +845,8 @@ const PricingPage = () => {
                   </div>
                 </button>
                 <div
-                  className={`overflow-hidden transition-all duration-300 ${
-                    expandedFaq === i ? "max-h-48" : "max-h-0"
-                  }`}
+                  className={`overflow-hidden transition-all duration-300 ${expandedFaq === i ? "max-h-48" : "max-h-0"
+                    }`}
                 >
                   <div className="px-6 pb-6 text-slate-600 leading-relaxed">
                     {faq.a}
@@ -869,7 +859,7 @@ const PricingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-6 bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] relative overflow-hidden">
+      <section className="py-24 px-6 bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0aC0ydi00aDJ2LTJoLTR2NmgzdjJ6bTAtOGgtMnYyaDJ2LTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-50"></div>
         </div>
@@ -883,7 +873,7 @@ const PricingPage = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/auth/signup">
-              <button className="bg-white text-[#3A4E63] px-10 py-5 rounded-xl font-bold hover:bg-slate-100 transition-all transform hover:scale-105 flex items-center gap-3 shadow-2xl">
+              <button className="bg-white text-[#033F99] px-10 py-5 rounded-xl font-bold hover:bg-slate-100 transition-all transform hover:scale-105 flex items-center gap-3 shadow-2xl">
                 <Zap className="h-6 w-6" />
                 Start Free Trial
               </button>
@@ -919,7 +909,7 @@ const PricingPage = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
-                <span className="text-[#3A4E63] font-bold text-xl">IB</span>
+                <span className="text-[#033F99] font-bold text-xl">IB</span>
               </div>
               <span className="text-2xl font-bold">Innovate Books</span>
             </div>

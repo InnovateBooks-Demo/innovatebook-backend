@@ -140,7 +140,7 @@ const TrialBalance = () => {
             <Button
               onClick={loadReport}
               disabled={loading}
-              style={{ backgroundColor: "#3A4E63" }}
+              style={{ backgroundColor: "#033F99" }}
               className="text-white"
             >
               {loading ? (

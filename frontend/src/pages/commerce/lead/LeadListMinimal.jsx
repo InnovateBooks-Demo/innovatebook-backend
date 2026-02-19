@@ -56,7 +56,7 @@ const LeadListMinimal = () => {
     return (
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="flex items-center justify-center h-96">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#3A4E63] border-t-transparent"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#033F99] border-t-transparent"></div>
         </div>
       </div>
     );
@@ -76,7 +76,7 @@ const LeadListMinimal = () => {
             </div>
             <button
               onClick={() => navigate("/commerce/lead/new")}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#3A4E63] text-white text-sm font-medium rounded-lg hover:bg-[#3A4E63] transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#033F99] text-white text-sm font-medium rounded-lg hover:bg-[#033F99] transition-colors"
             >
               <Plus className="w-4 h-4" />
               New Lead
@@ -86,7 +86,7 @@ const LeadListMinimal = () => {
           {/* Stats */}
           <div className="flex items-center gap-6 mt-6">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#3A4E63]"></div>
+              <div className="w-2 h-2 rounded-full bg-[#033F99]"></div>
               <span className="text-sm text-gray-600">{stats.hot} Hot</span>
             </div>
             <div className="flex items-center gap-2">
@@ -111,13 +111,13 @@ const LeadListMinimal = () => {
               placeholder="Search leads..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
             />
           </div>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+            className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
           >
             <option value="">All Status</option>
             <option value="New">New</option>
@@ -127,7 +127,7 @@ const LeadListMinimal = () => {
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+            className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
           >
             <option value="">All Scores</option>
             <option value="Hot">Hot</option>
@@ -181,16 +181,15 @@ const LeadListMinimal = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-1 h-8 rounded-full ${
-                            lead.lead_score >= 76
-                              ? "bg-[#3A4E63]"
+                          className={`w-1 h-8 rounded-full ${lead.lead_score >= 76
+                              ? "bg-[#033F99]"
                               : lead.lead_score >= 51
                                 ? "bg-[#044AB3]"
                                 : "bg-gray-300"
-                          }`}
+                            }`}
                         ></div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900 group-hover:text-[#3A4E63] transition-colors">
+                          <p className="text-sm font-medium text-gray-900 group-hover:text-[#033F99] transition-colors">
                             {lead.company_name}
                           </p>
                           <p className="text-xs text-gray-500">
@@ -213,13 +212,12 @@ const LeadListMinimal = () => {
                           {Math.round(lead.lead_score || 0)}
                         </span>
                         <span
-                          className={`text-xs px-2 py-0.5 rounded ${
-                            lead.lead_score_category === "Hot"
-                              ? "bg-[#EBF3FC] text-[#3A4E63]"
+                          className={`text-xs px-2 py-0.5 rounded ${lead.lead_score_category === "Hot"
+                              ? "bg-[#EBF3FC] text-[#033F99]"
                               : lead.lead_score_category === "Warm"
-                                ? "bg-[#EBF3FC] text-[#3A4E63]"
+                                ? "bg-[#EBF3FC] text-[#033F99]"
                                 : "bg-gray-100 text-gray-600"
-                          }`}
+                            }`}
                         >
                           {lead.lead_score_category || "Cold"}
                         </span>
@@ -241,7 +239,7 @@ const LeadListMinimal = () => {
                       {lead.assigned_to ? (
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full bg-[#C4D9F4] flex items-center justify-center">
-                            <span className="text-xs font-medium text-[#3A4E63]">
+                            <span className="text-xs font-medium text-[#033F99]">
                               {lead.assigned_to.charAt(0).toUpperCase()}
                             </span>
                           </div>
@@ -256,7 +254,7 @@ const LeadListMinimal = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#3A4E63] transition-colors" />
+                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#033F99] transition-colors" />
                     </td>
                   </tr>
                 ))

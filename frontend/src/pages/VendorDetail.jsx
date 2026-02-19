@@ -62,7 +62,7 @@ const VendorDetail = () => {
           <div>
             <h1
               className="text-3xl font-semibold"
-              style={{ fontFamily: "Inter", color: "#3A4E63" }}
+              style={{ fontFamily: "Inter", color: "#033F99" }}
             >
               {vendor?.name}
             </h1>
@@ -79,7 +79,7 @@ const VendorDetail = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold" style={{ color: "#3A4E63" }}>
+            <p className="text-2xl font-semibold" style={{ color: "#033F99" }}>
               {formatCurrency(data?.total_billed)}
             </p>
           </CardContent>
@@ -111,7 +111,7 @@ const VendorDetail = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold" style={{ color: "#3A4E63" }}>
+            <p className="text-2xl font-semibold" style={{ color: "#033F99" }}>
               {vendor?.avg_payment_days || 0} days
             </p>
           </CardContent>
@@ -137,7 +137,7 @@ const VendorDetail = () => {
                 <div>
                   <h3
                     className="font-semibold mb-4"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     Contact Information
                   </h3>
@@ -159,7 +159,7 @@ const VendorDetail = () => {
                 <div>
                   <h3
                     className="font-semibold mb-4"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     Business Information
                   </h3>
@@ -214,13 +214,12 @@ const VendorDetail = () => {
                         </td>
                         <td>
                           <span
-                            className={`badge ${
-                              bill.status === "Paid"
+                            className={`badge ${bill.status === "Paid"
                                 ? "badge-success"
                                 : bill.status === "Partially Paid"
                                   ? "badge-warning"
                                   : "badge-danger"
-                            }`}
+                              }`}
                           >
                             {bill.status}
                           </span>

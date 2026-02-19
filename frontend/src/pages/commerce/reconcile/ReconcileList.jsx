@@ -91,11 +91,11 @@ const ReconcileList = () => {
     avgScore:
       reconciliations.length > 0
         ? (
-            reconciliations.reduce(
-              (sum, r) => sum + r.reconciliation_score,
-              0,
-            ) / reconciliations.length
-          ).toFixed(1)
+          reconciliations.reduce(
+            (sum, r) => sum + r.reconciliation_score,
+            0,
+          ) / reconciliations.length
+        ).toFixed(1)
         : 0,
   };
 
@@ -121,7 +121,7 @@ const ReconcileList = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="w-16 h-16 border-4 border-[#3A4E63] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-16 h-16 border-4 border-[#033F99] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -143,7 +143,7 @@ const ReconcileList = () => {
         </div>
         <Button
           onClick={() => navigate("/commerce/reconcile/new")}
-          className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white"
+          className="bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white"
         >
           <Plus className="h-5 w-5 mr-2" />
           New Reconciliation
@@ -155,10 +155,10 @@ const ReconcileList = () => {
         <Card className="p-4 bg-gradient-to-br from-[#EBF3FC] to-[#C4D9F4] border-[#6B9FE6]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[#3A4E63]">Total</p>
+              <p className="text-sm font-medium text-[#033F99]">Total</p>
               <p className="text-2xl font-bold text-white">{stats.total}</p>
             </div>
-            <GitCompare className="h-8 w-8 text-[#3A4E63]" />
+            <GitCompare className="h-8 w-8 text-[#033F99]" />
           </div>
         </Card>
 
@@ -202,7 +202,7 @@ const ReconcileList = () => {
               <p className="text-sm font-medium text-[#0147CC]">Closed</p>
               <p className="text-2xl font-bold text-blue-900">{stats.closed}</p>
             </div>
-            <Target className="h-8 w-8 text-[#3A4E63]" />
+            <Target className="h-8 w-8 text-[#033F99]" />
           </div>
         </Card>
 
@@ -234,7 +234,7 @@ const ReconcileList = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
           >
             <option value="All">All Status</option>
             <option value="Open">Open</option>
@@ -295,7 +295,7 @@ const ReconcileList = () => {
               {filteredReconciliations.map((rec) => (
                 <tr key={rec.id} className="hover:bg-slate-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-semibold text-[#3A4E63]">
+                    <span className="text-sm font-semibold text-[#033F99]">
                       {rec.reconcile_id}
                     </span>
                   </td>
@@ -354,7 +354,7 @@ const ReconcileList = () => {
                         onClick={() =>
                           navigate(`/commerce/reconcile/${rec.reconcile_id}`)
                         }
-                        className="text-[#3A4E63] hover:text-white"
+                        className="text-[#033F99] hover:text-white"
                         title="View"
                       >
                         <Eye className="h-4 w-4" />

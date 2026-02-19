@@ -185,7 +185,7 @@ const VendorDetailNewPro = () => {
                 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2"
                 style={{ fontFamily: "Poppins" }}
               >
-                <User className="h-5 w-5" style={{ color: "#3A4E63" }} />
+                <User className="h-5 w-5" style={{ color: "#033F99" }} />
                 Contact Information
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -253,13 +253,12 @@ const VendorDetailNewPro = () => {
                           {formatCurrency(bill.total_amount)}
                         </p>
                         <span
-                          className={`text-xs px-2 py-1 rounded-full ${
-                            bill.status === "Paid"
+                          className={`text-xs px-2 py-1 rounded-full ${bill.status === "Paid"
                               ? "bg-green-100 text-green-700"
                               : bill.status === "Partially Paid"
                                 ? "bg-yellow-100 text-yellow-700"
                                 : "bg-red-100 text-red-700"
-                          }`}
+                            }`}
                         >
                           {bill.status}
                         </span>
@@ -299,7 +298,7 @@ const VendorDetailNewPro = () => {
                   </span>
                   <span
                     className="font-bold text-xl"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     {Math.round((totalReceived / totalBilld) * 100 || 0)}%
                   </span>

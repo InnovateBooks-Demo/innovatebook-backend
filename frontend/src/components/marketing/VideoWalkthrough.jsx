@@ -147,7 +147,7 @@ const VideoWalkthrough = ({
   return (
     <section className="mb-12">
       <div className="flex items-center gap-3 mb-6">
-        <PlayCircle className="h-6 w-6 text-[#3A4E63]" />
+        <PlayCircle className="h-6 w-6 text-[#033F99]" />
         <h2 className="text-3xl font-bold text-slate-900">Video Walkthrough</h2>
         <span className="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-full font-semibold">
           {duration}
@@ -180,7 +180,7 @@ const VideoWalkthrough = ({
         {!isPlaying && (
           <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center transition-opacity">
             <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform mb-4 animate-pulse">
-              <Play className="h-12 w-12 text-[#3A4E63] ml-2" />
+              <Play className="h-12 w-12 text-[#033F99] ml-2" />
             </div>
             <h3 className="text-white text-2xl font-bold">{title}</h3>
             <p className="text-slate-300 mt-2">{description}</p>
@@ -191,9 +191,8 @@ const VideoWalkthrough = ({
         {/* Video Controls */}
         {isPlaying && (
           <div
-            className={`absolute inset-0 flex flex-col justify-end transition-opacity duration-300 ${
-              showControls ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute inset-0 flex flex-col justify-end transition-opacity duration-300 ${showControls ? "opacity-100" : "opacity-0"
+              }`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Gradient overlay for controls */}
@@ -207,7 +206,7 @@ const VideoWalkthrough = ({
                 onClick={handleSeek}
               >
                 <div
-                  className="h-full bg-[#3A4E63] rounded-full relative transition-all"
+                  className="h-full bg-[#033F99] rounded-full relative transition-all"
                   style={{ width: `${progress}%` }}
                 >
                   <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover/progress:opacity-100 transition-opacity" />
@@ -269,7 +268,7 @@ const VideoWalkthrough = ({
 
         {/* Module Branding */}
         <div className="absolute bottom-4 left-4 flex items-center gap-2 z-20 pointer-events-none">
-          <div className="w-10 h-10 bg-[#3A4E63] rounded-lg flex items-center justify-center shadow-lg">
+          <div className="w-10 h-10 bg-[#033F99] rounded-lg flex items-center justify-center shadow-lg">
             {Icon && <Icon className="h-5 w-5 text-white" />}
           </div>
           <div className="text-white">

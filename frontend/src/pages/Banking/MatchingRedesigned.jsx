@@ -232,11 +232,10 @@ const MatchingRedesigned = () => {
                   <p className="text-xs text-gray-500 mb-1">Type</p>
                   <div className="flex items-center gap-2">
                     <span
-                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                        transaction.transaction_type === "Credit"
+                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${transaction.transaction_type === "Credit"
                           ? "bg-green-100 text-green-700"
                           : "bg-red-100 text-red-700"
-                      }`}
+                        }`}
                     >
                       {transaction.transaction_type === "Credit" ? (
                         <TrendingUp className="h-3 w-3 mr-1" />
@@ -264,15 +263,15 @@ const MatchingRedesigned = () => {
 
                 {(transaction.is_matched ||
                   transaction.status === "Matched") && (
-                  <div className="pt-4 border-t">
-                    <div className="flex items-center gap-2 text-blue-600 bg-blue-50 p-3 rounded-lg">
-                      <CheckCircle2 className="h-5 w-5" />
-                      <span className="text-sm font-medium">
-                        Already Matched
-                      </span>
+                    <div className="pt-4 border-t">
+                      <div className="flex items-center gap-2 text-blue-600 bg-blue-50 p-3 rounded-lg">
+                        <CheckCircle2 className="h-5 w-5" />
+                        <span className="text-sm font-medium">
+                          Already Matched
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             </Card>
           </div>
@@ -338,7 +337,7 @@ const MatchingRedesigned = () => {
                     onClick={() => setActiveTab("suggestions")}
                     style={
                       activeTab === "suggestions"
-                        ? { backgroundColor: "#3A4E63" }
+                        ? { backgroundColor: "#033F99" }
                         : {}
                     }
                   >
@@ -350,7 +349,7 @@ const MatchingRedesigned = () => {
                       onClick={() => setActiveTab("invoices")}
                       style={
                         activeTab === "invoices"
-                          ? { backgroundColor: "#3A4E63" }
+                          ? { backgroundColor: "#033F99" }
                           : {}
                       }
                     >
@@ -363,7 +362,7 @@ const MatchingRedesigned = () => {
                       onClick={() => setActiveTab("bills")}
                       style={
                         activeTab === "bills"
-                          ? { backgroundColor: "#3A4E63" }
+                          ? { backgroundColor: "#033F99" }
                           : {}
                       }
                     >
@@ -444,7 +443,7 @@ const MatchingRedesigned = () => {
                                   )
                                 }
                                 disabled={matching}
-                                style={{ backgroundColor: "#3A4E63" }}
+                                style={{ backgroundColor: "#033F99" }}
                               >
                                 <LinkIcon className="h-4 w-4 mr-2" />
                                 {matching ? "Matching..." : "Match"}
@@ -508,13 +507,12 @@ const MatchingRedesigned = () => {
                                     {formatCurrency(invoice.total_amount)}
                                   </span>
                                   <span
-                                    className={`text-xs px-2 py-1 rounded-full font-medium ${
-                                      invoice.status === "Paid"
+                                    className={`text-xs px-2 py-1 rounded-full font-medium ${invoice.status === "Paid"
                                         ? "bg-green-100 text-green-700"
                                         : invoice.status === "Partially Paid"
                                           ? "bg-yellow-100 text-yellow-700"
                                           : "bg-red-100 text-red-700"
-                                    }`}
+                                      }`}
                                   >
                                     {invoice.status}
                                   </span>
@@ -524,7 +522,7 @@ const MatchingRedesigned = () => {
                             <Button
                               onClick={() => handleMatch("invoice", invoice.id)}
                               disabled={matching}
-                              style={{ backgroundColor: "#3A4E63" }}
+                              style={{ backgroundColor: "#033F99" }}
                             >
                               <LinkIcon className="h-4 w-4 mr-2" />
                               {matching ? "Matching..." : "Match"}
@@ -587,13 +585,12 @@ const MatchingRedesigned = () => {
                                     {formatCurrency(bill.total_amount)}
                                   </span>
                                   <span
-                                    className={`text-xs px-2 py-1 rounded-full font-medium ${
-                                      bill.status === "Paid"
+                                    className={`text-xs px-2 py-1 rounded-full font-medium ${bill.status === "Paid"
                                         ? "bg-green-100 text-green-700"
                                         : bill.status === "Approved"
                                           ? "bg-blue-100 text-blue-700"
                                           : "bg-gray-100 text-gray-700"
-                                    }`}
+                                      }`}
                                   >
                                     {bill.status}
                                   </span>
@@ -603,7 +600,7 @@ const MatchingRedesigned = () => {
                             <Button
                               onClick={() => handleMatch("bill", bill.id)}
                               disabled={matching}
-                              style={{ backgroundColor: "#3A4E63" }}
+                              style={{ backgroundColor: "#033F99" }}
                             >
                               <LinkIcon className="h-4 w-4 mr-2" />
                               {matching ? "Matching..." : "Match"}

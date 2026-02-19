@@ -92,8 +92,8 @@ const LeadListPro = () => {
   );
 
   const getScoreColor = (score) => {
-    if (score >= 76) return "from-[#3A4E63] to-purple-600";
-    if (score >= 51) return "from-[#3A4E63] to-[#3A4E63]";
+    if (score >= 76) return "from-[#033F99] to-purple-600";
+    if (score >= 51) return "from-[#033F99] to-[#033F99]";
     return "from-slate-400 to-slate-500";
   };
 
@@ -101,7 +101,7 @@ const LeadListPro = () => {
     const styles = {
       New: "bg-blue-50 text-blue-700",
       Validated: "bg-emerald-50 text-emerald-700",
-      Qualified: "bg-[#EBF3FC] text-[#3A4E63]",
+      Qualified: "bg-[#EBF3FC] text-[#033F99]",
       Converted: "bg-green-50 text-green-700",
     };
     return styles[status] || "bg-gray-50 text-gray-700";
@@ -111,7 +111,7 @@ const LeadListPro = () => {
     return (
       <PageWrapper>
         <div className="flex items-center justify-center h-96">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#3A4E63] border-t-transparent"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#033F99] border-t-transparent"></div>
         </div>
       </PageWrapper>
     );
@@ -143,7 +143,7 @@ const LeadListPro = () => {
           <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100">
             <div className="flex items-center justify-between mb-3">
               <div className="p-3 bg-[#EBF3FC] rounded-lg">
-                <Users className="w-6 h-6 text-[#3A4E63]" />
+                <Users className="w-6 h-6 text-[#033F99]" />
               </div>
               <span className="text-2xl font-bold text-gray-900">
                 {kpis.total}
@@ -152,7 +152,7 @@ const LeadListPro = () => {
             <p className="text-sm font-medium text-gray-600">Total Leads</p>
           </div>
 
-          <div className="bg-gradient-to-br from-[#3A4E63] to-purple-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow text-white">
+          <div className="bg-gradient-to-br from-[#033F99] to-purple-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow text-white">
             <div className="flex items-center justify-between mb-3">
               <div className="p-3 bg-white/20 rounded-lg">
                 <TrendingUp className="w-6 h-6" />
@@ -166,9 +166,9 @@ const LeadListPro = () => {
           <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow border border-[#6B9FE6]">
             <div className="flex items-center justify-between mb-3">
               <div className="p-3 bg-[#EBF3FC] rounded-lg">
-                <Star className="w-6 h-6 text-[#3A4E63]" />
+                <Star className="w-6 h-6 text-[#033F99]" />
               </div>
-              <span className="text-2xl font-bold text-[#3A4E63]">
+              <span className="text-2xl font-bold text-[#033F99]">
                 {kpis.warm}
               </span>
             </div>
@@ -210,13 +210,13 @@ const LeadListPro = () => {
               placeholder="Search leads..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent text-gray-900"
+              className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent text-gray-900"
             />
           </div>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] text-gray-900 bg-white"
+            className="px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] text-gray-900 bg-white"
           >
             <option value="">All Status</option>
             <option value="New">New</option>
@@ -227,7 +227,7 @@ const LeadListPro = () => {
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] text-gray-900 bg-white"
+            className="px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] text-gray-900 bg-white"
           >
             <option value="">All Scores</option>
             <option value="Hot">Hot Leads</option>
@@ -256,9 +256,9 @@ const LeadListPro = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="p-2 bg-[#EBF3FC] rounded-lg">
-                      <Building2 className="w-4 h-4 text-[#3A4E63]" />
+                      <Building2 className="w-4 h-4 text-[#033F99]" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#3A4E63] transition-colors">
+                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#033F99] transition-colors">
                       {lead.company_name}
                     </h3>
                   </div>
@@ -316,7 +316,7 @@ const LeadListPro = () => {
                   >
                     {lead.lead_status}
                   </span>
-                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#3A4E63] transition-colors" />
+                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#033F99] transition-colors" />
                 </div>
               </div>
 
@@ -325,7 +325,7 @@ const LeadListPro = () => {
                 <div className="mt-3 pt-3 border-t border-gray-100">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-[#C4D9F4] flex items-center justify-center">
-                      <span className="text-xs font-bold text-[#3A4E63]">
+                      <span className="text-xs font-bold text-[#033F99]">
                         {lead.assigned_to.charAt(0)}
                       </span>
                     </div>

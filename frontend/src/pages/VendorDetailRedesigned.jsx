@@ -279,7 +279,7 @@ const VendorDetailRedesigned = () => {
                   Bill History
                 </h3>
                 <Button
-                  style={{ backgroundColor: "#3A4E63" }}
+                  style={{ backgroundColor: "#033F99" }}
                   className="text-white gap-2"
                   onClick={() => navigate("/bills/create")}
                 >
@@ -327,9 +327,8 @@ const VendorDetailRedesigned = () => {
                       {bills.map((bill, index) => (
                         <tr
                           key={bill.id}
-                          className={`border-b border-gray-100 hover:bg-orange-50 cursor-pointer ${
-                            index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                          }`}
+                          className={`border-b border-gray-100 hover:bg-orange-50 cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                            }`}
                           onClick={() => navigate(`/bills/${bill.id}`)}
                         >
                           <td className="px-4 py-3">
@@ -357,13 +356,12 @@ const VendorDetailRedesigned = () => {
                           </td>
                           <td className="px-4 py-3 text-center">
                             <span
-                              className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                bill.status === "Paid"
+                              className={`px-3 py-1 rounded-full text-xs font-semibold ${bill.status === "Paid"
                                   ? "bg-green-100 text-green-700"
                                   : bill.status === "Approved"
                                     ? "bg-blue-100 text-blue-700"
                                     : "bg-gray-100 text-gray-700"
-                              }`}
+                                }`}
                             >
                               {bill.status}
                             </span>

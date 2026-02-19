@@ -101,7 +101,7 @@ const RuleDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -128,11 +128,10 @@ const RuleDetail = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div
-              className={`w-16 h-16 rounded-xl flex items-center justify-center ${
-                rule.is_active
+              className={`w-16 h-16 rounded-xl flex items-center justify-center ${rule.is_active
                   ? "bg-gradient-to-br from-green-500 to-green-600"
                   : "bg-gradient-to-br from-gray-400 to-gray-500"
-              }`}
+                }`}
             >
               <Shield className="w-8 h-8 text-white" />
             </div>
@@ -148,7 +147,7 @@ const RuleDetail = () => {
               <>
                 <button
                   onClick={() => setEditing(true)}
-                  className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
+                  className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2"
                 >
                   <Edit className="w-4 h-4" />
                   Edit
@@ -189,11 +188,10 @@ const RuleDetail = () => {
 
       {/* Status Banner */}
       <div
-        className={`mb-6 p-4 rounded-xl border flex items-center gap-3 ${
-          rule.is_active
+        className={`mb-6 p-4 rounded-xl border flex items-center gap-3 ${rule.is_active
             ? "bg-green-100 text-green-700 border-green-200"
             : "bg-gray-100 text-gray-700 border-gray-200"
-        }`}
+          }`}
       >
         {rule.is_active ? (
           <CheckCircle className="w-6 h-6" />
@@ -230,7 +228,7 @@ const RuleDetail = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, rule_name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
               ) : (
                 <p className="font-medium text-gray-900">{rule.rule_name}</p>
@@ -246,7 +244,7 @@ const RuleDetail = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, rule_type: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 >
                   <option value="approval">Approval</option>
                   <option value="restriction">Restriction</option>
@@ -254,13 +252,12 @@ const RuleDetail = () => {
                 </select>
               ) : (
                 <span
-                  className={`px-2 py-1 text-xs rounded-full ${
-                    rule.rule_type === "approval"
+                  className={`px-2 py-1 text-xs rounded-full ${rule.rule_type === "approval"
                       ? "bg-blue-100 text-blue-700"
                       : rule.rule_type === "restriction"
                         ? "bg-orange-100 text-orange-700"
                         : "bg-purple-100 text-purple-700"
-                  }`}
+                    }`}
                 >
                   {rule.rule_type}
                 </span>
@@ -276,7 +273,7 @@ const RuleDetail = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, applies_to: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 >
                   <option value="equity">Equity</option>
                   <option value="debt">Debt</option>
@@ -301,7 +298,7 @@ const RuleDetail = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, required_role: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 />
               ) : (
                 <p className="font-medium text-gray-900 capitalize">
@@ -332,7 +329,7 @@ const RuleDetail = () => {
                     })
                   }
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] font-mono text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] font-mono text-sm"
                 />
               ) : (
                 <div className="bg-gray-50 rounded-lg p-3">
@@ -355,7 +352,7 @@ const RuleDetail = () => {
                       enforcement_action: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 >
                   <option value="require_approval">Require Approval</option>
                   <option value="block">Block</option>
@@ -364,13 +361,12 @@ const RuleDetail = () => {
                 </select>
               ) : (
                 <span
-                  className={`px-2 py-1 text-xs rounded-full ${
-                    rule.enforcement_action === "require_approval"
+                  className={`px-2 py-1 text-xs rounded-full ${rule.enforcement_action === "require_approval"
                       ? "bg-yellow-100 text-yellow-700"
                       : rule.enforcement_action === "block"
                         ? "bg-red-100 text-red-700"
                         : "bg-green-100 text-green-700"
-                  }`}
+                    }`}
                 >
                   {rule.enforcement_action?.replace("_", " ")}
                 </span>
@@ -401,11 +397,10 @@ const RuleDetail = () => {
           <div>
             <p className="text-sm text-gray-500">Status</p>
             <span
-              className={`px-2 py-1 text-xs rounded-full ${
-                rule.is_active
+              className={`px-2 py-1 text-xs rounded-full ${rule.is_active
                   ? "bg-green-100 text-green-700"
                   : "bg-gray-100 text-gray-700"
-              }`}
+                }`}
             >
               {rule.is_active ? "Active" : "Inactive"}
             </span>

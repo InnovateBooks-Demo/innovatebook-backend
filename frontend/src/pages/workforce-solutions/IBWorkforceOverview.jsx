@@ -131,7 +131,7 @@ const IBWorkforceOverview = () => {
           </h1>
           <p className="text-2xl text-slate-600 leading-relaxed">
             Human Capital Intelligence That{" "}
-            <span className="text-[#3A4E63] font-semibold">Drives ROI</span>
+            <span className="text-[#033F99] font-semibold">Drives ROI</span>
           </p>
         </div>
 
@@ -140,7 +140,7 @@ const IBWorkforceOverview = () => {
           <h2 className="text-3xl font-bold text-slate-900 mb-6">
             What is IB Workforce?
           </h2>
-          <div className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] p-8 rounded-3xl text-white mb-6">
+          <div className="bg-gradient-to-r from-[#033F99] to-[#033F99] p-8 rounded-3xl text-white mb-6">
             <p className="text-xl leading-relaxed">
               IB Workforce is <span className="font-bold underline">NOT</span>{" "}
               just HR software. It's{" "}
@@ -197,9 +197,9 @@ const IBWorkforceOverview = () => {
               return (
                 <div
                   key={index}
-                  className="bg-white p-6 rounded-3xl border-2 border-slate-200 hover:border-[#3A4E63] hover:shadow-xl transition-all"
+                  className="bg-white p-6 rounded-3xl border-2 border-slate-200 hover:border-[#033F99] hover:shadow-xl transition-all"
                 >
-                  <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-2xl flex items-center justify-center mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-2xl flex items-center justify-center mb-4">
                     <Icon className="h-7 w-7 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 mb-3">
@@ -270,8 +270,8 @@ const IBWorkforceOverview = () => {
                       </div>
 
                       <div className="mt-4 flex items-center gap-2">
-                        <Icon className="h-5 w-5 text-[#3A4E63]" />
-                        <span className="text-sm font-semibold text-[#3A4E63]">
+                        <Icon className="h-5 w-5 text-[#033F99]" />
+                        <span className="text-sm font-semibold text-[#033F99]">
                           Powered by {failure.module} Module
                         </span>
                       </div>
@@ -292,7 +292,7 @@ const IBWorkforceOverview = () => {
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] p-6 rounded-3xl text-white text-center"
+                className="bg-gradient-to-br from-[#033F99] to-[#033F99] p-6 rounded-3xl text-white text-center"
               >
                 <p className="text-5xl font-bold mb-2">{stat.metric}</p>
                 <p className="text-xl font-semibold mb-1">{stat.label}</p>
@@ -325,10 +325,10 @@ const IBWorkforceOverview = () => {
           <div className="grid md:grid-cols-2 gap-4">
             <Link
               to="/solutions/workforce/employees"
-              className="flex items-center justify-between p-4 bg-white rounded-xl border-2 border-[#3A4E63] hover:shadow-lg transition-all group"
+              className="flex items-center justify-between p-4 bg-white rounded-xl border-2 border-[#033F99] hover:shadow-lg transition-all group"
             >
               <div className="flex items-center gap-3">
-                <Users className="h-6 w-6 text-[#3A4E63]" />
+                <Users className="h-6 w-6 text-[#033F99]" />
                 <div>
                   <p className="font-bold text-slate-900">
                     Start with Employees
@@ -338,11 +338,11 @@ const IBWorkforceOverview = () => {
                   </p>
                 </div>
               </div>
-              <ArrowRight className="h-5 w-5 text-[#3A4E63] group-hover:translate-x-2 transition-transform" />
+              <ArrowRight className="h-5 w-5 text-[#033F99] group-hover:translate-x-2 transition-transform" />
             </Link>
             <Link
               to="/auth/signup"
-              className="flex items-center justify-between p-4 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white rounded-xl hover:shadow-lg transition-all group"
+              className="flex items-center justify-between p-4 bg-gradient-to-r from-[#033F99] to-[#033F99] text-white rounded-xl hover:shadow-lg transition-all group"
             >
               <div className="flex items-center gap-3">
                 <Zap className="h-6 w-6" />

@@ -18,12 +18,12 @@ export const ProductCard = ({
     return (
       <Link
         to={link || "#"}
-        className={`group flex gap-6 p-6 bg-white rounded-2xl border border-slate-100 hover:border-[#3A4E63]/30 hover:shadow-xl transition-all duration-300 ${className}`}
+        className={`group flex gap-6 p-6 bg-white rounded-2xl border border-slate-100 hover:border-[#033F99]/30 hover:shadow-xl transition-all duration-300 ${className}`}
         data-testid={`product-card-${title?.toLowerCase().replace(/\s+/g, "-")}`}
       >
         {Icon && (
-          <div className="w-16 h-16 rounded-2xl bg-[#3A4E63]/10 group-hover:bg-[#3A4E63] flex items-center justify-center flex-shrink-0 transition-all duration-300">
-            <Icon className="h-8 w-8 text-[#3A4E63] group-hover:text-white transition-colors duration-300" />
+          <div className="w-16 h-16 rounded-2xl bg-[#033F99]/10 group-hover:bg-[#033F99] flex items-center justify-center flex-shrink-0 transition-all duration-300">
+            <Icon className="h-8 w-8 text-[#033F99] group-hover:text-white transition-colors duration-300" />
           </div>
         )}
 
@@ -34,7 +34,7 @@ export const ProductCard = ({
               {subtitle && <p className="text-sm text-slate-500">{subtitle}</p>}
             </div>
             {badge && (
-              <span className="px-2 py-1 bg-[#3A4E63]/10 text-[#3A4E63] text-xs font-semibold rounded-full">
+              <span className="px-2 py-1 bg-[#033F99]/10 text-[#033F99] text-xs font-semibold rounded-full">
                 {badge}
               </span>
             )}
@@ -42,7 +42,7 @@ export const ProductCard = ({
 
           <p className="text-slate-600 text-sm mb-4">{description}</p>
 
-          <div className="flex items-center gap-2 text-[#3A4E63] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+          <div className="flex items-center gap-2 text-[#033F99] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
             <span>{linkText}</span>
             <ArrowRight className="h-4 w-4" />
           </div>
@@ -54,7 +54,7 @@ export const ProductCard = ({
   if (variant === "featured") {
     return (
       <div
-        className={`relative bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] p-8 rounded-3xl text-white overflow-hidden ${className}`}
+        className={`relative bg-gradient-to-br from-[#033F99] to-[#033F99] p-8 rounded-3xl text-white overflow-hidden ${className}`}
         data-testid={`product-card-${title?.toLowerCase().replace(/\s+/g, "-")}`}
       >
         {/* Background decoration */}
@@ -94,7 +94,7 @@ export const ProductCard = ({
           {link && (
             <Link
               to={link}
-              className="inline-flex items-center gap-2 bg-white text-[#3A4E63] px-6 py-3 rounded-xl font-semibold hover:bg-slate-100 transition-colors"
+              className="inline-flex items-center gap-2 bg-white text-[#033F99] px-6 py-3 rounded-xl font-semibold hover:bg-slate-100 transition-colors"
             >
               {linkText}
               <ArrowRight className="h-4 w-4" />
@@ -109,30 +109,30 @@ export const ProductCard = ({
   return (
     <Link
       to={link || "#"}
-      className={`group block p-6 bg-white rounded-2xl border-2 border-slate-100 hover:border-[#3A4E63] hover:-translate-y-2 hover:shadow-xl transition-all duration-300 ${className}`}
+      className={`group block p-6 bg-white rounded-2xl border-2 border-slate-100 hover:border-[#033F99] hover:-translate-y-2 hover:shadow-xl transition-all duration-300 ${className}`}
       data-testid={`product-card-${title?.toLowerCase().replace(/\s+/g, "-")}`}
     >
       {badge && (
-        <span className="inline-block px-2 py-1 bg-[#3A4E63]/10 text-[#3A4E63] text-xs font-semibold rounded-full mb-4">
+        <span className="inline-block px-2 py-1 bg-[#033F99]/10 text-[#033F99] text-xs font-semibold rounded-full mb-4">
           {badge}
         </span>
       )}
 
       {Icon && (
-        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#3A4E63]/10 to-[#3A4E63]/5 group-hover:from-[#3A4E63] group-hover:to-[#3A4E63] flex items-center justify-center mb-4 transition-all duration-300">
-          <Icon className="h-7 w-7 text-[#3A4E63] group-hover:text-white transition-colors duration-300" />
+        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#033F99]/10 to-[#033F99]/5 group-hover:from-[#033F99] group-hover:to-[#033F99] flex items-center justify-center mb-4 transition-all duration-300">
+          <Icon className="h-7 w-7 text-[#033F99] group-hover:text-white transition-colors duration-300" />
         </div>
       )}
 
       <h3 className="font-bold text-slate-900 text-lg mb-1">{title}</h3>
       {subtitle && (
-        <p className="text-sm text-[#3A4E63] font-medium mb-2">{subtitle}</p>
+        <p className="text-sm text-[#033F99] font-medium mb-2">{subtitle}</p>
       )}
       <p className="text-slate-600 text-sm leading-relaxed mb-4">
         {description}
       </p>
 
-      <div className="flex items-center gap-2 text-[#3A4E63] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+      <div className="flex items-center gap-2 text-[#033F99] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
         <span>{linkText}</span>
         <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform duration-300" />
       </div>

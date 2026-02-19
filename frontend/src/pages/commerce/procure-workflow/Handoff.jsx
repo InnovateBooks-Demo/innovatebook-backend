@@ -67,7 +67,7 @@ const ProcureHandoff = () => {
   if (loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   if (!handoff)
@@ -182,7 +182,7 @@ const ProcureHandoff = () => {
                       Scope / Items to Receive
                     </p>
                     {handoff.operations_data?.scope &&
-                    handoff.operations_data.scope.length > 0 ? (
+                      handoff.operations_data.scope.length > 0 ? (
                       <ul className="space-y-2">
                         {handoff.operations_data.scope.map((item, i) => (
                           <li
@@ -305,7 +305,7 @@ const ProcureHandoff = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Contract ID</p>
-                  <p className="font-medium text-[#3A4E63]">
+                  <p className="font-medium text-[#033F99]">
                     {handoff.contract_id}
                   </p>
                 </div>

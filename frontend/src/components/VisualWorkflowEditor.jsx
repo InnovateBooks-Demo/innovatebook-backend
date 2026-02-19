@@ -213,7 +213,7 @@ const VisualWorkflowEditor = ({ workflow, onSave, onCancel }) => {
           <div className="flex gap-2">
             <button
               onClick={handleSave}
-              className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e] flex items-center gap-2"
+              className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e] flex items-center gap-2"
             >
               <Check className="h-4 w-4" />
               Save Workflow
@@ -282,11 +282,10 @@ const VisualWorkflowEditor = ({ workflow, onSave, onCancel }) => {
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, step)}
                       onClick={() => setSelectedStep(step)}
-                      className={`relative p-4 rounded-lg border-2 bg-white cursor-pointer transition-all ${
-                        selectedStep?.step_id === step.step_id
-                          ? "ring-2 ring-[#3A4E63] border-[#3A4E63]"
+                      className={`relative p-4 rounded-lg border-2 bg-white cursor-pointer transition-all ${selectedStep?.step_id === step.step_id
+                          ? "ring-2 ring-[#033F99] border-[#033F99]"
                           : "hover:shadow-md"
-                      } ${typeInfo.color.split(" ")[0]} ${typeInfo.color.split(" ")[1]}`}
+                        } ${typeInfo.color.split(" ")[0]} ${typeInfo.color.split(" ")[1]}`}
                     >
                       <div className="flex items-start gap-3">
                         <div className="cursor-grab">
@@ -592,45 +591,45 @@ const VisualWorkflowEditor = ({ workflow, onSave, onCancel }) => {
                 {/* Notification Config */}
                 {(selectedStep.step_type === "notification" ||
                   selectedStep.step_type === "trigger") && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Title
-                      </label>
-                      <input
-                        type="text"
-                        value={selectedStep.config?.title || ""}
-                        onChange={(e) =>
-                          updateStep(selectedStep.step_id, {
-                            config: {
-                              ...selectedStep.config,
-                              title: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full border rounded-lg p-2"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Message
-                      </label>
-                      <textarea
-                        value={selectedStep.config?.message || ""}
-                        onChange={(e) =>
-                          updateStep(selectedStep.step_id, {
-                            config: {
-                              ...selectedStep.config,
-                              message: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full border rounded-lg p-2"
-                        rows={3}
-                      />
-                    </div>
-                  </>
-                )}
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Title
+                        </label>
+                        <input
+                          type="text"
+                          value={selectedStep.config?.title || ""}
+                          onChange={(e) =>
+                            updateStep(selectedStep.step_id, {
+                              config: {
+                                ...selectedStep.config,
+                                title: e.target.value,
+                              },
+                            })
+                          }
+                          className="w-full border rounded-lg p-2"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Message
+                        </label>
+                        <textarea
+                          value={selectedStep.config?.message || ""}
+                          onChange={(e) =>
+                            updateStep(selectedStep.step_id, {
+                              config: {
+                                ...selectedStep.config,
+                                message: e.target.value,
+                              },
+                            })
+                          }
+                          className="w-full border rounded-lg p-2"
+                          rows={3}
+                        />
+                      </div>
+                    </>
+                  )}
 
                 {/* Email Config */}
                 {selectedStep.step_type === "email" && (

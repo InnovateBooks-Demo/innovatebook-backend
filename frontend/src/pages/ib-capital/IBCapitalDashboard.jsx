@@ -51,7 +51,7 @@ const IBCapitalDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -155,7 +155,7 @@ const IBCapitalDashboard = () => {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3A4E63] to-[#0557C2] flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#033F99] to-[#0557C2] flex items-center justify-center">
             <Building2 className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -249,7 +249,7 @@ const IBCapitalDashboard = () => {
                 >
                   <Icon className="w-6 h-6 text-white" />
                 </div>
-                <ArrowUpRight className="w-5 h-5 text-gray-300 group-hover:text-[#3A4E63] transition-colors" />
+                <ArrowUpRight className="w-5 h-5 text-gray-300 group-hover:text-[#033F99] transition-colors" />
               </div>
               <h3 className="font-semibold text-gray-900 mb-1">
                 {module.name}
@@ -275,7 +275,7 @@ const IBCapitalDashboard = () => {
         {/* Covenant Health */}
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
           <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-[#3A4E63]" />
+            <Shield className="w-5 h-5 text-[#033F99]" />
             Covenant Health
           </h3>
           <div className="grid grid-cols-3 gap-4">
@@ -306,7 +306,7 @@ const IBCapitalDashboard = () => {
         {/* Pending Approvals */}
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
           <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-[#3A4E63]" />
+            <Clock className="w-5 h-5 text-[#033F99]" />
             Pending Approvals
           </h3>
           {dashboardData?.pending_approvals?.length > 0 ? (
@@ -326,7 +326,7 @@ const IBCapitalDashboard = () => {
                   </div>
                   <Link
                     to={`/ib-capital/governance/approvals/${approval.approval_id}`}
-                    className="px-3 py-1 bg-[#3A4E63] text-white text-xs rounded-lg hover:bg-[#022B6B]"
+                    className="px-3 py-1 bg-[#033F99] text-white text-xs rounded-lg hover:bg-[#022B6B]"
                   >
                     Review
                   </Link>
@@ -343,12 +343,12 @@ const IBCapitalDashboard = () => {
       <div className="mt-6 bg-white rounded-xl p-5 shadow-sm border border-gray-100">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-[#3A4E63]" />
+            <BarChart3 className="w-5 h-5 text-[#033F99]" />
             Recent Funding Rounds
           </h3>
           <Link
             to="/ib-capital/equity"
-            className="text-sm text-[#3A4E63] hover:underline"
+            className="text-sm text-[#033F99] hover:underline"
           >
             View All
           </Link>
@@ -395,15 +395,14 @@ const IBCapitalDashboard = () => {
                     </td>
                     <td className="py-3 px-4">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          round.status === "closed"
+                        className={`px-2 py-1 text-xs rounded-full ${round.status === "closed"
                             ? "bg-green-100 text-green-700"
                             : round.status === "open"
                               ? "bg-blue-100 text-blue-700"
                               : round.status === "planned"
                                 ? "bg-gray-100 text-gray-700"
                                 : "bg-red-100 text-red-700"
-                        }`}
+                          }`}
                       >
                         {round.status}
                       </span>

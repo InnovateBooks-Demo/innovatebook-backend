@@ -56,18 +56,18 @@
 //               <div className="flex items-center gap-2"><Handshake className="h-5 w-5 text-gray-500" /><h2 className="text-lg font-medium text-gray-900">Partner Information</h2></div>
 //             </div>
 //             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-//               <div><label className="block text-sm font-medium text-gray-700 mb-2">Display Name *</label><input type="text" required value={formData.display_name} onChange={(e) => setFormData({ ...formData, display_name: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent" placeholder="Enter display name" /></div>
-//               <div><label className="block text-sm font-medium text-gray-700 mb-2">Legal Name *</label><input type="text" required value={formData.legal_name} onChange={(e) => setFormData({ ...formData, legal_name: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent" placeholder="Enter legal name" /></div>
-//               <div><label className="block text-sm font-medium text-gray-700 mb-2">Partner Type *</label><select required value={formData.partner_type} onChange={(e) => setFormData({ ...formData, partner_type: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"><option value="Reseller">Reseller</option><option value="Referral">Referral</option><option value="OEM">OEM</option><option value="Integration">Integration</option><option value="Affiliate">Affiliate</option></select></div>
-//               <div><label className="block text-sm font-medium text-gray-700 mb-2">Country *</label><input type="text" required value={formData.country_of_registration} onChange={(e) => setFormData({ ...formData, country_of_registration: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent" placeholder="Enter country" /></div>
-//               <div><label className="block text-sm font-medium text-gray-700 mb-2">Partnership Tier</label><select value={formData.partnership_tier} onChange={(e) => setFormData({ ...formData, partnership_tier: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"><option value="Platinum">Platinum</option><option value="Gold">Gold</option><option value="Silver">Silver</option><option value="Bronze">Bronze</option></select></div>
-//               <div><label className="block text-sm font-medium text-gray-700 mb-2">Status</label><select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63] bg-white"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+//               <div><label className="block text-sm font-medium text-gray-700 mb-2">Display Name *</label><input type="text" required value={formData.display_name} onChange={(e) => setFormData({ ...formData, display_name: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent" placeholder="Enter display name" /></div>
+//               <div><label className="block text-sm font-medium text-gray-700 mb-2">Legal Name *</label><input type="text" required value={formData.legal_name} onChange={(e) => setFormData({ ...formData, legal_name: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent" placeholder="Enter legal name" /></div>
+//               <div><label className="block text-sm font-medium text-gray-700 mb-2">Partner Type *</label><select required value={formData.partner_type} onChange={(e) => setFormData({ ...formData, partner_type: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"><option value="Reseller">Reseller</option><option value="Referral">Referral</option><option value="OEM">OEM</option><option value="Integration">Integration</option><option value="Affiliate">Affiliate</option></select></div>
+//               <div><label className="block text-sm font-medium text-gray-700 mb-2">Country *</label><input type="text" required value={formData.country_of_registration} onChange={(e) => setFormData({ ...formData, country_of_registration: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent" placeholder="Enter country" /></div>
+//               <div><label className="block text-sm font-medium text-gray-700 mb-2">Partnership Tier</label><select value={formData.partnership_tier} onChange={(e) => setFormData({ ...formData, partnership_tier: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"><option value="Platinum">Platinum</option><option value="Gold">Gold</option><option value="Silver">Silver</option><option value="Bronze">Bronze</option></select></div>
+//               <div><label className="block text-sm font-medium text-gray-700 mb-2">Status</label><select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99] bg-white"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
 //             </div>
 //           </div>
 
 //           <div className="flex items-center justify-end gap-3">
 //             <button type="button" onClick={() => navigate('/commerce/parties/partners')} className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"><X className="h-4 w-4" />Cancel</button>
-//             <button type="submit" disabled={loading} className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50"><Save className="h-4 w-4" />{loading ? 'Creating...' : 'Create Partner'}</button>
+//             <button type="submit" disabled={loading} className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e] transition-colors shadow-sm disabled:opacity-50"><Save className="h-4 w-4" />{loading ? 'Creating...' : 'Create Partner'}</button>
 //           </div>
 //         </form>
 //       </div>
@@ -184,7 +184,7 @@ const PartnersCreate = () => {
                 }
                 placeholder="Enter display name"
                 className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400
-                           focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                           focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
               />
               <p className="mt-2 text-sm text-gray-500">
                 Used for invoices & UI.
@@ -204,7 +204,7 @@ const PartnersCreate = () => {
                 }
                 placeholder="Enter legal name"
                 className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400
-                           focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                           focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
               />
               <p className="mt-2 text-sm text-gray-500">
                 Used in contracts & compliance.
@@ -222,7 +222,7 @@ const PartnersCreate = () => {
                   setFormData({ ...formData, partner_type: e.target.value })
                 }
                 className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white text-gray-900
-                           focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                           focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
               >
                 <option value="Reseller">Reseller</option>
                 <option value="Referral">Referral</option>
@@ -248,7 +248,7 @@ const PartnersCreate = () => {
                 }
                 placeholder="Enter country"
                 className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400
-                           focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                           focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
               />
             </div>
 
@@ -262,7 +262,7 @@ const PartnersCreate = () => {
                   setFormData({ ...formData, partnership_tier: e.target.value })
                 }
                 className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white text-gray-900
-                           focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                           focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
               >
                 <option value="Platinum">Platinum</option>
                 <option value="Gold">Gold</option>
@@ -281,7 +281,7 @@ const PartnersCreate = () => {
                   setFormData({ ...formData, status: e.target.value })
                 }
                 className="w-full h-11 px-4 rounded-lg border border-gray-300 bg-white text-gray-900
-                           focus:outline-none focus:ring-2 focus:ring-[#3A4E63] focus:border-transparent"
+                           focus:outline-none focus:ring-2 focus:ring-[#033F99] focus:border-transparent"
               >
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
@@ -303,7 +303,7 @@ const PartnersCreate = () => {
             <button
               type="submit"
               disabled={loading}
-              className="h-11 px-7 rounded-lg bg-[#3A4E63] text-white font-semibold hover:bg-[#022d6e] transition disabled:opacity-50"
+              className="h-11 px-7 rounded-lg bg-[#033F99] text-white font-semibold hover:bg-[#022d6e] transition disabled:opacity-50"
             >
               <Save className="h-4 w-4 inline mr-2" />
               {loading ? "Creating..." : "Create Partner"}

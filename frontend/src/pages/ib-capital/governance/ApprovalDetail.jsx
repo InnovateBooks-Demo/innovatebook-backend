@@ -68,7 +68,7 @@ const ApprovalDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -117,13 +117,12 @@ const ApprovalDetail = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div
-              className={`w-16 h-16 rounded-xl flex items-center justify-center ${
-                approval.decision === "approved"
+              className={`w-16 h-16 rounded-xl flex items-center justify-center ${approval.decision === "approved"
                   ? "bg-gradient-to-br from-green-500 to-green-600"
                   : approval.decision === "rejected"
                     ? "bg-gradient-to-br from-red-500 to-red-600"
                     : "bg-gradient-to-br from-yellow-500 to-yellow-600"
-              }`}
+                }`}
             >
               <FileCheck className="w-8 h-8 text-white" />
             </div>
@@ -248,11 +247,10 @@ const ApprovalDetail = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    approval.decision === "approved"
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${approval.decision === "approved"
                       ? "bg-green-100"
                       : "bg-red-100"
-                  }`}
+                    }`}
                 >
                   {approval.decision === "approved" ? (
                     <CheckCircle className="w-5 h-5 text-green-600" />
@@ -263,11 +261,10 @@ const ApprovalDetail = () => {
                 <div>
                   <p className="text-sm text-gray-500">Decision</p>
                   <p
-                    className={`font-medium capitalize ${
-                      approval.decision === "approved"
+                    className={`font-medium capitalize ${approval.decision === "approved"
                         ? "text-green-600"
                         : "text-red-600"
-                    }`}
+                      }`}
                   >
                     {approval.decision}
                   </p>

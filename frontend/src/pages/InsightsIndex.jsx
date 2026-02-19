@@ -184,7 +184,7 @@ const InsightsIndex = () => {
       <SharedNavigation />
 
       {/* Hero Section - Full Color */}
-      <section className="pt-24 pb-20 px-4 relative overflow-hidden bg-[#3A4E63]">
+      <section className="pt-24 pb-20 px-4 relative overflow-hidden bg-[#033F99]">
         <div className="absolute inset-0 overflow-hidden opacity-10">
           <div className="absolute top-20 left-10 w-96 h-96 bg-white rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-20 w-80 h-80 bg-white rounded-full blur-3xl" />
@@ -211,7 +211,7 @@ const InsightsIndex = () => {
             <div className="flex justify-center gap-4 flex-wrap mb-12">
               <Link
                 to="/auth/signup"
-                className="inline-flex items-center gap-2 bg-white text-[#3A4E63] px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+                className="inline-flex items-center gap-2 bg-white text-[#033F99] px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
               >
                 <Sparkles className="h-5 w-5" />
                 Start Free Trial
@@ -255,7 +255,7 @@ const InsightsIndex = () => {
           className={`max-w-7xl mx-auto transition-all duration-1000 ${isVisible["insights"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
         >
           <div className="text-center mb-12">
-            <span className="inline-block px-4 py-1.5 bg-[#3A4E63]/10 text-[#3A4E63] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-1.5 bg-[#033F99]/10 text-[#033F99] text-sm font-semibold rounded-full mb-4">
               Intelligence Modules
             </span>
             <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-slate-900">
@@ -274,11 +274,10 @@ const InsightsIndex = () => {
                 <button
                   key={`tab-${insight.id}`}
                   onClick={() => setActiveInsight(index)}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
-                    activeInsight === index
-                      ? "bg-[#3A4E63] text-white shadow-lg"
+                  className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 ${activeInsight === index
+                      ? "bg-[#033F99] text-white shadow-lg"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
+                    }`}
                 >
                   <Icon className="h-5 w-5" />
                   {insight.name.split(" ")[0]}
@@ -288,14 +287,14 @@ const InsightsIndex = () => {
           </div>
 
           {/* Active Insight Detail */}
-          <div className="bg-gradient-to-br from-slate-50 to-[#3A4E63]/5 rounded-3xl p-8 md:p-12 border border-slate-100">
+          <div className="bg-gradient-to-br from-slate-50 to-[#033F99]/5 rounded-3xl p-8 md:p-12 border border-slate-100">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <div className="flex items-center gap-3 mb-4">
                   {React.createElement(insights[activeInsight].icon, {
-                    className: "h-8 w-8 text-[#3A4E63]",
+                    className: "h-8 w-8 text-[#033F99]",
                   })}
-                  <span className="text-[#3A4E63] font-semibold">
+                  <span className="text-[#033F99] font-semibold">
                     {insights[activeInsight].metric.label}
                   </span>
                 </div>
@@ -312,7 +311,7 @@ const InsightsIndex = () => {
                       key={`feature-${i}`}
                       className="flex items-center gap-3 text-slate-700"
                     >
-                      <CheckCircle className="h-5 w-5 text-[#3A4E63] flex-shrink-0" />
+                      <CheckCircle className="h-5 w-5 text-[#033F99] flex-shrink-0" />
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -320,7 +319,7 @@ const InsightsIndex = () => {
 
                 <div className="flex items-center gap-6">
                   <div className="bg-white p-4 rounded-xl border border-slate-200">
-                    <p className="text-3xl font-bold text-[#3A4E63]">
+                    <p className="text-3xl font-bold text-[#033F99]">
                       {insights[activeInsight].metric.value}
                     </p>
                     <p className="text-sm text-slate-500">
@@ -329,7 +328,7 @@ const InsightsIndex = () => {
                   </div>
                   <Link
                     to="/auth/signup"
-                    className="inline-flex items-center gap-2 text-[#3A4E63] font-bold hover:gap-3 transition-all"
+                    className="inline-flex items-center gap-2 text-[#033F99] font-bold hover:gap-3 transition-all"
                   >
                     Try it free
                     <ArrowRight className="h-5 w-5" />
@@ -339,22 +338,22 @@ const InsightsIndex = () => {
 
               {/* Visual Preview */}
               <div className="bg-white rounded-2xl p-8 shadow-xl border border-slate-100">
-                <div className="aspect-video bg-gradient-to-br from-[#3A4E63]/10 to-[#3A4E63]/5 rounded-xl flex items-center justify-center">
+                <div className="aspect-video bg-gradient-to-br from-[#033F99]/10 to-[#033F99]/5 rounded-xl flex items-center justify-center">
                   {React.createElement(insights[activeInsight].icon, {
-                    className: "h-24 w-24 text-[#3A4E63]/30",
+                    className: "h-24 w-24 text-[#033F99]/30",
                   })}
                 </div>
                 <div className="mt-6 grid grid-cols-3 gap-4">
                   <div className="text-center p-3 bg-slate-50 rounded-lg">
-                    <Activity className="h-5 w-5 text-[#3A4E63] mx-auto mb-1" />
+                    <Activity className="h-5 w-5 text-[#033F99] mx-auto mb-1" />
                     <p className="text-xs text-slate-500">Real-time</p>
                   </div>
                   <div className="text-center p-3 bg-slate-50 rounded-lg">
-                    <Brain className="h-5 w-5 text-[#3A4E63] mx-auto mb-1" />
+                    <Brain className="h-5 w-5 text-[#033F99] mx-auto mb-1" />
                     <p className="text-xs text-slate-500">AI-Powered</p>
                   </div>
                   <div className="text-center p-3 bg-slate-50 rounded-lg">
-                    <Zap className="h-5 w-5 text-[#3A4E63] mx-auto mb-1" />
+                    <Zap className="h-5 w-5 text-[#033F99] mx-auto mb-1" />
                     <p className="text-xs text-slate-500">Instant</p>
                   </div>
                 </div>
@@ -370,14 +369,13 @@ const InsightsIndex = () => {
                 <button
                   key={`card-${insight.id}`}
                   onClick={() => setActiveInsight(index)}
-                  className={`p-6 rounded-2xl border-2 transition-all duration-300 text-left ${
-                    activeInsight === index
-                      ? "bg-[#3A4E63] text-white border-[#3A4E63] shadow-lg"
-                      : "bg-white text-slate-900 border-slate-100 hover:border-[#3A4E63]/30 hover:shadow-md"
-                  }`}
+                  className={`p-6 rounded-2xl border-2 transition-all duration-300 text-left ${activeInsight === index
+                      ? "bg-[#033F99] text-white border-[#033F99] shadow-lg"
+                      : "bg-white text-slate-900 border-slate-100 hover:border-[#033F99]/30 hover:shadow-md"
+                    }`}
                 >
                   <Icon
-                    className={`h-8 w-8 mb-3 ${activeInsight === index ? "text-white" : "text-[#3A4E63]"}`}
+                    className={`h-8 w-8 mb-3 ${activeInsight === index ? "text-white" : "text-[#033F99]"}`}
                   />
                   <h4 className="font-bold mb-1">
                     {insight.name.split(" ")[0]}
@@ -404,7 +402,7 @@ const InsightsIndex = () => {
           className={`max-w-7xl mx-auto transition-all duration-1000 ${isVisible["intelligence"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
         >
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 bg-[#3A4E63] text-white text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-1.5 bg-[#033F99] text-white text-sm font-semibold rounded-full mb-4">
               AI Intelligence
             </span>
             <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-white">
@@ -422,10 +420,10 @@ const InsightsIndex = () => {
               return (
                 <div
                   key={`ai-feature-${feature.title}-${index}`}
-                  className="bg-slate-800/50 backdrop-blur-lg p-8 rounded-2xl border border-slate-700 hover:border-[#3A4E63]/50 hover:bg-slate-800 transition-all group"
+                  className="bg-slate-800/50 backdrop-blur-lg p-8 rounded-2xl border border-slate-700 hover:border-[#033F99]/50 hover:bg-slate-800 transition-all group"
                 >
-                  <div className="w-14 h-14 bg-[#3A4E63]/20 group-hover:bg-[#3A4E63]/30 rounded-xl flex items-center justify-center mb-6 transition-all">
-                    <Icon className="h-7 w-7 text-[#3A4E63]" />
+                  <div className="w-14 h-14 bg-[#033F99]/20 group-hover:bg-[#033F99]/30 rounded-xl flex items-center justify-center mb-6 transition-all">
+                    <Icon className="h-7 w-7 text-[#033F99]" />
                   </div>
                   <h3 className="text-xl font-bold text-white mb-3">
                     {feature.title}
@@ -444,7 +442,7 @@ const InsightsIndex = () => {
           className={`max-w-4xl mx-auto transition-all duration-1000 ${isVisible["faq"] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
         >
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 bg-[#3A4E63]/10 text-[#3A4E63] text-sm font-semibold rounded-full mb-4">
+            <span className="inline-block px-4 py-1.5 bg-[#033F99]/10 text-[#033F99] text-sm font-semibold rounded-full mb-4">
               FAQ
             </span>
             <h2 className="text-4xl font-bold mb-4 text-slate-900">
@@ -457,7 +455,7 @@ const InsightsIndex = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-4 bg-gradient-to-r from-[#3A4E63] via-[#3A4E63] to-[#3A4E63] relative overflow-hidden">
+      <section className="py-24 px-4 bg-gradient-to-r from-[#033F99] via-[#033F99] to-[#033F99] relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full blur-3xl" />
@@ -475,7 +473,7 @@ const InsightsIndex = () => {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               to="/auth/signup"
-              className="inline-flex items-center gap-2 bg-white text-[#3A4E63] px-10 py-5 rounded-xl font-bold hover:bg-slate-100 transition-all transform hover:scale-105 shadow-xl"
+              className="inline-flex items-center gap-2 bg-white text-[#033F99] px-10 py-5 rounded-xl font-bold hover:bg-slate-100 transition-all transform hover:scale-105 shadow-xl"
             >
               <Sparkles className="h-5 w-5" />
               Start Free Trial

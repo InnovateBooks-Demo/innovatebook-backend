@@ -52,7 +52,7 @@ const GovernancePoliciesList = () => {
   if (loading)
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
 
@@ -90,7 +90,7 @@ const GovernancePoliciesList = () => {
             </div>
             <Link
               to="/commerce/governance-engine/policies/create"
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#3A4E63] rounded-lg hover:bg-[#022d6e]"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#033F99] rounded-lg hover:bg-[#022d6e]"
             >
               <Plus className="h-4 w-4" />
               Add Policy

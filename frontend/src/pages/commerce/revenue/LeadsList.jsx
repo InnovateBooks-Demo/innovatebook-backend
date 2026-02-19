@@ -80,7 +80,7 @@ const LeadsList = () => {
         </div>
         <button
           onClick={() => navigate("/commerce/lead/new")}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#3A4E63] text-white rounded-xl font-semibold text-sm hover:bg-[#022B6B]"
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#033F99] text-white rounded-xl font-semibold text-sm hover:bg-[#022B6B]"
         >
           <Plus className="w-4 h-4" />
           Add Lead
@@ -150,13 +150,13 @@ const LeadsList = () => {
             placeholder="Search leads..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#3A4E63]/20 focus:border-[#3A4E63] outline-none"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#033F99]/20 focus:border-[#033F99] outline-none"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#3A4E63]/20 focus:border-[#3A4E63] outline-none"
+          className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#033F99]/20 focus:border-[#033F99] outline-none"
         >
           <option value="">All Status</option>
           {statuses.map((s) => (
@@ -243,7 +243,7 @@ const LeadsList = () => {
                     <div className="flex items-center justify-center gap-2">
                       <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-[#3A4E63] rounded-full"
+                          className="h-full bg-[#033F99] rounded-full"
                           style={{ width: `${lead.probability}%` }}
                         ></div>
                       </div>

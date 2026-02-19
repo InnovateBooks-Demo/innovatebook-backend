@@ -154,7 +154,7 @@ const ReportsBuilder = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#3A4E63] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -166,7 +166,7 @@ const ReportsBuilder = () => {
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#3A4E63] to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#033F99] to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                 <FileBarChart className="h-6 w-6 text-white" />
               </div>
               <div>
@@ -180,7 +180,7 @@ const ReportsBuilder = () => {
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm font-medium"
             >
               <Plus className="w-4 h-4" />
               New Report
@@ -210,9 +210,9 @@ const ReportsBuilder = () => {
                     filters: template.filters || [],
                   })
                 }
-                className="p-4 bg-white border border-slate-200 rounded-xl hover:border-[#3A4E63] hover:shadow-md transition-all text-left"
+                className="p-4 bg-white border border-slate-200 rounded-xl hover:border-[#033F99] hover:shadow-md transition-all text-left"
               >
-                <BarChart3 className="w-8 h-8 text-[#3A4E63] mb-3" />
+                <BarChart3 className="w-8 h-8 text-[#033F99] mb-3" />
                 <p className="font-medium text-slate-900 text-sm">
                   {template.name}
                 </p>
@@ -264,10 +264,10 @@ const ReportsBuilder = () => {
                         runReport(report.report_id);
                       }}
                       disabled={runningReport}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm"
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] transition-colors text-sm"
                     >
                       {runningReport &&
-                      selectedReport?.report_id === report.report_id ? (
+                        selectedReport?.report_id === report.report_id ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <Play className="w-4 h-4" />
@@ -298,7 +298,7 @@ const ReportsBuilder = () => {
               <p className="text-slate-500 mb-4">No custom reports yet</p>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] text-sm"
+                className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] text-sm"
               >
                 Create Your First Report
               </button>
@@ -458,7 +458,7 @@ const CreateReportModal = ({ onClose, onCreate, dataSources }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
                 placeholder="My Report"
               />
             </div>
@@ -475,7 +475,7 @@ const CreateReportModal = ({ onClose, onCreate, dataSources }) => {
                     columns: [],
                   })
                 }
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 {Object.entries(dataSources).map(([key, source]) => (
                   <option key={key} value={key}>
@@ -496,7 +496,7 @@ const CreateReportModal = ({ onClose, onCreate, dataSources }) => {
                 setFormData({ ...formData, description: e.target.value })
               }
               rows={2}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               placeholder="Report description..."
             />
           </div>
@@ -514,11 +514,10 @@ const CreateReportModal = ({ onClose, onCreate, dataSources }) => {
                   key={field.name}
                   type="button"
                   onClick={() => toggleColumn(field.name)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                    formData.columns.includes(field.name)
-                      ? "bg-[#3A4E63] text-white"
-                      : "bg-white border border-slate-200 text-slate-700 hover:border-[#3A4E63]"
-                  }`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${formData.columns.includes(field.name)
+                      ? "bg-[#033F99] text-white"
+                      : "bg-white border border-slate-200 text-slate-700 hover:border-[#033F99]"
+                    }`}
                 >
                   {formData.columns.includes(field.name) && (
                     <Check className="w-4 h-4" />
@@ -539,7 +538,7 @@ const CreateReportModal = ({ onClose, onCreate, dataSources }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, group_by: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="">None</option>
                 {selectedSource?.fields?.map((field) => (
@@ -558,7 +557,7 @@ const CreateReportModal = ({ onClose, onCreate, dataSources }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, sort_by: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A4E63]"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#033F99]"
               >
                 <option value="">None</option>
                 {selectedSource?.fields?.map((field) => (
@@ -580,7 +579,7 @@ const CreateReportModal = ({ onClose, onCreate, dataSources }) => {
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022a6b] transition-colors"
+              className="flex-1 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022a6b] transition-colors"
             >
               Create Report
             </button>

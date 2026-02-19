@@ -181,7 +181,7 @@ const ReportsPage = () => {
               </div>
             </div>
             {activeTab === "custom" && (
-              <button className="flex items-center gap-2 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] transition-colors">
+              <button className="flex items-center gap-2 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] transition-colors">
                 <Plus className="h-4 w-4" />
                 Create Report
               </button>
@@ -195,11 +195,10 @@ const ReportsPage = () => {
             <button
               key={tab.id}
               onClick={() => navigate(tab.path)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
                   ? "border-green-600 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -297,11 +296,10 @@ const ReportsPage = () => {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          report.status === "published"
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${report.status === "published"
                             ? "bg-green-100 text-green-700"
                             : "bg-yellow-100 text-yellow-700"
-                        }`}
+                          }`}
                       >
                         {report.status}
                       </span>
@@ -369,11 +367,10 @@ const ReportsPage = () => {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          report.active
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${report.active
                             ? "bg-green-100 text-green-700"
                             : "bg-gray-100 text-gray-500"
-                        }`}
+                          }`}
                       >
                         {report.active ? "Active" : "Paused"}
                       </span>

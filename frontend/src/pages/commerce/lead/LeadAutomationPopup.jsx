@@ -248,7 +248,7 @@ const LeadAutomationPopup = ({ leadId, leadData, onClose, onComplete }) => {
       case "error":
         return <XCircle className="h-5 w-5 text-red-600" />;
       case "running":
-        return <Loader2 className="h-5 w-5 text-[#3A4E63] animate-spin" />;
+        return <Loader2 className="h-5 w-5 text-[#033F99] animate-spin" />;
       case "manual":
         return <Clock className="h-5 w-5 text-purple-600" />;
       default:
@@ -265,7 +265,7 @@ const LeadAutomationPopup = ({ leadId, leadData, onClose, onComplete }) => {
       case "error":
         return "border-red-200 bg-red-50";
       case "running":
-        return "border-[#3A4E63] bg-[#C4D9F4]";
+        return "border-[#033F99] bg-[#C4D9F4]";
       case "manual":
         return "border-purple-200 bg-purple-50";
       default:
@@ -316,7 +316,7 @@ const LeadAutomationPopup = ({ leadId, leadData, onClose, onComplete }) => {
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] px-8 py-6 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-[#033F99] to-[#033F99] px-8 py-6 flex items-center justify-between">
           <div>
             <h2
               className="text-2xl font-bold text-white"
@@ -326,7 +326,7 @@ const LeadAutomationPopup = ({ leadId, leadData, onClose, onComplete }) => {
                 ? "✅ Lead Processing Complete"
                 : "⚙️ Lead Processing Status"}
             </h2>
-            <p className="text-[#3A4E63] mt-1 font-medium">
+            <p className="text-[#033F99] mt-1 font-medium">
               {isComplete
                 ? "All SOP steps completed successfully"
                 : "Please wait while automations run"}
@@ -358,19 +358,18 @@ const LeadAutomationPopup = ({ leadId, leadData, onClose, onComplete }) => {
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">
                       <div
-                        className={`p-3 rounded-xl ${
-                          stageData.status === "success"
+                        className={`p-3 rounded-xl ${stageData.status === "success"
                             ? "bg-emerald-600"
                             : stageData.status === "warning"
                               ? "bg-amber-600"
                               : stageData.status === "error"
                                 ? "bg-red-600"
                                 : stageData.status === "running"
-                                  ? "bg-[#3A4E63]"
+                                  ? "bg-[#033F99]"
                                   : stageData.status === "manual"
                                     ? "bg-purple-600"
                                     : "bg-slate-400"
-                        }`}
+                          }`}
                       >
                         <StageIcon className="h-6 w-6 text-white" />
                       </div>
@@ -452,7 +451,7 @@ const LeadAutomationPopup = ({ leadId, leadData, onClose, onComplete }) => {
                                 <p className="text-xs text-slate-600 font-medium">
                                   Fit Score
                                 </p>
-                                <p className="text-2xl font-black text-[#3A4E63]">
+                                <p className="text-2xl font-black text-[#033F99]">
                                   {stageData.data.fit_score}
                                 </p>
                               </div>
@@ -670,7 +669,7 @@ const LeadAutomationPopup = ({ leadId, leadData, onClose, onComplete }) => {
           <div className="border-t-2 border-slate-200 px-8 py-6 bg-slate-50 flex gap-4">
             <button
               onClick={() => navigate(`/commerce/lead/${leadId}`)}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-bold rounded-xl shadow-lg transition-all"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-bold rounded-xl shadow-lg transition-all"
             >
               Go to Lead Detail Page
               <ArrowRight className="h-5 w-5" />
@@ -680,7 +679,7 @@ const LeadAutomationPopup = ({ leadId, leadData, onClose, onComplete }) => {
                 onClose();
                 navigate("/commerce/lead/create");
               }}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-white hover:bg-slate-100 border-2 border-[#3A4E63] text-[#3A4E63] font-bold rounded-xl transition-all"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-white hover:bg-slate-100 border-2 border-[#033F99] text-[#033F99] font-bold rounded-xl transition-all"
             >
               <RefreshCw className="h-5 w-5" />
               Add Another Lead

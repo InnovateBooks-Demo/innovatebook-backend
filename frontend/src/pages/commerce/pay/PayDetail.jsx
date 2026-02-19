@@ -214,7 +214,7 @@ const PayDetail = () => {
             ₹{(payment.net_payable / 100000).toFixed(2)}L
           </p>
         </Card>
-        <Card className="p-4 bg-white border-l-4 border-[#3A4E63]">
+        <Card className="p-4 bg-white border-l-4 border-[#033F99]">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-slate-600">Payment Method</p>
             <Wallet className="h-5 w-5 text-[#0147CC]" />

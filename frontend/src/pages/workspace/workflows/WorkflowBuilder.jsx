@@ -321,7 +321,7 @@ const WorkflowBuilder = () => {
         </div>
         <button
           onClick={() => setShowNewWorkflow(true)}
-          className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e] flex items-center gap-2"
+          className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e] flex items-center gap-2"
         >
           <Plus className="h-4 w-4" />
           New Workflow
@@ -346,11 +346,10 @@ const WorkflowBuilder = () => {
                   <div
                     key={workflow.workflow_id}
                     onClick={() => fetchWorkflowDetails(workflow.workflow_id)}
-                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      selectedWorkflow?.workflow_id === workflow.workflow_id
-                        ? "border-[#3A4E63] bg-blue-50"
+                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${selectedWorkflow?.workflow_id === workflow.workflow_id
+                        ? "border-[#033F99] bg-blue-50"
                         : "hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex items-center gap-2">
@@ -418,11 +417,10 @@ const WorkflowBuilder = () => {
                         {selectedWorkflow.name}
                       </h2>
                       <span
-                        className={`px-2 py-0.5 rounded-full text-xs ${
-                          selectedWorkflow.is_active
+                        className={`px-2 py-0.5 rounded-full text-xs ${selectedWorkflow.is_active
                             ? "bg-green-100 text-green-700"
                             : "bg-gray-100 text-gray-600"
-                        }`}
+                          }`}
                       >
                         {selectedWorkflow.is_active ? "Active" : "Inactive"}
                       </span>
@@ -452,11 +450,10 @@ const WorkflowBuilder = () => {
                       onClick={() =>
                         toggleWorkflow(selectedWorkflow.workflow_id)
                       }
-                      className={`px-3 py-1 border rounded-lg flex items-center gap-1 text-sm ${
-                        selectedWorkflow.is_active
+                      className={`px-3 py-1 border rounded-lg flex items-center gap-1 text-sm ${selectedWorkflow.is_active
                           ? "hover:bg-orange-50"
                           : "hover:bg-green-50"
-                      }`}
+                        }`}
                       data-testid="toggle-workflow-btn"
                     >
                       {selectedWorkflow.is_active ? (
@@ -558,15 +555,14 @@ const WorkflowBuilder = () => {
                       >
                         <div className="flex flex-col items-center">
                           <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                              step.step_type === "condition"
+                            className={`w-8 h-8 rounded-full flex items-center justify-center ${step.step_type === "condition"
                                 ? "bg-blue-100"
                                 : step.step_type === "action"
                                   ? "bg-green-100"
                                   : step.step_type === "delay"
                                     ? "bg-orange-100"
                                     : "bg-gray-100"
-                            }`}
+                              }`}
                           >
                             {getStepIcon(step.step_type)}
                           </div>
@@ -746,7 +742,7 @@ const WorkflowBuilder = () => {
             <div className="flex gap-2 mt-4">
               <button
                 onClick={createWorkflow}
-                className="flex-1 px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022d6e]"
+                className="flex-1 px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022d6e]"
               >
                 Create
               </button>
@@ -786,13 +782,12 @@ const WorkflowBuilder = () => {
                         {getRunStatusIcon(run.status)}
                         <span className="font-mono text-sm">{run.run_id}</span>
                         <span
-                          className={`px-2 py-0.5 rounded-full text-xs ${
-                            run.status === "completed"
+                          className={`px-2 py-0.5 rounded-full text-xs ${run.status === "completed"
                               ? "bg-green-100 text-green-700"
                               : run.status === "failed"
                                 ? "bg-red-100 text-red-700"
                                 : "bg-blue-100 text-blue-700"
-                          }`}
+                            }`}
                         >
                           {run.status}
                         </span>

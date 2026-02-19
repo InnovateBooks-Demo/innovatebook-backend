@@ -10,7 +10,7 @@ export const ComparisonTable = ({
 }) => {
   const renderCell = (value, colIndex) => {
     if (value === true) {
-      return <Check className="h-5 w-5 text-[#3A4E63] mx-auto" />;
+      return <Check className="h-5 w-5 text-[#033F99] mx-auto" />;
     }
     if (value === false) {
       return <X className="h-5 w-5 text-slate-300 mx-auto" />;
@@ -33,11 +33,10 @@ export const ComparisonTable = ({
               {headers.map((header, index) => (
                 <th
                   key={`header-${index}`}
-                  className={`px-4 py-3 text-left text-sm font-semibold ${
-                    index === 0
+                  className={`px-4 py-3 text-left text-sm font-semibold ${index === 0
                       ? "text-slate-700"
                       : "text-center text-slate-600"
-                  } ${index === highlightColumn ? "bg-[#3A4E63]/5" : ""}`}
+                    } ${index === highlightColumn ? "bg-[#033F99]/5" : ""}`}
                 >
                   {header}
                 </th>
@@ -50,11 +49,10 @@ export const ComparisonTable = ({
                 {row.map((cell, cellIndex) => (
                   <td
                     key={`cell-${rowIndex}-${cellIndex}`}
-                    className={`px-4 py-3 ${
-                      cellIndex === 0
+                    className={`px-4 py-3 ${cellIndex === 0
                         ? "text-slate-700 font-medium"
                         : "text-center"
-                    } ${cellIndex === highlightColumn ? "bg-[#3A4E63]/5" : ""}`}
+                      } ${cellIndex === highlightColumn ? "bg-[#033F99]/5" : ""}`}
                   >
                     {renderCell(cell, cellIndex)}
                   </td>
@@ -79,9 +77,8 @@ export const ComparisonTable = ({
             {headers.map((header, index) => (
               <th
                 key={`header-${index}`}
-                className={`px-6 py-4 text-left font-bold ${
-                  index === 0 ? "text-slate-900" : "text-center"
-                } ${index === highlightColumn ? "bg-[#3A4E63] text-white" : "text-slate-700"}`}
+                className={`px-6 py-4 text-left font-bold ${index === 0 ? "text-slate-900" : "text-center"
+                  } ${index === highlightColumn ? "bg-[#033F99] text-white" : "text-slate-700"}`}
               >
                 {index === highlightColumn && (
                   <span className="block text-xs font-normal opacity-70 mb-1">
@@ -102,11 +99,10 @@ export const ComparisonTable = ({
               {row.map((cell, cellIndex) => (
                 <td
                   key={`cell-${rowIndex}-${cellIndex}`}
-                  className={`px-6 py-4 ${
-                    cellIndex === 0
+                  className={`px-6 py-4 ${cellIndex === 0
                       ? "text-slate-700 font-medium"
                       : "text-center"
-                  } ${cellIndex === highlightColumn ? "bg-[#3A4E63]/5" : ""}`}
+                    } ${cellIndex === highlightColumn ? "bg-[#033F99]/5" : ""}`}
                 >
                   {renderCell(cell, cellIndex)}
                 </td>

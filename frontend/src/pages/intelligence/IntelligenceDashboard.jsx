@@ -121,7 +121,7 @@ const IntelligenceDashboard = () => {
       bgColor: "bg-amber-50",
       stat:
         dashboard?.summary?.signals?.critical +
-          dashboard?.summary?.signals?.warning || 0,
+        dashboard?.summary?.signals?.warning || 0,
       statLabel: "Active Signals",
       status: dashboard?.summary?.signals?.status,
     },
@@ -214,7 +214,7 @@ const IntelligenceDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 text-[#3A4E63] animate-spin" />
+        <RefreshCw className="w-8 h-8 text-[#033F99] animate-spin" />
       </div>
     );
   }
@@ -238,7 +238,7 @@ const IntelligenceDashboard = () => {
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
                 <Brain className="h-7 w-7 text-white" />
               </div>
               <div>
@@ -253,7 +253,7 @@ const IntelligenceDashboard = () => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowDemoModal(true)}
-                className="flex items-center gap-2 px-4 py-2 text-[#3A4E63] hover:bg-[#3A4E63]/10 rounded-lg transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 text-[#033F99] hover:bg-[#033F99]/10 rounded-lg transition-colors text-sm font-medium"
               >
                 <Play className="w-4 h-4" />
                 Watch Demo
@@ -268,7 +268,7 @@ const IntelligenceDashboard = () => {
               <button
                 onClick={syncLiveData}
                 disabled={syncing}
-                className="flex items-center gap-2 px-4 py-2 bg-[#3A4E63] hover:bg-[#022a6b] text-white rounded-lg transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 bg-[#033F99] hover:bg-[#022a6b] text-white rounded-lg transition-colors text-sm font-medium"
               >
                 {syncing ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -294,7 +294,7 @@ const IntelligenceDashboard = () => {
 
       <div className="px-8 py-6">
         {/* Intelligence Flow Diagram */}
-        <div className="bg-gradient-to-r from-[#3A4E63] to-indigo-600 rounded-2xl p-6 mb-8 text-white">
+        <div className="bg-gradient-to-r from-[#033F99] to-indigo-600 rounded-2xl p-6 mb-8 text-white">
           <h2 className="text-lg font-semibold mb-4">Intelligence Flow</h2>
           <div className="flex items-center justify-between overflow-x-auto pb-2">
             {[
@@ -309,7 +309,7 @@ const IntelligenceDashboard = () => {
               <React.Fragment key={step}>
                 <div className="flex flex-col items-center min-w-[80px]">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${i === 6 ? "bg-white text-[#3A4E63]" : "bg-white/20"}`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${i === 6 ? "bg-white text-[#033F99]" : "bg-white/20"}`}
                   >
                     <span className="text-sm font-bold">{i + 1}</span>
                   </div>
@@ -440,7 +440,7 @@ const IntelligenceDashboard = () => {
                             ? "Review Needed"
                             : "Healthy"}
                     </span>
-                    <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-[#3A4E63] transition-colors" />
+                    <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-[#033F99] transition-colors" />
                   </div>
                 </div>
               </div>
@@ -456,7 +456,7 @@ const IntelligenceDashboard = () => {
               <h3 className="font-semibold text-slate-900">Recent Signals</h3>
               <Link
                 to="/intelligence/signals"
-                className="text-sm text-[#3A4E63] hover:underline font-medium"
+                className="text-sm text-[#033F99] hover:underline font-medium"
               >
                 View All
               </Link>
@@ -469,13 +469,12 @@ const IntelligenceDashboard = () => {
                     className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl"
                   >
                     <div
-                      className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                        signal.severity === "critical"
+                      className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${signal.severity === "critical"
                           ? "bg-red-500"
                           : signal.severity === "warning"
                             ? "bg-amber-500"
                             : "bg-blue-500"
-                      }`}
+                        }`}
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-slate-900 truncate">
@@ -486,13 +485,12 @@ const IntelligenceDashboard = () => {
                       </p>
                     </div>
                     <span
-                      className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-                        signal.severity === "critical"
+                      className={`px-2 py-0.5 text-xs font-medium rounded-full ${signal.severity === "critical"
                           ? "bg-red-100 text-red-700"
                           : signal.severity === "warning"
                             ? "bg-amber-100 text-amber-700"
                             : "bg-blue-100 text-blue-700"
-                      }`}
+                        }`}
                     >
                       {signal.severity}
                     </span>
@@ -514,7 +512,7 @@ const IntelligenceDashboard = () => {
               </h3>
               <Link
                 to="/intelligence/recommendations"
-                className="text-sm text-[#3A4E63] hover:underline font-medium"
+                className="text-sm text-[#033F99] hover:underline font-medium"
               >
                 View All
               </Link>
@@ -527,9 +525,8 @@ const IntelligenceDashboard = () => {
                     className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl"
                   >
                     <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        rec.priority <= 2 ? "bg-red-100" : "bg-slate-100"
-                      }`}
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${rec.priority <= 2 ? "bg-red-100" : "bg-slate-100"
+                        }`}
                     >
                       <Lightbulb
                         className={`w-4 h-4 ${rec.priority <= 2 ? "text-red-600" : "text-slate-600"}`}
@@ -544,13 +541,12 @@ const IntelligenceDashboard = () => {
                       </p>
                     </div>
                     <span
-                      className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-                        rec.priority === 1
+                      className={`px-2 py-0.5 text-xs font-medium rounded-full ${rec.priority === 1
                           ? "bg-red-100 text-red-700"
                           : rec.priority === 2
                             ? "bg-amber-100 text-amber-700"
                             : "bg-slate-100 text-slate-700"
-                      }`}
+                        }`}
                     >
                       P{rec.priority}
                     </span>

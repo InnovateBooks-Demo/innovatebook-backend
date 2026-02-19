@@ -112,7 +112,7 @@ const ProfitLoss = () => {
               </Button>
               <div className="h-8 w-px bg-gray-300" />
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-[#3A4E63] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-[#033F99] flex items-center justify-center">
                   <TrendingUp className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -174,7 +174,7 @@ const ProfitLoss = () => {
             <Button
               onClick={loadReport}
               disabled={loading}
-              style={{ backgroundColor: "#3A4E63" }}
+              style={{ backgroundColor: "#033F99" }}
               className="text-white"
             >
               {loading ? (
@@ -317,8 +317,8 @@ const ProfitLoss = () => {
                     <p className="text-lg font-bold text-red-600">
                       {formatCurrency(
                         data.cogs.total +
-                          data.operating_expenses.total +
-                          data.other_expenses.total,
+                        data.operating_expenses.total +
+                        data.other_expenses.total,
                       )}
                     </p>
                   </div>
@@ -333,9 +333,9 @@ const ProfitLoss = () => {
                     <p className="text-lg font-bold text-purple-600">
                       {data.revenue.total > 0
                         ? (
-                            (data.net_profit / data.revenue.total) *
-                            100
-                          ).toFixed(2)
+                          (data.net_profit / data.revenue.total) *
+                          100
+                        ).toFixed(2)
                         : 0}
                       %
                     </p>

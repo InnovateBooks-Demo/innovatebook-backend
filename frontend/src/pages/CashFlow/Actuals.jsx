@@ -63,7 +63,7 @@ const CashFlowActuals = () => {
       <div className="mb-8">
         <h1
           className="text-3xl font-semibold mb-2"
-          style={{ fontFamily: "Inter", color: "#3A4E63" }}
+          style={{ fontFamily: "Inter", color: "#033F99" }}
         >
           Cash Flow Actuals
         </h1>
@@ -85,7 +85,7 @@ const CashFlowActuals = () => {
               <div className="flex items-center justify-between">
                 <p
                   className="text-2xl font-semibold"
-                  style={{ color: "#3A4E63" }}
+                  style={{ color: "#033F99" }}
                 >
                   {formatCurrency(totalCash)}
                 </p>
@@ -143,11 +143,11 @@ const CashFlowActuals = () => {
               <div className="flex items-center justify-between">
                 <p
                   className="text-2xl font-semibold"
-                  style={{ color: "#3A4E63" }}
+                  style={{ color: "#033F99" }}
                 >
                   {Math.round(summary?.runway_days || 0)} days
                 </p>
-                <Activity className="h-8 w-8" style={{ color: "#3A4E63" }} />
+                <Activity className="h-8 w-8" style={{ color: "#033F99" }} />
               </div>
             </CardContent>
           </Card>
@@ -156,7 +156,7 @@ const CashFlowActuals = () => {
         {/* Bank Balances */}
         <Card className="chart-container">
           <CardHeader>
-            <CardTitle style={{ color: "#3A4E63" }}>
+            <CardTitle style={{ color: "#033F99" }}>
               Bank Balances by Account
             </CardTitle>
             <CardDescription>
@@ -178,7 +178,7 @@ const CashFlowActuals = () => {
                   </div>
                   <p
                     className="text-xl font-semibold"
-                    style={{ color: "#3A4E63" }}
+                    style={{ color: "#033F99" }}
                   >
                     {formatCurrency(bank.current_balance)}
                   </p>
@@ -192,7 +192,7 @@ const CashFlowActuals = () => {
         <Card className="chart-container">
           <Tabs defaultValue="operating">
             <CardHeader>
-              <CardTitle style={{ color: "#3A4E63" }}>
+              <CardTitle style={{ color: "#033F99" }}>
                 Cash Flow Statement
               </CardTitle>
               <TabsList>
@@ -225,7 +225,7 @@ const CashFlowActuals = () => {
                   <div className="flex justify-between py-3 bg-blue-50 rounded-lg px-4">
                     <span
                       className="font-semibold"
-                      style={{ color: "#3A4E63" }}
+                      style={{ color: "#033F99" }}
                     >
                       Net Operating Cash Flow
                     </span>
@@ -257,7 +257,7 @@ const CashFlowActuals = () => {
         {/* Cash Movement Register */}
         <Card className="chart-container">
           <CardHeader>
-            <CardTitle style={{ color: "#3A4E63" }}>
+            <CardTitle style={{ color: "#033F99" }}>
               Cash Movement Register
             </CardTitle>
             <CardDescription>

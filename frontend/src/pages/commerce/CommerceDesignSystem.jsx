@@ -42,7 +42,7 @@ export const PageHeader = ({ title, subtitle, action }) => (
         {title}
       </h1>
       {subtitle && (
-        <p className="text-[#3A4E63] mt-1 font-medium">{subtitle}</p>
+        <p className="text-[#033F99] mt-1 font-medium">{subtitle}</p>
       )}
     </div>
     {action && <div>{action}</div>}
@@ -53,7 +53,7 @@ export const PageHeader = ({ title, subtitle, action }) => (
 export const PrimaryButton = ({ children, onClick, icon: Icon, ...props }) => (
   <button
     onClick={onClick}
-    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] hover:from-[#3A4E63] hover:to-[#3A4E63] text-white font-semibold rounded-xl shadow-lg shadow-[#6B9FE6]/50 hover:shadow-xl hover:shadow-[#0558CC]/60 transition-all duration-200 transform hover:scale-105"
+    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#033F99] to-[#033F99] hover:from-[#033F99] hover:to-[#033F99] text-white font-semibold rounded-xl shadow-lg shadow-[#6B9FE6]/50 hover:shadow-xl hover:shadow-[#0558CC]/60 transition-all duration-200 transform hover:scale-105"
     {...props}
   >
     {Icon && <Icon className="h-5 w-5" />}
@@ -70,7 +70,7 @@ export const SecondaryButton = ({
 }) => (
   <button
     onClick={onClick}
-    className="flex items-center gap-2 px-5 py-2.5 bg-[#C4D9F4] hover:bg-[#6B9FE6] text-[#3A4E63] font-semibold rounded-xl transition-all duration-200"
+    className="flex items-center gap-2 px-5 py-2.5 bg-[#C4D9F4] hover:bg-[#6B9FE6] text-[#033F99] font-semibold rounded-xl transition-all duration-200"
     {...props}
   >
     {Icon && <Icon className="h-4 w-4" />}
@@ -82,7 +82,7 @@ export const SecondaryButton = ({
 export const OutlineButton = ({ children, onClick, icon: Icon, ...props }) => (
   <button
     onClick={onClick}
-    className="flex items-center gap-2 px-5 py-2.5 border-2 border-[#0558CC] hover:border-[#044AB3] text-[#3A4E63] hover:bg-[#EBF3FC] font-semibold rounded-xl transition-all duration-200"
+    className="flex items-center gap-2 px-5 py-2.5 border-2 border-[#0558CC] hover:border-[#044AB3] text-[#033F99] hover:bg-[#EBF3FC] font-semibold rounded-xl transition-all duration-200"
     {...props}
   >
     {Icon && <Icon className="h-4 w-4" />}
@@ -101,7 +101,7 @@ export const KPICard = ({
   <div className="bg-gradient-to-br from-[#EBF3FC] to-[#C4D9F4] rounded-2xl p-6 border-2 border-[#6B9FE6] shadow-md hover:shadow-xl hover:border-[#0558CC] transition-all duration-200">
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-sm font-semibold text-[#3A4E63] uppercase tracking-wide mb-2">
+        <p className="text-sm font-semibold text-[#033F99] uppercase tracking-wide mb-2">
           {label}
         </p>
         <p className="text-3xl font-bold text-white">{value}</p>
@@ -115,7 +115,7 @@ export const KPICard = ({
         )}
       </div>
       {Icon && (
-        <div className="w-14 h-14 bg-gradient-to-br from-[#3A4E63] to-[#3A4E63] rounded-xl flex items-center justify-center shadow-lg shadow-[#0558CC]/50">
+        <div className="w-14 h-14 bg-gradient-to-br from-[#033F99] to-[#033F99] rounded-xl flex items-center justify-center shadow-lg shadow-[#0558CC]/50">
           <Icon className="h-7 w-7 text-white" />
         </div>
       )}
@@ -128,13 +128,13 @@ export const StatsCard = ({ icon: Icon, label, value, sublabel }) => (
   <div className="bg-white rounded-2xl p-5 border-2 border-[#6B9FE6] shadow-md hover:shadow-lg hover:border-[#6B9FE6] transition-all duration-200">
     <div className="flex items-center justify-between">
       <div className="flex-1">
-        <p className="text-sm font-medium text-[#3A4E63] mb-1">{label}</p>
+        <p className="text-sm font-medium text-[#033F99] mb-1">{label}</p>
         <p className="text-2xl font-bold text-white">{value}</p>
-        {sublabel && <p className="text-xs text-[#3A4E63] mt-1">{sublabel}</p>}
+        {sublabel && <p className="text-xs text-[#033F99] mt-1">{sublabel}</p>}
       </div>
       {Icon && (
         <div className="w-12 h-12 bg-[#C4D9F4] rounded-xl flex items-center justify-center">
-          <Icon className="h-6 w-6 text-[#3A4E63]" />
+          <Icon className="h-6 w-6 text-[#033F99]" />
         </div>
       )}
     </div>
@@ -181,11 +181,10 @@ export const TableHeaderCell = ({ children, ...props }) => (
 // ==================== TABLE ROW ====================
 export const TableRow = ({ children, active, ...props }) => (
   <tr
-    className={`border-b border-[#EBF3FC] transition-all duration-150 ${
-      active
-        ? "bg-[#C4D9F4]/50 border-l-4 border-[#3A4E63]"
+    className={`border-b border-[#EBF3FC] transition-all duration-150 ${active
+        ? "bg-[#C4D9F4]/50 border-l-4 border-[#033F99]"
         : "hover:bg-[#EBF3FC]/50"
-    }`}
+      }`}
     {...props}
   >
     {children}
@@ -196,15 +195,15 @@ export const TableRow = ({ children, active, ...props }) => (
 export const StatusBadge = ({ status, children }) => {
   const getStatusStyle = (status) => {
     const styles = {
-      Draft: "bg-[#C4D9F4] text-[#3A4E63]",
+      Draft: "bg-[#C4D9F4] text-[#033F99]",
       Active:
-        "bg-gradient-to-r from-[#3A4E63] to-[#3A4E63] text-white shadow-md",
+        "bg-gradient-to-r from-[#033F99] to-[#033F99] text-white shadow-md",
       Pending: "bg-[#6B9FE6] text-white",
-      Approved: "bg-[#3A4E63] text-white",
-      Completed: "bg-[#3A4E63] text-white",
+      Approved: "bg-[#033F99] text-white",
+      Completed: "bg-[#033F99] text-white",
       Cancelled: "bg-slate-200 text-slate-700",
     };
-    return styles[status] || "bg-[#C4D9F4] text-[#3A4E63]";
+    return styles[status] || "bg-[#C4D9F4] text-[#033F99]";
   };
 
   return (
@@ -227,7 +226,7 @@ export const SearchBar = ({ value, onChange, placeholder, icon: Icon }) => (
       value={value}
       onChange={onChange}
       placeholder={placeholder || "Search..."}
-      className={`w-full ${Icon ? "pl-12" : "pl-4"} pr-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:border-[#3A4E63] focus:ring-4 focus:ring-[#C4D9F4] outline-none transition-all duration-200 text-slate-700 font-medium`}
+      className={`w-full ${Icon ? "pl-12" : "pl-4"} pr-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:border-[#033F99] focus:ring-4 focus:ring-[#C4D9F4] outline-none transition-all duration-200 text-slate-700 font-medium`}
     />
   </div>
 );
@@ -243,14 +242,14 @@ export const FilterBar = ({ children }) => (
 export const SelectDropdown = ({ value, onChange, options, label }) => (
   <div className="flex flex-col">
     {label && (
-      <label className="text-sm font-semibold text-[#3A4E63] mb-2">
+      <label className="text-sm font-semibold text-[#033F99] mb-2">
         {label}
       </label>
     )}
     <select
       value={value}
       onChange={onChange}
-      className="px-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:border-[#3A4E63] focus:ring-4 focus:ring-[#C4D9F4] outline-none transition-all duration-200 text-slate-700 font-medium bg-white"
+      className="px-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:border-[#033F99] focus:ring-4 focus:ring-[#C4D9F4] outline-none transition-all duration-200 text-slate-700 font-medium bg-white"
     >
       {options.map((option) => (
         <option key={option.value} value={option.value}>
@@ -282,7 +281,7 @@ export const FormInput = ({
       value={value}
       onChange={onChange}
       required={required}
-      className="px-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:border-[#3A4E63] focus:ring-4 focus:ring-[#C4D9F4] outline-none transition-all duration-200 text-slate-700 font-medium"
+      className="px-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:border-[#033F99] focus:ring-4 focus:ring-[#C4D9F4] outline-none transition-all duration-200 text-slate-700 font-medium"
     />
   </div>
 );
@@ -304,7 +303,7 @@ export const FormTextarea = ({
       value={value}
       onChange={onChange}
       rows={rows}
-      className="px-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:border-[#3A4E63] focus:ring-4 focus:ring-[#C4D9F4] outline-none transition-all duration-200 text-slate-700 font-medium resize-none"
+      className="px-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:border-[#033F99] focus:ring-4 focus:ring-[#C4D9F4] outline-none transition-all duration-200 text-slate-700 font-medium resize-none"
     />
   </div>
 );
@@ -327,7 +326,7 @@ export const FormSelect = ({
       value={value}
       onChange={onChange}
       required={required}
-      className="px-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:border-[#3A4E63] focus:ring-4 focus:ring-[#C4D9F4] outline-none transition-all duration-200 text-slate-700 font-medium bg-white"
+      className="px-4 py-3 border-2 border-[#6B9FE6] rounded-xl focus:border-[#033F99] focus:ring-4 focus:ring-[#C4D9F4] outline-none transition-all duration-200 text-slate-700 font-medium bg-white"
     >
       {options.map((opt) => (
         <option key={opt.value} value={opt.value}>
@@ -367,7 +366,7 @@ export const ActionButtons = ({
     {onView && (
       <button
         onClick={onView}
-        className="p-2 text-[#3A4E63] hover:text-white hover:bg-[#EBF3FC] rounded-lg transition-all"
+        className="p-2 text-[#033F99] hover:text-white hover:bg-[#EBF3FC] rounded-lg transition-all"
         title={viewLabel || "View"}
       >
         <svg
@@ -394,7 +393,7 @@ export const ActionButtons = ({
     {onEdit && (
       <button
         onClick={onEdit}
-        className="p-2 text-[#3A4E63] hover:text-white hover:bg-[#EBF3FC] rounded-lg transition-all"
+        className="p-2 text-[#033F99] hover:text-white hover:bg-[#EBF3FC] rounded-lg transition-all"
         title={editLabel || "Edit"}
       >
         <svg
@@ -439,7 +438,7 @@ export const ActionButtons = ({
 // ==================== LOADING SPINNER ====================
 export const LoadingSpinner = () => (
   <div className="flex items-center justify-center h-96">
-    <div className="w-16 h-16 border-4 border-[#6B9FE6] border-t-[#3A4E63] rounded-full animate-spin"></div>
+    <div className="w-16 h-16 border-4 border-[#6B9FE6] border-t-[#033F99] rounded-full animate-spin"></div>
   </div>
 );
 
@@ -452,7 +451,7 @@ export const EmptyState = ({ icon: Icon, title, message }) => (
       </div>
     )}
     <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-    <p className="text-[#3A4E63]">{message}</p>
+    <p className="text-[#033F99]">{message}</p>
   </div>
 );
 

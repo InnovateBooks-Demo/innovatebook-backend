@@ -244,7 +244,7 @@ const LeadDetail = () => {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <RefreshCw className="h-8 w-8 animate-spin text-[#3A4E63]" />
+        <RefreshCw className="h-8 w-8 animate-spin text-[#033F99]" />
       </div>
     );
   if (!lead)
@@ -273,7 +273,7 @@ const LeadDetail = () => {
         {/* Header */}
         <button
           onClick={() => navigate("/commerce/lead")}
-          className="flex items-center gap-2 text-slate-600 hover:text-[#3A4E63] mb-4"
+          className="flex items-center gap-2 text-slate-600 hover:text-[#033F99] mb-4"
         >
           <ArrowLeft className="h-4 w-4" />
           <span className="text-sm font-medium">Back to Leads</span>
@@ -281,7 +281,7 @@ const LeadDetail = () => {
 
         <div className="flex items-start justify-between mb-8">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-[#3A4E63] rounded-xl flex items-center justify-center text-white font-bold text-xl">
+            <div className="w-16 h-16 bg-[#033F99] rounded-xl flex items-center justify-center text-white font-bold text-xl">
               {lead.first_name?.charAt(0)}
               {lead.last_name?.charAt(0)}
             </div>
@@ -329,11 +329,10 @@ const LeadDetail = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-all ${
-                  activeTab === tab.id
-                    ? "border-[#3A4E63] text-[#3A4E63]"
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-all ${activeTab === tab.id
+                    ? "border-[#033F99] text-[#033F99]"
                     : "border-transparent text-slate-600 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 <tab.icon className="h-4 w-4" />
                 {tab.label}
@@ -601,7 +600,7 @@ const LeadDetail = () => {
               <h2 className="text-xl font-bold text-slate-900">Activities</h2>
               <button
                 onClick={() => setShowActivityModal(true)}
-                className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg font-medium hover:bg-[#3A4E63]"
+                className="px-4 py-2 bg-[#033F99] text-white rounded-lg font-medium hover:bg-[#033F99]"
               >
                 + Add Activity
               </button>
@@ -653,7 +652,7 @@ const LeadDetail = () => {
               <h2 className="text-xl font-bold text-slate-900">Deals</h2>
               <button
                 onClick={() => setShowDealModal(true)}
-                className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg font-medium hover:bg-[#3A4E63]"
+                className="px-4 py-2 bg-[#033F99] text-white rounded-lg font-medium hover:bg-[#033F99]"
               >
                 + Add Deal
               </button>
@@ -830,7 +829,7 @@ const LeadDetail = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg"
+                  className="flex-1 px-4 py-2.5 bg-[#033F99] text-white rounded-lg"
                 >
                   Create
                 </button>
@@ -935,7 +934,7 @@ const LeadDetail = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg"
+                  className="flex-1 px-4 py-2.5 bg-[#033F99] text-white rounded-lg"
                 >
                   Create
                 </button>

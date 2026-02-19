@@ -47,7 +47,7 @@ const ReturnDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3A4E63]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#033F99]"></div>
       </div>
     );
   }
@@ -94,15 +94,14 @@ const ReturnDetail = () => {
                   <XCircle className="w-4 h-4 text-red-500" />
                 )}
                 <span
-                  className={`px-2 py-1 text-sm rounded-full ${
-                    returnData.status === "settled"
+                  className={`px-2 py-1 text-sm rounded-full ${returnData.status === "settled"
                       ? "bg-green-100 text-green-700"
                       : returnData.status === "approved"
                         ? "bg-blue-100 text-blue-700"
                         : returnData.status === "declared"
                           ? "bg-yellow-100 text-yellow-700"
                           : "bg-red-100 text-red-700"
-                  }`}
+                    }`}
                 >
                   {returnData.status}
                 </span>
@@ -116,7 +115,7 @@ const ReturnDetail = () => {
             </button>
           )}
           {returnData.status === "approved" && (
-            <button className="px-4 py-2 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2">
+            <button className="px-4 py-2 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] flex items-center gap-2">
               <DollarSign className="w-4 h-4" />
               Settle
             </button>
@@ -146,7 +145,7 @@ const ReturnDetail = () => {
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
           <p className="text-sm text-gray-500 mb-1">Payment Date</p>
-          <p className="text-2xl font-bold text-[#3A4E63]">
+          <p className="text-2xl font-bold text-[#033F99]">
             {returnData.payment_date || "TBD"}
           </p>
         </div>
@@ -155,7 +154,7 @@ const ReturnDetail = () => {
       {/* Entitlements */}
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Users className="w-5 h-5 text-[#3A4E63]" />
+          <Users className="w-5 h-5 text-[#033F99]" />
           Entitlements ({returnData.entitlements?.length || 0} shareholders)
         </h2>
         {returnData.entitlements?.length > 0 ? (

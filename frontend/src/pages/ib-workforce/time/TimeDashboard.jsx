@@ -197,7 +197,7 @@ const TimeDashboard = () => {
               )}
               <button
                 onClick={() => toast.info("Log time feature coming soon")}
-                className="flex items-center gap-2 px-4 py-2.5 bg-[#3A4E63] text-white rounded-lg hover:bg-[#022B6B] transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#033F99] text-white rounded-lg hover:bg-[#022B6B] transition-colors"
                 data-testid="log-time-btn"
               >
                 <Plus className="h-4 w-4" />
@@ -278,11 +278,10 @@ const TimeDashboard = () => {
                       </div>
                     </div>
                     <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        att.attendance_status === "present"
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${att.attendance_status === "present"
                           ? "bg-emerald-100 text-emerald-700"
                           : "bg-gray-100 text-gray-700"
-                      }`}
+                        }`}
                     >
                       {att.attendance_status}
                     </span>
@@ -298,7 +297,7 @@ const TimeDashboard = () => {
               <h3 className="text-lg font-semibold text-gray-900">
                 Recent Time Entries
               </h3>
-              <button className="text-sm text-[#3A4E63] hover:underline">
+              <button className="text-sm text-[#033F99] hover:underline">
                 View All
               </button>
             </div>
@@ -324,13 +323,12 @@ const TimeDashboard = () => {
                       </p>
                     </div>
                     <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        entry.status === "approved"
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${entry.status === "approved"
                           ? "bg-emerald-100 text-emerald-700"
                           : entry.status === "submitted"
                             ? "bg-blue-100 text-blue-700"
                             : "bg-gray-100 text-gray-700"
-                      }`}
+                        }`}
                     >
                       {entry.status}
                     </span>
@@ -347,7 +345,7 @@ const TimeDashboard = () => {
             <h3 className="text-lg font-semibold text-gray-900">Timesheets</h3>
             <button
               onClick={() => toast.info("Create timesheet coming soon")}
-              className="text-sm text-[#3A4E63] hover:underline flex items-center gap-1"
+              className="text-sm text-[#033F99] hover:underline flex items-center gap-1"
             >
               <Plus className="h-4 w-4" /> Create Timesheet
             </button>
@@ -394,22 +392,21 @@ const TimeDashboard = () => {
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          ts.status === "approved"
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${ts.status === "approved"
                             ? "bg-emerald-100 text-emerald-700"
                             : ts.status === "submitted"
                               ? "bg-blue-100 text-blue-700"
                               : ts.status === "locked"
                                 ? "bg-purple-100 text-purple-700"
                                 : "bg-gray-100 text-gray-700"
-                        }`}
+                          }`}
                       >
                         {ts.status}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       {ts.status === "submitted" && (
-                        <button className="text-sm text-[#3A4E63] hover:underline">
+                        <button className="text-sm text-[#033F99] hover:underline">
                           Approve
                         </button>
                       )}
