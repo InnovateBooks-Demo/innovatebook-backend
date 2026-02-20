@@ -12,7 +12,7 @@ import uuid
 router = APIRouter(prefix="/api/emails", tags=["emails"])
 
 def get_db():
-    from app_state import db
+    from server import db
     return db
 
 async def get_current_user_simple(credentials = Depends(__import__('fastapi.security', fromlist=['HTTPBearer']).HTTPBearer())):

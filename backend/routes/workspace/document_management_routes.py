@@ -17,7 +17,7 @@ UPLOAD_DIR = "/app/backend/uploads/documents"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 def get_db():
-    from app_state import db
+    from server import db
     return db
 
 async def get_current_user_simple(credentials = Depends(__import__('fastapi.security', fromlist=['HTTPBearer']).HTTPBearer())):

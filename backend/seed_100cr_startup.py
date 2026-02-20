@@ -1,6 +1,6 @@
 """
 Auto-seed ₹100 Cr Financial Year Demo Data on Startup
-This module is imported and called from main.py on application startup
+This module is imported and called from server.py on application startup
 """
 
 import random
@@ -96,7 +96,7 @@ def random_date_in_month(year: int, month: int) -> datetime:
 async def seed_100cr_data(db) -> Dict[str, Any]:
     """
     Seed comprehensive ₹100 Cr financial year data.
-    Called from main.py on startup if data is missing.
+    Called from server.py on startup if data is missing.
     """
     results = {
         "customers": 0,

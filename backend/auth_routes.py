@@ -53,7 +53,7 @@ signup_sessions = {}
 # ==================== DB ====================
 
 def get_db():
-    from app_state import db
+    from server import db
     return db
 
 

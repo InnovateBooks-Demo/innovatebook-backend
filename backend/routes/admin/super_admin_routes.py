@@ -17,7 +17,7 @@ from auth_utils import verify_token
 router = APIRouter(prefix="/super-admin", tags=["Super Admin"])
 
 # Import shared dependencies
-from app_state import db, pwd_context
+from server import db, pwd_context
 
 # JWT configuration managed by auth_utils
 security = HTTPBearer()

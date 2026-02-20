@@ -10,7 +10,7 @@ import uuid
 router = APIRouter(prefix="/api/ib-workforce", tags=["IB Workforce"])
 
 def get_db():
-    from app_state import db
+    from server import db
     return db
 
 async def get_current_user():

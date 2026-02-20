@@ -8,8 +8,8 @@ import os
 JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
 
 def get_db():
-    """Get database instance from main"""
-    from app_state import db
+    """Get database instance from server"""
+    from server import db
     return db
 
 async def get_current_user(authorization: str = Header(None)):

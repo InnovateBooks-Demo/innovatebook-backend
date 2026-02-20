@@ -102,7 +102,7 @@ manager = WorkspaceConnectionManager()
 
 # Get database dependency to avoid circular imports
 def get_db():
-    from app_state import db
+    from server import db
     return db
 
 

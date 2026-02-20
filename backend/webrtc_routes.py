@@ -12,7 +12,7 @@ import uuid
 router = APIRouter(prefix="/api/webrtc", tags=["WebRTC"])
 
 # Import dependencies
-from app_state import get_database
+from server import get_database
 
 # Store active WebRTC connections
 webrtc_connections: Dict[str, WebSocket] = {}
