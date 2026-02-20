@@ -9,7 +9,7 @@ router = APIRouter(prefix="/test-helpers", tags=["Test Helpers - Dev Only"])
 
 def get_db():
     """Get database instance"""
-    from server import db
+    from app_state import db
     return db
 
 @router.get("/get-email-code/{email}")

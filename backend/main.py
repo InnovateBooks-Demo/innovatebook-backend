@@ -4548,7 +4548,7 @@ from engagement_routes import engagement_router
 from auth_routes import router as auth_router
 # from routes.auth.auth_routes import router as auth_router
 
-from test_helpers import router as test_helpers_router
+from tests.test_helpers import router as test_helpers_router
 # from chat_routes import router as chat_router  # Legacy - using workspace_router instead
 from user_management_routes import router as user_management_router
 from webrtc_routes import router as webrtc_router
@@ -4739,14 +4739,14 @@ async def auto_seed_on_startup():
     """Auto-seed database if empty on startup"""
     
     # DEBUG: Print all registered routes
-    print("\n" + "="*80)
-    print("REGISTERED ROUTES:")
-    print("="*80)
-    for route in app.routes:
-        if hasattr(route, 'path') and hasattr(route, 'methods'):
-            methods = ','.join(route.methods) if route.methods else 'WS'
-            print(f"{methods:15} {route.path}")
-    print("="*80 + "\n")
+    # print("\n" + "="*80)
+    # print("REGISTERED ROUTES:")
+    # print("="*80)
+    # for route in app.routes:
+    #     if hasattr(route, 'path') and hasattr(route, 'methods'):
+    #         methods = ','.join(route.methods) if route.methods else 'WS'
+    #         print(f"{methods:15} {route.path}")
+    # print("="*80 + "\n")
     
     try:
         logger.info("Checking if seed data is needed...")
