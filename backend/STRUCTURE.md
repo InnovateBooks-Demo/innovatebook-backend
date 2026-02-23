@@ -4,7 +4,7 @@
 
 ```
 /app/backend/
-├── server.py                 # Main FastAPI application
+├── main.py                   # Main FastAPI application
 ├── routes/                   # API route handlers
 │   ├── auth/                 # Authentication & user management
 │   │   ├── auth_routes.py

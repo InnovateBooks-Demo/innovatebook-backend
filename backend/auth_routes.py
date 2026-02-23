@@ -38,7 +38,7 @@ from log_utils import get_logger
 
 logger = logging.getLogger(__name__)
 auth_logger = get_logger(__name__)
-print("🔥 USING AUTH FILE:", __file__)
+print("USING AUTH FILE:", __file__)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 security = HTTPBearer()
@@ -53,7 +53,7 @@ signup_sessions = {}
 # ==================== DB ====================
 
 def get_db():
-    from server import db
+    from main import db
     return db
 
 

@@ -50,7 +50,7 @@ class WorkspaceUser(BaseModel):
     roles: List[str] = []
 
 
-router = APIRouter(tags=["workspace"])  # Prefix added in server.py include_router
+router = APIRouter(tags=["workspace"])  # Prefix added in main.py include_router
 security = HTTPBearer()
 
 JWT_SECRET = os.environ.get("JWT_SECRET_KEY", "fallback-secret-key")
@@ -102,7 +102,7 @@ manager = WorkspaceConnectionManager()
 
 # Get database dependency to avoid circular imports
 def get_db():
-    from server import db
+    from main import db
     return db
 
 

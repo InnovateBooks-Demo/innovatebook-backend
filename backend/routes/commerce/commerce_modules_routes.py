@@ -15,7 +15,7 @@ router = APIRouter(prefix="/commerce/modules", tags=["Commerce Modules"])
 
 # Get database dependency
 def get_db():
-    from server import db
+    from main import db
     return db
 
 # ============== PYDANTIC MODELS ==============
