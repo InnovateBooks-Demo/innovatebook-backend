@@ -157,11 +157,13 @@ class RefreshTokenRequest(BaseModel):
 
 class TokenPayload(BaseModel):
     """JWT Token payload structure"""
+    sub: Optional[str] = None
     user_id: str
     org_id: Optional[str] = None
     role_id: Optional[str] = None
     subscription_status: str
     is_super_admin: bool = False
+    type: str = "access"
     exp: datetime
 
 # ==================== RAZORPAY WEBHOOK MODELS ====================

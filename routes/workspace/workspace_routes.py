@@ -8,8 +8,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 import uuid
-import jwt
 import os
+# import jwt # Removed
+from auth_utils import verify_token
 
 from workspace_models import (
     # Enums
@@ -46,13 +47,12 @@ class WorkspaceUser(BaseModel):
 router = APIRouter(prefix="/api/workspace", tags=["workspace"])
 security = HTTPBearer()
 
-JWT_SECRET = os.environ.get('JWT_SECRET_KEY', 'fallback-secret-key')
-JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
+# JWT_SECRET and JWT_ALGORITHM removed in favor of auth_utils
 
 
 # Get database dependency to avoid circular imports
 def get_db():
-    from server import db
+    from main import db
     return db
 
 
@@ -61,10 +61,10 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     db = get_db()
     try:
         token = credentials.credentials
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id = payload.get("sub") or payload.get("sub")
-        if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
+        # Use auth_utils.verify_token
+        payload = verify_token(token, verify_type="access")
+        
+        user_id = payload.get("user_id")
         
         # Try to find user by _id first in users collection
         user = await db.users.find_one({"_id": user_id})
@@ -83,10 +83,15 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
             org_id=payload.get("org_id", "default"),
             roles=user.get("roles", [])
         )
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+    except Exception as e:
+        # verify_token raises HTTPException, but we catch generic here just in case?
+        # Actually verify_token raises HTTPException for expired/invalid.
+        # So we should just let that bubble up or catch specific if needed.
+        # But here we were catching jwt errors. verify_token handles that.
+        # So we can just let it bubble if it's HTTPException.
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=401, detail=f"Authentication failed: {str(e)}")
 
 
 # ============= HELPER FUNCTIONS =============

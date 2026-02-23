@@ -1,0 +1,26 @@
+Connecting to mongodb://localhost:27017 / innovate_books_db...
+Cleaning up old test data for test.invite.user@example.com...
+[OK] Seeded mock organization: test_org_9f7289ce
+Creating invite with token: i8TrZgs903wis2h5D1JkO4KSqgMEHVlqTsz6gAyw22A
+Calling /api/public/invites/accept...
+Response: 201 - {"success":true,"message":"Invite accepted. You can now login.","user_id":"m9gdsOkX_EzfYecIfSKzuw","org_id":"test_org_9f7289ce"}
+
+Verifying Database State...
+[OK] User found in 'users': m9gdsOkX_EzfYecIfSKzuw
+[OK] Password hash present in 'users'
+[OK] Membership found in 'org_users': role=admin
+[OK] Directory Record found in 'enterprise_users'
+[OK] Linked to correct user_id: m9gdsOkX_EzfYecIfSKzuw
+[OK] Correct: No password_hash in 'enterprise_users'
+
+Testing Login...
+Login Response: 200
+[OK] Login Successful
+Token: eyJhbGciOi...
+[OK] User email matches
+
+Testing Users List Endpoint...
+List Users Response: 200
+[OK] Users List retrieved: 1 users
+[OK] Found self in users list: Test Invite User (admin)
+[OK] Last active populated: Today

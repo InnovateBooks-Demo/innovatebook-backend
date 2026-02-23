@@ -13,7 +13,7 @@ from typing import List
 router = APIRouter(prefix="/api/seed", tags=["seed"])
 
 def get_db():
-    from server import db
+    from main import db
     return db
 
 

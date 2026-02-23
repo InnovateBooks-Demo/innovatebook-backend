@@ -47,7 +47,7 @@ manager = ConnectionManager()
 
 
 def get_db():
-    from server import db
+    from main import db
     return db
 
 
@@ -76,6 +76,11 @@ async def finance_websocket(websocket: WebSocket, token: str):
     await manager.connect(websocket, org_id)
     
     try:
+        from websockets.exceptions import ConnectionClosedError
+    except ImportError:
+        class ConnectionClosedError(Exception): pass
+
+    try:
         # Send initial connection message
         await websocket.send_json({
             "type": "connected",
@@ -91,8 +96,14 @@ async def finance_websocket(websocket: WebSocket, token: str):
             if data == "ping":
                 await websocket.send_text("pong")
             
-    except WebSocketDisconnect:
+    except (WebSocketDisconnect, ConnectionClosedError):
         manager.disconnect(websocket, org_id)
+    except Exception as e:
+        # Log other errors but don't crash server console
+        # logger.error(f"WebSocket error: {e}") 
+        manager.disconnect(websocket, org_id)
+    finally:
+        pass # manager.disconnect handles cleaning up references
 
 
 # ==================== EVENT TRIGGERS ====================

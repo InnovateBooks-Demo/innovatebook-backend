@@ -1,0 +1,18 @@
+Connecting to DB...
+Seeding Org: test_org_enforce_fdfb3dda
+Seeding Inviters (Owner & Member)...
+
+--- Test 1: Create Invite API (Admin creating Admin) ---
+[PASS] Blocked Admin from inviting Admin
+
+--- Test 2: Create Invite API (Admin creating Member) ---
+[PASS] Allowed Admin to invite Member
+
+--- Test 3: Accept Invite (Role=Admin, Inviter=Member) ---
+[PASS] Rejected Admin invite from Member
+
+--- Test 4: Accept Invite (Role=Admin, Inviter=Owner) ---
+[PASS] Accepted Admin invite from Owner
+
+--- Test 5: Accept Invite (Role=Member, Inviter=Member) ---
+[PASS] Accepted Member invite from Member

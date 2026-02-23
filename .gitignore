@@ -4,3 +4,37 @@ __pycache__
 .venv
 
 tests
+
+
+__pycache__
+.env
+
+.venv
+
+tests
+
+
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Uploads
+uploads/
+
+# OS
+.DS_Store
+Thumbs.db

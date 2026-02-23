@@ -11,7 +11,7 @@ import uuid
 router = APIRouter(prefix="/api/activity", tags=["activity"])
 
 def get_db():
-    from server import db
+    from main import db
     return db
 
 async def get_current_user_simple(credentials = Depends(__import__('fastapi.security', fromlist=['HTTPBearer']).HTTPBearer())):

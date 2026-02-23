@@ -26,7 +26,7 @@ load_dotenv()
 router = APIRouter(prefix="/intelligence", tags=["Intelligence"])
 
 # Import shared dependencies
-from server import db
+from main import db
 
 # JWT configuration
 JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env

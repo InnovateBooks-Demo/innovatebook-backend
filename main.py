@@ -12,7 +12,7 @@ from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone, timedelta
 from passlib.context import CryptContext
-import jwt
+# import jwt  # Removed in favor of auth_utils
 # from emergentintegrations.llm.chat import LlmChat, UserMessage
 try:
     from emergentintegrations.llm.chat import LlmChat, UserMessage
@@ -26,8 +26,15 @@ import asyncio
 import pandas as pd
 import io
 
+# from routes.public_invite_routes import router as public_invite_router
+
+
+
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -55,12 +62,15 @@ except Exception as e:
 # Security
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
-JWT_SECRET = os.environ.get('JWT_SECRET_KEY', 'fallback-secret-key')
-JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
-ACCESS_TOKEN_EXPIRE = int(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES', 43200))
+
+# Imported from auth_utils to ensure consistency
+from auth_utils import create_access_token, verify_token
 
 # Create the main app without a prefix
 app = FastAPI()
+
+
+# app.include_router(public_invite_router)
 
 
 
@@ -82,6 +92,13 @@ app.add_middleware(
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+
+
+from routes.public_invite_routes import router as public_invite_router
+
+# api_router.include_router(public_invite_router)
+
+app.include_router(public_invite_router, prefix="/api")
 # ==================== HEALTH CHECK ENDPOINT ====================
 @app.get("/health")
 async def health_check():
@@ -436,11 +453,7 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-def create_access_token(data: dict) -> str:
-    to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
+# Local create_access_token removed. Using auth_utils.create_access_token instead.
 
 async def get_database():
     """Dependency to get database instance"""
@@ -482,12 +495,11 @@ async def get_database():
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     try:
         token = credentials.credentials
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        # Use centralized verify_token from auth_utils
+        payload = verify_token(token, verify_type="access")
 
-        user_id = payload.get("sub") or payload.get("user_id")
-        if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-
+        user_id = payload.get("user_id") # auth_utils normalizes this
+        
         user = await db.users.find_one({"_id": user_id})
         if user is None:
             user = await db.users.find_one({"user_id": user_id})
@@ -515,9 +527,10 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 
         return User(**user_data)
 
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in get_current_user: {e}")
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
@@ -592,7 +605,7 @@ async def register(user_data: UserRegister):
     await db.users.insert_one(user_dict)
     
     # Create token
-    access_token = create_access_token({"sub": user.id})
+    access_token = create_access_token(user_id=user.id, role_id=user.role)
     
     return Token(access_token=access_token, token_type="bearer", user=user)
 
@@ -615,7 +628,54 @@ async def register(user_data: UserRegister):
 
 @api_router.get("/auth/me", response_model=User)
 async def get_me(current_user: User = Depends(get_current_user)):
+    print(current_user)
     return current_user
+
+@api_router.get("/auth/token-debug")
+async def debug_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """
+    Temporary debug endpoint to inspect token claims and server time.
+    """
+    # Security check: potentially hide in prod
+    # if os.environ.get("ENVIRONMENT") == "production":
+    #     raise HTTPException(status_code=404, detail="Not found")
+
+    token = credentials.credentials
+    try:
+        # We verify manually here to extract exp even if it's close to expiring, 
+        # though verify_token will raise if expired.
+        # To strictly debug *expiry check*, we want to see the values even if it fails standard auth?
+        # User asked: "returns token exp... returns extracted user_id".
+        # If verify_token fails, we can't easily see the payload unless we decode without verification.
+        # But `verify_token` is what determines validity. 
+        # Let's use verify_token to show "what the server sees as valid".
+        
+        payload = verify_token(token, verify_type="access")
+        
+        utc_now = datetime.now(timezone.utc)
+        exp_timestamp = payload.get("exp")
+        exp_dt = datetime.fromtimestamp(exp_timestamp, tz=timezone.utc) if exp_timestamp else None
+        
+        remaining = None
+        if exp_dt:
+            remaining = (exp_dt - utc_now).total_seconds()
+            
+        return {
+            "server_utc_time": utc_now.isoformat(),
+            "token_exp_time": exp_dt.isoformat() if exp_dt else None,
+            "seconds_remaining": remaining,
+            "user_id": payload.get("user_id"),
+            "org_id": payload.get("org_id"),
+            "sub": payload.get("sub"),
+            "role_id": payload.get("role_id"),
+            "status": "Valid"
+        }
+    except Exception as e:
+        return {
+            "server_utc_time": datetime.now(timezone.utc).isoformat(),
+            "error": str(e),
+            "status": "Invalid/Expired"
+        }
 
 # ==================== DASHBOARD ROUTES ====================
 
@@ -4486,10 +4546,19 @@ from commerce_routes import commerce_router
 from lead_sop_complete import lead_router
 from engagement_routes import engagement_router
 from auth_routes import router as auth_router
-from test_helpers import router as test_helpers_router
-from chat_routes import router as chat_router
+# from routes.auth.auth_routes import router as auth_router
+
+# from test_helpers import router as test_helpers_router
+# try:
+#     from test_helpers import router as test_helpers_router
+#     app.include_router(test_helpers_router, prefix="/api/test-helpers", tags=["test-helpers"])
+# except ModuleNotFoundError:
+#     # test_helpers is optional (dev-only). Ignore if missing.
+#     pass
+
+# from chat_routes import router as chat_router  # Legacy - using workspace_router instead
 from user_management_routes import router as user_management_router
-from webrtc_routes import router as webrtc_router
+from routes.integrations.webrtc_routes import router as webrtc_router
 from manufacturing_routes import router as manufacturing_router
 from manufacturing_routes_phase2 import router as manufacturing_phase2_router
 from manufacturing_routes_phase3 import router as manufacturing_phase3_router
@@ -4516,11 +4585,11 @@ from razorpay_webhook_routes import router as razorpay_webhook_router
 # Include the router in the main app
 app.include_router(api_router)
 app.include_router(auth_router, prefix="/api")
-app.include_router(test_helpers_router, prefix="/api")
+# app.include_router(test_helpers_router, prefix="/api")
 app.include_router(commerce_router, prefix="/api")
 app.include_router(lead_router, prefix="/api")
 app.include_router(engagement_router)
-app.include_router(chat_router)
+# app.include_router(chat_router)  # Legacy - using workspace_router instead
 app.include_router(user_management_router)
 app.include_router(webrtc_router)
 app.include_router(manufacturing_router)
@@ -4560,7 +4629,7 @@ app.include_router(intelligence_router, prefix="/api")
 
 # Import Workspace routes
 from workspace_routes import router as workspace_router
-app.include_router(workspace_router)
+app.include_router(workspace_router, prefix="/api/workspace")
 
 # Import Comprehensive Seed routes
 from comprehensive_seed import router as seed_router
@@ -4594,7 +4663,7 @@ from governance_engine_routes import router as governance_engine_router
 app.include_router(governance_engine_router, prefix="/api")
 
 # Admin routes
-from admin_routes import router as admin_router
+from routes.admin.admin_routes import router as admin_router
 app.include_router(admin_router, prefix="/api")
 
 # GST Reporting routes
@@ -4675,6 +4744,17 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def auto_seed_on_startup():
     """Auto-seed database if empty on startup"""
+    
+    # DEBUG: Print all registered routes
+    # print("\n" + "="*80)
+    # print("REGISTERED ROUTES:")
+    # print("="*80)
+    # for route in app.routes:
+    #     if hasattr(route, 'path') and hasattr(route, 'methods'):
+    #         methods = ','.join(route.methods) if route.methods else 'WS'
+    #         print(f"{methods:15} {route.path}")
+    # print("="*80 + "\n")
+    
     try:
         logger.info("Checking if seed data is needed...")
         
