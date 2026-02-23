@@ -17,8 +17,10 @@ from enterprise_auth_service import (
 from enterprise_middleware import verify_token
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
+from log_utils import get_logger
 
 logger = logging.getLogger(__name__)
+auth_logger = get_logger(__name__)
 
 router = APIRouter(prefix="/enterprise/auth", tags=["Enterprise Auth"])
 
@@ -33,6 +35,16 @@ def get_db():
 
 # ==================== LOGIN ====================
 
+# ... existing imports
+from log_utils import get_logger
+
+logger = logging.getLogger(__name__)
+auth_logger = get_logger(__name__)
+
+# ...
+
+# ==================== LOGIN ====================
+
 @router.post("/login", response_model=EnterpriseLoginResponse)
 async def enterprise_login(credentials: EnterpriseLogin, db = Depends(get_db)):
     """
@@ -42,7 +54,7 @@ async def enterprise_login(credentials: EnterpriseLogin, db = Depends(get_db)):
     - Includes org and subscription info
     """
     try:
-        logger.info(f"🔐 Enterprise login attempt: {credentials.email}")
+        auth_logger.login_attempt(credentials.email)
         
         # Find user by email
         user = await db.enterprise_users.find_one(
@@ -51,7 +63,7 @@ async def enterprise_login(credentials: EnterpriseLogin, db = Depends(get_db)):
         )
         
         if not user:
-            logger.warning(f"❌ User not found: {credentials.email}")
+            auth_logger.login_failure(credentials.email, reason="user_not_found")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password"
@@ -59,6 +71,7 @@ async def enterprise_login(credentials: EnterpriseLogin, db = Depends(get_db)):
         
         # Check if user is active
         if not user.get("is_active", True):
+            auth_logger.login_failure(credentials.email, reason="inactive_account")
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Account is inactive. Contact administrator."
@@ -66,7 +79,7 @@ async def enterprise_login(credentials: EnterpriseLogin, db = Depends(get_db)):
         
         # Verify password
         if not verify_password(credentials.password, user["password_hash"]):
-            logger.warning(f"❌ Invalid password for: {credentials.email}")
+            auth_logger.login_failure(credentials.email, reason="invalid_password")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password"
@@ -80,6 +93,7 @@ async def enterprise_login(credentials: EnterpriseLogin, db = Depends(get_db)):
                 {"_id": 0}
             )
             if not org:
+                auth_logger.login_failure(credentials.email, reason="organization_not_found")
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Organization not found"
@@ -87,6 +101,8 @@ async def enterprise_login(credentials: EnterpriseLogin, db = Depends(get_db)):
         
         # Generate tokens
         tokens = await generate_tokens(user, org, db)
+        
+        auth_logger.login_success(credentials.email, user_id=user["user_id"], org_id=org["org_id"] if org else "super_admin")
         
         # Prepare response
         return EnterpriseLoginResponse(
@@ -110,10 +126,12 @@ async def enterprise_login(credentials: EnterpriseLogin, db = Depends(get_db)):
             } if org else None
         )
         
-    except HTTPException:
+    except HTTPException as e:
+        if e.status_code >= 500:
+             auth_logger.error("login_http_error", error=e, email=credentials.email)
         raise
     except Exception as e:
-        logger.error(f"❌ Login error: {e}")
+        auth_logger.error("login_exception", error=e, email=credentials.email)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Login failed"

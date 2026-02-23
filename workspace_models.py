@@ -157,6 +157,8 @@ class ChatMessage(BaseModel):
     file_name: Optional[str] = None
     created_at: datetime
     edited: bool = False
+    delivered_to: List[str] = []
+    read_by: List[str] = []
 
 
 class ChatMessageCreate(BaseModel):

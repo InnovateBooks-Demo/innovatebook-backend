@@ -235,3 +235,8 @@ class SignupResponse(BaseModel):
     message: str
     step: str
     data: Optional[Dict] = None
+
+class AcceptInviteRequest(BaseModel):
+    invite_token: str
+    password: str = Field(..., min_length=8)
+    full_name: Optional[str] = None

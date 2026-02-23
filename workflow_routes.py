@@ -146,7 +146,7 @@ async def create_activity_record(db, activity_data: dict):
 
 # Get database dependency
 def get_db():
-    from server import db
+    from main import db
     return db
 
 # ============== ENUMS ==============

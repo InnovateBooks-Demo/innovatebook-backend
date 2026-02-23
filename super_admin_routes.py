@@ -16,7 +16,7 @@ import os
 router = APIRouter(prefix="/super-admin", tags=["Super Admin"])
 
 # Import shared dependencies
-from server import db, pwd_context
+from main import db, pwd_context
 
 # JWT configuration (same as enterprise auth)
 JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env

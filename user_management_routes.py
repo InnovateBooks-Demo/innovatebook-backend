@@ -14,8 +14,8 @@ import shutil
 
 router = APIRouter(prefix="/api/users", tags=["User Management"])
 
-# Import dependencies from server
-from server import get_current_user, get_database
+# Import dependencies from main
+from main import get_current_user, get_database
 
 # Create uploads directory if it doesn't exist
 UPLOAD_DIR = "/app/backend/uploads/profile_photos"

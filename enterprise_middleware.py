@@ -12,6 +12,7 @@ from typing import Optional, Dict, Any
 import logging
 from dotenv import load_dotenv
 from pathlib import Path
+from auth_utils import verify_token as verify_jwt
 
 # Load environment variables
 ROOT_DIR = Path(__file__).parent
@@ -20,9 +21,6 @@ load_dotenv(ROOT_DIR / '.env')
 logger = logging.getLogger(__name__)
 
 security = HTTPBearer()
-
-JWT_SECRET = os.environ.get('JWT_SECRET_KEY')
-JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
 
 # Direct MongoDB connection (avoid circular import)
 mongo_url = os.environ['MONGO_URL']
@@ -43,31 +41,9 @@ async def verify_token(
     Verify JWT token and extract payload
     Returns: Token payload with user_id, org_id, role_id, subscription_status
     """
-    try:
-        token = credentials.credentials
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        
-        # Validate required fields
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token: missing user_id"
-            )
-        
-        # Check token expiration (JWT library does this automatically)
-        return payload
-        
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token has expired. Please login again."
-        )
-    except jwt.InvalidTokenError as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid token: {str(e)}"
-        )
+    token = credentials.credentials
+    # verify_jwt handles decoding, expiration, type check, and normalization
+    return verify_jwt(token, verify_type="access")
 
 # ==================== TENANT VALIDATION MIDDLEWARE ====================
 
@@ -121,9 +97,6 @@ async def validate_tenant(
 
     # ✅ Fetch org by org_id (your DB has this field)
     org = await db.organizations.find_one({"org_id": org_id}, {"_id": 0})
-    if not org:
-        # (Optional) fallback because you also have one org doc where _id == org_id
-        org = await db.organizations.find_one({"_id": org_id}, {"_id": 0})
 
     if not org or not org.get("is_active", True):
         raise HTTPException(

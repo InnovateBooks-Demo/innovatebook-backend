@@ -16,7 +16,7 @@ JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
 
 
 def get_db():
-    from server import db
+    from main import db
     return db
 
 
@@ -45,20 +45,20 @@ def generate_html_statement(title: str, period: str, content: str, org_name: str
         <title>{title}</title>
         <style>
             body {{ font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; color: #1a1a1a; }}
-            .header {{ border-bottom: 3px solid #3A4E63; padding-bottom: 20px; margin-bottom: 30px; }}
-            .header h1 {{ color: #3A4E63; margin: 0; font-size: 24px; }}
+            .header {{ border-bottom: 3px solid #033F99; padding-bottom: 20px; margin-bottom: 30px; }}
+            .header h1 {{ color: #033F99; margin: 0; font-size: 24px; }}
             .header .period {{ color: #666; font-size: 14px; margin-top: 5px; }}
             .header .org {{ color: #333; font-size: 16px; font-weight: bold; margin-top: 10px; }}
             table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
             th {{ background: #f5f5f5; text-align: left; padding: 12px; font-weight: 600; border-bottom: 2px solid #ddd; }}
             td {{ padding: 10px 12px; border-bottom: 1px solid #eee; }}
-            .section-header {{ background: #3A4E63; color: white; padding: 10px 12px; font-weight: 600; margin-top: 20px; }}
+            .section-header {{ background: #033F99; color: white; padding: 10px 12px; font-weight: 600; margin-top: 20px; }}
             .total-row {{ background: #f0f4f8; font-weight: bold; }}
-            .total-row td {{ border-top: 2px solid #3A4E63; }}
+            .total-row td {{ border-top: 2px solid #033F99; }}
             .amount {{ text-align: right; font-family: 'Courier New', monospace; }}
             .positive {{ color: #059669; }}
             .negative {{ color: #dc2626; }}
-            .grand-total {{ background: #3A4E63; color: white; }}
+            .grand-total {{ background: #033F99; color: white; }}
             .grand-total td {{ font-size: 18px; padding: 15px 12px; }}
             .footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }}
             .generated {{ float: right; }}

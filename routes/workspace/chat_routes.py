@@ -11,7 +11,7 @@ from chat_models import (
     UserPresence, UserStatus,
     WSMessage, WSMessageType
 )
-from server import get_database, get_current_user
+from main import get_database, get_current_user
 import os
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
@@ -329,7 +329,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await manager.connect(websocket, user_id)
     
     try:
-        while True:
+        while True: 
             data = await websocket.receive_json()
             
             # Handle different message types
