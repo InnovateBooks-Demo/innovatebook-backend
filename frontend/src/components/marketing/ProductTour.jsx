@@ -261,10 +261,10 @@ const ProductTour = ({
               key={index}
               onClick={() => setCurrentStep(index)}
               className={`w-2 h-2 rounded-full transition-all ${index === currentStep
-                  ? "w-6 bg-[#033F99]"
-                  : index < currentStep
-                    ? "bg-[#033F99]/60"
-                    : "bg-slate-300"
+                ? "w-6 bg-[#033F99]"
+                : index < currentStep
+                  ? "bg-[#033F99]/60"
+                  : "bg-slate-300"
                 }`}
             />
           ))}

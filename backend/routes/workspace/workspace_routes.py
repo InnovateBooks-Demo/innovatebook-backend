@@ -52,7 +52,7 @@ security = HTTPBearer()
 
 # Get database dependency to avoid circular imports
 def get_db():
-    from server import db
+    from main import db
     return db
 
 

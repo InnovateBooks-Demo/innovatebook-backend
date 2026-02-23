@@ -641,7 +641,7 @@ Govern ← Reconcile ← Tax ← Spend ← Pay ← Procure
 │       │   └── ui/ (Shadcn components)
 │       └── utils/
 └── backend/
-    ├── server.py (Main FastAPI app)
+    ├── main.py (Main FastAPI app)
     ├── auth_routes.py
     ├── commerce_routes.py
     ├── commerce_models.py

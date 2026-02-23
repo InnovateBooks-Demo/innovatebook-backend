@@ -22,7 +22,7 @@ EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
 
 
 def get_db():
-    from server import db
+    from main import db
     return db
 
 

@@ -10,6 +10,7 @@ import time
 import subprocess
 import re
 import random
+import os
 
 # Configuration
 BACKEND_URL = "https://saas-finint.preview.emergentagent.com/api"
@@ -19,8 +20,7 @@ RANDOM_ID = random.randint(1000, 9999)
 TEST_USER_DATA = {
     "full_name": "Test User",
     "email": f"testuser{RANDOM_ID}@example.com",
-    TEST_PASSWORD = os.getenv("TEST_PASSWORD", "Test1234")   # or demo123 as default
-,
+    "password": os.getenv("TEST_PASSWORD", "Test1234"),   # or demo123 as default
     "mobile": f"987654{RANDOM_ID}",
     "mobile_country_code": "+91",
     "role": "cfo",
@@ -237,7 +237,7 @@ def test_complete_authentication_flow():
         return False
     
     data = response.json()
-    # Handle both auth_routes.py format (with "success") and server.py format (direct Token)
+    # Handle both auth_routes.py format (with "success") and main.py format (direct Token)
     if data.get("success"):
         access_token = data.get("access_token")
     elif data.get("access_token"):

@@ -77,7 +77,7 @@ Complete implementation of Lead Module enhancements for IB Commerce Solution inc
 - `/app/frontend/src/pages/commerce/lead/LeadEngagement.jsx` (NEW)
 - `/app/backend/engagement_routes.py` (NEW)
 - `/app/frontend/src/App.js` (route added)
-- `/app/backend/server.py` (router registered)
+- `/app/backend/main.py` (router registered)
 
 ### 9. Deal Value Column Removed
 **Problem**: Deal Value column in lead list
@@ -107,7 +107,7 @@ Complete implementation of Lead Module enhancements for IB Commerce Solution inc
    - `calculate_engagement_points()` function
    - Auto-updates engagement score and lead status
 
-4. **`/app/backend/server.py`**
+4. **`/app/backend/main.py`**
    - Imported and registered `engagement_router`
 
 ### Frontend (6 files)

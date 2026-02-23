@@ -47,7 +47,7 @@ manager = ConnectionManager()
 
 
 def get_db():
-    from server import db
+    from main import db
     return db
 
 
