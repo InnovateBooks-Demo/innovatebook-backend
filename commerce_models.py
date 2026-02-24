@@ -388,6 +388,7 @@ class Lead(BaseModel):
     # ===== SYSTEM FIELDS =====
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_activity_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
     created_by: str = "system"
     modified_by: Optional[str] = None
 

@@ -4636,7 +4636,7 @@ from comprehensive_seed import router as seed_router
 app.include_router(seed_router)
 
 # Import IB Commerce Workflow routes (Revenue & Procurement 5-stage)
-from workflow_routes import router as workflow_router
+from routes.commerce.workflow_routes import router as workflow_router
 app.include_router(workflow_router, prefix="/api")
 
 # Import Enhanced Parties Engine (Commercial Identity & Readiness)

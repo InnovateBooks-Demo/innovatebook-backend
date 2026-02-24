@@ -87,6 +87,57 @@ def log_sop_stage(stage: str, performed_by: str, status: str, notes: str) -> Dic
     }
 
 
+# ==================== LOOKUP: ENRICH SUGGESTIONS ====================
+
+@lead_router.get("/enrich")
+async def get_enrich_suggestions(company_name: str, db=Depends(get_db)):
+    """
+    DB-only company enrichment suggestions.
+    Returns distinct companies from existing leads matching the company_name prefix.
+    Intended to be called debounced from the frontend LeadCreate form.
+    No AI. No external calls.
+    """
+    if not company_name or len(company_name.strip()) < 2:
+        return {"suggestions": []}
+
+    try:
+        # Case-insensitive prefix search on company_name
+        regex_pattern = f"^{re.escape(company_name.strip())}"
+        cursor = db.commerce_leads.find(
+            {"company_name": {"$regex": regex_pattern, "$options": "i"}},
+            {
+                "company_name": 1,
+                "industry_type": 1,
+                "city": 1,
+                "country": 1,
+                "website_url": 1,
+            }
+        ).limit(10)
+
+        docs = await cursor.to_list(length=10)
+
+        # Deduplicate by normalized company_name
+        seen = set()
+        suggestions = []
+        for doc in docs:
+            name = doc.get("company_name", "").strip()
+            key = name.lower()
+            if key not in seen:
+                seen.add(key)
+                suggestions.append({
+                    "company_name": name,
+                    "industry_type": doc.get("industry_type"),
+                    "city": doc.get("city"),
+                    "country": doc.get("country"),
+                    "website_url": doc.get("website_url"),
+                })
+
+        return {"suggestions": suggestions}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Enrich lookup failed: {str(e)}")
+
+
 # ==================== CRUD ENDPOINTS ====================
 
 @lead_router.post("")
@@ -128,7 +179,8 @@ async def create_lead(lead_data: LeadCreate, db=Depends(get_db)):
             tags=lead_data.tags or [],
             fingerprint=fingerprint,
             captured_by="current_user",
-            lead_status=LeadStatus.NEW
+            lead_status=LeadStatus.NEW,
+            last_activity_at=datetime.now(timezone.utc)
         )
         
         # Add audit entry

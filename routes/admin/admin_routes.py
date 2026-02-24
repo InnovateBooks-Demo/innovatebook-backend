@@ -729,22 +729,80 @@ async def get_admin_dashboard(db=Depends(get_db), current_user=Depends(get_curre
 
 # ==================== USERS ====================
 
+# @router.get("/users")
+# async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+#     """
+#     List users in current org.
+#     Returns demo-like shape so frontend renders:
+#       user_id, email, full_name, role_id, role_name, is_active, last_login
+#     """
+#     try:
+#         org_id = current_user["org_id"]
+
+#         users = await db.enterprise_users.find(
+#             {"org_id": org_id},
+#             {"_id": 0, "password_hash": 0}
+#         ).to_list(length=200)
+
+#         # Role map (org + system)
+#         roles = await db.roles.find(
+#             {"$or": [{"org_id": org_id}, {"is_system": True}]},
+#             {"_id": 0, "role_id": 1, "role_name": 1}
+#         ).to_list(length=200)
+#         role_map = {r["role_id"]: r.get("role_name") for r in roles}
+
+#         enriched = []
+#         for u in users:
+#             last_dt = _to_dt(u.get("last_active_at")) or _to_dt(u.get("last_login_at")) or _to_dt(u.get("created_at"))
+
+#             enriched.append({
+#                 "user_id": u.get("user_id"),
+#                 "email": (u.get("email") or "").strip().lower(),
+#                 "full_name": (
+#                     u.get("full_name")
+#                     or f"{u.get('first_name','')} {u.get('last_name','')}".strip()
+#                     or u.get("user_id")
+#                     or ""
+#                 ),
+#                 "role_id": u.get("role_id"),
+#                 "role_name": role_map.get(u.get("role_id")) or u.get("role_id") or "",
+#                 "is_active": u.get("is_active", True),
+#                 "last_login": _last_login_label(last_dt),
+#                 # keep these if frontend wants later; harmless if unused
+#                 "org_id": u.get("org_id"),
+#                 "is_super_admin": u.get("is_super_admin", False),
+#                 "created_at": u.get("created_at"),
+#             })
+
+#         return {"success": True, "users": enriched}
+
+#     except Exception as e:
+#         logger.exception(f"List users error: {e}")
+#         raise HTTPException(status_code=500, detail="Failed to fetch users")
 @router.get("/users")
 async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
-    """
-    List users in current org.
-    Returns demo-like shape so frontend renders:
-      user_id, email, full_name, role_id, role_name, is_active, last_login
-    """
     try:
         org_id = current_user["org_id"]
 
-        users = await db.enterprise_users.find(
-            {"org_id": org_id},
-            {"_id": 0, "password_hash": 0}
-        ).to_list(length=200)
+        # 1) Get org membership rows
+        memberships = await db.org_users.find(
+            {"org_id": org_id, "status": {"$in": ["active", "Active"]}, "is_active": True},
+            {"_id": 0, "user_id": 1, "role": 1, "role_id": 1}
+        ).to_list(length=500)
 
-        # Role map (org + system)
+        member_user_ids = [m["user_id"] for m in memberships if m.get("user_id")]
+        membership_map = {m["user_id"]: m for m in memberships}
+
+        if not member_user_ids:
+            return {"success": True, "users": []}
+
+        # 2) Fetch user profiles
+        users = await db.users.find(
+            {"user_id": {"$in": member_user_ids}},
+            {"_id": 0, "password_hash": 0, "password": 0}
+        ).to_list(length=500)
+
+        # 3) Role map (optional)
         roles = await db.roles.find(
             {"$or": [{"org_id": org_id}, {"is_system": True}]},
             {"_id": 0, "role_id": 1, "role_name": 1}
@@ -753,6 +811,9 @@ async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_a
 
         enriched = []
         for u in users:
+            m = membership_map.get(u.get("user_id"), {})
+            role_id = m.get("role_id") or u.get("role_id") or m.get("role") or u.get("role") or "member"
+
             last_dt = _to_dt(u.get("last_active_at")) or _to_dt(u.get("last_login_at")) or _to_dt(u.get("created_at"))
 
             enriched.append({
@@ -764,22 +825,21 @@ async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_a
                     or u.get("user_id")
                     or ""
                 ),
-                "role_id": u.get("role_id"),
-                "role_name": role_map.get(u.get("role_id")) or u.get("role_id") or "",
-                "is_active": u.get("is_active", True),
+                "role_id": role_id,
+                "role_name": role_map.get(role_id) or role_id or "",
+                "is_active": u.get("is_active", True) and m.get("is_active", True),
                 "last_login": _last_login_label(last_dt),
-                # keep these if frontend wants later; harmless if unused
-                "org_id": u.get("org_id"),
-                "is_super_admin": u.get("is_super_admin", False),
+                "org_id": org_id,
                 "created_at": u.get("created_at"),
             })
 
+        # Keep stable ordering
+        enriched.sort(key=lambda x: (not x["is_active"], x["full_name"].lower()))
         return {"success": True, "users": enriched}
 
     except Exception as e:
         logger.exception(f"List users error: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch users")
-
 
 @router.post("/users/{user_id}/deactivate")
 async def deactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):

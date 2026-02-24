@@ -3,7 +3,7 @@ IB Commerce - Revenue & Procurement 5-Stage Workflow
 Full enterprise-grade implementation with stage transitions, governance, and approvals
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Query, Header
+from fastapi import APIRouter, HTTPException, Depends, Query, Header, UploadFile, File
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
@@ -193,6 +193,10 @@ class RevenueLeadCreate(BaseModel):
     company_name: str
     website: Optional[str] = None
     country: str
+    street: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    postal_code: Optional[str] = None
     industry: Optional[str] = None
     # Primary Contact
     contact_name: str
@@ -208,8 +212,20 @@ class RevenueLeadCreate(BaseModel):
     budget_mentioned: Optional[str] = "unknown"  # yes, no, unknown
     authority_known: Optional[bool] = False
     need_timeline: Optional[bool] = False
+    # Structured Qualification model (hidden from UI, stored to DB)
+    qualification: Optional[Dict[str, Any]] = None
     # Notes
     notes: Optional[str] = None
+
+class RevenueActivityCreate(BaseModel):
+    """Log manual activity (call, email, meeting, note)"""
+    type: str
+    summary: str
+
+class RevenueStatusUpdate(BaseModel):
+    """Gated status update with force option"""
+    status: str
+    force: bool = False
 
 class RevenueEvaluationItem(BaseModel):
     """Item in evaluation"""
@@ -446,28 +462,125 @@ def calculate_approval_matrix(data: Dict) -> List[Dict]:
 
 # --- LEAD STAGE ---
 
+# ICP target definitions — adjust to match your business domain
+_ICP_TARGET_INDUSTRIES = {"Manufacturing", "Retail", "Logistics", "E-commerce", "FMCG", "Auto", "Pharma"}
+_ICP_TARGET_SIZES = {"50-200", "200-500", "500+", "50-200 employees", "200-500 employees", "500+ employees"}
+
+
+def _compute_lead_fields(lead: dict) -> dict:
+    """Attach _computed block to a lead dict (rule-based, no ML)."""
+    now = datetime.now(timezone.utc)
+
+    # --- Age (days since created_at) ---
+    raw_created = lead.get("created_at")
+    try:
+        created_dt = datetime.fromisoformat(str(raw_created).replace("Z", "+00:00"))
+        if created_dt.tzinfo is None:
+            created_dt = created_dt.replace(tzinfo=timezone.utc)
+    except Exception:
+        created_dt = now
+    age_days = max(0, (now - created_dt).days)
+
+    # --- Health (based on inactivity: last_activity_at, fallback created_at) ---
+    raw_activity = lead.get("last_activity_at") or raw_created
+    try:
+        activity_dt = datetime.fromisoformat(str(raw_activity).replace("Z", "+00:00"))
+        if activity_dt.tzinfo is None:
+            activity_dt = activity_dt.replace(tzinfo=timezone.utc)
+    except Exception:
+        activity_dt = created_dt
+    inactive_days = max(0, (now - activity_dt).days)
+
+    if inactive_days <= 5:
+        health = "green"
+    elif inactive_days <= 10:
+        health = "yellow"
+    else:
+        health = "red"
+
+    # --- ICP Fit (rule-based: industry + company_size) ---
+    industry = str(lead.get("industry") or "").strip()
+    company_size = str(lead.get("company_size") or "").strip()
+    icp_score = (
+        (1 if industry in _ICP_TARGET_INDUSTRIES else 0) +
+        (1 if company_size in _ICP_TARGET_SIZES else 0)
+    )
+    icp_fit = "Strong" if icp_score == 2 else ("Medium" if icp_score == 1 else "Weak")
+
+    lead["_computed"] = {
+        "age_days": age_days,
+        "inactive_days": inactive_days,
+        "health": health,
+        "icp_fit": icp_fit,
+    }
+    # Keep top-level age_days for backward compat
+    lead["age_days"] = age_days
+    return lead
+
+
+def _extract_signals(summaries: List[str]) -> Dict[str, Any]:
+    """Scan all activity summaries for BANT-style keyword signals (Rule-based)."""
+    text = " ".join(summaries).lower()
+
+    # Budget signal
+    budget = "unknown"
+    if any(kw in text for kw in ["budget confirmed", "budget approved", "has budget", "budget available"]):
+        budget = "yes"
+    elif any(kw in text for kw in ["no budget", "budget not confirmed", "budget rejected", "cannot afford"]):
+        budget = "no"
+
+    # Authority known
+    auth = any(kw in text for kw in [
+        "decision maker", "operations head", "ceo", "founder",
+        "cto", "managing director", "md ", "director", "head of"
+    ])
+
+    # Interest level
+    interest = "low"
+    if any(kw in text for kw in ["very interested", "demo scheduled", "positive", "keen"]):
+        interest = "high"
+    elif any(kw in text for kw in ["interested", "follow up", "demo", "curious"]):
+        interest = "medium"
+
+    return {
+        "budget_signal": budget,
+        "authority_known": auth,
+        "interest_level": interest,
+        "last_signal_update_at": datetime.now(timezone.utc).isoformat()
+    }
+
+
+def _build_warnings(signals: Dict[str, Any]) -> List[str]:
+    """Generate advisory warnings based on extracted signals."""
+    warnings = []
+    if signals.get("budget_signal") in ("no", "unknown"):
+        warnings.append("Budget not clearly discussed or confirmed")
+    if not signals.get("authority_known"):
+        warnings.append("Primary decision maker (Authority) not yet identified")
+    if signals.get("interest_level") == "low":
+        warnings.append("Low buyer interest level detected from summaries")
+    return warnings
+
+
 @router.get("/revenue/leads")
 async def get_revenue_leads(
     stage: Optional[str] = None,
     owner_id: Optional[str] = None,
     db = Depends(get_db)
 ):
-    """Get all revenue leads with optional filters"""
+    """Get all revenue leads with optional filters. Each lead includes _computed fields:
+    _computed.age_days, _computed.inactive_days, _computed.health, _computed.icp_fit"""
     query = {}
     if stage:
         query["stage"] = stage
     if owner_id:
         query["owner_id"] = owner_id
-    
+
     leads = await db.revenue_workflow_leads.find(query, {"_id": 0}).to_list(1000)
-    
-    # Calculate age for each lead
-    for lead in leads:
-        created = datetime.fromisoformat(lead.get("created_at", datetime.now(timezone.utc).isoformat()).replace('Z', '+00:00'))
-        age_days = (datetime.now(timezone.utc) - created).days
-        lead["age_days"] = age_days
-        lead["health"] = "good" if age_days < 30 else ("warning" if age_days < 60 else "critical")
-    
+
+    # Attach computed fields (rule-based, no ML)
+    leads = [_compute_lead_fields(lead) for lead in leads]
+
     return {"success": True, "leads": leads, "count": len(leads)}
 
 @router.post("/revenue/leads")
@@ -476,10 +589,17 @@ async def create_revenue_lead(lead: RevenueLeadCreate, db = Depends(get_db)):
     data = lead.dict()
     data["lead_id"] = f"REV-LEAD-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     data["stage"] = LeadStage.NEW.value
-    data["created_at"] = datetime.now(timezone.utc).isoformat()
-    data["updated_at"] = data["created_at"]
+    now_iso = datetime.now(timezone.utc).isoformat()
+    data["created_at"] = now_iso
+    data["updated_at"] = now_iso
+    # ── New: set last_activity_at to creation time so inactivity starts at 0 ──
+    data["last_activity_at"] = now_iso
     data["next_action"] = "Initial contact"
-    
+
+    # ── Compute health/ICP at creation time (health will always be green on day 0) ──
+    data["_computed"] = _compute_lead_fields(dict(data))["_computed"]
+    data["age_days"] = 0  # backward compat
+
     await db.revenue_workflow_leads.insert_one(data)
     
     # Create workspace task for follow-up
@@ -516,16 +636,700 @@ async def create_revenue_lead(lead: RevenueLeadCreate, db = Depends(get_db)):
         "description": f"New lead created: {data.get('company_name')} - ₹{data.get('estimated_deal_value', 0):,.0f}",
         "module": "commerce"
     })
-    
+
+    # ── Audit entry for creation ─────────────────────────────────────────────
+    await db.revenue_workflow_audits.insert_one({
+        "lead_id":   data["lead_id"],
+        "action":    "created",
+        "actor":     data.get("owner_id"),
+        "timestamp": now_iso,
+    })
+
     return {"success": True, "message": "Lead created", "lead_id": data["lead_id"]}
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# IMPORT LEADS  —  Preview + Commit
+# Routes placed before /enrich and /{lead_id} to avoid path-shadow ambiguity.
+# ══════════════════════════════════════════════════════════════════════════════
+
+import csv as _csv
+import io  as _io
+import time as _time
+from urllib.parse import urlparse as _urlparse
+
+# ── Industry keyword dictionary (rule-based, no ML) ───────────────────────────
+_INDUSTRY_KEYWORDS: dict[str, list[str]] = {
+    "Logistics":          ["logistics", "cargo", "freight", "transport", "courier", "shipping", "dispatch", "warehousing"],
+    "Manufacturing":      ["manufacturing", "factory", "industries", "fabrication", "forge", "casting", "steel", "plant", "mills"],
+    "Retail":             ["retail", "mart", "store", "shop", "supermarket", "bazaar", "wholesale", "ecommerce"],
+    "Technology":         ["tech", "software", "digital", "systems", "solutions", "infotech", "cyber", "saas", "cloud", "ai"],
+    "Healthcare":         ["health", "hospital", "pharma", "medical", "clinic", "biotech", "diagnostics", "medsys"],
+    "Financial Services": ["finance", "financial", "capital", "bank", "fund", "invest", "fintech", "credit", "insurance"],
+    "Construction":       ["construction", "builders", "infra", "infrastructure", "realty", "housing", "estate"],
+    "Education":          ["education", "academy", "school", "college", "learning", "institute", "tutor", "edtech"],
+    "Telecommunications": ["telecom", "networks", "wireless", "broadband", "mobile", "communications"],
+    "Media":              ["media", "publishing", "broadcast", "news", "entertainment", "studios", "films"],
+}
+
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+def _norm_name(name: str) -> str:
+    """Lowercase, strip legal suffixes and punctuation — used as dedup key."""
+    import re as _re
+    s = name.lower().strip()
+    s = _re.sub(r"[^a-z0-9 ]", " ", s)
+    s = _re.sub(r"\b(pvt|ltd|llp|inc|corp|private|limited|llc|co)\b", " ", s)
+    return _re.sub(r"\s+", " ", s).strip()
+
+def _extract_domain(url: str) -> str | None:
+    """Return bare domain (no www, no port) or None."""
+    if not url:
+        return None
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
+    try:
+        host = _urlparse(url).hostname or ""
+        return host.removeprefix("www.").lower() or None
+    except Exception:
+        return None
+
+def _suggest_industry(company_name: str, website: str) -> tuple[str | None, str]:
+    """Scan company_name + domain for keyword hits. Returns (industry, confidence)."""
+    text = f"{company_name} {_extract_domain(website) or ''}".lower()
+    scores: dict[str, int] = {}
+    for industry, kws in _INDUSTRY_KEYWORDS.items():
+        hits = sum(1 for kw in kws if kw in text)
+        if hits:
+            scores[industry] = hits
+    if not scores:
+        return None, "low"
+    best = max(scores, key=lambda k: scores[k])
+    conf = "high" if scores[best] >= 2 else "medium"
+    return best, conf
+
+def _parse_float(val: str) -> float | None:
+    try:
+        return float(str(val).replace(",", "").replace("$", "").replace("₹", "").strip())
+    except (ValueError, TypeError):
+        return None
+
+# ── MongoDB import cache (multi-worker safe) ──────────────────────────────────
+# Collection: revenue_workflow_import_cache
+# Each doc: {token, rows (list), expires_at (ISO str)}
+# TTL: 20 minutes — no index needed; we filter on read.
+
+_IMPORT_TTL_MINUTES = 20
+
+async def _cache_store(db, rows: list) -> str:
+    token = f"imp_{uuid.uuid4().hex[:12]}"
+    expires_at = datetime.now(timezone.utc).isoformat()
+    await db.revenue_workflow_import_cache.insert_one({
+        "_token": token,
+        "rows":   rows,
+        "expires_at": expires_at,
+        "_ttl_minutes": _IMPORT_TTL_MINUTES,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+    return token
+
+async def _cache_load(db, token: str) -> list | None:
+    doc = await db.revenue_workflow_import_cache.find_one({"_token": token})
+    if not doc:
+        return None
+    # Check TTL manually
+    created = datetime.fromisoformat(doc["created_at"])
+    if datetime.now(timezone.utc) > created + timedelta(minutes=_IMPORT_TTL_MINUTES):
+        await db.revenue_workflow_import_cache.delete_one({"_token": token})
+        return None
+    return doc["rows"]
+
+async def _cache_delete(db, token: str):
+    await db.revenue_workflow_import_cache.delete_one({"_token": token})
+
+# ── Required CSV columns (only company_name is truly required) ─────────────────
+_REQUIRED_COLS = {"company_name"}
+_OPTIONAL_COLS = {
+    "contact_name", "email", "phone", "website", "country",
+    "industry", "company_size", "source", "lead_source",
+    "expected_deal_value", "timeline", "expected_timeline", "notes",
+}
+_ALL_EXPECTED = _REQUIRED_COLS | _OPTIONAL_COLS
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ENDPOINT 1 — Preview
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@router.post("/revenue/leads/import/preview")
+async def import_leads_preview(
+    file: UploadFile = File(...),
+    db=Depends(get_db),
+):
+    """
+    Parse CSV, run duplicate detection, suggest industries.
+    Does NOT write to leads DB.
+    Returns import_token referencing preview data stored in MongoDB.
+    """
+    # ── Read & decode ─────────────────────────────────────────────────────────
+    raw_bytes = await file.read()
+    try:
+        text = raw_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        text = raw_bytes.decode("latin-1")
+
+    reader = _csv.DictReader(_io.StringIO(text))
+    if not reader.fieldnames:
+        raise HTTPException(400, detail="CSV is empty or has no header row.")
+
+    # Normalise header names (strip whitespace, lowercase)
+    headers = {h.strip().lower(): h for h in reader.fieldnames}
+
+    missing_required = _REQUIRED_COLS - set(headers.keys())
+    if missing_required:
+        raise HTTPException(
+            400,
+            detail={
+                "message": "CSV is missing required columns.",
+                "missing": sorted(missing_required),
+                "required": sorted(_REQUIRED_COLS),
+            },
+        )
+
+    raw_rows = list(reader)
+
+    # ── Pre-load existing DB leads → maps (not sets) ──────────────────────────
+    existing = await db.revenue_workflow_leads.find(
+        {}, {"_id": 0, "lead_id": 1, "contact_email": 1, "email": 1, "website": 1, "company_name": 1}
+    ).to_list(10000)
+
+    email_to_lead_id:  dict[str, str] = {}
+    domain_to_lead_id: dict[str, str] = {}
+    name_to_lead_id:   dict[str, str] = {}
+
+    for ex in existing:
+        lid = ex.get("lead_id", "")
+        em  = (ex.get("contact_email") or ex.get("email") or "").lower().strip()
+        dom = _extract_domain(ex.get("website") or "")
+        nm  = _norm_name(ex.get("company_name") or "")
+        if em:  email_to_lead_id[em]   = lid
+        if dom: domain_to_lead_id[dom] = lid
+        if nm:  name_to_lead_id[nm]    = lid
+
+    # ── Parse + check each row ────────────────────────────────────────────────
+    preview_rows: list[dict] = []
+    errors:       list[dict] = []
+
+    # Batch-level dedup maps (same CSV duplicates)
+    batch_emails:  dict[str, int] = {}   # email  → first row_index
+    batch_domains: dict[str, int] = {}
+    batch_names:   dict[str, int] = {}
+
+    total_rows      = len(raw_rows)
+    duplicate_count = 0
+    invalid_count   = 0
+
+    for idx, raw_row in enumerate(raw_rows):
+        # Normalise column names to lowercase
+        row = {k.strip().lower(): (v or "").strip() for k, v in raw_row.items()}
+
+        company_name = row.get("company_name", "")
+        if not company_name:
+            errors.append({"row_index": idx, "reason": "company_name is required"})
+            invalid_count += 1
+            continue
+
+        contact_name = row.get("contact_name", "")
+        email        = (row.get("email", "")).lower()
+        phone        = row.get("phone", "") or row.get("contact_phone", "")
+        website      = row.get("website", "")
+        country      = row.get("country", "")
+        company_size = row.get("company_size", "")
+        source       = row.get("source") or row.get("lead_source") or "imported"
+        timeline     = row.get("expected_timeline") or row.get("timeline") or "3-6 months"
+        notes        = row.get("notes", "")
+        raw_value    = row.get("expected_deal_value", "")
+        deal_value   = _parse_float(raw_value)
+
+        # Industry: use from CSV if present, else suggest
+        industry_from_csv = row.get("industry", "")
+        industry_suggested_flag = False
+        industry_confidence = None
+        if industry_from_csv:
+            industry = industry_from_csv
+        else:
+            industry, industry_confidence = _suggest_industry(company_name, website)
+            industry_suggested_flag = industry is not None
+
+        # ── Duplicate detection ───────────────────────────────────────────────
+        dup_flag   = False
+        dup_reason = None
+        matched_id = None
+
+        domain = _extract_domain(website)
+        norm   = _norm_name(company_name)
+
+        # Check DB maps first (strong match = email, domain; weak = name)
+        if email and email in email_to_lead_id:
+            dup_flag, dup_reason, matched_id = True, "email_match", email_to_lead_id[email]
+        elif domain and domain in domain_to_lead_id:
+            dup_flag, dup_reason, matched_id = True, "domain_match", domain_to_lead_id[domain]
+        elif norm and norm in name_to_lead_id:
+            dup_flag, dup_reason, matched_id = True, "company_name_match", name_to_lead_id[norm]
+        # Check within this batch
+        elif email and email in batch_emails:
+            dup_flag, dup_reason, matched_id = True, "batch_duplicate", f"row_{batch_emails[email]}"
+        elif domain and domain in batch_domains:
+            dup_flag, dup_reason, matched_id = True, "batch_duplicate", f"row_{batch_domains[domain]}"
+        elif norm and norm in batch_names:
+            dup_flag, dup_reason, matched_id = True, "batch_duplicate", f"row_{batch_names[norm]}"
+
+        # Register in batch maps (only first occurrence)
+        if email  and email  not in batch_emails:  batch_emails[email]   = idx
+        if domain and domain not in batch_domains: batch_domains[domain] = idx
+        if norm   and norm   not in batch_names:   batch_names[norm]     = idx
+
+        if dup_flag:
+            duplicate_count += 1
+
+        preview_rows.append({
+            "row_index":           idx,
+            "company_name":        company_name,
+            "contact_name":        contact_name,
+            "email":               email,
+            "phone":               phone,
+            "website":             website,
+            "country":             country,
+            "industry":            industry,
+            "industry_suggested":  industry_suggested_flag,
+            "industry_confidence": industry_confidence,
+            "company_size":        company_size,
+            "lead_source":         source,
+            "estimated_deal_value": deal_value,
+            "expected_timeline":   timeline,
+            "notes":               notes,
+            "duplicate_flag":      dup_flag,
+            "duplicate_reason":    dup_reason,
+            "matched_lead_id":     matched_id,
+            "invalid_reason":      None,
+        })
+
+    # ── Store preview in MongoDB cache ────────────────────────────────────────
+    import_token = await _cache_store(db, preview_rows)
+
+    return {
+        "success": True,
+        "import_token": import_token,
+        "summary": {
+            "total_rows":     total_rows,
+            "valid_rows":     len(preview_rows),
+            "invalid_rows":   invalid_count,
+            "duplicate_rows": duplicate_count,
+        },
+        "rows":   preview_rows,
+        "errors": errors,
+    }
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ENDPOINT 2 — Commit
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+class ImportCommitRequest(BaseModel):
+    import_token: str
+    mode: str = "skip_duplicates"  # skip_duplicates | import_all | import_non_duplicates_only
+
+@router.post("/revenue/leads/import/commit")
+async def import_leads_commit(
+    req: ImportCommitRequest,
+    db=Depends(get_db),
+):
+    """
+    Load preview by token, insert non-duplicate (or all) rows as stage='imported'.
+    Uses bulk insert_many for performance.
+    """
+    rows = await _cache_load(db, req.import_token)
+    if rows is None:
+        raise HTTPException(
+            422,
+            detail="Import token expired or not found. Please re-upload your CSV and preview again.",
+        )
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    skip_dups = req.mode in ("skip_duplicates", "import_non_duplicates_only")
+
+    to_insert: list[dict] = []
+    skipped = 0
+    lead_ids: list[str] = []
+
+    for row in rows:
+        if row.get("invalid_reason"):
+            continue
+        if skip_dups and row.get("duplicate_flag"):
+            skipped += 1
+            continue
+
+        ts_suffix = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S%f")[:17]
+        lead_id = f"REV-LEAD-IMP-{ts_suffix}-{row['row_index']}"
+
+        doc = {
+            "lead_id":              lead_id,
+            "stage":                "imported",
+            "company_name":         row["company_name"],
+            "website":              row["website"] or None,
+            "country":              row["country"] or "",
+            "industry":             row["industry"] or None,
+            "company_size":         row["company_size"] or None,
+            "contact_name":         row["contact_name"] or "",
+            "contact_email":        row["email"] or None,
+            "contact_phone":        row["phone"] or None,
+            "lead_source":          row["lead_source"] or "imported",
+            "estimated_deal_value": row["estimated_deal_value"] or 0,
+            "expected_timeline":    row["expected_timeline"] or "3-6 months",
+            "notes":                row["notes"] or "",
+            "created_at":           now_iso,
+            "updated_at":           now_iso,
+            "last_activity_at":     now_iso,
+            "age_days":             0,
+            # Qualification defaults
+            "problem_identified":   False,
+            "budget_mentioned":     "unknown",
+            "authority_known":      False,
+            "need_timeline":        False,
+            "qualification": {
+                "budget_confirmed":    False,
+                "authority_confirmed": False,
+                "timeline_confirmed":  False,
+                "need_confirmed":      False,
+            },
+        }
+        # Compute health fields at creation (health = green on day 0)
+        doc["_computed"] = _compute_lead_fields(doc).get("_computed", {})
+
+        to_insert.append(doc)
+        lead_ids.append(lead_id)
+
+    # Bulk insert
+    inserted_count = 0
+    if to_insert:
+        await db.revenue_workflow_leads.insert_many(to_insert, ordered=False)
+        inserted_count = len(to_insert)
+
+    # Audit entry
+    await db.revenue_workflow_audits.insert_one({
+        "action":              "import_committed",
+        "timestamp":           now_iso,
+        "total_in_token":      len(rows),
+        "inserted":            inserted_count,
+        "skipped_duplicates":  skipped,
+        "mode":                req.mode,
+    })
+
+    # Invalidate token
+    await _cache_delete(db, req.import_token)
+
+    return {
+        "success":           True,
+        "inserted":          inserted_count,
+        "skipped_duplicates": skipped,
+        "invalid":           len(rows) - inserted_count - skipped,
+        "lead_ids":          lead_ids,
+    }
+
+
+
+#
+# 3-tier lookup, in order:
+#   1. revenue_workflow_leads     (our own DB — zero cost)
+#   2. revenue_workflow_company_cache (MongoDB — zero cost, persists Clearbit results)
+#   3. Clearbit Company API       (paid — only called on true cache miss)
+#
+# The cache means that after the first lookup for a company, all future
+# lookups for the same name are served from MongoDB (no Clearbit credit spent).
+# ─────────────────────────────────────────────────────────────────────────────
+
+import re as _re
+import httpx as _httpx
+
+_CLEARBIT_API_KEY = os.environ.get("CLEARBIT_API_KEY", "").strip()
+
+# Clearbit uses ISO 3166-1 alpha-2 country codes → map to full names for the UI
+_COUNTRY_CODES = {
+    "IN": "India", "US": "United States", "GB": "United Kingdom",
+    "DE": "Germany", "FR": "France", "SG": "Singapore", "AU": "Australia",
+    "CA": "Canada", "AE": "UAE", "JP": "Japan", "CN": "China",
+    "NL": "Netherlands", "BR": "Brazil", "ZA": "South Africa",
+}
+
+# Clearbit industry → our simplified industry labels
+_INDUSTRY_MAP = {
+    "logistics and supply chain": "Logistics",
+    "transportation": "Logistics",
+    "manufacturing": "Manufacturing",
+    "retail": "Retail",
+    "technology": "Technology",
+    "software": "Technology",
+    "information technology": "Technology",
+    "healthcare": "Healthcare",
+    "financial services": "Financial Services",
+    "banking": "Financial Services",
+    "education": "Education",
+    "real estate": "Real Estate",
+    "construction": "Construction",
+    "media": "Media",
+    "telecommunications": "Telecommunications",
+}
+
+def _normalize_company(name: str) -> str:
+    """Lowercase, strip punctuation — used as cache key."""
+    return _re.sub(r"[^a-z0-9 ]", "", name.strip().lower()).strip()
+
+def _map_clearbit_response(cb: dict) -> dict:
+    """Extract the 4 fields we care about from a Clearbit company object."""
+    domain   = cb.get("domain") or ""
+    website  = f"https://{domain}" if domain else None
+
+    raw_country = (cb.get("geo") or {}).get("country") or cb.get("country") or ""
+    country  = _COUNTRY_CODES.get(raw_country.upper(), raw_country) or None
+
+    raw_industry = (
+        (cb.get("category") or {}).get("industry") or
+        (cb.get("category") or {}).get("sector") or ""
+    ).lower()
+    industry = _INDUSTRY_MAP.get(raw_industry) or (raw_industry.title() if raw_industry else None)
+
+    emp_range = (cb.get("metrics") or {}).get("employeesRange") or None
+    # Clearbit returns e.g. "51-200"; map to our labels
+    size_map  = {"1-10": "1-10", "11-50": "11-50", "51-200": "51-200",
+                 "201-500": "200-500", "501-1000": "500+", "1001-5000": "500+",
+                 "5001-10000": "500+", "10001+": "500+"}
+    company_size = size_map.get(emp_range, emp_range)
+
+    return {k: v for k, v in {
+        "website":      website,
+        "country":      country,
+        "industry":     industry,
+        "company_size": company_size,
+    }.items() if v}
+
+
+@router.get("/revenue/leads/enrich")
+async def enrich_company(
+    company_name: str = Query(..., min_length=2),
+    db=Depends(get_db),
+):
+    """
+    3-tier company enrichment:
+      1. Existing leads DB  (free, instant)
+      2. MongoDB cache       (free after first hit)
+      3. Clearbit API        (charged, only on true cache miss)
+    """
+    company_name = company_name.strip()
+    if len(company_name) < 2:
+        return {"found": False, "source": None, "suggestions": {}}
+
+    # ── Tier 1: existing leads ──────────────────────────────────────────────
+    pattern = _re.compile(_re.escape(company_name), _re.IGNORECASE)
+    lead_match = await db.revenue_workflow_leads.find_one(
+        {"company_name": {"$regex": pattern}},
+        {"_id": 0, "website": 1, "country": 1, "industry": 1, "company_size": 1},
+    )
+    if lead_match:
+        suggestions = {k: v for k, v in {
+            "website":      lead_match.get("website"),
+            "country":      lead_match.get("country"),
+            "industry":     lead_match.get("industry"),
+            "company_size": lead_match.get("company_size"),
+        }.items() if v}
+        if suggestions:
+            return {"found": True, "source": "existing_leads", "suggestions": suggestions}
+
+    # ── Tier 2: MongoDB company cache ───────────────────────────────────────
+    cache_key = _normalize_company(company_name)
+    cached = await db.revenue_workflow_company_cache.find_one(
+        {"_cache_key": cache_key},
+        {"_id": 0, "suggestions": 1, "source": 1},
+    )
+    if cached and cached.get("suggestions"):
+        return {"found": True, "source": cached.get("source", "cache"), "suggestions": cached["suggestions"]}
+
+    # ── Tier 3: Clearbit API ────────────────────────────────────────────────
+    if not _CLEARBIT_API_KEY:
+        # Key not set — gracefully return not found
+        return {"found": False, "source": None, "suggestions": {}}
+
+    try:
+        async with _httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(
+                "https://company.clearbit.com/v1/companies/find",
+                params={"name": company_name},
+                headers={"Authorization": f"Bearer {_CLEARBIT_API_KEY}"},
+            )
+
+        if resp.status_code == 200:
+            cb_data = resp.json()
+            suggestions = _map_clearbit_response(cb_data)
+            if suggestions:
+                # Persist to cache so future lookups are free
+                await db.revenue_workflow_company_cache.update_one(
+                    {"_cache_key": cache_key},
+                    {"$set": {
+                        "_cache_key":  cache_key,
+                        "company_name": company_name,
+                        "source":      "clearbit",
+                        "suggestions": suggestions,
+                        "cached_at":   datetime.now(timezone.utc).isoformat(),
+                    }},
+                    upsert=True,
+                )
+                return {"found": True, "source": "clearbit", "suggestions": suggestions}
+
+        elif resp.status_code == 404:
+            # Company not found in Clearbit — cache negative result (24h implicit TTL via re-query)
+            pass  # don't cache 404s; let them retry later
+
+    except Exception as exc:
+        logger.warning("Clearbit enrich failed for '%s': %s", company_name, exc)
+
+    return {"found": False, "source": None, "suggestions": {}}
+
+
 
 @router.get("/revenue/leads/{lead_id}")
 async def get_revenue_lead(lead_id: str, db = Depends(get_db)):
-    """Get lead details"""
+    """Get lead details with recomputed fields"""
     lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id}, {"_id": 0})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
+    
+    # Recompute computed fields on the fly for detail view accuracy
+    lead = _compute_lead_fields(lead)
     return {"success": True, "lead": lead}
+
+@router.get("/revenue/leads/{lead_id}/activities")
+async def get_lead_activities(lead_id: str, db = Depends(get_db)):
+    """Get all manual activities for a lead (sorted desc)"""
+    activities = await db.revenue_workflow_activities.find(
+        {"lead_id": lead_id}, {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return {"success": True, "activities": activities}
+
+@router.post("/revenue/leads/{lead_id}/activities")
+async def log_lead_activity(lead_id: str, act: RevenueActivityCreate, db = Depends(get_db)):
+    """Log a new activity, recompute signals and update lead health"""
+    now_iso = datetime.now(timezone.utc).isoformat()
+    
+    # 1. Store activity
+    activity_doc = {
+        "activity_id": f"ACT-LOG-{uuid.uuid4().hex[:6].upper()}",
+        "lead_id": lead_id,
+        "type": act.type,
+        "summary": act.summary,
+        "created_at": now_iso,
+        "actor_id": "system"  # In real app, pulled from auth token
+    }
+    await db.revenue_workflow_activities.insert_one(activity_doc)
+    
+    # 2. Get all activities to re-run signal extraction
+    all_acts = await db.revenue_workflow_activities.find({"lead_id": lead_id}).to_list(100)
+    summaries = [a["summary"] for a in all_acts]
+    signals = _extract_signals(summaries)
+    
+    # 3. Update Lead (last_activity_at, signals, _computed)
+    lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    
+    lead["last_activity_at"] = now_iso
+    lead["signals"] = signals
+    # Set individual fields for existing UI to pick up if it doesn't use the signals object
+    lead["budget_mentioned"] = signals["budget_signal"]
+    lead["authority_known"] = signals["authority_known"]
+    
+    lead = _compute_lead_fields(lead)
+    
+    await db.revenue_workflow_leads.update_one(
+        {"lead_id": lead_id},
+        {"$set": {
+            "last_activity_at": now_iso,
+            "signals": signals,
+            "budget_mentioned": lead["budget_mentioned"],
+            "authority_known": lead["authority_known"],
+            "_computed": lead["_computed"],
+            "updated_at": now_iso
+        }}
+    )
+
+    # 4. Audit Log
+    await db.revenue_workflow_audits.insert_one({
+        "lead_id": lead_id,
+        "action": "activity_added",
+        "type": act.type,
+        "timestamp": now_iso,
+        "message": f"Activity logged: {act.type.upper()}"
+    })
+    
+    return {"success": True, "message": "Activity logged", "activity_id": activity_doc["activity_id"]}
+
+@router.patch("/revenue/leads/{lead_id}/status")
+async def update_lead_status(lead_id: str, req: RevenueStatusUpdate, db = Depends(get_db)):
+    """Gated status update with BANT signal validation"""
+    now_iso = datetime.now(timezone.utc).isoformat()
+    
+    lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    
+    old_stage = lead.get("stage", "new")
+    new_status = req.status
+    
+    # Rules: Gating
+    if new_status in ["contacted", "qualified"]:
+        act_count = await db.revenue_workflow_activities.count_documents({"lead_id": lead_id})
+        if act_count == 0:
+            raise HTTPException(status_code=400, detail="Cannot advance lead stage without at least one activity logged.")
+
+    # Rules: Advisory (Qualification only)
+    warnings = []
+    if new_status == "qualified" and not req.force:
+        signals = lead.get("signals") or {}
+        # If signals are missing, build them from summaries just in case they aren't up to date
+        if not signals:
+            all_acts = await db.revenue_workflow_activities.find({"lead_id": lead_id}).to_list(100)
+            signals = _extract_signals([a["summary"] for a in all_acts])
+        
+        warnings = _build_warnings(signals)
+        if warnings:
+            return {
+                "success": False,
+                "allowed": False,
+                "warnings": warnings,
+                "can_force": True,
+                "detail": "Advisory signals missing for qualification."
+            }
+
+    # Execute update
+    await db.revenue_workflow_leads.update_one(
+        {"lead_id": lead_id},
+        {"$set": {
+            "stage": new_status,
+            "updated_at": now_iso,
+            "qualification_override": req.force
+        }}
+    )
+    
+    # Audit Log
+    await db.revenue_workflow_audits.insert_one({
+        "lead_id": lead_id,
+        "action": "status_changed",
+        "before": old_stage,
+        "after": new_status,
+        "override": req.force,
+        "warnings": warnings,
+        "timestamp": now_iso
+    })
+    
+    return {"success": True, "message": f"Stage updated to {new_status}"}
 
 @router.put("/revenue/leads/{lead_id}")
 async def update_revenue_lead(lead_id: str, lead: RevenueLeadCreate, db = Depends(get_db)):
@@ -536,6 +1340,19 @@ async def update_revenue_lead(lead_id: str, lead: RevenueLeadCreate, db = Depend
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Lead not found")
     return {"success": True, "message": "Lead updated"}
+
+@router.delete("/revenue/leads/{lead_id}")
+async def delete_revenue_lead(lead_id: str, db = Depends(get_db)):
+    """Delete a revenue lead"""
+    result = await db.revenue_workflow_leads.delete_one({"lead_id": lead_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    
+    # Optional: Clean up related activities and audits
+    await db.revenue_workflow_activities.delete_many({"lead_id": lead_id})
+    await db.revenue_workflow_audits.delete_many({"lead_id": lead_id})
+    
+    return {"success": True, "message": "Lead deleted successfully"}
 
 @router.put("/revenue/leads/{lead_id}/stage")
 async def change_lead_stage(lead_id: str, new_stage: str, db = Depends(get_db)):
