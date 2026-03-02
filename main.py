@@ -4716,7 +4716,7 @@ app.include_router(cap_table_scenario_router)
 from email_campaigns_routes import router as email_campaigns_router
 app.include_router(email_campaigns_router)
 
-from workflow_builder_routes import router as workflow_builder_router
+from routes.integrations.workflow_builder_routes import router as workflow_builder_router
 app.include_router(workflow_builder_router)
 
 
@@ -4772,7 +4772,7 @@ async def auto_seed_on_startup():
         capital_owners_count = await db.capital_owners.count_documents({})
         if capital_owners_count == 0:
             logger.info("Seeding IB Capital data...")
-            from ib_capital_routes import seed_capital_data
+            from ib_capital_routes import seed_capital_data1
             result = await seed_capital_data()
             logger.info(f"IB Capital seeded: {result.get('summary', {})}")
         else:
