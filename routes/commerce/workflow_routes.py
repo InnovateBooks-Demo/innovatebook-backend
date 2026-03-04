@@ -1426,6 +1426,163 @@ async def log_lead_activity(lead_id: str, act: RevenueActivityCreate, db = Depen
     
     return {"success": True, "message": "Activity logged", "activity_id": activity_doc["activity_id"]}
 
+
+# ── Email Engagement (SendGrid) ────────────────────────────────────────────────
+
+class EmailEngagementCreate(BaseModel):
+    to: str                      # recipient email
+    subject: str
+    html: str                    # HTML body
+    text: Optional[str] = None   # plain-text fallback (optional)
+
+@router.post("/revenue/leads/{lead_id}/engagements/email")
+async def send_lead_email(lead_id: str, payload: EmailEngagementCreate, db = Depends(get_db)):
+    """
+    Compose and send an outbound email to a lead via SendGrid.
+    Creates an engagement record and updates it with delivery status.
+    """
+    import re as _re
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    # 1. Validate lead exists
+    lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id}, {"_id": 0})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    # 2. Validate email format
+    email_pattern = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+    if not _re.match(email_pattern, payload.to):
+        raise HTTPException(status_code=422, detail=f"Invalid recipient email: {payload.to}")
+
+    # 3. Create engagement record with status "queued"
+    engagement_id = f"ENG-EMAIL-{uuid.uuid4().hex[:10].upper()}"
+    from_email = os.environ.get("SENDGRID_FROM_EMAIL", "")
+    engagement_doc = {
+        "engagement_id": engagement_id,
+        "lead_id": lead_id,
+        "type": "email",
+        "direction": "outbound",
+        "to_email": payload.to,
+        "from_email": from_email,
+        "subject": payload.subject,
+        "body_html": payload.html,
+        "body_text": payload.text or "",
+        "status": "queued",
+        "provider": "sendgrid",
+        "provider_message_id": None,
+        "created_by": "system",   # TODO: replace with auth user_id when auth added to this endpoint
+        "created_at": now_iso,
+        "updated_at": now_iso,
+    }
+    await db.revenue_workflow_engagements.insert_one(engagement_doc)
+    engagement_doc.pop("_id", None)
+
+    # 4. Send via SendGrid
+    from services.sendgrid_service import send_email
+    result = await send_email(
+        to_email=payload.to,
+        subject=payload.subject,
+        html=payload.html,
+        text=payload.text,
+        engagement_id=engagement_id,
+        lead_id=lead_id,
+    )
+
+    # 5. Update status based on send result
+    if result["success"]:
+        new_status = "sent"
+        msg_id = result.get("message_id")
+    else:
+        new_status = "failed"
+        msg_id = None
+
+    update_fields = {
+        "status": new_status,
+        "provider_message_id": msg_id,
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.revenue_workflow_engagements.update_one(
+        {"engagement_id": engagement_id},
+        {"$set": update_fields}
+    )
+    engagement_doc.update(update_fields)
+
+    # 6. Also write a lightweight activity record so it appears in Engagement History
+    activity_doc = {
+        "activity_id": f"ACT-EMAIL-{uuid.uuid4().hex[:6].upper()}",
+        "lead_id": lead_id,
+        "type": "email",
+        "summary": f"Email sent to {payload.to} | Subject: {payload.subject}",
+        "engagement_id": engagement_id,
+        "status": new_status,
+        "created_at": now_iso,
+        "actor_id": "system",
+    }
+    await db.revenue_workflow_activities.insert_one(activity_doc)
+
+    # 7. Auto-Promotion (Email -> Contacted)
+    current_stage = lead.get("stage", "new")
+    if current_stage in ["imported", "new"]:
+        update_res = await db.revenue_workflow_leads.update_one(
+            {"lead_id": lead_id, "stage": {"$in": ["imported", "new"]}},
+            {"$set": {"stage": "contacted", "updated_at": now_iso}}
+        )
+        if update_res.modified_count == 1:
+            await db.revenue_workflow_audits.insert_one({
+                "lead_id": lead_id,
+                "action": "auto_promotion",
+                "before": current_stage,
+                "after": "contacted",
+                "reason": "email_sent",
+                "timestamp": now_iso
+            })
+            current_stage = "contacted"
+
+    # 8. Update lead's last_activity_at and signals
+    # Re-fetch or use existing lead to compute fields
+    lead["stage"] = current_stage
+    lead["last_activity_at"] = now_iso
+    lead = _compute_lead_fields(lead)
+
+    await db.revenue_workflow_leads.update_one(
+        {"lead_id": lead_id},
+        {"$set": {
+            "stage": current_stage,
+            "last_activity_at": now_iso,
+            "_computed": lead.get("_computed", {}),
+            "updated_at": now_iso
+        }}
+    )
+
+    if not result["success"]:
+        return {
+            "success": False,
+            "error": result.get("error", "Email sending failed"),
+            "engagement": engagement_doc,
+        }
+
+    return {"success": True, "engagement": engagement_doc}
+
+
+@router.get("/revenue/leads/{lead_id}/engagements")
+async def get_lead_engagements(lead_id: str, db = Depends(get_db)):
+    """
+    Return all email-type engagements for a lead (newest first).
+    Pure engagement records (status tracking, provider metadata).
+    Use /activities for the unified activity log.
+    """
+    lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id}, {"_id": 0, "lead_id": 1})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    engagements = await db.revenue_workflow_engagements.find(
+        {"lead_id": lead_id}, {"_id": 0}
+    ).sort("created_at", -1).to_list(200)
+
+    return {"success": True, "engagements": engagements, "count": len(engagements)}
+
+
+
 @router.patch("/revenue/leads/{lead_id}/status")
 async def update_lead_status(lead_id: str, req: RevenueStatusUpdate, db = Depends(get_db)):
     """Gated status update with BANT signal validation"""

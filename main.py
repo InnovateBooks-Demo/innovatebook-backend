@@ -4615,6 +4615,10 @@ app.include_router(org_admin_router, prefix="/api")
 app.include_router(parties_router)
 app.include_router(razorpay_webhook_router, prefix="/api")
 
+# SendGrid Event Webhook
+from routes.integrations.sendgrid_webhook_routes import router as sendgrid_webhook_router
+app.include_router(sendgrid_webhook_router, prefix="/api")
+
 # Import Commerce Modules routes (Catalog, Revenue, Procurement, Governance)
 from commerce_modules_routes import router as commerce_modules_router
 app.include_router(commerce_modules_router, prefix="/api")
