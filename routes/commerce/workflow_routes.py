@@ -1595,11 +1595,11 @@ async def update_lead_status(lead_id: str, req: RevenueStatusUpdate, db = Depend
     old_stage = lead.get("stage", "new")
     new_status = req.status
     
-    # Rules: Gating - REMOVED strictly requiring activities for CONTACTED/QUALIFIED
-    # if new_status in ["contacted", "qualified"]:
-    #     act_count = await db.revenue_workflow_activities.count_documents({"lead_id": lead_id})
-    #     if act_count == 0:
-    #         raise HTTPException(status_code=400, detail="Cannot advance lead stage without at least one activity logged.")
+    # Rules: Gating - Qualification Gate
+    if new_status == "qualified" and not req.force:
+        act_count = await db.revenue_workflow_activities.count_documents({"lead_id": lead_id})
+        if act_count == 0:
+            raise HTTPException(status_code=400, detail="Add an engagement log before qualifying.")
 
     # Rules: Advisory (Qualification only)
     warnings = []
