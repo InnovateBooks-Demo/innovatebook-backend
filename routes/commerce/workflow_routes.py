@@ -860,14 +860,117 @@ async def _cache_load(db, token: str) -> list | None:
 async def _cache_delete(db, token: str):
     await db.revenue_workflow_import_cache.delete_one({"_token": token})
 
-# ── Required CSV columns (only company_name is truly required) ─────────────────
-_REQUIRED_COLS = {"company_name"}
+# ── CSV column definitions — single source of truth for import ─────────────────
+# User-facing CSV headers.  Mandatory: must be present as header AND non-empty.
+_REQUIRED_COLS = {
+    "company_name",
+    "country",
+    "industry",
+    "lead_full_name",
+    "professional_mail",
+    "owner_name",
+}
+# Optional: may be absent or blank.
 _OPTIONAL_COLS = {
-    "contact_name", "email", "phone", "website", "country",
-    "industry", "company_size", "source", "lead_source",
-    "expected_deal_value", "timeline", "expected_timeline", "notes",
+    "website",
+    "contact_phone",
+    "lead_source",
+    "estimated_deal_value",
+    "expected_timeline",
+    "problem_identified",
+    "budget_mentioned",
+    "authority_known",
+    "need_timeline",
+    "notes",
 }
 _ALL_EXPECTED = _REQUIRED_COLS | _OPTIONAL_COLS
+
+# Mapping: CSV header  →  internal DB field name
+_CSV_TO_DB = {
+    "lead_full_name":    "contact_name",
+    "professional_mail":  "contact_email",
+    "owner_name":         "owner_id",
+    # These map 1-to-1:
+    "company_name":       "company_name",
+    "country":            "country",
+    "industry":           "industry",
+}
+
+# Valid enum values for budget_mentioned
+_BUDGET_MENTIONED_VALUES = {"available", "no_budget", "unknown"}
+# Valid enum values for lead_source
+_LEAD_SOURCE_VALUES = {"inbound", "outbound", "referral", "linkedin"}
+# Valid enum values for expected_timeline
+_TIMELINE_VALUES = {"0-3 months", "3-6 months", "6-12 months", "long_term"}
+
+# ── CSV import template (2 sample rows) ───────────────────────────────────────
+_TEMPLATE_HEADERS = [
+    "company_name", "country", "industry",
+    "lead_full_name", "professional_mail", "owner_name",
+    "website", "contact_phone",
+    "lead_source", "estimated_deal_value", "expected_timeline",
+    "notes",
+]
+_TEMPLATE_SAMPLE_ROWS = [
+    [
+        "Acme Corporation", "India", "Manufacturing",
+        "John Doe", "john.doe@acme.com", "Rahul Mehta",
+        "https://acme.com", "+91-9876543210",
+        "inbound", "500000", "3-6 months",
+        "Interested in ERP solution. Follow up next week.",
+    ],
+    [
+        "Beta Logistics Pvt Ltd", "India", "Logistics",
+        "Priya Sharma", "priya@betalog.in", "Anita Desai",
+        "https://betalog.in", "+91-9123456780",
+        "referral", "1200000", "6-12 months",
+        "Referral from Acme. CFO approved budget.",
+    ],
+    [
+        "Gamma Tech Solutions", "USA", "Technology",
+        "Michael Chen", "m.chen@gammatech.io", "Rahul Mehta",
+        "https://gammatech.io", "+1-555-0199",
+        "linkedin", "800000", "0-3 months",
+        "Met at SaaS conference. Very interested in cloud migration.",
+    ],
+]
+
+
+# ── Email validator (simple regex, no external deps) ─────────────────────────
+import re as _re
+_EMAIL_RE = _re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+
+def _norm_bool(val: str) -> bool | None:
+    """Normalise truthy / falsy CSV strings to Python bool. Returns None if unparseable."""
+    v = val.strip().lower()
+    if v in ("true", "yes", "1", "y", "on"):  return True
+    if v in ("false", "no", "0", "n", "off", ""):  return False
+    return None
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ENDPOINT 0 — Template CSV download
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+from fastapi.responses import StreamingResponse
+
+@router.get("/revenue/leads/import/template")
+async def get_import_template():
+    """
+    Returns a downloadable CSV template with all importable columns and 2 sample rows.
+    Headers stay in sync with _TEMPLATE_HEADERS (same source of truth as validation).
+    """
+    buf = _io.StringIO()
+    writer = _csv.writer(buf)
+    writer.writerow(_TEMPLATE_HEADERS)
+    for sample_row in _TEMPLATE_SAMPLE_ROWS:
+        writer.writerow(sample_row)
+    buf.seek(0)
+
+    return StreamingResponse(
+        _io.BytesIO(buf.getvalue().encode("utf-8")),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=revenue_leads_import_template.csv"},
+    )
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -880,12 +983,16 @@ async def import_leads_preview(
     db=Depends(get_db),
 ):
     """
-    Parse CSV, run duplicate detection, suggest industries.
+    Parse CSV, run per-row validation, duplicate detection, and industry suggestion.
     Does NOT write to leads DB.
     Returns import_token referencing preview data stored in MongoDB.
+    All-or-nothing row validation: if any row is invalid, has_row_errors=True is returned
+    so the frontend can block the commit.
     """
     # ── Read & decode ─────────────────────────────────────────────────────────
     raw_bytes = await file.read()
+    if not raw_bytes:
+        raise HTTPException(400, detail="Uploaded file is empty.")
     try:
         text = raw_bytes.decode("utf-8")
     except UnicodeDecodeError:
@@ -896,9 +1003,10 @@ async def import_leads_preview(
         raise HTTPException(400, detail="CSV is empty or has no header row.")
 
     # Normalise header names (strip whitespace, lowercase)
-    headers = {h.strip().lower(): h for h in reader.fieldnames}
+    headers = {h.strip().lower() for h in reader.fieldnames}
 
-    missing_required = _REQUIRED_COLS - set(headers.keys())
+    # ── Check required headers first (blocks entire import) ───────────────────
+    missing_required = _REQUIRED_COLS - headers
     if missing_required:
         raise HTTPException(
             400,
@@ -910,8 +1018,10 @@ async def import_leads_preview(
         )
 
     raw_rows = list(reader)
+    if not raw_rows:
+        raise HTTPException(400, detail="CSV has headers but no data rows.")
 
-    # ── Pre-load existing DB leads → maps (not sets) ──────────────────────────
+    # ── Pre-load existing DB leads for duplicate detection ─────────────────────
     existing = await db.revenue_workflow_leads.find(
         {}, {"_id": 0, "lead_id": 1, "contact_email": 1, "email": 1, "website": 1, "company_name": 1}
     ).to_list(10000)
@@ -929,12 +1039,12 @@ async def import_leads_preview(
         if dom: domain_to_lead_id[dom] = lid
         if nm:  name_to_lead_id[nm]    = lid
 
-    # ── Parse + check each row ────────────────────────────────────────────────
+    # ── Parse, validate, and check each row ──────────────────────────────────
     preview_rows: list[dict] = []
-    errors:       list[dict] = []
+    errors:       list[dict] = []   # row-level validation errors
 
-    # Batch-level dedup maps (same CSV duplicates)
-    batch_emails:  dict[str, int] = {}   # email  → first row_index
+    # Batch-level dedup maps
+    batch_emails:  dict[str, int] = {}
     batch_domains: dict[str, int] = {}
     batch_names:   dict[str, int] = {}
 
@@ -943,88 +1053,179 @@ async def import_leads_preview(
     invalid_count   = 0
 
     for idx, raw_row in enumerate(raw_rows):
-        # Normalise column names to lowercase
+        # Normalise column names and trim values
         row = {k.strip().lower(): (v or "").strip() for k, v in raw_row.items()}
 
-        company_name = row.get("company_name", "")
-        if not company_name:
-            errors.append({"row_index": idx, "reason": "company_name is required"})
-            invalid_count += 1
+        # Skip fully empty rows
+        if not any(row.values()):
             continue
 
-        contact_name = row.get("contact_name", "")
-        email        = (row.get("email", "")).lower()
-        phone        = row.get("phone", "") or row.get("contact_phone", "")
-        website      = row.get("website", "")
-        country      = row.get("country", "")
-        company_size = row.get("company_size", "")
-        source       = row.get("source") or row.get("lead_source") or "imported"
-        timeline     = row.get("expected_timeline") or row.get("timeline") or "3-6 months"
-        notes        = row.get("notes", "")
-        raw_value    = row.get("expected_deal_value", "")
-        deal_value   = _parse_float(raw_value)
+        row_errors: list[str] = []
+        human_row = idx + 2   # +2: 1-based + header row
 
-        # Industry: use from CSV if present, else suggest
+        # --- Required field checks (use CSV-facing header names) ---
+        company_name = row.get("company_name", "")
+        if not company_name:
+            row_errors.append("company_name is required")
+
+        lead_full_name = row.get("lead_full_name", "")
+        if not lead_full_name:
+            row_errors.append("lead_full_name is required")
+
+        professional_mail = row.get("professional_mail", "").lower()
+        if not professional_mail:
+            row_errors.append("professional_mail is required")
+        elif not _EMAIL_RE.match(professional_mail):
+            row_errors.append(f"professional_mail '{professional_mail}' is not a valid email address")
+
+        country = row.get("country", "")
+        if not country:
+            row_errors.append("country is required")
+
         industry_from_csv = row.get("industry", "")
+        if not industry_from_csv:
+            row_errors.append("industry is required")
+
+        owner_name = row.get("owner_name", "")
+        if not owner_name:
+            row_errors.append("owner_name is required")
+
+        # --- Optional fields with normalization ---
+        website       = row.get("website", "")
+        contact_phone = row.get("contact_phone", "") or row.get("phone", "")
+        raw_value     = row.get("estimated_deal_value", "")
+        timeline      = row.get("expected_timeline", "") or "3-6 months"
+        notes         = row.get("notes", "")
+
+        # Validate estimated_deal_value if provided
+        deal_value: float | None = None
+        if raw_value:
+            deal_value = _parse_float(raw_value)
+            if deal_value is None:
+                row_errors.append(f"estimated_deal_value '{raw_value}' is not a valid number")
+
+        # Validate expected_timeline enum if provided
+        if timeline and timeline not in _TIMELINE_VALUES:
+            # Try to match loosely, otherwise just keep as-is (don't block)
+            pass  # timeline is free-text in the form too
+
+        # Normalize lead_source
+        lead_source_raw = row.get("lead_source", "") or "imported"
+        lead_source = lead_source_raw if lead_source_raw in _LEAD_SOURCE_VALUES else "imported"
+
+        # Normalize booleans
+        problem_identified_raw = row.get("problem_identified", "")
+        problem_identified = _norm_bool(problem_identified_raw)
+        if problem_identified is None:
+            row_errors.append(f"problem_identified '{problem_identified_raw}' must be true/false/yes/no/1/0")
+            problem_identified = False
+
+        authority_known_raw = row.get("authority_known", "")
+        authority_known = _norm_bool(authority_known_raw)
+        if authority_known is None:
+            row_errors.append(f"authority_known '{authority_known_raw}' must be true/false/yes/no/1/0")
+            authority_known = False
+
+        need_timeline_raw = row.get("need_timeline", "")
+        need_timeline = _norm_bool(need_timeline_raw)
+        if need_timeline is None:
+            row_errors.append(f"need_timeline '{need_timeline_raw}' must be true/false/yes/no/1/0")
+            need_timeline = False
+
+        # Normalize budget_mentioned
+        budget_mentioned_raw = row.get("budget_mentioned", "") or "unknown"
+        if budget_mentioned_raw not in _BUDGET_MENTIONED_VALUES:
+            row_errors.append(f"budget_mentioned '{budget_mentioned_raw}' must be one of: {', '.join(sorted(_BUDGET_MENTIONED_VALUES))}")
+            budget_mentioned = "unknown"
+        else:
+            budget_mentioned = budget_mentioned_raw
+
+        # --- Industry (required now, but still try suggestion if empty) ---
         industry_suggested_flag = False
         industry_confidence = None
         if industry_from_csv:
             industry = industry_from_csv
         else:
-            industry, industry_confidence = _suggest_industry(company_name, website)
+            industry, industry_confidence = _suggest_industry(company_name or "", website)
             industry_suggested_flag = industry is not None
 
-        # ── Duplicate detection ───────────────────────────────────────────────
+        # --- Duplicate detection (only for valid rows) ---
         dup_flag   = False
         dup_reason = None
         matched_id = None
 
-        domain = _extract_domain(website)
-        norm   = _norm_name(company_name)
+        if not row_errors and company_name:
+            domain = _extract_domain(website)
+            norm   = _norm_name(company_name)
 
-        # Check DB maps first (strong match = email, domain; weak = name)
-        if email and email in email_to_lead_id:
-            dup_flag, dup_reason, matched_id = True, "email_match", email_to_lead_id[email]
-        elif domain and domain in domain_to_lead_id:
-            dup_flag, dup_reason, matched_id = True, "domain_match", domain_to_lead_id[domain]
-        elif norm and norm in name_to_lead_id:
-            dup_flag, dup_reason, matched_id = True, "company_name_match", name_to_lead_id[norm]
-        # Check within this batch
-        elif email and email in batch_emails:
-            dup_flag, dup_reason, matched_id = True, "batch_duplicate", f"row_{batch_emails[email]}"
-        elif domain and domain in batch_domains:
-            dup_flag, dup_reason, matched_id = True, "batch_duplicate", f"row_{batch_domains[domain]}"
-        elif norm and norm in batch_names:
-            dup_flag, dup_reason, matched_id = True, "batch_duplicate", f"row_{batch_names[norm]}"
+            if professional_mail and professional_mail in email_to_lead_id:
+                dup_flag, dup_reason, matched_id = True, "email_match", email_to_lead_id[professional_mail]
+            elif domain and domain in domain_to_lead_id:
+                dup_flag, dup_reason, matched_id = True, "domain_match", domain_to_lead_id[domain]
+            elif norm and norm in name_to_lead_id:
+                dup_flag, dup_reason, matched_id = True, "company_name_match", name_to_lead_id[norm]
+            elif professional_mail and professional_mail in batch_emails:
+                dup_flag, dup_reason, matched_id = True, "batch_duplicate", f"row_{batch_emails[professional_mail]}"
+            elif domain and domain in batch_domains:
+                dup_flag, dup_reason, matched_id = True, "batch_duplicate", f"row_{batch_domains[domain]}"
+            elif norm and norm in batch_names:
+                dup_flag, dup_reason, matched_id = True, "batch_duplicate", f"row_{batch_names[norm]}"
 
-        # Register in batch maps (only first occurrence)
-        if email  and email  not in batch_emails:  batch_emails[email]   = idx
-        if domain and domain not in batch_domains: batch_domains[domain] = idx
-        if norm   and norm   not in batch_names:   batch_names[norm]     = idx
+            # Register in batch maps
+            if professional_mail and professional_mail not in batch_emails: batch_emails[professional_mail] = idx
+            if domain and domain not in batch_domains: batch_domains[domain] = idx
+            if norm and norm not in batch_names: batch_names[norm] = idx
 
-        if dup_flag:
-            duplicate_count += 1
+            if dup_flag:
+                duplicate_count += 1
+
+        # --- Accumulate row errors ---
+        if row_errors:
+            invalid_count += 1
+            errors.append({
+                "row_index": idx,
+                "row_number": human_row,
+                "company_name": company_name or "(empty)",
+                "errors": row_errors,
+                "reason": "; ".join(row_errors),   # backward compat single string
+            })
+            # Still add to preview_rows so the user can see what's wrong
+            invalid_reason = "; ".join(row_errors)
+        else:
+            invalid_reason = None
 
         preview_rows.append({
             "row_index":           idx,
+            "row_number":          human_row,
+            # CSV-facing field names (used by frontend preview table)
             "company_name":        company_name,
-            "contact_name":        contact_name,
-            "email":               email,
-            "phone":               phone,
-            "website":             website,
+            "lead_full_name":      lead_full_name,
+            "professional_mail":   professional_mail,
+            "owner_name":          owner_name,
+            # Schema-matching fields (internal DB names)
+            "contact_name":        lead_full_name,
+            "contact_email":       professional_mail,
+            "owner_id":            owner_name,
             "country":             country,
             "industry":            industry,
             "industry_suggested":  industry_suggested_flag,
             "industry_confidence": industry_confidence,
-            "company_size":        company_size,
-            "lead_source":         source,
-            "estimated_deal_value": deal_value,
+            # Optional fields
+            "contact_phone":       contact_phone,
+            "website":             website,
+            "lead_source":         lead_source,
+            "estimated_deal_value": deal_value or 0,
             "expected_timeline":   timeline,
+            "problem_identified":  problem_identified,
+            "budget_mentioned":    budget_mentioned,
+            "authority_known":     authority_known,
+            "need_timeline":       need_timeline,
             "notes":               notes,
+            # Dedup / validation
             "duplicate_flag":      dup_flag,
             "duplicate_reason":    dup_reason,
             "matched_lead_id":     matched_id,
-            "invalid_reason":      None,
+            "invalid_reason":      invalid_reason,
         })
 
     # ── Store preview in MongoDB cache ────────────────────────────────────────
@@ -1033,9 +1234,10 @@ async def import_leads_preview(
     return {
         "success": True,
         "import_token": import_token,
+        "has_row_errors": invalid_count > 0,
         "summary": {
             "total_rows":     total_rows,
-            "valid_rows":     len(preview_rows),
+            "valid_rows":     len(preview_rows) - invalid_count,
             "invalid_rows":   invalid_count,
             "duplicate_rows": duplicate_count,
         },
@@ -1088,33 +1290,38 @@ async def import_leads_commit(
         doc = {
             "lead_id":              lead_id,
             "stage":                "imported",
+            # Company
             "company_name":         row["company_name"],
-            "website":              row["website"] or None,
-            "country":              row["country"] or "",
-            "industry":             row["industry"] or None,
-            "company_size":         row["company_size"] or None,
-            "contact_name":         row["contact_name"] or "",
-            "contact_email":        row["email"] or None,
-            "contact_phone":        row["phone"] or None,
-            "lead_source":          row["lead_source"] or "imported",
-            "estimated_deal_value": row["estimated_deal_value"] or 0,
-            "expected_timeline":    row["expected_timeline"] or "3-6 months",
-            "notes":                row["notes"] or "",
-            "created_at":           now_iso,
-            "updated_at":           now_iso,
-            "last_activity_at":     now_iso,
-            "age_days":             0,
-            # Qualification defaults
-            "problem_identified":   False,
-            "budget_mentioned":     "unknown",
-            "authority_known":      False,
-            "need_timeline":        False,
+            "website":              row.get("website") or None,
+            "country":              row.get("country") or "",
+            "industry":             row.get("industry") or None,
+            # Contact — mapped from CSV names to internal DB names
+            "contact_name":         row.get("lead_full_name") or "",
+            "contact_email":        row.get("professional_mail") or None,
+            "contact_phone":        row.get("contact_phone") or None,
+            # Lead metadata
+            "lead_source":          row.get("lead_source") or "imported",
+            "estimated_deal_value": row.get("estimated_deal_value") or 0,
+            "expected_timeline":    row.get("expected_timeline") or "3-6 months",
+            "owner_id":             row.get("owner_name") or None,
+            # Qualification signals (from CSV or defaults)
+            "problem_identified":   bool(row.get("problem_identified", False)),
+            "budget_mentioned":     row.get("budget_mentioned") or "unknown",
+            "authority_known":      bool(row.get("authority_known", False)),
+            "need_timeline":        bool(row.get("need_timeline", False)),
             "qualification": {
                 "budget_confirmed":    False,
                 "authority_confirmed": False,
                 "timeline_confirmed":  False,
                 "need_confirmed":      False,
             },
+            # Notes
+            "notes":                row.get("notes") or "",
+            # Timestamps
+            "created_at":           now_iso,
+            "updated_at":           now_iso,
+            "last_activity_at":     now_iso,
+            "age_days":             0,
         }
         # Compute health fields at creation (health = green on day 0)
         doc["_computed"] = _compute_lead_fields(doc).get("_computed", {})
