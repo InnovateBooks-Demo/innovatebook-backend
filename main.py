@@ -4636,8 +4636,8 @@ from workspace_routes import router as workspace_router
 app.include_router(workspace_router, prefix="/api/workspace")
 
 # Import Comprehensive Seed routes
-from comprehensive_seed import router as seed_router
-app.include_router(seed_router)
+# from comprehensive_seed import router as seed_router
+# app.include_router(seed_router)
 
 # Import IB Commerce Workflow routes (Revenue & Procurement 5-stage)
 from routes.commerce.workflow_routes import router as workflow_router
