@@ -228,6 +228,11 @@ class RevenueActivityCreate(BaseModel):
     """Log manual activity (call, email, meeting, note)"""
     type: str
     summary: str
+    subject: Optional[str] = None
+    body_text: Optional[str] = None
+    body_html: Optional[str] = None
+    from_email: Optional[str] = None
+    to_email: Optional[str] = None
 
 class RevenueStatusUpdate(BaseModel):
     """Gated status update with force option"""
@@ -1551,10 +1556,32 @@ async def get_revenue_lead(lead_id: str, db = Depends(get_db)):
 
 @router.get("/revenue/leads/{lead_id}/activities")
 async def get_lead_activities(lead_id: str, db = Depends(get_db)):
-    """Get all manual activities for a lead (sorted desc)"""
+    """Get all manual activities for a lead (sorted desc) with enrichment"""
     activities = await db.revenue_workflow_activities.find(
         {"lead_id": lead_id}, {"_id": 0}
     ).sort("created_at", -1).to_list(100)
+    
+    # Enrich email activities with engagement data
+    engagement_ids = [a["engagement_id"] for a in activities if a.get("type") == "email" and a.get("engagement_id")]
+    if engagement_ids:
+        engagements = await db.revenue_workflow_engagements.find(
+            {"engagement_id": {"$in": engagement_ids}}, {"_id": 0}
+        ).to_list(len(engagement_ids))
+        
+        eng_map = {e["engagement_id"]: e for e in engagements}
+        for act in activities:
+            eid = act.get("engagement_id")
+            if eid in eng_map:
+                eng = eng_map[eid]
+                # Map fields to what ActivityDetailModal expects
+                act["subject"] = eng.get("subject") or act.get("subject")
+                act["body_text"] = eng.get("body_text") or act.get("body_text")
+                act["body_html"] = eng.get("body_html") or act.get("body_html")
+                act["from_email"] = eng.get("from_email") or act.get("from_email")
+                act["to_email"] = eng.get("to_email") or act.get("to_email")
+                act["status"] = eng.get("status") or act.get("status")
+                act["created_by"] = eng.get("created_by") or act.get("actor_id") or "system"
+                
     return {"success": True, "activities": activities}
 
 @router.post("/revenue/leads/{lead_id}/activities")
@@ -1568,6 +1595,11 @@ async def log_lead_activity(lead_id: str, act: RevenueActivityCreate, db = Depen
         "lead_id": lead_id,
         "type": act.type,
         "summary": act.summary,
+        "subject": act.subject,
+        "body_text": act.body_text,
+        "body_html": act.body_html,
+        "from_email": act.from_email,
+        "to_email": act.to_email,
         "created_at": now_iso,
         "actor_id": "system"  # In real app, pulled from auth token
     }
@@ -1720,6 +1752,11 @@ async def send_lead_email(lead_id: str, payload: EmailEngagementCreate, db = Dep
         "lead_id": lead_id,
         "type": "email",
         "summary": f"Email sent to {payload.to} | Subject: {payload.subject}",
+        "subject": payload.subject,
+        "body_text": payload.text,
+        "body_html": payload.html,
+        "from_email": from_email,
+        "to_email": payload.to,
         "engagement_id": engagement_id,
         "status": new_status,
         "created_at": now_iso,
