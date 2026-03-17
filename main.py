@@ -4586,6 +4586,10 @@ from razorpay_webhook_routes import router as razorpay_webhook_router
 app.include_router(api_router)
 app.include_router(auth_router, prefix="/api")
 # app.include_router(test_helpers_router, prefix="/api")
+# from routes.commerce.workflow_routes import legacy_router as workflow_legacy_router
+from routes.commerce.workflow_routes import legacy_router as workflow_legacy_router
+app.include_router(workflow_legacy_router, prefix="/api")
+
 app.include_router(commerce_router, prefix="/api")
 app.include_router(lead_router, prefix="/api")
 app.include_router(engagement_router)
@@ -4638,8 +4642,9 @@ app.include_router(workspace_router, prefix="/api/workspace")
 
 
 # Import IB Commerce Workflow routes (Revenue & Procurement 5-stage)
-from routes.commerce.workflow_routes import router as workflow_router
+from routes.commerce.workflow_routes import router as workflow_router, legacy_router as workflow_legacy_router
 app.include_router(workflow_router, prefix="/api")
+# app.include_router(workflow_legacy_router, prefix="/api") # Moved up for precedence
 
 # Import Enhanced Parties Engine (Commercial Identity & Readiness)
 # from parties_engine_routes import router as parties_engine_router

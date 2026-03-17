@@ -421,6 +421,16 @@ class Evaluate(BaseModel):
     
     # Deal Summary
     opportunity_name: str
+    company_name: Optional[str] = None
+    contact_person: Optional[str] = None
+    contact_email: Optional[str] = None
+    lead_source: Optional[str] = None
+    owner: Optional[str] = None
+    notes: Optional[str] = None
+    commercial_notes: Optional[str] = None
+    internal_notes: Optional[str] = None
+    stage: str = "in_progress"
+    
     opportunity_type: str
     expected_deal_value: float
     proposed_payment_terms: str
@@ -439,6 +449,7 @@ class Evaluate(BaseModel):
     # Cost & Margin Analysis
     estimated_cost: float = 0.0
     estimated_revenue: float = 0.0
+    gross_profit: float = 0.0
     gross_margin_percent: float = 0.0
     margin_threshold_check: str = "Pass"
     discount_applied_percent: float = 0.0

@@ -6,7 +6,7 @@ Full enterprise-grade implementation with stage transitions, governance, and app
 from fastapi import APIRouter, HTTPException, Depends, Query, Header, UploadFile, File
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta,date
 from enum import Enum
 import logging
 import uuid
@@ -24,6 +24,7 @@ ENABLE_CLEARTAX_GST_VERIFY = os.environ.get("ENABLE_CLEARTAX_GST_VERIFY", "false
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/commerce/workflow", tags=["IB Commerce Workflow"])
+legacy_router = APIRouter(prefix="/commerce", tags=["IB Commerce Workflow Legacy"])
 
 
 # ============== WORKSPACE & INTELLIGENCE INTEGRATION ==============
@@ -239,16 +240,79 @@ class RevenueStatusUpdate(BaseModel):
     status: str
     force: bool = False
 
+class RevenueEvaluationSingleItemCreate(BaseModel):
+    catalog_item_id: str
+    quantity: int = Field(default=1, gt=0)
+    discount: float = Field(default=0, ge=0)
+    notes: Optional[str] = None
+    manual_cost: Optional[float] = Field(None, ge=0)
+    override_reason: Optional[str] = None
+
+class RevenueEvaluationItemUpdate(BaseModel):
+    # Canonical
+    quantity: Optional[int] = Field(None, gt=0)
+    unit_price: Optional[float] = Field(None, ge=0)
+    cost_price: Optional[float] = Field(None, ge=0)
+    discount: Optional[float] = Field(None, ge=0)
+    
+    # Legacy / Aliases for normalization
+    expected_cost: Optional[float] = Field(None, ge=0)
+    net_price: Optional[float] = Field(None, ge=0)
+    line_total: Optional[float] = Field(None, ge=0)
+    gross_margin_percent: Optional[float] = Field(None, ge=0)
+    
+    # Other
+    notes: Optional[str] = None
+    estimated_cost: Optional[float] = Field(None, ge=0) # existing legacy field
+
+class RevenueEvaluationUpdate(BaseModel):
+    opportunity_name: Optional[str] = None
+    opportunity_value: Optional[float] = None
+    expected_close_date: Optional[date] = None
+    payment_terms: Optional[str] = None
+    commercial_notes: Optional[str] = None
+    internal_notes: Optional[str] = None
+    # Integration additions
+    items: Optional[List[Dict[str, Any]]] = None # Use dict to allow flexibility during migration
+    total_value: Optional[float] = None
+    gross_margin_percent: Optional[float] = None
+
+class RevenueEvaluationStatusUpdate(BaseModel):
+    status: str = Field(..., description="Target status: draft, in_progress, in_review, ready_for_commit, approved, rejected")
+
+class RevenueEvaluationItemCreate(BaseModel):
+    item_id: str
+    quantity: int = Field(default=1, gt=0)
+    discount_percent: float = Field(default=0, ge=0, le=100)
+
 class RevenueEvaluationItem(BaseModel):
-    """Item in evaluation"""
+    """Item in evaluation with full financial audit fields"""
     item_id: str
     item_name: str
-    quantity: int = 1
-    unit_price: float = 0
-    discount_percent: float = 0
-    net_price: float = 0
-    expected_cost: float = 0
+    quantity: int = Field(default=1, gt=0)
+    unit_price: float = Field(default=0, ge=0)
+    discount_percent: float = Field(default=0, ge=0, le=100)
+    
+    # Financial Engine Fields
+    total_price: float = 0
+    total_cost: float = 0
+    gross_margin: float = 0
     margin_percent: float = 0
+    line_total: float = 0
+    
+    # Audit & Provenance
+    cost_price: float = 0
+    discount: float = 0
+    cost_source: str = "manual"
+    price_source: str = "manual"
+    original_catalog_cost: Optional[float] = None
+    overridden_cost: Optional[float] = None
+    override_reason: Optional[str] = None
+    override_flag: bool = False
+    
+    # Legacy fallbacks
+    net_price: float = Field(default=0, ge=0)
+    expected_cost: float = Field(default=0, ge=0)
 
 class RevenueEvaluationCreate(BaseModel):
     """Evaluate Stage - Commercial viability check"""
@@ -521,24 +585,27 @@ async def calculate_risk_score(data: Dict) -> Dict[str, Any]:
     """Calculate risk scores based on deal/vendor data"""
     score = 20  # Base score
     
-    # Deal size risk
-    deal_value = data.get("total_value", 0) or data.get("total_cost", 0) or 0
-    if deal_value > 10000000:
-        score += 30
-        size_risk = "high"
-    elif deal_value > 1000000:
-        score += 15
-        size_risk = "medium"
-    else:
-        size_risk = "low"
+    size_risk = "low"
+    geo_risk = "low"
     
-    # Geography risk
-    region = data.get("region", "")
-    if region and region.lower() in ["international", "export"]:
-        score += 20
-        geo_risk = "high"
-    else:
-        geo_risk = "low"
+    try:
+        # Deal size risk
+        deal_value = float(data.get("total_value", 0) or data.get("total_cost", 0) or 0)
+        if deal_value > 10000000:
+            score += 30
+            size_risk = "high"
+        elif deal_value > 1000000:
+            score += 15
+            size_risk = "medium"
+            
+        # Geography risk
+        region = data.get("region", "")
+        if region and str(region).lower() in ["international", "export"]:
+            score += 20
+            geo_risk = "high"
+            
+    except Exception as e:
+        logger.warning(f"Error calculating risk score: {str(e)}. Using safe defaults.")
     
     return {
         "total_score": min(score, 100),
@@ -1973,16 +2040,38 @@ async def convert_lead_to_evaluate(lead_id: str, db = Depends(get_db)):
     }
     await db.revenue_workflow_parties.insert_one(party_data)
     
-    # Create Evaluation record
+    # Create Evaluation record 
+    # Mapped to `commerce_models.Evaluate` structure for Phase 2
     eval_data = {
         "evaluation_id": f"REV-EVAL-{datetime.now().strftime('%Y%m%d%H%M%S')}",
+        "linked_lead_id": lead_id,
         "lead_id": lead_id,
+        "customer_id": party_data["party_id"],
         "party_id": party_data["party_id"],
-        "deal_type": "one-time",
-        "currency": "INR",
-        "status": EvaluationStatus.DRAFT.value,
-        "items": [],
+        
+        # Mapped from Lead per requirements
+        "opportunity_name": f"Opportunity for {lead.get('company_name')}",
+        "company_name": lead.get("company_name"),
+        "contact_person": lead.get("contact_name"),
+        "contact_email": lead.get("contact_email"),
+        "lead_source": lead.get("lead_source"),
+        "owner": lead.get("owner_id") or lead.get("owner_name"),
+        "notes": lead.get("notes"),
+        
+        "opportunity_type": "New Business",
+        "expected_deal_value": lead.get("estimated_deal_value", 0),
         "total_value": lead.get("estimated_deal_value", 0),
+        "proposed_payment_terms": "Net 30",
+        "currency": "INR",
+        
+        # Initial values per requirements
+        "stage": "in_progress",
+        "status": "draft",
+        "evaluation_status": "draft",
+        
+        "gross_margin_percent": 0.0,
+        "estimated_cost": 0.0,
+        "items": [],
         "created_at": now,
         "updated_at": now
     }
@@ -2004,7 +2093,9 @@ async def convert_lead_to_evaluate(lead_id: str, db = Depends(get_db)):
         "success": True,
         "message": "Lead converted to evaluation",
         "evaluation_id": eval_data["evaluation_id"],
-        "party_id": party_data["party_id"]
+        "lead_id": lead_id,
+        "stage": eval_data["stage"],
+        "status": eval_data["status"]
     }
 
 # --- EVALUATION STAGE ---
@@ -2018,68 +2109,513 @@ async def get_revenue_evaluations(status: Optional[str] = None, db = Depends(get
 
 @router.get("/revenue/evaluations/{evaluation_id}")
 async def get_revenue_evaluation(evaluation_id: str, db = Depends(get_db)):
-    """Get evaluation details with party readiness and risk assessment"""
+    """Get evaluation details for EvaluateDetail.jsx"""
     eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id}, {"_id": 0})
     if not eval_data:
         raise HTTPException(status_code=404, detail="Evaluation not found")
     
-    # Get party readiness
-    party_readiness = await validate_party_readiness(eval_data.get("party_id"), db)
-    
-    # Calculate risk
-    risk_data = await calculate_risk_score(eval_data)
+    # Calculate item aggregates
+    items = eval_data.get("items", [])
+    selected_items_count = sum(item.get("quantity", 1) for item in items)
     
     return {
         "success": True,
+        
+        # Core & Linked info
+        "evaluation_id": eval_data.get("evaluation_id"),
+        "lead_id": eval_data.get("lead_id") or eval_data.get("linked_lead_id"),
+        
+        # Copied lead fields
+        "company_name": eval_data.get("company_name"),
+        "contact_person": eval_data.get("contact_person"),
+        "contact_email": eval_data.get("contact_email"),
+        "lead_source": eval_data.get("lead_source"),
+        "owner": eval_data.get("owner"),
+        "notes": eval_data.get("notes"),
+        
+        # Status
+        "stage": eval_data.get("stage", "in_progress"),
+        "status": eval_data.get("status", "draft"),
+        
+        # Economics / Items placeholders
+        "selected_items_count": selected_items_count,
+        "estimated_revenue": eval_data.get("total_value", 0.0),
+        "total_price": eval_data.get("total_value", 0.0), # Canonical
+        "estimated_cost": eval_data.get("estimated_cost", 0.0),
+        "total_cost": eval_data.get("estimated_cost", 0.0), # Canonical
+        "gross_margin_percent": eval_data.get("gross_margin_percent", 0.0),
+        "margin_percent": eval_data.get("gross_margin_percent", 0.0), # Canonical
+        
+        # Timestamps
+        "created_at": eval_data.get("created_at"),
+        "updated_at": eval_data.get("updated_at"),
+        
+        # Keep original data for backward compatibility in UI temporarily
         "evaluation": eval_data,
-        "party_readiness": party_readiness,
-        "risk_assessment": risk_data
+        "items": items
+    }
+
+# --- LEGACY ALIAS ROUTES ---
+
+def compute_item_financials(unit_price: float, cost_price: float, quantity: int, discount: float = 0):
+    """
+    Unified calculation for item-level financials. 
+    Canonical: total_price is the NET value (after discount).
+    """
+    gross_total = round(unit_price * quantity, 2)
+    total_price = round(gross_total - discount, 2)
+    if total_price < 0:
+        total_price = 0.0
+        
+    total_cost = round(cost_price * quantity, 2)
+    gross_margin = round(total_price - total_cost, 2)
+    
+    margin_percent = 0.0
+    if total_price > 0:
+        margin_percent = round((gross_margin / total_price) * 100, 2)
+        
+    return {
+        # Canonical inputs
+        "unit_price": round(unit_price, 2),
+        "cost_price": round(cost_price, 2),
+        "quantity": quantity,
+        "discount": round(discount, 2),
+        
+        # Canonical outputs
+        "total_price": total_price,  # This is NET VALUE
+        "total_cost": total_cost,    # This is TOTAL COST
+        "gross_margin": gross_margin,
+        "margin_percent": margin_percent,
+        
+        # Legacy/Compatibility aliases
+        "net_price": total_price,
+        "line_total": total_price,
+        "expected_cost": cost_price, # unit cost legacy name
+        "estimated_revenue": total_price,
+        "estimated_cost": total_cost,
+        "gross_margin_percent": margin_percent
+    }
+
+async def recalculate_evaluation_economics(evaluation_id: str, db):
+    """Reusable mechanism to recalculate evaluation summary whenever items change"""
+    eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
+    if not eval_data:
+        return None
+        
+    items = eval_data.get("items", [])
+    
+    # 1. Calculation Formulas per requirements (prefer new fields, fallback for legacy)
+    selected_items_count = sum(i.get("quantity", 0) for i in items)
+    estimated_revenue = sum(float(i.get("total_price") if "total_price" in i else i.get("line_total", 0)) for i in items)
+    estimated_cost = sum(float(i.get("total_cost") if "total_cost" in i else i.get("estimated_cost", 0)) for i in items)
+    
+    gross_profit = round(estimated_revenue - estimated_cost, 2)
+    gross_margin_percent = round((gross_profit / estimated_revenue * 100), 2) if estimated_revenue > 0 else 0
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    summary_data = {
+        "items": items,
+        "selected_items_count": selected_items_count,
+        # Canonical names
+        "total_price": round(estimated_revenue, 2),
+        "total_cost": round(estimated_cost, 2),
+        "margin_percent": gross_margin_percent,
+        "gross_margin": gross_profit,
+        
+        # Existing names (Backward Compatibility)
+        "estimated_revenue": round(estimated_revenue, 2),
+        "total_value": round(estimated_revenue, 2),
+        "estimated_cost": round(estimated_cost, 2),
+        "gross_profit": gross_profit,
+        "gross_margin_percent": gross_margin_percent,
+        
+        "updated_at": now
+    }
+    
+    await db.revenue_workflow_evaluations.update_one(
+        {"evaluation_id": evaluation_id},
+        {"$set": summary_data}
+    )
+    
+    return summary_data
+
+@router.post("/revenue/evaluations/{evaluation_id}/items")
+async def add_evaluation_items(evaluation_id: str, payload: RevenueEvaluationSingleItemCreate, db = Depends(get_db)):
+    """Add a selected catalog item into the evaluation as an evaluation item entry"""
+    eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
+    if not eval_data:
+        raise HTTPException(status_code=404, detail="Evaluation not found")
+        
+    # 1. Resolve catalog item via helper
+    resolved_item = await resolve_catalog_item(db, payload.catalog_item_id)
+    unit_price = resolved_item["base_price"]
+    catalog_cost = resolved_item["cost_price"]
+    
+    # 2. Handle Manual Cost Overrides
+    estimated_cost_per_unit = catalog_cost
+    override_flag = False
+    override_reason = None
+    
+    if payload.manual_cost is not None and payload.manual_cost != catalog_cost:
+        if not payload.override_reason or not payload.override_reason.strip():
+            raise HTTPException(status_code=400, detail="Cost override requires justification")
+        
+        # Deviation check (30%)
+        deviation_percent = abs((payload.manual_cost - catalog_cost) / catalog_cost) * 100
+        if deviation_percent > 30:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cost override exceeds 30% threshold (Current deviation: {deviation_percent:.1f}%)"
+            )
+            
+        estimated_cost_per_unit = payload.manual_cost
+        override_flag = True
+        override_reason = payload.override_reason
+
+    # 3. Extract payload and resolve name
+    qty = payload.quantity
+    disc = payload.discount
+    notes = payload.notes
+    item_name = resolved_item["name"]
+
+    # 4. Calculations explicitly per requirements
+    financials = compute_item_financials(unit_price, estimated_cost_per_unit, qty, disc)
+    
+    # Build Evaluation Item
+    item_doc = {
+        "item_id": str(uuid.uuid4()),
+        "evaluation_id": evaluation_id,
+        "catalog_item_id": payload.catalog_item_id,
+        "item_name": item_name,
+        **financials,
+        "original_catalog_cost": round(catalog_cost, 2),
+        "overridden_cost": round(estimated_cost_per_unit, 2) if override_flag else None,
+        "override_reason": override_reason,
+        "override_flag": override_flag,
+        "notes": notes,
+        "cost_source": resolved_item["cost_source"] if not override_flag else "manual_override",
+        "price_source": resolved_item["price_source"]
+    }
+    
+    # Usually adding implies a new line entry. We'll add as a new entry.
+    current_items = eval_data.get("items", [])
+    current_items.append(item_doc)
+        
+    # 4. Trigger Reusable Recalculation Mechanism
+    await db.revenue_workflow_evaluations.update_one(
+        {"evaluation_id": evaluation_id},
+        {"$set": {"items": current_items}}
+    )
+    
+    summary = await recalculate_evaluation_economics(evaluation_id, db)
+    
+    return {
+        "success": True, 
+        "message": "Item added successfully",
+        "item": item_doc,
+        "evaluation_summary": summary
+    }
+
+@router.get("/revenue/evaluations/{evaluation_id}/items")
+async def get_evaluation_items(evaluation_id: str, db = Depends(get_db)):
+    """Fetch all catalog items linked to the evaluation"""
+    eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id}, {"_id": 0})
+    if not eval_data:
+        raise HTTPException(status_code=404, detail="Evaluation not found")
+        
+    items = eval_data.get("items", [])
+    
+    # Calculate summary if needed or pull directly from evaluation root
+    selected_items_count = sum(i.get("quantity", 1) for i in items)
+    
+    # Add unique item_id mapping for frontend uniqueness check if not present natively
+    for item in items:
+        if "item_id" not in item:
+             # Backward compatibility: Fallback id assignment if not originally present
+             item["item_id"] = str(uuid.uuid4())
+             
+        # Add basic mapped timestamp if none exist on row item
+        if "created_at" not in item:
+             item["created_at"] = eval_data.get("created_at")
+
+    return {
+        "success": True,
+        "evaluation_id": evaluation_id,
+        "items": items,
+        "evaluation_summary": {
+            "selected_items_count": selected_items_count,
+            "estimated_revenue": eval_data.get("total_value", 0.0), # maps to expected deal value sum
+            "estimated_cost": eval_data.get("estimated_cost", 0.0),
+            "gross_margin_percent": eval_data.get("gross_margin_percent", 0.0)
+        }
+    }
+
+async def resolve_catalog_item(db, item_id: str):
+    """
+    Reusable helper to resolve catalog item details with strict financial validation.
+    Returns a unified object with price and cost data.
+    """
+    catalog_item = await db.catalog_items.find_one({"item_id": item_id})
+    if not catalog_item:
+        raise HTTPException(status_code=404, detail="Catalog item not found")
+        
+    # Extract & safely convert
+    base_price = float(catalog_item.get("base_price", 0) or 0)
+    cost_price = float(catalog_item.get("cost_price", 0) or 0)
+    
+    # Strict financial validation
+    if base_price <= 0:
+        raise HTTPException(status_code=400, detail="Invalid catalog item: missing or invalid base_price")
+    if cost_price <= 0:
+        raise HTTPException(status_code=400, detail="Cost not configured for selected catalog item")
+        
+    return {
+        "item_id": catalog_item.get("item_id"),
+        "name": catalog_item.get("name", "Unknown Item"),
+        "category": catalog_item.get("category"),
+        "base_price": base_price,
+        "cost_price": cost_price,
+        "price_source": "catalog_items",
+        "cost_source": "catalog_items"
+    }
+
+async def create_conversion_audit(db, lead_id: str, evaluation_id: str, user_id: str):
+    pass # Placeholder for actual implementation
+
+@router.patch("/revenue/evaluations/{evaluation_id}/items/{item_id}")
+async def update_evaluation_item(evaluation_id: str, item_id: str, payload: RevenueEvaluationItemUpdate, db = Depends(get_db)):
+    """Update a specific evaluation item and recalculate financials"""
+    eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
+    if not eval_data:
+        raise HTTPException(status_code=404, detail="Evaluation not found")
+        
+    items = eval_data.get("items", [])
+    
+    # Extract item to update
+    item_idx = next((i for i, x in enumerate(items) if x.get("item_id") == item_id), None)
+    if item_idx is None:
+        raise HTTPException(status_code=404, detail="Evaluation item not found")
+        
+    target_item = items[item_idx]
+    
+    # 1. Update allowed fields dynamically with normalization
+    if payload.quantity is not None:
+        target_item["quantity"] = payload.quantity
+    if payload.unit_price is not None:
+        target_item["unit_price"] = payload.unit_price
+    
+    # cost_price priority
+    if payload.cost_price is not None:
+        target_item["cost_price"] = payload.cost_price
+    elif payload.expected_cost is not None:
+        target_item["cost_price"] = payload.expected_cost
+    elif payload.estimated_cost is not None:
+        target_item["cost_price"] = payload.estimated_cost
+        
+    if payload.discount is not None:
+        target_item["discount"] = payload.discount
+    if payload.notes is not None:
+        target_item["notes"] = payload.notes
+        
+    # 2. Recalculate line financials using shared helper
+    qty = target_item.get("quantity", 1)
+    price = target_item.get("unit_price", 0)
+    cost = target_item.get("cost_price", 0)
+    disc = target_item.get("discount", 0)
+    
+    # Validation
+    if qty <= 0:
+        raise HTTPException(status_code=400, detail="Quantity must be greater than zero")
+        
+    financials = compute_item_financials(price, cost, qty, disc)
+    target_item.update(financials)
+    
+    # Push update back
+    items[item_idx] = target_item
+    
+    # 3. Trigger Reusable Recalculation Mechanism
+    await db.revenue_workflow_evaluations.update_one(
+        {"evaluation_id": evaluation_id},
+        {"$set": {"items": items}}
+    )
+    
+    summary = await recalculate_evaluation_economics(evaluation_id, db)
+    
+    return {
+        "success": True, 
+        "message": "Evaluation item updated",
+        "item": target_item,
+        "evaluation_summary": summary
+    }
+
+@router.delete("/revenue/evaluations/{evaluation_id}/items/{item_id}")
+async def delete_evaluation_item(evaluation_id: str, item_id: str, db = Depends(get_db)):
+    """Delete an item from an evaluation and recalculate financials"""
+    eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
+    if not eval_data:
+        raise HTTPException(status_code=404, detail="Evaluation not found")
+        
+    items = eval_data.get("items", [])
+    
+    initial_length = len(items)
+    items = [i for i in items if i.get("item_id") != item_id]
+    
+    if len(items) == initial_length:
+        raise HTTPException(status_code=404, detail="Evaluation item not found")
+        
+    # Recalculate Evaluation level Summaries
+    await db.revenue_workflow_evaluations.update_one(
+        {"evaluation_id": evaluation_id},
+        {"$set": {"items": items}}
+    )
+    
+    summary = await recalculate_evaluation_economics(evaluation_id, db)
+    
+    return {
+        "success": True, 
+        "message": "Evaluation item deleted",
+        "evaluation_summary": summary
     }
 
 @router.put("/revenue/evaluations/{evaluation_id}")
-async def update_revenue_evaluation(evaluation_id: str, data: RevenueEvaluationCreate, db = Depends(get_db)):
-    """Update evaluation with items and calculations"""
-    eval_data = data.dict()
-    
-    # Calculate totals from items
-    total_value = sum(item.get("net_price", 0) for item in eval_data.get("items", []))
-    total_cost = sum(item.get("expected_cost", 0) for item in eval_data.get("items", []))
-    gross_margin = ((total_value - total_cost) / total_value * 100) if total_value > 0 else 0
-    
-    eval_data["total_value"] = total_value
-    eval_data["gross_margin_percent"] = round(gross_margin, 2)
-    
-    # Calculate risk
-    risk_data = await calculate_risk_score(eval_data)
-    eval_data["party_risk_score"] = risk_data["total_score"]
-    eval_data["deal_size_risk"] = risk_data["deal_size_risk"]
-    eval_data["geography_risk"] = risk_data["geography_risk"]
-    
-    # Check for policy violations
-    policy_flags = []
-    if gross_margin < 15:
-        policy_flags.append("Margin below hard floor (15%)")
-        eval_data["status"] = EvaluationStatus.BLOCKED.value
-    elif gross_margin < 25:
-        policy_flags.append("Margin below soft floor (25%)")
-        eval_data["status"] = EvaluationStatus.APPROVAL_REQUIRED.value
-    
-    if risk_data["total_score"] > 70:
-        policy_flags.append("High risk score")
-        eval_data["status"] = EvaluationStatus.APPROVAL_REQUIRED.value
-    
-    eval_data["policy_flags"] = policy_flags
-    eval_data["approval_required"] = len(policy_flags) > 0 and eval_data.get("status") != EvaluationStatus.BLOCKED.value
-    eval_data["updated_at"] = datetime.now(timezone.utc).isoformat()
-    
-    result = await db.revenue_workflow_evaluations.update_one(
-        {"evaluation_id": evaluation_id},
-        {"$set": eval_data}
-    )
-    if result.matched_count == 0:
+async def update_revenue_evaluation(evaluation_id: str, payload: RevenueEvaluationUpdate, db = Depends(get_db)):
+    """Update core evaluation fields while preserving linked lead and calculated financials"""
+    eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
+    if not eval_data:
         raise HTTPException(status_code=404, detail="Evaluation not found")
+        
+    # Mapping user fields to internal model names
+    update_data = {}
+    if payload.opportunity_name is not None:
+        update_data["opportunity_name"] = payload.opportunity_name
+    if payload.opportunity_value is not None:
+        update_data["expected_deal_value"] = payload.opportunity_value
+    if payload.expected_close_date is not None:
+        update_data["expected_close_date"] = str(payload.expected_close_date)
+    if payload.payment_terms is not None:
+        update_data["proposed_payment_terms"] = payload.payment_terms
+    if payload.commercial_notes is not None:
+        update_data["commercial_notes"] = payload.commercial_notes
+    if payload.internal_notes is not None:
+        update_data["internal_notes"] = payload.internal_notes
+        
+    # Process Items if provided (Bulk Update from Frontend Workspace)
+    if payload.items is not None:
+        processed_items = []
+        for item in payload.items:
+            # 1. Extract inputs with canonical priority
+            qty = item.get("quantity", 1)
+            unit_price = item.get("unit_price", 0)
+            
+            # cost_price priority over expected_cost
+            cost_price = item.get("cost_price", item.get("expected_cost", 0))
+            
+            # discount absolute priority over discount_percent
+            discount = item.get("discount")
+            if discount is None:
+                if "discount_percent" in item:
+                    discount = (item["discount_percent"] / 100) * unit_price * qty
+                else:
+                    discount = 0.0
+            
+            # 2. Re-calculate server-side for truth
+            financials = compute_item_financials(unit_price, cost_price, qty, discount)
+            
+            # 3. Build normalized item doc
+            item_id = item.get("item_id") or f"ITEM-{uuid.uuid4().hex[:8].upper()}"
+            
+            # Maintain identity and merge financials
+            item_doc = {
+                **item, # keep existing metadata
+                "item_id": item_id,
+                **financials
+            }
+            
+            # Ensure audit fields
+            item_doc["cost_source"] = item_doc.get("cost_source", "manual_sync")
+            item_doc["price_source"] = item_doc.get("price_source", "manual_sync")
+            
+            processed_items.append(item_doc)
+            
+        update_data["items"] = processed_items
+
+    if not update_data:
+        return {"success": True, "message": "No changes to update"}
+        
+    # Automatic update for updated_at
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    return {"success": True, "message": "Evaluation updated", "status": eval_data.get("status")}
+    # Perform update
+    await db.revenue_workflow_evaluations.update_one(
+        {"evaluation_id": evaluation_id},
+        {"$set": update_data}
+    )
+    
+    # Trigger Reusable Recalculation Mechanism
+    summary = await recalculate_evaluation_economics(evaluation_id, db)
+    
+    return {
+        "success": True, 
+        "message": "Evaluation updated successfully",
+        "updated_fields": list(update_data.keys()),
+        "evaluation_summary": summary
+    }
+
+@router.patch("/revenue/evaluations/{evaluation_id}/status")
+async def update_evaluation_status(evaluation_id: str, payload: RevenueEvaluationStatusUpdate, db = Depends(get_db)):
+    """Controlled update of evaluation status based on transition rules"""
+    eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
+    if not eval_data:
+        raise HTTPException(status_code=404, detail="Evaluation not found")
+        
+    current_status = eval_data.get("status") or eval_data.get("evaluation_status", "draft")
+    new_status = payload.status.lower().strip()
+    
+    # Define valid transitions
+    # Any active state -> rejected is allowed manually
+    valid_transitions = {
+        "draft": ["in_progress", "rejected"],
+        "in_progress": ["in_review", "rejected"],
+        "in_review": ["ready_for_commit", "rejected"],
+        "ready_for_commit": ["approved", "rejected"],
+        "approved": [], # Final state
+        "rejected": ["draft"] # Allow restart from rejected? User didn't specify, but often helpful. 
+                              # Based on req: draft -> in_progress, etc. 
+                              # Let's stick strictly to req + any->rejected.
+    }
+    
+    # Strict check
+    is_valid = False
+    if new_status == "rejected" and current_status not in ["approved", "rejected"]:
+        is_valid = True
+    elif new_status in valid_transitions.get(current_status, []):
+        is_valid = True
+        
+    if not is_valid:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Invalid status transition from '{current_status}' to '{new_status}'"
+        )
+        
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Update both fields for structural compatibility
+    await db.revenue_workflow_evaluations.update_one(
+        {"evaluation_id": evaluation_id},
+        {"$set": {
+            "evaluation_status": new_status,
+            "status": new_status,
+            "updated_at": now
+        }}
+    )
+    
+    return {
+        "success": True, 
+        "message": f"Status transitioned from {current_status} to {new_status}",
+        "previous_status": current_status,
+        "current_status": new_status
+    }
 
 @router.post("/revenue/evaluations/{evaluation_id}/party/legal-profile/verify")
 async def verify_evaluation_party_legal_profile(
@@ -2259,8 +2795,21 @@ async def submit_evaluation_for_commit(evaluation_id: str, db = Depends(get_db))
     
     if eval_data.get("status") == EvaluationStatus.BLOCKED.value:
         raise HTTPException(status_code=400, detail="Evaluation is blocked and cannot proceed")
+        
+    # Validation constraints
+    if not eval_data.get("items"):
+        raise HTTPException(status_code=400, detail="Evaluation must contain at least one item.")
+        
+    if float(eval_data.get("total_value", 0)) <= 0:
+        raise HTTPException(status_code=400, detail="Evaluation total value must be greater than 0.")
+        
+    if float(eval_data.get("gross_margin_percent", 0)) < 0:
+        raise HTTPException(status_code=400, detail="Evaluation cannot have a negative gross margin.")
     
-    # Check party readiness (Gated server-side)
+    # 0. Proactively Refresh/Recalculate Economy to ensure zero-stale data for governance
+    eval_data = await recalculate_evaluation_economics(evaluation_id, db)
+    
+    # 1. Check party readiness (Gated server-side)
     party_id = eval_data.get("party_id")
     readiness = await validate_party_readiness(party_id, db)
     
