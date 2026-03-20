@@ -20,6 +20,7 @@ CLEARTAX_HOST = os.environ.get("CLEARTAX_HOST", "https://api.cleartax.in")
 CLEARTAX_AUTH_TOKEN = os.environ.get("CLEARTAX_AUTH_TOKEN", "placeholder_token")
 CLEARTAX_TAXABLE_ENTITY_ID = os.environ.get("CLEARTAX_TAXABLE_ENTITY_ID", "placeholder_id")
 ENABLE_CLEARTAX_GST_VERIFY = os.environ.get("ENABLE_CLEARTAX_GST_VERIFY", "false").lower() == "true"
+ALLOW_DEV_GST_BYPASS = os.environ.get("ALLOW_DEV_GST_BYPASS", "false").lower() == "true"
 
 logger = logging.getLogger(__name__)
 
@@ -272,11 +273,11 @@ class RevenueEvaluationUpdate(BaseModel):
     payment_terms: Optional[str] = None
     commercial_notes: Optional[str] = None
     internal_notes: Optional[str] = None
-    # Integration additions
     items: Optional[List[Dict[str, Any]]] = None # Use dict to allow flexibility during migration
     total_value: Optional[float] = None
     gross_margin_percent: Optional[float] = None
-
+    evaluation_scope: Optional[Dict[str, Any]] = None
+    evaluation_costs: Optional[List[Dict[str, Any]]] = None
 class RevenueEvaluationStatusUpdate(BaseModel):
     status: str = Field(..., description="Target status: draft, in_progress, in_review, ready_for_commit, approved, rejected")
 
@@ -369,9 +370,45 @@ class RevenueContractCreate(BaseModel):
 class RevenueHandoffCreate(BaseModel):
     """Handoff Stage - Execution trigger"""
     contract_id: str
-    # Handoff targets
-    operations_notes: Optional[str] = None
     finance_notes: Optional[str] = None
+
+# --- EVALUATE SUBSYSTEM MODELS ---
+class EvaluationScope(BaseModel):
+    scope_id: str
+    evaluation_id: str
+    deliverables: str = ""
+    timeline: str = ""
+    assumptions: Optional[str] = None
+    dependencies: Optional[str] = None
+    created_at: str
+    updated_at: str
+
+class EvaluationCost(BaseModel):
+    cost_id: str
+    evaluation_id: str
+    category: str  # labor, infrastructure, vendor, other
+    description: str
+    amount: float
+    created_at: str
+    updated_at: str
+
+class EvaluationRisk(BaseModel):
+    risk_id: str
+    evaluation_id: str
+    category: str  # customer, operational, commercial, financial
+    risk_score: float
+    reason: str
+    mitigation: Optional[str] = None
+    created_at: str
+    updated_at: str
+
+class EvaluationActivity(BaseModel):
+    activity_id: str
+    evaluation_id: str
+    action: str
+    performed_by: str
+    timestamp: str
+    details: Optional[Dict[str, Any]] = None
 
 # ============== PROCUREMENT MODELS ==============
 
@@ -453,13 +490,13 @@ class ProcureHandoffCreate(BaseModel):
 # ============== MOCK SERVICES ==============
 
 async def cleartax_verify_gstin(gstin: str) -> Dict[str, Any]:
-    """Verify GSTIN using ClearTax API (Hardened - Option 1)"""
+    """Verify GSTIN using ClearTax API with safe response-shape handling"""
     if not ENABLE_CLEARTAX_GST_VERIFY:
         return {
-            "verified": False, 
-            "source": "cleartax", 
-            "reason": ["ClearTax verification disabled"], 
-            "raw": None
+            "verified": False,
+            "source": "cleartax",
+            "reason": ["ClearTax verification disabled"],
+            "raw": None,
         }
 
     url = f"{CLEARTAX_HOST}/gst/api/v0.2/taxable_entities/{CLEARTAX_TAXABLE_ENTITY_ID}/gstin_verification"
@@ -469,42 +506,91 @@ async def cleartax_verify_gstin(gstin: str) -> Dict[str, Any]:
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get(url, headers=headers, params=params)
-            status_code = response.status_code
-            raw_data = response.json()
-            
-            # Robust status extraction (checking nested keys)
-            # ClearTax responses can vary; checking common wrappers
-            data_node = raw_data.get("data") or raw_data.get("result") or raw_data.get("payload") or raw_data
-            sts = str(data_node.get("sts") or data_node.get("status") or "").lower()
-            
-            # Logic: Active AND NOT (Cancelled or Suspended)
-            is_active = "active" in sts
-            is_blocked = any(x in sts for x in ["cancel", "suspend", "inactive"])
-            verified = is_active and not is_blocked
-            
-            logger.info(f"[CLEARTAX_VERIFY] gstin={gstin}, http_status={status_code}, extracted_sts='{sts}', verified={verified}")
-            
+
+        status_code = response.status_code
+        raw_data = response.json()
+
+        logger.info(f"[CLEARTAX_VERIFY] raw_data_type={type(raw_data).__name__} raw_data={raw_data}")
+
+        normalized = None
+
+        if isinstance(raw_data, dict):
+            normalized = raw_data
+        elif isinstance(raw_data, list):
+            if raw_data and isinstance(raw_data[0], dict):
+                normalized = raw_data[0]
+            else:
+                return {
+                    "verified": False,
+                    "source": "cleartax",
+                    "reason": ["Unexpected ClearTax response format: list"],
+                    "raw": raw_data,
+                }
+        else:
             return {
-                "verified": verified,
-                "gstin": gstin,
-                "sts": sts,
-                "lgnm": data_node.get("lgnm"),
-                "tradeNam": data_node.get("tradeNam"),
-                "pradr": data_node.get("pradr"),
-                "rgdt": data_node.get("rgdt"),
-                "cxdt": data_node.get("cxdt"),
+                "verified": False,
                 "source": "cleartax",
-                "raw": raw_data
+                "reason": [f"Unexpected ClearTax response format: {type(raw_data).__name__}"],
+                "raw": raw_data,
             }
+
+        data_node = (
+            normalized.get("data")
+            or normalized.get("result")
+            or normalized.get("payload")
+            or normalized
+        )
+
+        if isinstance(data_node, list):
+            if data_node and isinstance(data_node[0], dict):
+                data_node = data_node[0]
+            else:
+                return {
+                    "verified": False,
+                    "source": "cleartax",
+                    "reason": ["Unexpected ClearTax nested response format"],
+                    "raw": raw_data,
+                }
+
+        if not isinstance(data_node, dict):
+            return {
+                "verified": False,
+                "source": "cleartax",
+                "reason": ["Unexpected ClearTax normalized payload format"],
+                "raw": raw_data,
+            }
+
+        sts = str(data_node.get("sts") or data_node.get("status") or "").lower()
+
+        is_active = "active" in sts
+        is_blocked = any(x in sts for x in ["cancel", "suspend", "inactive"])
+        verified = is_active and not is_blocked
+
+        logger.info(
+            f"[CLEARTAX_VERIFY] gstin={gstin}, http_status={status_code}, extracted_sts='{sts}', verified={verified}"
+        )
+
+        return {
+            "verified": verified,
+            "gstin": gstin,
+            "sts": sts,
+            "lgnm": data_node.get("lgnm"),
+            "tradeNam": data_node.get("tradeNam"),
+            "pradr": data_node.get("pradr"),
+            "rgdt": data_node.get("rgdt"),
+            "cxdt": data_node.get("cxdt"),
+            "source": "cleartax",
+            "raw": raw_data,
+        }
+
     except Exception as e:
         logger.error(f"ClearTax verification failed: {str(e)}")
         return {
             "verified": False,
             "source": "cleartax",
             "reason": [f"API Error: {str(e)}"],
-            "raw": None
+            "raw": None,
         }
-
 async def validate_party_readiness(party_id: str, db) -> Dict[str, Any]:
     """Fetch actual party readiness from DB with strict validation (PROMPT A)"""
     # 1) If party_id is missing: return draft, all flags False, risk_score 0, risk_reasons []
@@ -533,8 +619,19 @@ async def validate_party_readiness(party_id: str, db) -> Dict[str, Any]:
             "risk_reasons": ["Party document not found"]
         }
     
+    logger.info(f"[DEBUG_READINESS] Processing party_id={party_id}")
+    if not isinstance(party, dict):
+        party = {}
+    
     # 3) legal_ok logic MUST be strict: legal_profile.status == "verified" OR legal_ok == True
-    legal_profile = party.get("legal_profile", {})
+    legal_profile = party.get("legal_profile") or {}
+    logger.info(f"[DEBUG_READINESS] type(legal_profile)={type(legal_profile)}")
+    
+    if isinstance(legal_profile, list):
+        legal_profile = legal_profile[0] if legal_profile and isinstance(legal_profile[0], dict) else {}
+    elif not isinstance(legal_profile, dict):
+        legal_profile = {}
+        
     legal_ok = bool((legal_profile.get("status") == "verified") or (party.get("legal_ok") is True))
     
     # 4) tax_ok and compliance_ok come ONLY from DB
@@ -2098,6 +2195,352 @@ async def convert_lead_to_evaluate(lead_id: str, db = Depends(get_db)):
         "status": eval_data["status"]
     }
 
+# --- INTERNAL EVALUATE SUBSYSTEM SERVICES ---
+async def internal_create_evaluation_scope(db, scope_data: EvaluationScope):
+    await db.revenue_workflow_evaluation_scopes.insert_one(scope_data.model_dump() if hasattr(scope_data, "model_dump") else scope_data.dict())
+    return scope_data
+
+async def internal_get_evaluation_scope(db, evaluation_id: str):
+    return await db.revenue_workflow_evaluation_scopes.find_one({"evaluation_id": evaluation_id}, {"_id": 0})
+
+async def internal_update_evaluation_scope(db, evaluation_id: str, updates: dict):
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.revenue_workflow_evaluation_scopes.update_one(
+        {"evaluation_id": evaluation_id},
+        {"$set": updates},
+        upsert=True
+    )
+
+async def internal_add_evaluation_cost(db, cost_data: EvaluationCost):
+    await db.revenue_workflow_evaluation_costs.insert_one(cost_data.model_dump() if hasattr(cost_data, "model_dump") else cost_data.dict())
+    return cost_data
+
+async def internal_get_evaluation_costs(db, evaluation_id: str):
+    return await db.revenue_workflow_evaluation_costs.find({"evaluation_id": evaluation_id}, {"_id": 0}).to_list(1000)
+
+async def internal_add_evaluation_risk(db, risk_data: EvaluationRisk):
+    await db.revenue_workflow_evaluation_risks.insert_one(risk_data.model_dump() if hasattr(risk_data, "model_dump") else risk_data.dict())
+    return risk_data
+
+async def internal_get_evaluation_risks(db, evaluation_id: str):
+    return await db.revenue_workflow_evaluation_risks.find({"evaluation_id": evaluation_id}, {"_id": 0}).to_list(1000)
+
+async def internal_log_evaluation_activity(db, activity_data: EvaluationActivity):
+    await db.revenue_workflow_evaluation_activities.insert_one(activity_data.model_dump() if hasattr(activity_data, "model_dump") else activity_data.dict())
+    return activity_data
+
+async def internal_get_evaluation_activities(db, evaluation_id: str):
+    return await db.revenue_workflow_evaluation_activities.find({"evaluation_id": evaluation_id}, {"_id": 0}).sort("timestamp", -1).to_list(1000)
+
+async def compute_evaluation_risk(evaluation_id: str, db):
+    """
+    Structured 4-part risk engine (Customer, Operational, Commercial, Financial).
+    Heuristic-based scoring (0-100).
+    """
+    eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
+    if not eval_data:
+        return None
+        
+    scope = await internal_get_evaluation_scope(db, evaluation_id) or {}
+    items = eval_data.get("items", [])
+    
+    party_id = eval_data.get("party_id")
+    party_readiness = await validate_party_readiness(party_id, db) if party_id else {}
+    
+    reasons = []
+    now_str = datetime.now(timezone.utc).isoformat()
+    
+    # 1. Customer Risk (20%)
+    c_score = 10.0 # Baseline
+    if not party_readiness.get("legal_ok"):
+        c_score += 30
+        reasons.append({"category": "customer", "factor": "Legal profile not verified", "impact": 30})
+    if not party_readiness.get("tax_ok"):
+        c_score += 30
+        reasons.append({"category": "customer", "factor": "Tax profile not verified", "impact": 30})
+    if not party_readiness.get("compliance_ok"):
+        c_score += 20
+        reasons.append({"category": "customer", "factor": "Compliance profile not verified", "impact": 20})
+        
+    if party_readiness.get("risk_score", 0) > 50:
+        c_score += 10 # Reduced penalty if verification is done
+        reasons.append({"category": "customer", "factor": "High party-level risk detected", "impact": 10})
+    c_score = min(100, c_score)
+
+    # 2. Operational Risk (25%)
+    o_score = 15.0
+    if not scope:
+        o_score += 25
+        reasons.append({"category": "operational", "factor": "Missing project scope definition", "impact": 25})
+    else:
+        timeline = (scope.get("timeline") or "").lower()
+        if any(w in timeline for w in ["immediate", "urgent", "asap", "1 week"]):
+            o_score += 20
+            reasons.append({"category": "operational", "factor": "Aggressive delivery timeline", "impact": 20})
+        if scope.get("dependencies"):
+            o_score += 15
+            reasons.append({"category": "operational", "factor": "External dependencies identified", "impact": 15})
+    
+    if len(items) > 10:
+        o_score += 10
+        reasons.append({"category": "operational", "factor": "High item count increases complexity", "impact": 10})
+    o_score = min(100, o_score)
+
+    # 3. Commercial Risk (30%)
+    m_percent = eval_data.get("gross_margin_percent", 0)
+    com_score = 10.0
+    if m_percent < 15:
+        com_score = 80.0
+        reasons.append({"category": "commercial", "factor": "Aggressive pricing (Margin < 15%)", "impact": 70})
+    elif m_percent < 25:
+        com_score = 40.0
+        reasons.append({"category": "commercial", "factor": "Thin margins (15-25%)", "impact": 30})
+        
+    total_discount = sum(item.get("discount", 0) for item in items)
+    total_rev = eval_data.get("total_value", 0)
+    if total_rev > 0 and (total_discount / total_rev) > 0.2:
+        com_score += 15
+        reasons.append({"category": "commercial", "factor": "Heavy discounting (>20%)", "impact": 15})
+    com_score = min(100, com_score)
+
+    # 4. Financial Exposure Risk (25%)
+    f_score = 10.0
+    if total_rev > 5000000:
+        f_score += 40
+        reasons.append({"category": "financial", "factor": "High deal value exposure", "impact": 40})
+    elif total_rev > 1000000:
+        f_score += 20
+        reasons.append({"category": "financial", "factor": "Significant deal value", "impact": 20})
+        
+    if m_percent < 10 and total_rev > 1000000:
+        f_score += 20
+        reasons.append({"category": "financial", "factor": "High value with critically low margin", "impact": 20})
+    f_score = min(100, f_score)
+
+    # Overall Weighted Score
+    overall_score = round(
+        (c_score * 0.20) +
+        (o_score * 0.25) +
+        (com_score * 0.30) +
+        (f_score * 0.25)
+    )
+    
+    # Risk Level Mapping
+    risk_level = "low"
+    if overall_score >= 75: risk_level = "critical"
+    elif overall_score >= 50: risk_level = "high"
+    elif overall_score >= 25: risk_level = "moderate"
+    
+    # Persist Category Risks
+    categories = {
+        "customer": {"score": c_score, "desc": "Customer profiling & readiness risk"},
+        "operational": {"score": o_score, "desc": "Scope, timeline & complexity risk"},
+        "commercial": {"score": com_score, "desc": "Margin & pricing strategy risk"},
+        "financial": {"score": f_score, "desc": "Deal size & exposure risk"}
+    }
+    
+    for cat, data in categories.items():
+        risk_record = EvaluationRisk(
+            risk_id=f"RISK-{uuid.uuid4().hex[:8].upper()}",
+            evaluation_id=evaluation_id,
+            category=cat,
+            risk_score=data["score"],
+            reason=data["desc"],
+            created_at=now_str,
+            updated_at=now_str
+        )
+        # Upsert by category
+        await db.revenue_workflow_evaluation_risks.update_one(
+            {"evaluation_id": evaluation_id, "category": cat},
+            {"$set": risk_record.model_dump() if hasattr(risk_record, "model_dump") else risk_record.dict()},
+            upsert=True
+        )
+        
+    # Update Main Record
+    await db.revenue_workflow_evaluations.update_one(
+        {"evaluation_id": evaluation_id},
+        {"$set": {
+            "risk_score": overall_score,
+            "risk_level": risk_level,
+            "party_risk_score": c_score, # Synchronous update of customer risk on main record
+            "updated_at": now_str
+        }}
+    )
+    
+    # Log Activity
+    activity = EvaluationActivity(
+        activity_id=f"ACT-{uuid.uuid4().hex[:8].upper()}",
+        evaluation_id=evaluation_id,
+        action="risk_recalculated",
+        performed_by="system",
+        timestamp=now_str,
+        details={
+            "overall_score": overall_score,
+            "risk_level": risk_level,
+            "top_reasons": sorted(reasons, key=lambda x: x["impact"], reverse=True)[:3]
+        }
+    )
+    await internal_log_evaluation_activity(db, activity)
+    
+    return {
+        "overall_score": overall_score,
+        "overall_level": risk_level,
+        "breakdown": {
+            "customer_risk": c_score,
+            "operational_risk": o_score,
+            "commercial_risk": com_score,
+            "financial_exposure_risk": f_score
+        },
+        "reasons": sorted(reasons, key=lambda x: x["impact"], reverse=True)
+    }
+
+async def internal_validate_evaluation_policies(db, evaluation_id: str):
+    """
+    Governance layer: Margin, Discount, and Exposure checks.
+    """
+    eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
+    if not eval_data:
+        return None
+        
+    items = eval_data.get("items", [])
+    margin_percent = eval_data.get("gross_margin_percent", 0.0)
+    total_rev = eval_data.get("total_value", 0.0)
+    
+    # 1. Margin Policy (min 25%)
+    m_threshold = 25.0
+    m_status = "pass" if margin_percent >= m_threshold else "fail"
+    m_msg = "Margin meets minimum threshold" if m_status == "pass" else f"Margin {margin_percent}% is below required {m_threshold}%"
+    
+    # 2. Discount Policy (max 20% individual item discount)
+    d_threshold = 20.0
+    max_d_found = 0.0
+    for item in items:
+        u_p = float(item.get("unit_price") or 0)
+        qty = int(item.get("quantity") or 1)
+        disc = float(item.get("discount") or 0)
+        base = u_p * qty
+        if base > 0:
+            eff_d = (disc / base) * 100
+            max_d_found = max(max_d_found, eff_d)
+            
+    d_status = "pass"
+    if max_d_found > d_threshold:
+        d_status = "warning"
+    if max_d_found > 30: # Hard limit for fail
+        d_status = "fail"
+        
+    d_msg = f"Highest discount {round(max_d_found, 1)}% is within limits" if d_status == "pass" else f"Highest discount {round(max_d_found, 1)}% exceeds threshold of {d_threshold}%"
+
+    # 3. Exposure Policy (max 5M total value)
+    e_threshold = 5000000.0
+    e_status = "pass" if total_rev <= e_threshold else "fail"
+    e_msg = "Exposure within allowed limits" if e_status == "pass" else f"Deal value ₹{total_rev} exceeds exposure limit of ₹{e_threshold}"
+
+    policy_validation = {
+        "margin_policy": {"status": m_status, "threshold": m_threshold, "actual": margin_percent, "message": m_msg},
+        "discount_policy": {"status": d_status, "threshold": d_threshold, "actual": round(max_d_found, 1), "message": d_msg},
+        "exposure_policy": {"status": e_status, "threshold": e_threshold, "actual": total_rev, "message": e_msg}
+    }
+    
+    # Persist
+    await db.revenue_workflow_evaluations.update_one(
+        {"evaluation_id": evaluation_id},
+        {"$set": {"policy_validation": policy_validation}}
+    )
+    
+    # Activity Log
+    now_str = datetime.now(timezone.utc).isoformat()
+    activity = EvaluationActivity(
+        activity_id=f"ACT-{uuid.uuid4().hex[:8].upper()}",
+        evaluation_id=evaluation_id,
+        action="policy_validated",
+        performed_by="system",
+        timestamp=now_str,
+        details={
+            "summary": f"M:{m_status}, D:{d_status}, E:{e_status}",
+            "results": policy_validation
+        }
+    )
+    await internal_log_evaluation_activity(db, activity)
+    
+    return policy_validation
+
+async def internal_compute_evaluation_decision(db, evaluation_id: str):
+    """
+    Recommendation Engine: Send to Commit | Revise | Reject
+    """
+    eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
+    if not eval_data:
+        return None
+        
+    margin = eval_data.get("gross_margin_percent", 0.0)
+    risk_score = eval_data.get("risk_score", 0)
+    risk_level = eval_data.get("risk_level", "low")
+    policy = eval_data.get("policy_validation") or {}
+    
+    reasons = []
+    recommendation = "send_to_commit"
+    
+    # 1. Reject Logic (Gross margin <= 0 is non-negotiable rejection)
+    if (margin <= 0 or 
+        (policy.get("margin_policy") or {}).get("status") == "fail" or
+        (policy.get("exposure_policy") or {}).get("status") == "fail" or
+        risk_level == "critical"):
+        recommendation = "reject"
+        if margin <= 0: reasons.append("Non-positive gross margin detected")
+        if (policy.get("margin_policy") or {}).get("status") == "fail": reasons.append("Margin below critical policy threshold")
+        if (policy.get("exposure_policy") or {}).get("status") == "fail": reasons.append("Exposure exceeds financial limits")
+        if risk_level == "critical": reasons.append("Critical risk factors identified")
+        
+    # 2. Revise Logic (if not rejected)
+    elif (risk_score >= 50 or 
+          (policy.get("discount_policy") or {}).get("status") in ["warning", "fail"]):
+        recommendation = "revise"
+        if risk_score >= 50: reasons.append("High overall risk score")
+        if (policy.get("discount_policy") or {}).get("status") in ["warning", "fail"]: reasons.append("Aggressive discounting requires revision")
+
+    # 3. Default Pass
+    if recommendation == "send_to_commit":
+        reasons.append("All baseline policies and risk levels cleared")
+
+    # Approval required flag
+    approval_required = (recommendation == "revise" or 
+                         risk_level in ["high", "critical"] or 
+                         any(p.get("status") in ["warning", "fail"] for p in policy.values() if isinstance(p, dict)))
+
+    decision_summary = {
+        "recommendation": recommendation,
+        "can_submit": recommendation != "reject", # Loss-making or critical failures block submission
+        "approval_required": approval_required,
+        "reasons": reasons[:4] # Top 4
+    }
+    
+    # Persist
+    await db.revenue_workflow_evaluations.update_one(
+        {"evaluation_id": evaluation_id},
+        {"$set": {"decision_summary": decision_summary}}
+    )
+    
+    # Activity Log
+    now_str = datetime.now(timezone.utc).isoformat()
+    old_summary = eval_data.get("decision_summary")
+    if not old_summary or old_summary.get("recommendation") != recommendation:
+        activity = EvaluationActivity(
+            activity_id=f"ACT-{uuid.uuid4().hex[:8].upper()}",
+            evaluation_id=evaluation_id,
+            action="decision_updated",
+            performed_by="system",
+            timestamp=now_str,
+            details={
+                "previous": old_summary.get("recommendation") if old_summary else None,
+                "new": recommendation,
+                "reasons": reasons[:4]
+            }
+        )
+        await internal_log_evaluation_activity(db, activity)
+
+    return decision_summary
+
 # --- EVALUATION STAGE ---
 
 @router.get("/revenue/evaluations")
@@ -2118,7 +2561,18 @@ async def get_revenue_evaluation(evaluation_id: str, db = Depends(get_db)):
     items = eval_data.get("items", [])
     selected_items_count = sum(item.get("quantity", 1) for item in items)
     
-    return {
+    party_id = eval_data.get("party_id")
+    party_readiness = await validate_party_readiness(party_id, db) if party_id else None
+    
+    risk_assessment = {
+        "total_score": party_readiness.get("risk_score", 0) if party_readiness else 0,
+        "deal_size_risk": eval_data.get("deal_size_risk", "low"),
+        "geography_risk": eval_data.get("geography_risk", "low"),
+        "concentration_risk": eval_data.get("concentration_risk", "low"),
+    }
+    
+    # Subsystem Integrations
+    res = {
         "success": True,
         
         # Core & Linked info
@@ -2152,8 +2606,42 @@ async def get_revenue_evaluation(evaluation_id: str, db = Depends(get_db)):
         
         # Keep original data for backward compatibility in UI temporarily
         "evaluation": eval_data,
-        "items": items
+        "items": items,
+        
+        # Risk & Readiness Data
+        "party_readiness": party_readiness,
+        "risk_assessment": risk_assessment,
+        
+        # Subsystem Integrations
+        "evaluation_scope": await internal_get_evaluation_scope(db, evaluation_id),
+        "evaluation_costs": await internal_get_evaluation_costs(db, evaluation_id),
+        
+        # Risk Subsystem
+        "risk_summary": {
+            "overall_score": eval_data.get("risk_score", 0),
+            "overall_level": eval_data.get("risk_level", "low")
+        },
+        "risk_breakdown": {
+            "customer_risk": (await db.revenue_workflow_evaluation_risks.find_one({"evaluation_id": evaluation_id, "category": "customer"}) or {}).get("risk_score", 0),
+            "operational_risk": (await db.revenue_workflow_evaluation_risks.find_one({"evaluation_id": evaluation_id, "category": "operational"}) or {}).get("risk_score", 0),
+            "commercial_risk": (await db.revenue_workflow_evaluation_risks.find_one({"evaluation_id": evaluation_id, "category": "commercial"}) or {}).get("risk_score", 0),
+            "financial_exposure_risk": (await db.revenue_workflow_evaluation_risks.find_one({"evaluation_id": evaluation_id, "category": "financial"}) or {}).get("risk_score", 0)
+        },
+        "risk_reasons": [],
+        "policy_validation": eval_data.get("policy_validation"),
+        "decision_summary": eval_data.get("decision_summary")
     }
+    
+    # Enrich reasons from latest activity if missing
+    if not res.get("risk_reasons"):
+        latest_act = await db.revenue_workflow_evaluation_activities.find_one(
+            {"evaluation_id": evaluation_id, "action": "risk_recalculated"},
+            sort=[("timestamp", -1)]
+        )
+        if latest_act and latest_act.get("details"):
+            res["risk_reasons"] = latest_act["details"].get("top_reasons", [])
+            
+    return res
 
 # --- LEGACY ALIAS ROUTES ---
 
@@ -2207,7 +2695,13 @@ async def recalculate_evaluation_economics(evaluation_id: str, db):
     # 1. Calculation Formulas per requirements (prefer new fields, fallback for legacy)
     selected_items_count = sum(i.get("quantity", 0) for i in items)
     estimated_revenue = sum(float(i.get("total_price") if "total_price" in i else i.get("line_total", 0)) for i in items)
-    estimated_cost = sum(float(i.get("total_cost") if "total_cost" in i else i.get("estimated_cost", 0)) for i in items)
+    
+    # Structured Costs support
+    item_costs = sum(float(i.get("total_cost") if "total_cost" in i else i.get("estimated_cost", 0)) for i in items)
+    structured_costs_list = await db.revenue_workflow_evaluation_costs.find({"evaluation_id": evaluation_id}).to_list(100)
+    structured_costs_total = sum(float(float(c.get("amount", 0))) for c in structured_costs_list)
+    
+    estimated_cost = round(item_costs + structured_costs_total, 2)
     
     gross_profit = round(estimated_revenue - estimated_cost, 2)
     gross_margin_percent = round((gross_profit / estimated_revenue * 100), 2) if estimated_revenue > 0 else 0
@@ -2237,6 +2731,10 @@ async def recalculate_evaluation_economics(evaluation_id: str, db):
         {"evaluation_id": evaluation_id},
         {"$set": summary_data}
     )
+    
+    # Trigger Risk & Decision Re-calculation
+    await compute_evaluation_risk(evaluation_id, db)
+    await internal_compute_evaluation_decision(db, evaluation_id)
     
     return summary_data
 
@@ -2540,17 +3038,96 @@ async def update_revenue_evaluation(evaluation_id: str, payload: RevenueEvaluati
             
         update_data["items"] = processed_items
 
-    if not update_data:
-        return {"success": True, "message": "No changes to update"}
-        
     # Automatic update for updated_at
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
+    # Scope Management Integration
+    scope_action_taken = None
+    if payload.evaluation_scope is not None:
+        existing_scope = await internal_get_evaluation_scope(db, evaluation_id)
+        now_str = datetime.now(timezone.utc).isoformat()
+        if existing_scope:
+            await internal_update_evaluation_scope(db, evaluation_id, payload.evaluation_scope)
+            scope_action_taken = "scope_updated"
+        else:
+            new_scope = EvaluationScope(
+                scope_id=f"SCOPE-{uuid.uuid4().hex[:8].upper()}",
+                evaluation_id=evaluation_id,
+                deliverables=payload.evaluation_scope.get("deliverables", ""),
+                timeline=payload.evaluation_scope.get("timeline", ""),
+                assumptions=payload.evaluation_scope.get("assumptions"),
+                dependencies=payload.evaluation_scope.get("dependencies"),
+                created_at=now_str,
+                updated_at=now_str
+            )
+            await internal_create_evaluation_scope(db, new_scope)
+            scope_action_taken = "scope_created"
+            
+        # Log Activity
+        activity = EvaluationActivity(
+            activity_id=f"ACT-{uuid.uuid4().hex[:8].upper()}",
+            evaluation_id=evaluation_id,
+            action=scope_action_taken,
+            performed_by="system", # TODO: Get from auth context when available
+            timestamp=now_str,
+            details={"updated_fields": list(payload.evaluation_scope.keys())}
+        )
+        await internal_log_evaluation_activity(db, activity)
+
+    # Structured Costs Integration
+    costs_action_taken = None
+    if payload.evaluation_costs is not None:
+        now_str = datetime.now(timezone.utc).isoformat()
+        # Fetch existing to decide update vs create
+        existing_costs = await internal_get_evaluation_costs(db, evaluation_id)
+        existing_map = {c["category"]: c for c in existing_costs}
+        
+        changed_categories = []
+        for cost_item in payload.evaluation_costs:
+            cat = cost_item.get("category")
+            if not cat: continue
+            
+            amount = float(cost_item.get("amount", 0))
+            if cat in existing_map:
+                await db.revenue_workflow_evaluation_costs.update_one(
+                    {"evaluation_id": evaluation_id, "category": cat},
+                    {"$set": {
+                        "amount": amount,
+                        "description": cost_item.get("description", f"{cat.capitalize()} cost"),
+                        "updated_at": now_str
+                    }}
+                )
+            else:
+                new_cost = EvaluationCost(
+                    cost_id=f"COST-{uuid.uuid4().hex[:8].upper()}",
+                    evaluation_id=evaluation_id,
+                    category=cat,
+                    description=cost_item.get("description", f"{cat.capitalize()} cost"),
+                    amount=amount,
+                    created_at=now_str,
+                    updated_at=now_str
+                )
+                await internal_add_evaluation_cost(db, new_cost)
+            changed_categories.append(cat)
+        
+        costs_action_taken = "costs_updated"
+        # Log Activity for costs
+        cost_activity = EvaluationActivity(
+            activity_id=f"ACT-{uuid.uuid4().hex[:8].upper()}",
+            evaluation_id=evaluation_id,
+            action=costs_action_taken,
+            performed_by="system",
+            timestamp=now_str,
+            details={"changed_categories": changed_categories}
+        )
+        await internal_log_evaluation_activity(db, cost_activity)
+
     # Perform update
-    await db.revenue_workflow_evaluations.update_one(
-        {"evaluation_id": evaluation_id},
-        {"$set": update_data}
-    )
+    if update_data:
+        await db.revenue_workflow_evaluations.update_one(
+            {"evaluation_id": evaluation_id},
+            {"$set": update_data}
+        )
     
     # Trigger Reusable Recalculation Mechanism
     summary = await recalculate_evaluation_economics(evaluation_id, db)
@@ -2559,6 +3136,7 @@ async def update_revenue_evaluation(evaluation_id: str, payload: RevenueEvaluati
         "success": True, 
         "message": "Evaluation updated successfully",
         "updated_fields": list(update_data.keys()),
+        "scope_action": scope_action_taken,
         "evaluation_summary": summary
     }
 
@@ -2640,6 +3218,15 @@ async def verify_evaluation_party_legal_profile(
     # 2. ClearTax Verification
     verification = await cleartax_verify_gstin(payload.gst)
     
+    if not verification.get("verified") and ALLOW_DEV_GST_BYPASS:
+        logger.warning(
+            f"[DEV_GST_BYPASS] Allowing GST verify for gstin={payload.gst} in non-production mode"
+        )
+        verification["verified"] = True
+        verification["source"] = "dev_bypass"
+        verification["reason"] = ["GST verification bypassed in development"]
+        verification["sts"] = verification.get("sts") or "dev_bypass"
+    
     return {
         "success": True,
         "verified": verification["verified"],
@@ -2669,7 +3256,14 @@ async def update_evaluation_party_legal_profile(
     # 2. Re-verify ClearTax (Fool-proof)
     verification = await cleartax_verify_gstin(payload.gst)
     if not verification["verified"]:
-        raise HTTPException(status_code=400, detail="GSTIN could not be verified as Active.")
+        if ALLOW_DEV_GST_BYPASS:
+            logger.warning(f"[DEV_GST_BYPASS] Allowing GST save for gstin={payload.gst} in non-production mode")
+            verification["verified"] = True
+            verification["source"] = "dev_bypass"
+            verification["reason"] = ["GST verification bypassed in development"]
+            verification["sts"] = verification.get("sts") or "dev_bypass"
+        else:
+            raise HTTPException(status_code=400, detail="GSTIN could not be verified as Active.")
 
     # 3. Load Evaluation
     eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
@@ -2706,13 +3300,16 @@ async def update_evaluation_party_legal_profile(
             "$set": {
                 "legal_profile": legal_profile,
                 "legal_ok": True,
-                "risk_score": 52,
+                "risk_score": 45, # Reduced from 52 to reflect successful verification
                 "risk_reasons": ["Industry moderate risk", "Indian entity verified"],
                 "updated_at": now
             }
         },
         upsert=True
     )
+
+    # 4.5 Trigger Risk Re-calculation for this specific evaluation
+    await compute_evaluation_risk(evaluation_id, db)
 
     # 5. Return updated readiness by calling validate_party_readiness after update
     party_readiness = await validate_party_readiness(party_id, db)
@@ -2754,6 +3351,11 @@ async def verify_party_tax(
         upsert=True
     )
 
+    # Trigger Risk Re-calculation for all evaluations linked to this party
+    evaluations = await db.revenue_workflow_evaluations.find({"party_id": party_id}).to_list(100)
+    for ev in evaluations:
+        await compute_evaluation_risk(ev["evaluation_id"], db)
+
     party_readiness = await validate_party_readiness(party_id, db)
     return {"success": True, "party_readiness": party_readiness}
 
@@ -2783,6 +3385,11 @@ async def verify_party_compliance(
         upsert=True
     )
 
+    # Trigger Risk Re-calculation for all evaluations linked to this party
+    evaluations = await db.revenue_workflow_evaluations.find({"party_id": party_id}).to_list(100)
+    for ev in evaluations:
+        await compute_evaluation_risk(ev["evaluation_id"], db)
+
     party_readiness = await validate_party_readiness(party_id, db)
     return {"success": True, "party_readiness": party_readiness}
 
@@ -2807,23 +3414,23 @@ async def submit_evaluation_for_commit(evaluation_id: str, db = Depends(get_db))
         raise HTTPException(status_code=400, detail="Evaluation cannot have a negative gross margin.")
     
     # 0. Proactively Refresh/Recalculate Economy to ensure zero-stale data for governance
-    eval_data = await recalculate_evaluation_economics(evaluation_id, db)
+    await recalculate_evaluation_economics(evaluation_id, db)
+    
+    # Re-fetch evaluation to get updated economics while securing party_id, lead_id, etc.
+    eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
     
     # 1. Check party readiness (Gated server-side)
     party_id = eval_data.get("party_id")
     readiness = await validate_party_readiness(party_id, db)
     
     if not readiness.get("legal_ok"):
-        raise HTTPException(
-            status_code=400, 
-            detail="Legal profile not verified. Complete Legal Profile to proceed."
-        )
-    
-    if readiness.get("status") != "verified":
-        raise HTTPException(
-            status_code=400, 
-            detail="Party not verified (legal/tax/compliance incomplete)."
-        )
+        raise HTTPException(status_code=400, detail="Legal profile not verified")
+
+    if not readiness.get("tax_ok"):
+        raise HTTPException(status_code=400, detail="Tax profile not verified")
+
+    if not readiness.get("compliance_ok"):
+        raise HTTPException(status_code=400, detail="Compliance not verified")
     
     now = datetime.now(timezone.utc).isoformat()
     
