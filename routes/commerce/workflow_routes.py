@@ -4,8 +4,9 @@ Full enterprise-grade implementation with stage transitions, governance, and app
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Query, Header, UploadFile, File
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 from datetime import datetime, timezone, timedelta,date
 from enum import Enum
 import logging
@@ -165,6 +166,22 @@ class LeadStage(str, Enum):
     CONTACTED = "contacted"
     QUALIFIED = "qualified"
     DISQUALIFIED = "disqualified"
+
+
+class MainStage(str, Enum):
+    LEAD = "lead"
+    EVALUATE = "evaluate"
+    COMMIT = "commit"
+    CONTRACT = "contract"
+    HANDOFF = "handoff"
+
+
+class EvaluateStage(str, Enum):
+    EXPLORE = "explore"
+    DEFINE = "define"
+    FIT = "fit"
+    SCOPE = "scope"
+    PROPOSE = "propose"
 
 class EvaluationStatus(str, Enum):
     DRAFT = "draft"
@@ -409,6 +426,47 @@ class EvaluationActivity(BaseModel):
     performed_by: str
     timestamp: str
     details: Optional[Dict[str, Any]] = None
+
+
+class EvaluationData(BaseModel):
+    """Structured evaluation data for multi-stage workflow"""
+    explore: Dict[str, Any] = Field(default_factory=lambda: {
+        "problem_statement": "",
+        "business_goal": "",
+        "stakeholder_status": ""
+    })
+    define: Dict[str, Any] = Field(default_factory=lambda: {
+        "solution_type": "",
+        "estimated_users": 0,
+        "departments": [],
+        "complexity": "low"
+    })
+    fit: Dict[str, Any] = Field(default_factory=lambda: {
+        "product_interest": "",
+        "demo_completed": False,
+        "client_feedback": ""
+    })
+    scope: Dict[str, Any] = Field(default_factory=lambda: {
+        "deal_size": 0.0,
+        "timeline": "",
+        "decision_maker": "",
+        "budget": "unknown"
+    })
+    propose: Dict[str, Any] = Field(default_factory=lambda: {
+        "proposed_product": "",
+        "proposal_quantity": 1,
+        "proposal_sent_date": None,
+        "client_status": "pending"
+    })
+
+
+class EvaluateStageUpdate(BaseModel):
+    evaluate_stage: EvaluateStage
+
+
+class EvaluationDataUpdate(BaseModel):
+    stage: EvaluateStage
+    data: Dict[str, Any]
 
 # ============== PROCUREMENT MODELS ==============
 
@@ -1716,6 +1774,10 @@ async def get_revenue_lead(lead_id: str, db = Depends(get_db)):
 
     # Recompute computed fields on the fly for detail view accuracy
     lead = _compute_lead_fields(lead)
+    if lead.get("evaluation_data"):
+        # The helper should be available globally
+        lead["evaluation_data"] = _normalize_evaluation_dict(lead["evaluation_data"])
+        
     return {"success": True, "lead": lead}
 
 @router.get("/revenue/leads/{lead_id}/activities")
@@ -2029,13 +2091,61 @@ async def update_lead_status(lead_id: str, req: RevenueStatusUpdate, db = Depend
             }
 
     # Execute update
+    update_doc: Dict[str, Any] = {
+        "stage": new_status,
+        "updated_at": now_iso,
+        "qualification_override": req.force
+    }
+    
+    # Transition Logic: If qualified, move to 'evaluate' main stage
+    if new_status == "qualified":
+        update_doc["main_stage"] = MainStage.EVALUATE
+        update_doc["evaluate_stage"] = EvaluateStage.EXPLORE
+        # Initialize evaluation_data if not present
+        if not lead.get("evaluation_data"):
+             update_doc["evaluation_data"] = EvaluationData().dict()
+    
+    # NEW Phase 3 Logic: Transition from Evaluate to Commit
+    if new_status == "commit":
+        current_main = lead.get("main_stage")
+        if current_main != MainStage.EVALUATE:
+            raise HTTPException(status_code=400, detail="Leads must be in Evaluate stage before moving to Commit.")
+        
+        current_eval_stage = _normalize_evaluate_stage(lead.get("evaluate_stage") or "propose")
+        # Be defensive
+        raw_eval_data = lead.get("evaluation_data")
+        eval_data = raw_eval_data if isinstance(raw_eval_data, dict) else {}
+        
+        # Final validation of entire evaluate workflow before allowing COMMIT
+
+        # Final validation of entire evaluate workflow before allowing COMMIT
+        is_valid, error_detail, missing_fields = _validate_evaluation_progression(eval_data, current_eval_stage, target_stage=None)
+        if not is_valid:
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "detail": error_detail,
+                    "missing_fields": missing_fields,
+                    "error_type": "VALIDATION_ERROR"
+                }
+            )
+            
+        update_doc["main_stage"] = MainStage.COMMIT
+        
+        # Insert activity for Move to Commit
+        await db.revenue_workflow_activities.insert_one({
+            "lead_id": lead_id,
+            "type": "status_change",
+            "summary": "Lead moved to Commit stage",
+            "description": f"Evaluation completed and lead progressed to {MainStage.COMMIT}.",
+            "performed_by": "User",
+            "created_at": now_iso
+        })
+    
     await db.revenue_workflow_leads.update_one(
         {"lead_id": lead_id},
-        {"$set": {
-            "stage": new_status,
-            "updated_at": now_iso,
-            "qualification_override": req.force
-        }}
+        {"$set": update_doc}
     )
     
     # Audit Log
@@ -2050,6 +2160,216 @@ async def update_lead_status(lead_id: str, req: RevenueStatusUpdate, db = Depend
     })
     
     return {"success": True, "message": f"Stage updated to {new_status}"}
+
+
+def _normalize_evaluate_stage(s: Any) -> str:
+    """Safely convert any stage input (Enum, Enum-string, or plain string) to lowercase value."""
+    if s is None: return "explore"
+    # 1. Enum object: EvaluateStage.DEFINE -> "define"
+    if hasattr(s, 'value'): return str(s.value).lower()
+    
+    # 2. String representation of Enum: "EvaluateStage.DEFINE" -> "define"
+    s_str = str(s).lower()
+    if "." in s_str:
+        return s_str.split(".")[-1]
+        
+    # 3. Plain string: "define" -> "define"
+    return s_str
+
+def _normalize_evaluation_dict(eval_data: Any) -> Dict[str, Any]:
+    """
+    Safe merge strategy: Convert all keys to normalized lowercase.
+    If both 'explore' and 'EvaluateStage.EXPLORE' exist, 'explore' takes precedence.
+    """
+    if not isinstance(eval_data, dict): return {}
+    
+    normalized = {}
+    valid_stages = ["explore", "define", "fit", "scope", "propose"]
+    
+    # 1. First Pass: Initialize with known lowercase keys if they exist
+    for stage in valid_stages:
+        if stage in eval_data:
+            normalized[stage] = eval_data[stage]
+    
+    # 2. Second Pass: Fill missing normalized keys from legacy sources
+    for k, v in eval_data.items():
+        norm_k = _normalize_evaluate_stage(k)
+        if norm_k in valid_stages and norm_k not in normalized:
+            logger.info(f"[LEGACY_MERGE] Mapping {k} data to {norm_k}")
+            normalized[norm_k] = v
+            
+    return normalized
+
+
+def _validate_evaluation_progression(eval_data: dict, current_stage: Any, target_stage: Any = None) -> Tuple[bool, str, List[str]]:
+    """
+    Validate if the lead can progress from current_stage to target_stage (or to COMMIT if target_stage is None).
+    Returns (is_valid, error_detail, missing_fields).
+    """
+    # Use strings as keys for consistency
+    validation_map = {
+        "explore": ["problem_statement", "business_goal", "stakeholder_status"],
+        "define": ["solution_type", "estimated_users", "departments", "complexity"],
+        "fit": ["product_interest", "demo_completed", "client_feedback"],
+        "scope": ["deal_size", "timeline", "decision_maker", "budget"],
+        "propose": ["proposed_product", "proposal_quantity", "proposal_sent_date", "client_status"]
+    }
+
+    stages_order = ["explore", "define", "fit", "scope", "propose"]
+
+    logger.debug(f"Validating evaluate progression: current={current_stage}, target={target_stage}, data_keys={list(eval_data.keys())}")
+    
+    # Normalize all inputs to plain values using helper
+    # Defensive: Normalize the entire dict first to handle legacy keys
+    eval_data = _normalize_evaluation_dict(eval_data)
+    
+    curr_val = _normalize_evaluate_stage(current_stage)
+    
+    try:
+        current_idx = stages_order.index(curr_val)
+        
+        if target_stage:
+            target_val = _normalize_evaluate_stage(target_stage)
+            target_idx = stages_order.index(target_val)
+        else:
+            # Moving to COMMIT (end of workflow)
+            target_idx = len(stages_order)
+            target_val = "commit"
+    except ValueError:
+        logger.error(f"Invalid stage transition values: current='{current_stage}' (normalized='{curr_val}'), target='{target_stage}'")
+        return False, f"Invalid stage transition: '{current_stage}' or '{target_stage}' not recognized.", []
+
+    if target_idx > current_idx:
+        all_missing = []
+        # Ensure eval_data is a dict
+        if not isinstance(eval_data, dict):
+            logger.warning(f"Validation Error: evaluation_data is not a dict or is null: {type(eval_data)}")
+            eval_data = {}
+
+        for idx in range(current_idx, target_idx):
+            stage_key = stages_order[idx] # Already strings
+            required_fields = validation_map.get(stage_key, [])
+            stage_data = eval_data.get(stage_key)
+            
+            if not isinstance(stage_data, dict):
+                logger.debug(f"Stage data for {stage_key} is missing or not a dict: {type(stage_data)}")
+                stage_data = {}
+            
+            stage_missing = []
+            for field in required_fields:
+                val = stage_data.get(field)
+                logger.info(f"[VALIDATE] Checking {stage_key}.{field}: value='{val}' (type={type(val).__name__})")
+                
+                if val is None or str(val).strip() == "" or (field == "demo_completed" and val is False):
+                    stage_missing.append(str(field))
+            
+            if stage_missing:
+                all_missing.extend(stage_missing)
+                destination = target_stage if target_stage else "COMMIT"
+                dest_name = str(destination).upper()
+                error_msg = f"Cannot move to {dest_name}. Missing required fields in {stage_key} stage."
+                logger.warning(f"Validation failed for lead: {error_msg} - Missing: {stage_missing}")
+                return False, error_msg, stage_missing
+    
+    return True, "", []
+
+
+@router.patch("/revenue/leads/{lead_id}/evaluate-stage")
+async def update_evaluate_stage(lead_id: str, req: EvaluateStageUpdate, db = Depends(get_db)):
+    """Update evaluate sub-stage with validation and optional atomic save"""
+    try:
+        lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id})
+        if not lead:
+            raise HTTPException(status_code=404, detail="Lead not found")
+        
+        current_stage = _normalize_evaluate_stage(lead.get("evaluate_stage") or "explore")
+        new_stage = _normalize_evaluate_stage(req.evaluate_stage)
+        
+        # Be defensive with evaluation_data
+        raw_eval_data = lead.get("evaluation_data")
+        eval_data = raw_eval_data if isinstance(raw_eval_data, dict) else {}
+
+        logger.info(f"Transitioning Lead {lead_id} Evaluate Stage: {current_stage} -> {new_stage}")
+
+        # Structured validation return: (is_valid, error_detail, missing_fields)
+        is_valid, error_detail, missing_fields = _validate_evaluation_progression(eval_data, current_stage, new_stage)
+        
+        if not is_valid:
+            logger.warning(f"Evaluation stage transition blocked for {lead_id}: {error_detail}")
+            # Use JSONResponse for consistent structured error format
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "detail": error_detail,
+                    "missing_fields": missing_fields,
+                    "error_type": "VALIDATION_ERROR"
+                }
+            )
+
+        now_iso = datetime.now(timezone.utc).isoformat()
+        await db.revenue_workflow_leads.update_one(
+            {"lead_id": lead_id},
+            {"$set": {
+                "evaluate_stage": new_stage,
+                "updated_at": now_iso
+            }}
+        )
+
+        # Audit
+        await db.revenue_workflow_audits.insert_one({
+            "lead_id": lead_id,
+            "action": "evaluate_stage_changed",
+            "before": str(current_stage),
+            "after": str(new_stage),
+            "timestamp": now_iso
+        })
+
+        # Insert Activity
+        await db.revenue_workflow_activities.insert_one({
+            "lead_id": lead_id,
+            "type": "evaluate_stage_change",
+            "summary": f"Evaluation stage: {str(new_stage).upper()}",
+            "description": f"Lead moved from {current_stage} to {new_stage} in the evaluation workflow.",
+            "performed_by": "User",
+            "created_at": now_iso
+        })
+
+        return {"success": True, "message": f"Stage updated to {new_stage}"}
+    except Exception as e:
+        logger.error(f"Error in update_evaluate_stage: {str(e)}", exc_info=True)
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "detail": f"Internal system error: {str(e)}"}
+        )
+        logger.exception(f"Unexpected crash in update_evaluate_stage for lead {lead_id}")
+        return {
+            "success": False,
+            "detail": f"Internal Server Error: {str(e)}",
+            "error_type": "SYSTEM_ERROR"
+        }
+
+
+@router.put("/revenue/leads/{lead_id}/evaluation-data")
+async def update_evaluation_data(lead_id: str, req: EvaluationDataUpdate, db = Depends(get_db)):
+    """Update evaluation data for a specific stage"""
+    now_iso = datetime.now(timezone.utc).isoformat()
+    # Use dot notation to update nested field in MongoDB
+    stage_val = _normalize_evaluate_stage(req.stage)
+    update_key = f"evaluation_data.{stage_val}"
+    
+    logger.info(f"[SAVE] Updating {lead_id} {stage_val} data with: {list(req.data.keys())}")
+    
+    result = await db.revenue_workflow_leads.update_one(
+        {"lead_id": lead_id},
+        {"$set": {
+            update_key: req.data,
+            "updated_at": now_iso
+        }}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    return {"success": True, "message": f"Evaluation data for {req.stage} updated"}
 
 @router.put("/revenue/leads/{lead_id}")
 async def update_revenue_lead(lead_id: str, lead: RevenueLeadCreate, db = Depends(get_db)):

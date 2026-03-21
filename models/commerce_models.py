@@ -132,6 +132,25 @@ class LeadStatus(str, Enum):
     DORMANT = "Dormant"
     CONVERTED = "Converted"
     CLOSED = "Closed"
+    COMMIT = "Commit"
+    CONTRACT = "Contract"
+    HANDOFF = "Handoff"
+
+
+class MainStage(str, Enum):
+    LEAD = "lead"
+    EVALUATE = "evaluate"
+    COMMIT = "commit"
+    CONTRACT = "contract"
+    HANDOFF = "handoff"
+
+
+class EvaluateStage(str, Enum):
+    EXPLORE = "explore"
+    DEFINE = "define"
+    FIT = "fit"
+    SCOPE = "scope"
+    PROPOSE = "propose"
 
 
 class ValidationStatus(str, Enum):
@@ -196,6 +215,38 @@ class LeadDuplicateCheck(BaseModel):
     checked_by: str = "AI_Engine"
 
 
+class EvaluationData(BaseModel):
+    """Structured evaluation data for multi-stage workflow"""
+    explore: Dict[str, Any] = Field(default_factory=lambda: {
+        "problem_statement": "",
+        "business_goal": "",
+        "stakeholder_status": ""
+    })
+    define: Dict[str, Any] = Field(default_factory=lambda: {
+        "solution_type": "",
+        "estimated_users": 0,
+        "departments": [],
+        "complexity": "low"
+    })
+    fit: Dict[str, Any] = Field(default_factory=lambda: {
+        "product_interest": "",
+        "demo_completed": False,
+        "client_feedback": ""
+    })
+    scope: Dict[str, Any] = Field(default_factory=lambda: {
+        "deal_size": 0.0,
+        "timeline": "",
+        "decision_maker": "",
+        "budget": "unknown"
+    })
+    propose: Dict[str, Any] = Field(default_factory=lambda: {
+        "proposed_product": "",
+        "proposal_quantity": 1,
+        "proposal_sent_date": None,
+        "client_status": "pending"
+    })
+
+
 class LeadCreate(BaseModel):
     # 1. Lead Identification (required on creation)
     company_name: str
@@ -238,6 +289,11 @@ class Lead(BaseModel):
     captured_by: str = "system"
     captured_on: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     lead_status: LeadStatus = LeadStatus.NEW
+    
+    # ===== WORKFLOW EXTENSION (Phase 2) =====
+    main_stage: MainStage = MainStage.LEAD
+    evaluate_stage: Optional[EvaluateStage] = None
+    evaluation_data: EvaluationData = Field(default_factory=EvaluationData)
     
     # ===== STAGE 2: CONTACT PERSON =====
     contact_name: str
