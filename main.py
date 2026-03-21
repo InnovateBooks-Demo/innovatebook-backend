@@ -4556,7 +4556,8 @@ from auth_routes import router as auth_router
 #     # test_helpers is optional (dev-only). Ignore if missing.
 #     pass
 
-# from chat_routes import router as chat_router  # Legacy - using workspace_router instead
+# from chat_routes import router as chat_router  # Removed - using workspace_router instead
+from legacy_chat_adapter import router as legacy_chat_router
 from user_management_routes import router as user_management_router
 from routes.integrations.webrtc_routes import router as webrtc_router
 from manufacturing_routes import router as manufacturing_router
@@ -4593,7 +4594,8 @@ app.include_router(workflow_legacy_router, prefix="/api")
 app.include_router(commerce_router, prefix="/api")
 app.include_router(lead_router, prefix="/api")
 app.include_router(engagement_router)
-# app.include_router(chat_router)  # Legacy - using workspace_router instead
+# app.include_router(chat_router)  # Removed
+app.include_router(legacy_chat_router)
 app.include_router(user_management_router)
 app.include_router(webrtc_router)
 app.include_router(manufacturing_router)

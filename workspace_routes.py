@@ -61,41 +61,44 @@ JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
 
 class WorkspaceConnectionManager:
     def __init__(self):
-        # room_id -> List[WebSocket]
-        self.rooms: Dict[str, List[WebSocket]] = {}
+        # user_id -> List[WebSocket]
+        self.user_connections: Dict[str, List[WebSocket]] = {}
 
-    async def connect(self, websocket: WebSocket, room_id: str):
+    async def connect(self, websocket: WebSocket, user_id: str):
         await websocket.accept()
-        self.rooms.setdefault(room_id, []).append(websocket)
-        print(f"DEBUG: WS ACCEPTED + joined room={room_id} total={len(self.rooms[room_id])}")
+        self.user_connections.setdefault(user_id, []).append(websocket)
+        print(f"DEBUG: WS ACCEPTED user_id={user_id} total_conns={len(self.user_connections[user_id])}")
 
-    def disconnect(self, websocket: WebSocket, room_id: str):
-        if room_id in self.rooms and websocket in self.rooms[room_id]:
-            self.rooms[room_id].remove(websocket)
-            if not self.rooms[room_id]:
-                del self.rooms[room_id]
-        print(f"DEBUG: WS LEFT room={room_id}")
+    def disconnect(self, websocket: WebSocket, user_id: str):
+        if user_id in self.user_connections and websocket in self.user_connections[user_id]:
+            self.user_connections[user_id].remove(websocket)
+            if not self.user_connections[user_id]:
+                del self.user_connections[user_id]
+        print(f"DEBUG: WS LEFT user_id={user_id}")
 
+    async def broadcast_to_users(self, user_ids: List[str], message: dict):
+        unique_users = list(set(user_ids))
+        for uid in unique_users:
+            conns = self.user_connections.get(uid, [])
+            if not conns:
+                continue
+            
+            dead = []
+            for ws in conns:
+                try:
+                    await ws.send_json(message)
+                except Exception as e:
+                    print(f"DEBUG: Send error user_id={uid}: {e}")
+                    dead.append(ws)
+            
+            for ws in dead:
+                self.disconnect(ws, uid)
+
+    # Backward compatibility shim for old room-based calls
     async def broadcast(self, room_id: str, message: dict):
-        conns = self.rooms.get(room_id, [])
-        if not conns:
-            print(f"DEBUG: broadcast skipped (no connections) room={room_id}")
-            return
-
-        dead = []
-        for ws in conns:
-            try:
-                await ws.send_json(message)
-            except Exception as e:
-                print(f"DEBUG: Broadcast error room={room_id}: {e}")
-                dead.append(ws)
-
-        for ws in dead:
-            try:
-                self.disconnect(ws, room_id)
-            except Exception:
-                pass
-
+        # This will be replaced by specific DB lookups in the routes
+        print(f"WARNING: Legacy broadcast called for {room_id}. Should use broadcast_to_users.")
+        pass
 
 manager = WorkspaceConnectionManager()
 
@@ -713,6 +716,25 @@ async def send_channel_message(
 
     await db.workspace_channel_messages.insert_one(message_doc)
 
+    # ===== Broadcast to channel room: channel:{channel_id} =====
+    try:
+        event = {
+            "event": "message_created",
+            "channel_id": channel_id,
+            "message": {
+                **message_doc,
+                "created_at": message_doc["created_at"]
+            }
+        }
+        # Broadcast to all members of the channel
+        # Fetch channel members
+        channel = await db.workspace_channels.find_one({"channel_id": channel_id})
+        member_ids = channel.get("member_users", []) if channel else []
+        
+        await manager.broadcast_to_users(member_ids, event)
+    except Exception as e:
+        print(f"DEBUG: WS BROADCAST FAILED channel room={channel_id} err={e}")
+
     message_doc["created_at"] = now
     return ChannelMessage(**message_doc)
 
@@ -912,7 +934,8 @@ async def send_chat_message(
 
         room_id = f"chat:{chat_id}"
         print(f"DEBUG: WS BROADCAST room={room_id} message_id={message_id}")
-        await manager.broadcast(room_id, event)
+        # Broadcast to all participants of the chat
+        await manager.broadcast_to_users(chat.get("participants", []), event)
     except Exception as e:
         print(f"DEBUG: WS BROADCAST FAILED err={e}")
 
@@ -948,60 +971,67 @@ async def get_chat_messages(
 # ==========================
 # WEBSOCKET ENDPOINT (LIVE)
 # ==========================
-@router.websocket("/ws/{chat_id}")
-async def workspace_chat_ws(websocket: WebSocket, chat_id: str, token: str = Query(None)):
-    db = get_db()
-    print(f"DEBUG: WS HIT chat_id={chat_id} token_present={bool(token)}")
-
+@router.websocket("/ws/workspace")
+async def workspace_unified_ws(websocket: WebSocket, token: str = Query(None)):
     if not token:
-        print("DEBUG: WS CLOSE no_token")
         await websocket.close(code=1008)
         return
 
-    # Decode JWT manually (NO Depends(HTTPBearer))
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = verify_token(token, verify_type="access")
     except Exception as e:
-        print(f"DEBUG: WS CLOSE invalid_token err={e}")
+        print(f"DEBUG: WS Auth failed: {e}")
         await websocket.close(code=1008)
         return
 
-    user_id = payload.get("user_id") or payload.get("sub")
-    org_id = payload.get("org_id", "default")
-    print(f"DEBUG: WS AUTH OK user_id={user_id} org_id={org_id}")
-
+    user_id = payload.get("user_id")
     if not user_id:
-        print("DEBUG: WS CLOSE missing_user_id")
         await websocket.close(code=1008)
         return
 
-    # Chat access validation
-    chat = await db.workspace_chats.find_one({"chat_id": chat_id, "is_archived": False})
-    if not chat:
-        print(f"DEBUG: WS CLOSE chat_not_found chat_id={chat_id}")
-        await websocket.close(code=1008)
-        return
-
-    if user_id not in chat.get("participants", []):
-        print(f"DEBUG: WS CLOSE not_participant user_id={user_id} chat_id={chat_id}")
-        await websocket.close(code=1008)
-        return
-
-    # Join room chat:{chat_id}
-    room_id = f"chat:{chat_id}"
-    await manager.connect(websocket, room_id)
-    print(f"DEBUG: WS CONNECTED user_id={user_id} room_id={room_id}")
+    await manager.connect(websocket, user_id)
+    print(f"DEBUG: WS UNIFIED CONNECTED user_id={user_id}")
 
     try:
         while True:
-            # keep alive; we don't need to process inbound for basic real-time messages
-            _ = await websocket.receive_text()
+            # Keep alive
+            await websocket.receive_text()
     except WebSocketDisconnect:
-        print(f"DEBUG: WS DISCONNECT user_id={user_id} room_id={room_id}")
-        manager.disconnect(websocket, room_id)
+        print(f"DEBUG: WS UNIFIED DISCONNECT user_id={user_id}")
+        manager.disconnect(websocket, user_id)
     except Exception as e:
-        print(f"DEBUG: WS ERROR user_id={user_id} err={e}")
-        manager.disconnect(websocket, room_id)
+        print(f"DEBUG: WS UNIFIED ERROR user_id={user_id} err={e}")
+        manager.disconnect(websocket, user_id)
+
+
+@router.websocket("/ws/{chat_id}")
+async def workspace_chat_ws(websocket: WebSocket, chat_id: str, token: str = Query(None)):
+    """DEPRECATED: Use /ws/workspace instead. Kept for short-term compatibility."""
+    if not token:
+        await websocket.close(code=1008)
+        return
+
+    try:
+        payload = verify_token(token, verify_type="access")
+    except Exception:
+        await websocket.close(code=1008)
+        return
+
+    user_id = payload.get("user_id")
+    if not user_id:
+        await websocket.close(code=1008)
+        return
+
+    # Use user_id for connection even in legacy endpoint
+    await manager.connect(websocket, user_id)
+    
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket, user_id)
+    except Exception:
+        manager.disconnect(websocket, user_id)
 
 
 # ============= NOTIFICATION ROUTES =============
@@ -1352,8 +1382,10 @@ async def upload_chat_attachment(
 
     # Broadcast to WebSocket (match frontend listener)
     try:
-        room_id = f"chat:{chat_id}"
-        await manager.broadcast(room_id, {
+        chat = await db.workspace_chats.find_one({"chat_id": chat_id})
+        participant_ids = chat.get("participants", []) if chat else []
+        
+        await manager.broadcast_to_users(participant_ids, {
             "event": "message_created",
             "chat_id": chat_id,
             "message": {
@@ -1363,7 +1395,7 @@ async def upload_chat_attachment(
                 "sender_type": message_doc["sender_type"],
                 "sender_name": message_doc["sender_name"],
                 "content_type": message_doc["content_type"],
-                "payload": message_doc["payload"],  # keep payload
+                "payload": message_doc["payload"],
                 "file_url": message_doc.get("file_url"),
                 "file_name": message_doc.get("file_name"),
                 "created_at": message_doc["created_at"],
@@ -1372,7 +1404,7 @@ async def upload_chat_attachment(
                 "read_by": []
             }
         })
-        print(f"DEBUG: WS BROADCAST attachment room={room_id} message_id={message_doc['message_id']}")
+        print(f"DEBUG: WS BROADCAST attachment chat_id={chat_id} message_id={message_doc['message_id']}")
     except Exception as e:
         print(f"DEBUG: WS BROADCAST attachment FAILED err={e}")
 
@@ -1402,3 +1434,32 @@ async def get_chat_attachment(
         raise HTTPException(status_code=404, detail="File not found")
 
     return FileResponse(file_path)
+# ==========================
+# LEGACY ADAPTERS (BACKWARD COMPATIBILITY)
+# ==========================
+
+@router.get("/legacy/chat/channels")
+async def legacy_get_channels(
+    current_user: WorkspaceUser = Depends(get_current_user)
+):
+    """Alias for /api/workspace/channels for legacy callers"""
+    return await get_channels(channel_type=None, current_user=current_user)
+
+@router.get("/legacy/chat/channels/{channel_id}/messages")
+async def legacy_get_channel_messages(
+    channel_id: str,
+    limit: int = 50,
+    current_user: WorkspaceUser = Depends(get_current_user)
+):
+    """Alias for /api/workspace/channels/{id}/messages"""
+    return await get_channel_messages(channel_id, limit, current_user)
+
+@router.post("/legacy/chat/messages")
+async def legacy_send_chat_message(
+    data: ChatMessageCreate, # Note: this is for context chats, but legacy used it for channels too
+    current_user: WorkspaceUser = Depends(get_current_user)
+):
+    """Thin adapter for legacy single-endpoint message sending"""
+    # This is complex because legacy had a mixed model. 
+    # For now, we point to the primary workspace chat or error gracefully.
+    raise HTTPException(status_code=410, detail="Legacy endpoint /api/chat/messages is deprecated. Please use /api/workspace/chats/{id}/messages")

@@ -924,9 +924,31 @@ async def get_revenue_leads(
     return {"success": True, "leads": leads, "count": len(leads)}
 
 @router.post("/revenue/leads")
-async def create_revenue_lead(lead: RevenueLeadCreate, db = Depends(get_db)):
+async def create_revenue_lead(lead: RevenueLeadCreate, db = Depends(get_db), authorization: str = Header(None)):
     """Create a new revenue lead - Stage 1"""
     data = lead.dict()
+    
+    # ── Owner Assignment (from token) ────────────────────────────────────────
+    # Default fallback if no token
+    owner_id = data.get("owner_id") or "user_demo_legacy"
+    owner_name = "Unassigned"
+    owner_email = None
+
+    if authorization:
+        try:
+            token = authorization.replace("Bearer ", "")
+            payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+            # Extract fields expected by frontend
+            owner_id = payload.get("user_id") or payload.get("id") or owner_id
+            owner_email = payload.get("email")
+            owner_name = payload.get("full_name") or owner_email or "Unassigned"
+        except Exception:
+            pass
+
+    data["owner_id"] = owner_id
+    data["owner_name"] = owner_name
+    data["owner_email"] = owner_email
+
     data["lead_id"] = f"REV-LEAD-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     data["stage"] = LeadStage.NEW.value
     now_iso = datetime.now(timezone.utc).isoformat()
