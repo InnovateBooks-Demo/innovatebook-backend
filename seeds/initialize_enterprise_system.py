@@ -49,7 +49,7 @@ async def main():
         raise RuntimeError("SUPER_ADMIN_PASSWORD is required for initialization")
   # Change in production
     
-    existing_super_admin = await db.enterprise_users.find_one(
+    existing_super_admin = await db.users.find_one(
         {"email": super_admin_email},
         {"_id": 0}
     )
@@ -67,7 +67,7 @@ async def main():
             "created_at": datetime.now(timezone.utc),
             "updated_at": datetime.now(timezone.utc)
         }
-        await db.enterprise_users.insert_one(super_admin_doc)
+        await db.users.insert_one(super_admin_doc)
         logger.info(f"✅ Super admin created: {super_admin_email}")
         logger.info(f"🔑 Password: {super_admin_password}")
     else:

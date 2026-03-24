@@ -17,45 +17,33 @@ from enterprise_middleware import (
     require_permission,
     get_org_scope
 )
+from routes.deps import get_db, User
 
 router = APIRouter(prefix="/api/capital", tags=["Capital"])
 
-# MongoDB connection (Lazy loaded)
-_mongo_client = None
-_db_instance = None
-
-def get_db():
-    global _mongo_client, _db_instance
-    if _db_instance is None:
-        print("[Antigravity] Initializing Lazy MongoDB client in capital_routes")
-        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-        db_name = os.environ['DB_NAME']
-        _mongo_client = AsyncIOMotorClient(mongo_url)
-        _db_instance = _mongo_client[db_name]
-    return _db_instance
 
 # ========================
 # PORTFOLIO
 # ========================
 
 @router.get("/portfolio", dependencies=[Depends(require_permission("capital", "view"))])
-async def get_portfolio(org_id: Optional[str] = Depends(get_org_scope)):
+async def get_portfolio(org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Get all portfolio items (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        portfolio = await get_db().portfolio.find(query, {"_id": 0}).to_list(1000)
+        portfolio = await db.portfolio.find(query, {"_id": 0}).to_list(1000)
         return {"success": True, "portfolio": portfolio}
     except Exception as e:
         return {"success": False, "portfolio": [], "error": str(e)}
 
 @router.get("/portfolio/{portfolio_id}", dependencies=[Depends(require_permission("capital", "view"))])
-async def get_portfolio_item(portfolio_id: str, org_id: Optional[str] = Depends(get_org_scope)):
+async def get_portfolio_item(portfolio_id: str, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Get portfolio item by ID (org-scoped)"""
     try:
         query = {"id": portfolio_id}
         if org_id:
             query["org_id"] = org_id
-        item = await get_db().portfolio.find_one(query, {"_id": 0})
+        item = await db.portfolio.find_one(query, {"_id": 0})
         if not item:
             raise HTTPException(status_code=404, detail="Portfolio item not found")
         return {"success": True, "portfolio_item": item}
@@ -63,26 +51,26 @@ async def get_portfolio_item(portfolio_id: str, org_id: Optional[str] = Depends(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/portfolio", dependencies=[Depends(require_active_subscription), Depends(require_permission("capital", "create"))])
-async def create_portfolio_item(portfolio_data: dict, org_id: Optional[str] = Depends(get_org_scope)):
+async def create_portfolio_item(portfolio_data: dict, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Create portfolio item (org-scoped, requires active subscription)"""
     try:
         portfolio_data["id"] = str(uuid4())
         portfolio_data["created_at"] = datetime.utcnow()
         if org_id:
             portfolio_data["org_id"] = org_id
-        await get_db().portfolio.insert_one(portfolio_data)
+        await db.portfolio.insert_one(portfolio_data)
         return {"success": True, "portfolio_item": portfolio_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/portfolio/{portfolio_id}", dependencies=[Depends(require_active_subscription)])
-async def update_portfolio_item(portfolio_id: str, portfolio_data: dict, org_id: Optional[str] = Depends(get_org_scope)):
+async def update_portfolio_item(portfolio_id: str, portfolio_data: dict, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Update portfolio item (org-scoped, requires active subscription)"""
     try:
         query = {"id": portfolio_id}
         if org_id:
             query["org_id"] = org_id
-        result = await get_db().portfolio.update_one(query, {"$set": portfolio_data})
+        result = await db.portfolio.update_one(query, {"$set": portfolio_data})
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Portfolio item not found")
         return {"success": True, "message": "Portfolio item updated"}
@@ -94,7 +82,7 @@ async def update_portfolio_item(portfolio_id: str, portfolio_data: dict, org_id:
 # ========================
 
 @router.get("/investments", dependencies=[Depends(subscription_guard)])
-async def get_investments(org_id: Optional[str] = Depends(get_org_scope)):
+async def get_investments(org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Get all investments (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
@@ -108,7 +96,7 @@ async def get_investments(org_id: Optional[str] = Depends(get_org_scope)):
 # ========================
 
 @router.get("/assets", dependencies=[Depends(subscription_guard)])
-async def get_assets(org_id: Optional[str] = Depends(get_org_scope)):
+async def get_assets(org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Get all assets (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}

@@ -12,7 +12,7 @@ router = APIRouter(prefix="/api/webrtc", tags=["WebRTC"])
 
 logger = logging.getLogger(__name__)
 
-from workspace_routes import JWT_SECRET, JWT_ALGORITHM
+from routes.deps import JWT_SECRET, JWT_ALGORITHM
 
 # Store active WebRTC connections
 webrtc_connections = {}  # user_id -> WebSocket

@@ -34,7 +34,7 @@ async def get_mapping(db):
             email_to_canonical[email.strip().lower()] = user["_id"]
 
     # 2. Map legacy user_id to email from 'enterprise_users'
-    async for ent_user in db.enterprise_users.find({}, {"user_id": 1, "email": 1}):
+    async for ent_user in db.users.find({}, {"user_id": 1, "email": 1}):
         legacy_id = ent_user.get("user_id")
         email = ent_user.get("email")
         if legacy_id and email:

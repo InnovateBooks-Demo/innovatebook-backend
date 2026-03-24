@@ -44,7 +44,7 @@ async def enterprise_login(credentials: EnterpriseLogin, db = Depends(get_db)):
         auth_logger.login_attempt(credentials.email)
         
         # Find user by email
-        user = await db.enterprise_users.find_one(
+        user = await db.users.find_one(
             {"email": credentials.email},
             {"_id": 0}
         )
@@ -154,7 +154,7 @@ async def refresh_access_token(request: RefreshTokenRequest, db = Depends(get_db
         user_id = payload.get("sub")
         
         # Get user
-        user = await db.enterprise_users.find_one(
+        user = await db.users.find_one(
             {"user_id": user_id},
             {"_id": 0}
         )
@@ -250,7 +250,7 @@ async def get_current_user_details(
     try:
         user_id = token_payload.get("user_id")
         
-        user = await db.enterprise_users.find_one(
+        user = await db.users.find_one(
             {"user_id": user_id},
             {"_id": 0, "password_hash": 0}
         )

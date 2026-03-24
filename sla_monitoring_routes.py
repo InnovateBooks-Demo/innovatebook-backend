@@ -7,36 +7,13 @@ from fastapi import APIRouter, HTTPException, Depends, Header, BackgroundTasks
 from typing import List, Optional
 from datetime import datetime, timedelta
 import uuid
-import jwt
-import os
 import asyncio
+import os
+from routes.deps import get_current_user, User, get_db
 
 router = APIRouter(prefix="/api/operations/sla", tags=["SLA Monitoring"])
 
-JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
-
-def get_db():
-    """Get database instance from main"""
-    from main import db
-    return db
-
-async def get_current_user(authorization: str = Header(None)):
-    """Extract current user from JWT token"""
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        return {
-            "user_id": payload.get("user_id"),
-            "org_id": payload.get("org_id"),
-            "role_id": payload.get("role_id")
-        }
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+# Auth moved to routes.deps
 
 
 # ==================== SLA MONITORING FUNCTIONS ====================
@@ -331,10 +308,10 @@ async def create_sla_breach(db, org_id: str, entity_type: str, entity_id: str,
 # ==================== API ENDPOINTS ====================
 
 @router.post("/check")
-async def run_sla_check(current_user: dict = Depends(get_current_user)):
+async def run_sla_check(current_user: User = Depends(get_current_user)):
     """Run SLA check for the current organization"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     all_alerts = []
     
@@ -367,11 +344,11 @@ async def run_sla_check(current_user: dict = Depends(get_current_user)):
 @router.get("/breaches")
 async def get_sla_breaches(
     entity_type: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all SLA breaches"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     if entity_type:
         query["entity_type"] = entity_type
     
@@ -381,10 +358,10 @@ async def get_sla_breaches(
 
 
 @router.get("/summary")
-async def get_sla_summary(current_user: dict = Depends(get_current_user)):
+async def get_sla_summary(current_user: User = Depends(get_current_user)):
     """Get SLA summary dashboard data"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Count by status
     total_projects = await db.ops_projects.count_documents({"org_id": org_id, "status": {"$in": ["planned", "active"]}})

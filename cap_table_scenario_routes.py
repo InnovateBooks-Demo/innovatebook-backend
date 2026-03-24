@@ -3,43 +3,18 @@ IB Capital - Cap Table Scenario Modeling
 Simulate dilution from future funding rounds
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Header
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
 import uuid
-import jwt
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
+from routes.deps import get_current_user, User, get_db
 
 router = APIRouter(prefix="/api/ib-capital/scenario", tags=["Cap Table Scenario Modeling"])
 
-_mongo_client = None
-_db_instance = None
-
-def get_db():
-    global _mongo_client, _db_instance
-    if _db_instance is None:
-        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-        db_name = os.environ.get('DB_NAME', 'innovate_books_db')
-        _mongo_client = AsyncIOMotorClient(mongo_url)
-        _db_instance = _mongo_client[db_name]
-    return _db_instance
 
 
-JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
-
-
-async def get_current_user(authorization: str = Header(None)):
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        return {"user_id": payload.get("user_id"), 
-                "org_id": payload.get("org_id")}
-    except:
-        raise HTTPException(status_code=401, detail="Invalid token")
 
 
 def serialize_doc(doc):
@@ -53,8 +28,10 @@ def serialize_docs(docs):
 
 
 # Collections
-def get_scenarios_col(): return get_db().capital_scenarios
-def get_scenario_rounds_col(): return get_db().capital_scenario_rounds
+
+# Collections (Helpers)
+def get_scenarios_col(db): return db.capital_scenarios
+def get_scenario_rounds_col(db): return db.capital_scenario_rounds
 
 
 
@@ -123,53 +100,78 @@ async def get_scenario_templates():
 
 
 @router.get("/list")
-async def list_scenarios(current_user: dict = Depends(get_current_user)):
+async def list_scenarios(
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
     """List all saved scenarios"""
-    org_id = current_user.get("org_id")
-    scenarios = await get_scenarios_col().find({"org_id": org_id, "deleted": {"$ne": True}}).to_list(100)
+
+    org_id = current_user.org_id
+    scenarios = await db.capital_scenarios.find({"org_id": org_id, "deleted": {"$ne": True}}).to_list(100)
+
     return {"scenarios": serialize_docs(scenarios)}
 
 
 @router.post("/create")
-async def create_scenario(scenario: ScenarioCreate, current_user: dict = Depends(get_current_user)):
+async def create_scenario(
+    scenario: ScenarioCreate,
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
     """Create a new scenario"""
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     new_scenario = {
         "scenario_id": f"SCN-{uuid.uuid4().hex[:8].upper()}",
         "org_id": org_id,
-        **scenario.dict(),
+        **scenario.model_dump(),
         "status": "draft",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
+        "created_by": current_user.user_id,
         "rounds": []
     }
     
-    await get_scenarios_col().insert_one(new_scenario)
+
+    await db.capital_scenarios.insert_one(new_scenario)
+
     return serialize_doc(new_scenario)
 
 
 @router.get("/{scenario_id}")
-async def get_scenario(scenario_id: str, current_user: dict = Depends(get_current_user)):
+async def get_scenario(
+    scenario_id: str,
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
     """Get scenario with all rounds"""
-    org_id = current_user.get("org_id")
-    scenario = await get_scenarios_col().find_one({"scenario_id": scenario_id, "org_id": org_id})
+
+    org_id = current_user.org_id
+    scenario = await db.capital_scenarios.find_one({"scenario_id": scenario_id, "org_id": org_id})
+
     
     if not scenario:
         raise HTTPException(status_code=404, detail="Scenario not found")
     
     # Get all rounds for this scenario
-    rounds = await get_scenario_rounds_col().find({"scenario_id": scenario_id}).sort("order", 1).to_list(20)
+
+    rounds = await db.capital_scenario_rounds.find({"scenario_id": scenario_id}).sort("order", 1).to_list(20)
+
     scenario["rounds"] = serialize_docs(rounds)
     
     return serialize_doc(scenario)
 
 
 @router.delete("/{scenario_id}")
-async def delete_scenario(scenario_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_scenario(
+    scenario_id: str,
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
     """Delete a scenario"""
-    org_id = current_user.get("org_id")
-    result = await get_scenarios_col().update_one(
+
+    org_id = current_user.org_id
+    result = await db.capital_scenarios.update_one(
+
         {"scenario_id": scenario_id, "org_id": org_id},
         {"$set": {"deleted": True, "deleted_at": datetime.now(timezone.utc).isoformat()}}
     )
@@ -183,17 +185,25 @@ async def delete_scenario(scenario_id: str, current_user: dict = Depends(get_cur
 # ============== SCENARIO ROUNDS ==============
 
 @router.post("/round/add")
-async def add_scenario_round(round_data: ScenarioRoundCreate, current_user: dict = Depends(get_current_user)):
+async def add_scenario_round(
+    round_data: ScenarioRoundCreate,
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
     """Add a funding round to a scenario"""
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Verify scenario exists
-    scenario = await get_scenarios_col().find_one({"scenario_id": round_data.scenario_id, "org_id": org_id})
+
+    scenario = await db.capital_scenarios.find_one({"scenario_id": round_data.scenario_id, "org_id": org_id})
+
     if not scenario:
         raise HTTPException(status_code=404, detail="Scenario not found")
     
     # Get current round count for ordering
-    existing_rounds = await get_scenario_rounds_col().count_documents({"scenario_id": round_data.scenario_id})
+
+    existing_rounds = await db.capital_scenario_rounds.count_documents({"scenario_id": round_data.scenario_id})
+
     
     # Calculate new shares issued
     price_per_share = round_data.pre_money_valuation / scenario.get("base_shares_outstanding", 1000000)
@@ -201,7 +211,7 @@ async def add_scenario_round(round_data: ScenarioRoundCreate, current_user: dict
     
     new_round = {
         "round_id": f"RND-{uuid.uuid4().hex[:8].upper()}",
-        **round_data.dict(),
+        **round_data.model_dump(),
         "order": existing_rounds + 1,
         "price_per_share": price_per_share,
         "new_shares_issued": new_shares,
@@ -209,14 +219,22 @@ async def add_scenario_round(round_data: ScenarioRoundCreate, current_user: dict
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await get_scenario_rounds_col().insert_one(new_round)
+
+    await db.capital_scenario_rounds.insert_one(new_round)
+
     return serialize_doc(new_round)
 
 
 @router.delete("/round/{round_id}")
-async def delete_scenario_round(round_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_scenario_round(
+    round_id: str,
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
     """Delete a round from a scenario"""
-    result = await get_scenario_rounds_col().delete_one({"round_id": round_id})
+
+    result = await db.capital_scenario_rounds.delete_one({"round_id": round_id})
+
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Round not found")
@@ -227,12 +245,18 @@ async def delete_scenario_round(round_id: str, current_user: dict = Depends(get_
 # ============== DILUTION ANALYSIS ==============
 
 @router.post("/analyze")
-async def analyze_dilution(request: DilutionAnalysis, current_user: dict = Depends(get_current_user)):
+async def analyze_dilution(
+    request: DilutionAnalysis,
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
     """Analyze dilution across all rounds in a scenario"""
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Get scenario
-    scenario = await get_scenarios_col().find_one({"scenario_id": request.scenario_id, "org_id": org_id})
+
+    scenario = await db.capital_scenarios.find_one({"scenario_id": request.scenario_id, "org_id": org_id})
+
     if not scenario:
         raise HTTPException(status_code=404, detail="Scenario not found")
     
@@ -255,7 +279,9 @@ async def analyze_dilution(request: DilutionAnalysis, current_user: dict = Depen
         total_shares = scenario.get("base_shares_outstanding", 1000000)
     
     # Get scenario rounds
-    rounds = await get_scenario_rounds_col().find({"scenario_id": request.scenario_id}).sort("order", 1).to_list(20)
+
+    rounds = await db.capital_scenario_rounds.find({"scenario_id": request.scenario_id}).sort("order", 1).to_list(20)
+
     
     # Calculate dilution through each round
     analysis = {
@@ -373,7 +399,10 @@ async def analyze_dilution(request: DilutionAnalysis, current_user: dict = Depen
 
 
 @router.post("/simulate-quick")
-async def quick_simulation(data: dict, current_user: dict = Depends(get_current_user)):
+async def quick_simulation(
+    data: dict,
+    current_user: User = Depends(get_current_user)
+):
     """Quick dilution simulation without saving"""
     
     current_shares = data.get("current_shares", 1000000)

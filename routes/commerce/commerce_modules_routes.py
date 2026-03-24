@@ -3,20 +3,26 @@ Commerce Modules Routes - Catalog, Revenue, Procurement, Governance
 Full CRUD operations for all submodules (Async MongoDB)
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Query
-from pydantic import BaseModel, Field
-from typing import List, Optional
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
 import logging
+import jwt
+import os
+from fastapi import APIRouter, Depends, HTTPException, Query, status as http_status
+from pydantic import BaseModel
+from routes.deps import get_db, get_current_user
+from routes.rbac_deps import _require_role
+from models.user_models import WorkspaceUser
+
+JWT_SECRET = os.environ.get("JWT_SECRET_KEY", "fallback-secret-key")
+JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
+security = HTTPBearer()
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/commerce/modules", tags=["Commerce Modules"])
 
-# Get database dependency
-def get_db():
-    from main import db
-    return db
 
 # ============== PYDANTIC MODELS ==============
 
@@ -299,7 +305,7 @@ async def get_catalog_items(search: Optional[str] = None, category: Optional[str
         logger.error(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/catalog/items")
+@router.post("/catalog/items", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_catalog_item(item: CatalogItemCreate, db = Depends(get_db)):
     data = item.dict()
     data["item_id"] = f"ITEM-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -314,14 +320,14 @@ async def get_catalog_item(item_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Item not found")
     return {"success": True, "item": item}
 
-@router.put("/catalog/items/{item_id}")
+@router.put("/catalog/items/{item_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_catalog_item(item_id: str, item: CatalogItemCreate, db = Depends(get_db)):
     result = await db.catalog_items.update_one({"item_id": item_id}, {"$set": item.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Item not found")
     return {"success": True, "message": "Item updated"}
 
-@router.delete("/catalog/items/{item_id}")
+@router.delete("/catalog/items/{item_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def delete_catalog_item(item_id: str, db = Depends(get_db)):
     result = await db.catalog_items.delete_one({"item_id": item_id})
     if result.deleted_count == 0:
@@ -335,7 +341,7 @@ async def get_catalog_pricing(status: Optional[str] = None, db = Depends(get_db)
     items = await db.catalog_pricing.find(query, {"_id": 0}).to_list(1000)
     return {"success": True, "pricing": items, "count": len(items)}
 
-@router.post("/catalog/pricing")
+@router.post("/catalog/pricing", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_catalog_pricing(pricing: CatalogPricingCreate, db = Depends(get_db)):
     data = pricing.dict()
     data["pricing_id"] = f"PRC-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -350,14 +356,14 @@ async def get_pricing_detail(pricing_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Pricing not found")
     return {"success": True, "pricing": item}
 
-@router.put("/catalog/pricing/{pricing_id}")
+@router.put("/catalog/pricing/{pricing_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_pricing(pricing_id: str, pricing: CatalogPricingCreate, db = Depends(get_db)):
     result = await db.catalog_pricing.update_one({"pricing_id": pricing_id}, {"$set": pricing.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Pricing not found")
     return {"success": True, "message": "Pricing updated"}
 
-@router.delete("/catalog/pricing/{pricing_id}")
+@router.delete("/catalog/pricing/{pricing_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_pricing(pricing_id: str, db = Depends(get_db)):
     result = await db.catalog_pricing.delete_one({"pricing_id": pricing_id})
     if result.deleted_count == 0:
@@ -370,7 +376,7 @@ async def get_catalog_costing(db = Depends(get_db)):
     items = await db.catalog_costing.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "costing": items, "count": len(items)}
 
-@router.post("/catalog/costing")
+@router.post("/catalog/costing", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_catalog_costing(costing: CatalogCostingCreate, db = Depends(get_db)):
     data = costing.dict()
     data["costing_id"] = f"CST-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -385,14 +391,14 @@ async def get_costing_detail(costing_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Costing not found")
     return {"success": True, "costing": item}
 
-@router.put("/catalog/costing/{costing_id}")
+@router.put("/catalog/costing/{costing_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_costing(costing_id: str, costing: CatalogCostingCreate, db = Depends(get_db)):
     result = await db.catalog_costing.update_one({"costing_id": costing_id}, {"$set": costing.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Costing not found")
     return {"success": True, "message": "Costing updated"}
 
-@router.delete("/catalog/costing/{costing_id}")
+@router.delete("/catalog/costing/{costing_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_costing(costing_id: str, db = Depends(get_db)):
     result = await db.catalog_costing.delete_one({"costing_id": costing_id})
     if result.deleted_count == 0:
@@ -405,7 +411,7 @@ async def get_catalog_rules(db = Depends(get_db)):
     items = await db.catalog_rules.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "rules": items, "count": len(items)}
 
-@router.post("/catalog/rules")
+@router.post("/catalog/rules", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_catalog_rule(rule: CatalogRuleCreate, db = Depends(get_db)):
     data = rule.dict()
     data["rule_id"] = f"RUL-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -420,14 +426,14 @@ async def get_rule_detail(rule_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Rule not found")
     return {"success": True, "rule": item}
 
-@router.put("/catalog/rules/{rule_id}")
+@router.put("/catalog/rules/{rule_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_rule(rule_id: str, rule: CatalogRuleCreate, db = Depends(get_db)):
     result = await db.catalog_rules.update_one({"rule_id": rule_id}, {"$set": rule.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Rule not found")
     return {"success": True, "message": "Rule updated"}
 
-@router.delete("/catalog/rules/{rule_id}")
+@router.delete("/catalog/rules/{rule_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_rule(rule_id: str, db = Depends(get_db)):
     result = await db.catalog_rules.delete_one({"rule_id": rule_id})
     if result.deleted_count == 0:
@@ -440,7 +446,7 @@ async def get_catalog_packages(db = Depends(get_db)):
     items = await db.catalog_packages.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "packages": items, "count": len(items)}
 
-@router.post("/catalog/packages")
+@router.post("/catalog/packages", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_catalog_package(package: CatalogPackageCreate, db = Depends(get_db)):
     data = package.dict()
     data["package_id"] = f"PKG-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -455,14 +461,14 @@ async def get_package_detail(package_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Package not found")
     return {"success": True, "package": item}
 
-@router.put("/catalog/packages/{package_id}")
+@router.put("/catalog/packages/{package_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_package(package_id: str, package: CatalogPackageCreate, db = Depends(get_db)):
     result = await db.catalog_packages.update_one({"package_id": package_id}, {"$set": package.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Package not found")
     return {"success": True, "message": "Package updated"}
 
-@router.delete("/catalog/packages/{package_id}")
+@router.delete("/catalog/packages/{package_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_package(package_id: str, db = Depends(get_db)):
     result = await db.catalog_packages.delete_one({"package_id": package_id})
     if result.deleted_count == 0:
@@ -1136,9 +1142,10 @@ async def get_leads(
     lead_status: Optional[str] = None, 
     lead_source: Optional[str] = None,
     rating: Optional[str] = None,
+    current_user: WorkspaceUser = Depends(get_current_user),
     db = Depends(get_db)
 ):
-    query = {}
+    query = {"org_id": current_user.org_id}
     if lead_status:
         query["lead_status"] = lead_status
     if lead_source:
@@ -1148,7 +1155,7 @@ async def get_leads(
     items = await db.revenue_leads.find(query, {"_id": 0}).to_list(1000)
     return {"success": True, "leads": items, "count": len(items)}
 
-@router.post("/revenue/leads/seed")
+@router.post("/revenue/leads/seed", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def seed_enhanced_leads(db = Depends(get_db)):
     """Seed 15 comprehensive CRM-style sample leads (Zoho + HubSpot + Salesforce features)"""
     # Clear existing leads and related data
@@ -1213,31 +1220,58 @@ async def seed_enhanced_leads(db = Depends(get_db)):
         "message": f"Seeded {len(ENHANCED_SAMPLE_LEADS)} enhanced CRM leads with activities and deals"
     }
 
-@router.post("/revenue/leads")
-async def create_lead(lead: LeadCreate, db = Depends(get_db)):
+@router.post("/revenue/leads", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def create_lead(
+    lead: LeadCreate, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     data = lead.dict()
     data["lead_id"] = f"LEAD-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    data["org_id"] = current_user.org_id
     data["created_at"] = datetime.now(timezone.utc).isoformat()
     await db.revenue_leads.insert_one(data)
     return {"success": True, "message": "Lead created", "lead_id": data["lead_id"]}
 
 @router.get("/revenue/leads/{lead_id}")
-async def get_lead_detail(lead_id: str, db = Depends(get_db)):
-    item = await db.revenue_leads.find_one({"lead_id": lead_id}, {"_id": 0})
+async def get_lead_detail(
+    lead_id: str, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    item = await db.revenue_leads.find_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    }, {"_id": 0})
     if not item:
         raise HTTPException(status_code=404, detail="Lead not found")
     return {"success": True, "lead": item}
 
-@router.put("/revenue/leads/{lead_id}")
-async def update_lead(lead_id: str, lead: LeadCreate, db = Depends(get_db)):
-    result = await db.revenue_leads.update_one({"lead_id": lead_id}, {"$set": lead.dict()})
+@router.put("/revenue/leads/{lead_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def update_lead(
+    lead_id: str, 
+    lead: LeadCreate, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    result = await db.revenue_leads.update_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    }, {"$set": lead.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Lead not found")
     return {"success": True, "message": "Lead updated"}
 
-@router.delete("/revenue/leads/{lead_id}")
-async def delete_lead(lead_id: str, db = Depends(get_db)):
-    result = await db.revenue_leads.delete_one({"lead_id": lead_id})
+@router.delete("/revenue/leads/{lead_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
+async def delete_lead(
+    lead_id: str, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    result = await db.revenue_leads.delete_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    })
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Lead not found")
     return {"success": True, "message": "Lead deleted"}
@@ -1312,31 +1346,41 @@ def calculate_lead_score(lead: dict) -> int:
     return min(score, 100)  # Cap at 100
 
 
-@router.post("/revenue/leads/{lead_id}/calculate-score")
-async def calculate_and_update_lead_score(lead_id: str, db = Depends(get_db)):
+@router.post("/revenue/leads/{lead_id}/calculate-score", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def calculate_and_update_lead_score(
+    lead_id: str, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Calculate and update lead score for a specific lead"""
-    lead = await db.revenue_leads.find_one({"lead_id": lead_id}, {"_id": 0})
+    lead = await db.revenue_leads.find_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    }, {"_id": 0})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
     score = calculate_lead_score(lead)
     await db.revenue_leads.update_one(
-        {"lead_id": lead_id}, 
+        {"lead_id": lead_id, "org_id": current_user.org_id}, 
         {"$set": {"lead_score": score, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
     
     return {"success": True, "lead_id": lead_id, "lead_score": score}
 
 
-@router.post("/revenue/leads/recalculate-all-scores")
-async def recalculate_all_lead_scores(db = Depends(get_db)):
-    """Recalculate scores for all leads"""
-    leads = await db.revenue_leads.find({}, {"_id": 0}).to_list(1000)
+@router.post("/revenue/leads/recalculate-all-scores", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
+async def recalculate_all_lead_scores(
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    """Recalculate scores for all leads in the org"""
+    leads = await db.revenue_leads.find({"org_id": current_user.org_id}, {"_id": 0}).to_list(1000)
     updated = 0
     for lead in leads:
         score = calculate_lead_score(lead)
         await db.revenue_leads.update_one(
-            {"lead_id": lead["lead_id"]}, 
+            {"lead_id": lead["lead_id"], "org_id": current_user.org_id}, 
             {"$set": {"lead_score": score}}
         )
         updated += 1
@@ -1346,8 +1390,17 @@ async def recalculate_all_lead_scores(db = Depends(get_db)):
 # ============== LEAD ACTIVITIES (HubSpot/Salesforce) ==============
 
 @router.get("/revenue/leads/{lead_id}/activities")
-async def get_lead_activities(lead_id: str, db = Depends(get_db)):
+async def get_lead_activities(
+    lead_id: str, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Get all activities for a lead"""
+    # Verify lead ownership first
+    lead = await db.revenue_leads.find_one({"lead_id": lead_id, "org_id": current_user.org_id}, {"_id": 1})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+        
     activities = await db.lead_activities.find(
         {"lead_id": lead_id}, 
         {"_id": 0}
@@ -1355,11 +1408,16 @@ async def get_lead_activities(lead_id: str, db = Depends(get_db)):
     return {"success": True, "activities": activities, "count": len(activities)}
 
 
-@router.post("/revenue/leads/{lead_id}/activities")
-async def create_lead_activity(lead_id: str, activity: ActivityCreate, db = Depends(get_db)):
+@router.post("/revenue/leads/{lead_id}/activities", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def create_lead_activity(
+    lead_id: str, 
+    activity: ActivityCreate, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Create a new activity for a lead"""
-    # Verify lead exists
-    lead = await db.revenue_leads.find_one({"lead_id": lead_id})
+    # Verify lead exists and belongs to org
+    lead = await db.revenue_leads.find_one({"lead_id": lead_id, "org_id": current_user.org_id})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
@@ -1382,7 +1440,7 @@ async def create_lead_activity(lead_id: str, activity: ActivityCreate, db = Depe
     return {"success": True, "message": "Activity created", "activity_id": data["activity_id"]}
 
 
-@router.put("/revenue/activities/{activity_id}")
+@router.put("/revenue/activities/{activity_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_activity(activity_id: str, activity: ActivityCreate, db = Depends(get_db)):
     """Update an activity"""
     data = activity.dict()
@@ -1396,7 +1454,7 @@ async def update_activity(activity_id: str, activity: ActivityCreate, db = Depen
     return {"success": True, "message": "Activity updated"}
 
 
-@router.delete("/revenue/activities/{activity_id}")
+@router.delete("/revenue/activities/{activity_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def delete_activity(activity_id: str, db = Depends(get_db)):
     """Delete an activity"""
     result = await db.lead_activities.delete_one({"activity_id": activity_id})
@@ -1405,8 +1463,16 @@ async def delete_activity(activity_id: str, db = Depends(get_db)):
     return {"success": True, "message": "Activity deleted"}
 
 
-@router.post("/revenue/leads/{lead_id}/log-call")
-async def log_call(lead_id: str, subject: str, description: str = None, outcome: str = None, duration: int = None, db = Depends(get_db)):
+@router.post("/revenue/leads/{lead_id}/log-call", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def log_call(
+    lead_id: str, 
+    subject: str, 
+    description: str = None, 
+    outcome: str = None, 
+    duration: int = None, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Quick log a call for a lead"""
     activity = ActivityCreate(
         activity_type="call",
@@ -1418,11 +1484,17 @@ async def log_call(lead_id: str, subject: str, description: str = None, outcome:
         status="completed",
         completed_date=datetime.now(timezone.utc).isoformat()
     )
-    return await create_lead_activity(lead_id, activity, db)
+    return await create_lead_activity(lead_id, activity, current_user, db)
 
 
-@router.post("/revenue/leads/{lead_id}/log-email")
-async def log_email(lead_id: str, subject: str, description: str = None, db = Depends(get_db)):
+@router.post("/revenue/leads/{lead_id}/log-email", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def log_email(
+    lead_id: str, 
+    subject: str, 
+    description: str = None, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Quick log an email for a lead"""
     activity = ActivityCreate(
         activity_type="email",
@@ -1432,11 +1504,18 @@ async def log_email(lead_id: str, subject: str, description: str = None, db = De
         status="completed",
         completed_date=datetime.now(timezone.utc).isoformat()
     )
-    return await create_lead_activity(lead_id, activity, db)
+    return await create_lead_activity(lead_id, activity, current_user, db)
 
 
-@router.post("/revenue/leads/{lead_id}/schedule-meeting")
-async def schedule_meeting(lead_id: str, subject: str, due_date: str, description: str = None, db = Depends(get_db)):
+@router.post("/revenue/leads/{lead_id}/schedule-meeting", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def schedule_meeting(
+    lead_id: str, 
+    subject: str, 
+    due_date: str, 
+    description: str = None, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Schedule a meeting for a lead"""
     activity = ActivityCreate(
         activity_type="meeting",
@@ -1446,11 +1525,19 @@ async def schedule_meeting(lead_id: str, subject: str, due_date: str, descriptio
         due_date=due_date,
         status="pending"
     )
-    return await create_lead_activity(lead_id, activity, db)
+    return await create_lead_activity(lead_id, activity, current_user, db)
 
 
-@router.post("/revenue/leads/{lead_id}/create-task")
-async def create_task(lead_id: str, subject: str, due_date: str = None, priority: str = "medium", description: str = None, db = Depends(get_db)):
+@router.post("/revenue/leads/{lead_id}/create-task", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def create_task(
+    lead_id: str, 
+    subject: str, 
+    due_date: str = None, 
+    priority: str = "medium", 
+    description: str = None, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Create a task for a lead"""
     activity = ActivityCreate(
         activity_type="task",
@@ -1461,33 +1548,59 @@ async def create_task(lead_id: str, subject: str, due_date: str = None, priority
         priority=priority,
         status="pending"
     )
-    return await create_lead_activity(lead_id, activity, db)
+    return await create_lead_activity(lead_id, activity, current_user, db)
 
 
 # ============== DEALS/OPPORTUNITIES (Salesforce) ==============
 
 @router.get("/revenue/leads/{lead_id}/deals")
-async def get_lead_deals(lead_id: str, db = Depends(get_db)):
+async def get_lead_deals(
+    lead_id: str, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Get all deals for a lead"""
+    # Verify lead ownership first
+    lead = await db.revenue_leads.find_one({"lead_id": lead_id, "org_id": current_user.org_id}, {"_id": 1})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+        
     deals = await db.lead_deals.find({"lead_id": lead_id}, {"_id": 0}).to_list(100)
     return {"success": True, "deals": deals, "count": len(deals)}
 
 
 @router.get("/revenue/deals")
-async def get_all_deals(stage: Optional[str] = None, db = Depends(get_db)):
+async def get_all_deals(
+    stage: Optional[str] = None, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Get all deals with optional stage filter"""
-    query = {}
+    # Deals should really be org-scoped too. Since deals belong to leads,
+    # and leads belong to orgs, we cross-reference or assume lead_deals has org_id.
+    # We will assume lead_deals needs to be filtered by leads in the org, or just org_id directly.
+    # For now, let's filter via leads if we can, or just add org_id to deals at creation.
+    # To be safe, we'll fetch deals whose lead_id is in the org's leads.
+    org_leads = await db.revenue_leads.find({"org_id": current_user.org_id}, {"lead_id": 1}).to_list(None)
+    lead_ids = [l["lead_id"] for l in org_leads]
+    
+    query = {"lead_id": {"$in": lead_ids}}
     if stage:
         query["stage"] = stage
     deals = await db.lead_deals.find(query, {"_id": 0}).to_list(1000)
     return {"success": True, "deals": deals, "count": len(deals)}
 
 
-@router.post("/revenue/leads/{lead_id}/deals")
-async def create_deal(lead_id: str, deal: DealCreate, db = Depends(get_db)):
+@router.post("/revenue/leads/{lead_id}/deals", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def create_deal(
+    lead_id: str, 
+    deal: DealCreate, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Create a new deal/opportunity for a lead"""
     # Verify lead exists
-    lead = await db.revenue_leads.find_one({"lead_id": lead_id})
+    lead = await db.revenue_leads.find_one({"lead_id": lead_id, "org_id": current_user.org_id})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
@@ -1513,7 +1626,7 @@ async def create_deal(lead_id: str, deal: DealCreate, db = Depends(get_db)):
     return {"success": True, "message": "Deal created", "deal_id": data["deal_id"]}
 
 
-@router.put("/revenue/deals/{deal_id}")
+@router.put("/revenue/deals/{deal_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_deal(deal_id: str, deal: DealCreate, db = Depends(get_db)):
     """Update a deal"""
     data = deal.dict()
@@ -1524,7 +1637,7 @@ async def update_deal(deal_id: str, deal: DealCreate, db = Depends(get_db)):
     return {"success": True, "message": "Deal updated"}
 
 
-@router.delete("/revenue/deals/{deal_id}")
+@router.delete("/revenue/deals/{deal_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_deal(deal_id: str, db = Depends(get_db)):
     """Delete a deal"""
     result = await db.lead_deals.delete_one({"deal_id": deal_id})
@@ -1535,10 +1648,18 @@ async def delete_deal(deal_id: str, db = Depends(get_db)):
 
 # ============== LEAD CONVERSION (Salesforce) ==============
 
-@router.post("/revenue/leads/{lead_id}/convert")
-async def convert_lead(lead_id: str, create_opportunity: bool = True, db = Depends(get_db)):
+@router.post("/revenue/leads/{lead_id}/convert", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def convert_lead(
+    lead_id: str, 
+    create_opportunity: bool = True, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Convert a lead to Account + Contact + optionally Opportunity (Salesforce style)"""
-    lead = await db.revenue_leads.find_one({"lead_id": lead_id}, {"_id": 0})
+    lead = await db.revenue_leads.find_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    }, {"_id": 0})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
@@ -1625,15 +1746,20 @@ async def convert_lead(lead_id: str, create_opportunity: bool = True, db = Depen
 
 # ============== LIFECYCLE STAGE UPDATE (HubSpot) ==============
 
-@router.put("/revenue/leads/{lead_id}/lifecycle-stage")
-async def update_lifecycle_stage(lead_id: str, stage: str, db = Depends(get_db)):
+@router.put("/revenue/leads/{lead_id}/lifecycle-stage", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def update_lifecycle_stage(
+    lead_id: str, 
+    stage: str, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Update lead lifecycle stage (HubSpot style)"""
     valid_stages = ["Subscriber", "Lead", "MQL", "SQL", "Opportunity", "Customer"]
     if stage not in valid_stages:
         raise HTTPException(status_code=400, detail=f"Invalid stage. Must be one of: {valid_stages}")
     
     result = await db.revenue_leads.update_one(
-        {"lead_id": lead_id},
+        {"lead_id": lead_id, "org_id": current_user.org_id},
         {"$set": {
             "lifecycle_stage": stage,
             "updated_at": datetime.now(timezone.utc).isoformat()
@@ -1646,10 +1772,11 @@ async def update_lifecycle_stage(lead_id: str, stage: str, db = Depends(get_db))
 
 # ============== LEAD ENGAGEMENT TRACKING (HubSpot) ==============
 
-@router.post("/revenue/leads/{lead_id}/track-engagement")
+@router.post("/revenue/leads/{lead_id}/track-engagement", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def track_engagement(
     lead_id: str, 
     engagement_type: str,  # email_open, email_click, website_visit, page_view, form_submission
+    current_user: WorkspaceUser = Depends(get_current_user),
     db = Depends(get_db)
 ):
     """Track an engagement event for a lead"""
@@ -1667,7 +1794,7 @@ async def track_engagement(
     
     field = field_map[engagement_type]
     result = await db.revenue_leads.update_one(
-        {"lead_id": lead_id},
+        {"lead_id": lead_id, "org_id": current_user.org_id},
         {
             "$inc": {field: 1},
             "$set": {
@@ -1684,9 +1811,16 @@ async def track_engagement(
 # ============== LEAD TIMELINE (Full Activity History) ==============
 
 @router.get("/revenue/leads/{lead_id}/timeline")
-async def get_lead_timeline(lead_id: str, db = Depends(get_db)):
+async def get_lead_timeline(
+    lead_id: str, 
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Get complete timeline/activity history for a lead"""
-    lead = await db.revenue_leads.find_one({"lead_id": lead_id}, {"_id": 0})
+    lead = await db.revenue_leads.find_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    }, {"_id": 0})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
@@ -1749,9 +1883,12 @@ async def get_lead_timeline(lead_id: str, db = Depends(get_db)):
 # ============== LEAD DASHBOARD STATS ==============
 
 @router.get("/revenue/leads/dashboard/stats")
-async def get_lead_dashboard_stats(db = Depends(get_db)):
+async def get_lead_dashboard_stats(
+    current_user: WorkspaceUser = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Get comprehensive lead dashboard statistics"""
-    leads = await db.revenue_leads.find({}, {"_id": 0}).to_list(1000)
+    leads = await db.revenue_leads.find({"org_id": current_user.org_id}, {"_id": 0}).to_list(1000)
     
     total = len(leads)
     
@@ -1820,7 +1957,7 @@ async def get_evaluations(db = Depends(get_db)):
     items = await db.revenue_evaluations.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "evaluations": items, "count": len(items)}
 
-@router.post("/revenue/evaluations")
+@router.post("/revenue/evaluations", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_evaluation(evaluation: EvaluationCreate, db = Depends(get_db)):
     data = evaluation.dict()
     data["evaluation_id"] = f"EVAL-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -1835,14 +1972,14 @@ async def get_evaluation_detail(evaluation_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Evaluation not found")
     return {"success": True, "evaluation": item}
 
-@router.put("/revenue/evaluations/{evaluation_id}")
+@router.put("/revenue/evaluations/{evaluation_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_evaluation(evaluation_id: str, evaluation: EvaluationCreate, db = Depends(get_db)):
     result = await db.revenue_evaluations.update_one({"evaluation_id": evaluation_id}, {"$set": evaluation.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Evaluation not found")
     return {"success": True, "message": "Evaluation updated"}
 
-@router.delete("/revenue/evaluations/{evaluation_id}")
+@router.delete("/revenue/evaluations/{evaluation_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_evaluation(evaluation_id: str, db = Depends(get_db)):
     result = await db.revenue_evaluations.delete_one({"evaluation_id": evaluation_id})
     if result.deleted_count == 0:
@@ -1855,7 +1992,7 @@ async def get_commits(db = Depends(get_db)):
     items = await db.revenue_commits.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "commits": items, "count": len(items)}
 
-@router.post("/revenue/commits")
+@router.post("/revenue/commits", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_commit(commit: CommitCreate, db = Depends(get_db)):
     data = commit.dict()
     data["commit_id"] = f"CMT-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -1870,14 +2007,14 @@ async def get_commit_detail(commit_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Commit not found")
     return {"success": True, "commit": item}
 
-@router.put("/revenue/commits/{commit_id}")
+@router.put("/revenue/commits/{commit_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_commit(commit_id: str, commit: CommitCreate, db = Depends(get_db)):
     result = await db.revenue_commits.update_one({"commit_id": commit_id}, {"$set": commit.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Commit not found")
     return {"success": True, "message": "Commit updated"}
 
-@router.delete("/revenue/commits/{commit_id}")
+@router.delete("/revenue/commits/{commit_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_commit(commit_id: str, db = Depends(get_db)):
     result = await db.revenue_commits.delete_one({"commit_id": commit_id})
     if result.deleted_count == 0:
@@ -1890,7 +2027,7 @@ async def get_contracts(db = Depends(get_db)):
     items = await db.revenue_contracts.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "contracts": items, "count": len(items)}
 
-@router.post("/revenue/contracts")
+@router.post("/revenue/contracts", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_contract(contract: ContractCreate, db = Depends(get_db)):
     data = contract.dict()
     data["contract_id"] = f"CNT-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -1905,14 +2042,14 @@ async def get_contract_detail(contract_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Contract not found")
     return {"success": True, "contract": item}
 
-@router.put("/revenue/contracts/{contract_id}")
+@router.put("/revenue/contracts/{contract_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_contract(contract_id: str, contract: ContractCreate, db = Depends(get_db)):
     result = await db.revenue_contracts.update_one({"contract_id": contract_id}, {"$set": contract.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Contract not found")
     return {"success": True, "message": "Contract updated"}
 
-@router.delete("/revenue/contracts/{contract_id}")
+@router.delete("/revenue/contracts/{contract_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_contract(contract_id: str, db = Depends(get_db)):
     result = await db.revenue_contracts.delete_one({"contract_id": contract_id})
     if result.deleted_count == 0:
@@ -1927,7 +2064,7 @@ async def get_procurement_requests(status: Optional[str] = None, db = Depends(ge
     items = await db.procurement_requests.find(query, {"_id": 0}).to_list(1000)
     return {"success": True, "requests": items, "count": len(items)}
 
-@router.post("/procurement/requests")
+@router.post("/procurement/requests", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_procurement_request(pr: ProcurementCreate, db = Depends(get_db)):
     data = pr.dict()
     data["pr_id"] = f"PR-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -1942,14 +2079,14 @@ async def get_pr_detail(pr_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="PR not found")
     return {"success": True, "request": item}
 
-@router.put("/procurement/requests/{pr_id}")
+@router.put("/procurement/requests/{pr_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_pr(pr_id: str, pr: ProcurementCreate, db = Depends(get_db)):
     result = await db.procurement_requests.update_one({"pr_id": pr_id}, {"$set": pr.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="PR not found")
     return {"success": True, "message": "PR updated"}
 
-@router.delete("/procurement/requests/{pr_id}")
+@router.delete("/procurement/requests/{pr_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_pr(pr_id: str, db = Depends(get_db)):
     result = await db.procurement_requests.delete_one({"pr_id": pr_id})
     if result.deleted_count == 0:
@@ -1962,7 +2099,7 @@ async def get_purchase_orders(db = Depends(get_db)):
     items = await db.purchase_orders.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "orders": items, "count": len(items)}
 
-@router.post("/procurement/orders")
+@router.post("/procurement/orders", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_purchase_order(po: PurchaseOrderCreate, db = Depends(get_db)):
     data = po.dict()
     data["po_id"] = f"PO-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -1977,14 +2114,14 @@ async def get_po_detail(po_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="PO not found")
     return {"success": True, "order": item}
 
-@router.put("/procurement/orders/{po_id}")
+@router.put("/procurement/orders/{po_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_po(po_id: str, po: PurchaseOrderCreate, db = Depends(get_db)):
     result = await db.purchase_orders.update_one({"po_id": po_id}, {"$set": po.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="PO not found")
     return {"success": True, "message": "PO updated"}
 
-@router.delete("/procurement/orders/{po_id}")
+@router.delete("/procurement/orders/{po_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_po(po_id: str, db = Depends(get_db)):
     result = await db.purchase_orders.delete_one({"po_id": po_id})
     if result.deleted_count == 0:
@@ -1997,7 +2134,7 @@ async def get_procurement_evaluations(db = Depends(get_db)):
     items = await db.procurement_evaluations.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "evaluations": items, "count": len(items)}
 
-@router.post("/procurement/evaluations")
+@router.post("/procurement/evaluations", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_procurement_evaluation(evaluation: EvaluationCreate, db = Depends(get_db)):
     data = evaluation.dict()
     data["evaluation_id"] = f"PE-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -2012,14 +2149,14 @@ async def get_procurement_evaluation_detail(evaluation_id: str, db = Depends(get
         raise HTTPException(status_code=404, detail="Evaluation not found")
     return {"success": True, "evaluation": item}
 
-@router.put("/procurement/evaluations/{evaluation_id}")
+@router.put("/procurement/evaluations/{evaluation_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_procurement_evaluation(evaluation_id: str, evaluation: EvaluationCreate, db = Depends(get_db)):
     result = await db.procurement_evaluations.update_one({"evaluation_id": evaluation_id}, {"$set": evaluation.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Evaluation not found")
     return {"success": True, "message": "Evaluation updated"}
 
-@router.delete("/procurement/evaluations/{evaluation_id}")
+@router.delete("/procurement/evaluations/{evaluation_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_procurement_evaluation(evaluation_id: str, db = Depends(get_db)):
     result = await db.procurement_evaluations.delete_one({"evaluation_id": evaluation_id})
     if result.deleted_count == 0:
@@ -2032,7 +2169,7 @@ async def get_procurement_commits(db = Depends(get_db)):
     items = await db.procurement_commits.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "commits": items, "count": len(items)}
 
-@router.post("/procurement/commits")
+@router.post("/procurement/commits", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_procurement_commit(commit: CommitCreate, db = Depends(get_db)):
     data = commit.dict()
     data["commit_id"] = f"PC-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -2047,14 +2184,14 @@ async def get_procurement_commit_detail(commit_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Commit not found")
     return {"success": True, "commit": item}
 
-@router.put("/procurement/commits/{commit_id}")
+@router.put("/procurement/commits/{commit_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_procurement_commit(commit_id: str, commit: CommitCreate, db = Depends(get_db)):
     result = await db.procurement_commits.update_one({"commit_id": commit_id}, {"$set": commit.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Commit not found")
     return {"success": True, "message": "Commit updated"}
 
-@router.delete("/procurement/commits/{commit_id}")
+@router.delete("/procurement/commits/{commit_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_procurement_commit(commit_id: str, db = Depends(get_db)):
     result = await db.procurement_commits.delete_one({"commit_id": commit_id})
     if result.deleted_count == 0:
@@ -2067,7 +2204,7 @@ async def get_procurement_contracts(db = Depends(get_db)):
     items = await db.procurement_contracts.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "contracts": items, "count": len(items)}
 
-@router.post("/procurement/contracts")
+@router.post("/procurement/contracts", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_procurement_contract(contract: ContractCreate, db = Depends(get_db)):
     data = contract.dict()
     data["contract_id"] = f"PCT-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -2082,14 +2219,14 @@ async def get_procurement_contract_detail(contract_id: str, db = Depends(get_db)
         raise HTTPException(status_code=404, detail="Contract not found")
     return {"success": True, "contract": item}
 
-@router.put("/procurement/contracts/{contract_id}")
+@router.put("/procurement/contracts/{contract_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_procurement_contract(contract_id: str, contract: ContractCreate, db = Depends(get_db)):
     result = await db.procurement_contracts.update_one({"contract_id": contract_id}, {"$set": contract.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Contract not found")
     return {"success": True, "message": "Contract updated"}
 
-@router.delete("/procurement/contracts/{contract_id}")
+@router.delete("/procurement/contracts/{contract_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_procurement_contract(contract_id: str, db = Depends(get_db)):
     result = await db.procurement_contracts.delete_one({"contract_id": contract_id})
     if result.deleted_count == 0:
@@ -2104,7 +2241,7 @@ async def get_policies(status: Optional[str] = None, db = Depends(get_db)):
     items = await db.governance_policies.find(query, {"_id": 0}).to_list(1000)
     return {"success": True, "policies": items, "count": len(items)}
 
-@router.post("/governance/policies")
+@router.post("/governance/policies", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_policy(policy: PolicyCreate, db = Depends(get_db)):
     data = policy.dict()
     data["policy_id"] = f"POL-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -2119,14 +2256,14 @@ async def get_policy_detail(policy_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Policy not found")
     return {"success": True, "policy": item}
 
-@router.put("/governance/policies/{policy_id}")
+@router.put("/governance/policies/{policy_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_policy(policy_id: str, policy: PolicyCreate, db = Depends(get_db)):
     result = await db.governance_policies.update_one({"policy_id": policy_id}, {"$set": policy.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Policy not found")
     return {"success": True, "message": "Policy updated"}
 
-@router.delete("/governance/policies/{policy_id}")
+@router.delete("/governance/policies/{policy_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_policy(policy_id: str, db = Depends(get_db)):
     result = await db.governance_policies.delete_one({"policy_id": policy_id})
     if result.deleted_count == 0:
@@ -2139,7 +2276,7 @@ async def get_limits(db = Depends(get_db)):
     items = await db.governance_limits.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "limits": items, "count": len(items)}
 
-@router.post("/governance/limits")
+@router.post("/governance/limits", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_limit(limit: LimitCreate, db = Depends(get_db)):
     data = limit.dict()
     data["limit_id"] = f"LMT-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -2154,14 +2291,14 @@ async def get_limit_detail(limit_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Limit not found")
     return {"success": True, "limit": item}
 
-@router.put("/governance/limits/{limit_id}")
+@router.put("/governance/limits/{limit_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_limit(limit_id: str, limit: LimitCreate, db = Depends(get_db)):
     result = await db.governance_limits.update_one({"limit_id": limit_id}, {"$set": limit.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Limit not found")
     return {"success": True, "message": "Limit updated"}
 
-@router.delete("/governance/limits/{limit_id}")
+@router.delete("/governance/limits/{limit_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_limit(limit_id: str, db = Depends(get_db)):
     result = await db.governance_limits.delete_one({"limit_id": limit_id})
     if result.deleted_count == 0:
@@ -2174,7 +2311,7 @@ async def get_authorities(db = Depends(get_db)):
     items = await db.governance_authority.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "authorities": items, "count": len(items)}
 
-@router.post("/governance/authority")
+@router.post("/governance/authority", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def create_authority(authority: AuthorityCreate, db = Depends(get_db)):
     data = authority.dict()
     data["authority_id"] = f"AUTH-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -2189,14 +2326,14 @@ async def get_authority_detail(authority_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Authority not found")
     return {"success": True, "authority": item}
 
-@router.put("/governance/authority/{authority_id}")
+@router.put("/governance/authority/{authority_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def update_authority(authority_id: str, authority: AuthorityCreate, db = Depends(get_db)):
     result = await db.governance_authority.update_one({"authority_id": authority_id}, {"$set": authority.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Authority not found")
     return {"success": True, "message": "Authority updated"}
 
-@router.delete("/governance/authority/{authority_id}")
+@router.delete("/governance/authority/{authority_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def delete_authority(authority_id: str, db = Depends(get_db)):
     result = await db.governance_authority.delete_one({"authority_id": authority_id})
     if result.deleted_count == 0:
@@ -2209,7 +2346,7 @@ async def get_risks(db = Depends(get_db)):
     items = await db.governance_risks.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "risks": items, "count": len(items)}
 
-@router.post("/governance/risks")
+@router.post("/governance/risks", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_risk(risk: RiskCreate, db = Depends(get_db)):
     data = risk.dict()
     data["risk_id"] = f"RSK-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -2224,14 +2361,14 @@ async def get_risk_detail(risk_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Risk not found")
     return {"success": True, "risk": item}
 
-@router.put("/governance/risks/{risk_id}")
+@router.put("/governance/risks/{risk_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_risk(risk_id: str, risk: RiskCreate, db = Depends(get_db)):
     result = await db.governance_risks.update_one({"risk_id": risk_id}, {"$set": risk.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Risk not found")
     return {"success": True, "message": "Risk updated"}
 
-@router.delete("/governance/risks/{risk_id}")
+@router.delete("/governance/risks/{risk_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_risk(risk_id: str, db = Depends(get_db)):
     result = await db.governance_risks.delete_one({"risk_id": risk_id})
     if result.deleted_count == 0:
@@ -2244,7 +2381,7 @@ async def get_audits(db = Depends(get_db)):
     items = await db.governance_audits.find({}, {"_id": 0}).to_list(1000)
     return {"success": True, "audits": items, "count": len(items)}
 
-@router.post("/governance/audits")
+@router.post("/governance/audits", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def create_audit(audit: AuditCreate, db = Depends(get_db)):
     data = audit.dict()
     data["audit_id"] = f"AUD-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -2259,14 +2396,14 @@ async def get_audit_detail(audit_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Audit not found")
     return {"success": True, "audit": item}
 
-@router.put("/governance/audits/{audit_id}")
+@router.put("/governance/audits/{audit_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def update_audit(audit_id: str, audit: AuditCreate, db = Depends(get_db)):
     result = await db.governance_audits.update_one({"audit_id": audit_id}, {"$set": audit.dict()})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Audit not found")
     return {"success": True, "message": "Audit updated"}
 
-@router.delete("/governance/audits/{audit_id}")
+@router.delete("/governance/audits/{audit_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def delete_audit(audit_id: str, db = Depends(get_db)):
     result = await db.governance_audits.delete_one({"audit_id": audit_id})
     if result.deleted_count == 0:

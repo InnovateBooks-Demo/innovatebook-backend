@@ -4,6 +4,7 @@ Full enterprise-grade implementation with stage transitions, governance, and app
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Query, Header, UploadFile, File
+from fastapi.security import HTTPAuthorizationCredentials
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any, Tuple
@@ -11,7 +12,15 @@ from datetime import datetime, timezone, timedelta,date
 from enum import Enum
 import logging
 import uuid
+import logging
+import uuid
 import jwt
+import os
+import re
+import httpx
+from routes.deps import get_current_user, User, security, JWT_ALGORITHM
+
+# Auth moved to routes.deps
 import os
 import re
 import httpx
@@ -27,6 +36,32 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/commerce/workflow", tags=["IB Commerce Workflow"])
 legacy_router = APIRouter(prefix="/commerce", tags=["IB Commerce Workflow Legacy"])
+
+# ─── Inline RBAC helper ───────────────────────────────────────────────────────
+_ROLE_RANK = {"owner": 4, "admin": 3, "manager": 2, "member": 1, "viewer": 0}
+
+def _require_role(allowed_roles: list):
+    """Dependency factory: reject if caller's role rank < min allowed rank."""
+    min_rank = min(_ROLE_RANK.get(r, 0) for r in allowed_roles)
+
+    async def _check(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+        try:
+            payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(status_code=401, detail="Token has expired")
+        except jwt.PyJWTError:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        if payload.get("is_super_admin"):
+            return payload
+        role = (payload.get("role_id") or "member").strip().lower()
+        if _ROLE_RANK.get(role, 0) < min_rank:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Insufficient permissions. Required: {' or '.join(allowed_roles)}. Your role: '{role}'.",
+            )
+        return payload
+
+    return _check
 
 
 # ============== WORKSPACE & INTELLIGENCE INTEGRATION ==============
@@ -906,11 +941,12 @@ def _build_warnings(signals: Dict[str, Any]) -> List[str]:
 async def get_revenue_leads(
     stage: Optional[str] = None,
     owner_id: Optional[str] = None,
+    current_user: User = Depends(get_current_user),
     db = Depends(get_db)
 ):
     """Get all revenue leads with optional filters. Each lead includes _computed fields:
     _computed.age_days, _computed.inactive_days, _computed.health, _computed.icp_fit"""
-    query = {}
+    query = {"org_id": current_user.org_id}
     if stage:
         query["stage"] = stage
     if owner_id:
@@ -923,31 +959,26 @@ async def get_revenue_leads(
 
     return {"success": True, "leads": leads, "count": len(leads)}
 
-@router.post("/revenue/leads")
-async def create_revenue_lead(lead: RevenueLeadCreate, db = Depends(get_db), authorization: str = Header(None)):
+@router.post("/revenue/leads", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def create_revenue_lead(
+    lead: RevenueLeadCreate, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Create a new revenue lead - Stage 1"""
     data = lead.dict()
     
     # ── Owner Assignment (from token) ────────────────────────────────────────
     # Default fallback if no token
-    owner_id = data.get("owner_id") or "user_demo_legacy"
-    owner_name = "Unassigned"
-    owner_email = None
-
-    if authorization:
-        try:
-            token = authorization.replace("Bearer ", "")
-            payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-            # Extract fields expected by frontend
-            owner_id = payload.get("user_id") or payload.get("id") or owner_id
-            owner_email = payload.get("email")
-            owner_name = payload.get("full_name") or owner_email or "Unassigned"
-        except Exception:
-            pass
+    owner_id = data.get("owner_id") or current_user.user_id
+    owner_name = current_user.full_name or "Unassigned"
+    owner_email = current_user.email
+    org_id = current_user.org_id
 
     data["owner_id"] = owner_id
     data["owner_name"] = owner_name
     data["owner_email"] = owner_email
+    data["org_id"] = org_id
 
     data["lead_id"] = f"REV-LEAD-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     data["stage"] = LeadStage.NEW.value
@@ -973,7 +1004,8 @@ async def create_revenue_lead(lead: RevenueLeadCreate, db = Depends(get_db), aut
         "assigned_to_user": data.get("owner_id"),
         "priority": "high" if data.get("estimated_deal_value", 0) > 1000000 else "medium",
         "source": "revenue_workflow",
-        "workflow_ref": {"type": "lead", "id": data["lead_id"], "stage": "new"}
+        "workflow_ref": {"type": "lead", "id": data["lead_id"], "stage": "new"},
+        "created_by": current_user.user_id
     })
     
     # Create intelligence signal for new lead
@@ -986,7 +1018,8 @@ async def create_revenue_lead(lead: RevenueLeadCreate, db = Depends(get_db), aut
         "source": "workflow_engine",
         "context_type": "revenue_lead",
         "context_id": data["lead_id"],
-        "metadata": {"company": data.get("company_name"), "value": data.get("estimated_deal_value")}
+        "metadata": {"company": data.get("company_name"), "value": data.get("estimated_deal_value")},
+        "org_id": org_id
     })
     
     # Create activity record
@@ -1226,7 +1259,7 @@ async def get_import_template():
 # ENDPOINT 1 — Preview
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-@router.post("/revenue/leads/import/preview")
+@router.post("/revenue/leads/import/preview", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def import_leads_preview(
     file: UploadFile = File(...),
     db=Depends(get_db),
@@ -1503,9 +1536,10 @@ class ImportCommitRequest(BaseModel):
     import_token: str
     mode: str = "skip_duplicates"  # skip_duplicates | import_all | import_non_duplicates_only
 
-@router.post("/revenue/leads/import/commit")
+@router.post("/revenue/leads/import/commit", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def import_leads_commit(
     req: ImportCommitRequest,
+    current_user: User = Depends(get_current_user),
     db=Depends(get_db),
 ):
     """
@@ -1538,6 +1572,7 @@ async def import_leads_commit(
 
         doc = {
             "lead_id":              lead_id,
+            "org_id":               current_user.org_id,
             "stage":                "imported",
             # Company
             "company_name":         row["company_name"],
@@ -1587,6 +1622,8 @@ async def import_leads_commit(
     # Audit entry
     await db.revenue_workflow_audits.insert_one({
         "action":              "import_committed",
+        "org_id":              current_user.org_id,
+        "operator_id":         current_user.user_id,
         "timestamp":           now_iso,
         "total_in_token":      len(rows),
         "inserted":            inserted_count,
@@ -1765,9 +1802,16 @@ async def enrich_company(
 
 
 @router.get("/revenue/leads/{lead_id}")
-async def get_revenue_lead(lead_id: str, db = Depends(get_db)):
+async def get_revenue_lead(
+    lead_id: str, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Get lead details with recomputed fields and auto-promotion"""
-    lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id}, {"_id": 0})
+    lead = await db.revenue_workflow_leads.find_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    }, {"_id": 0})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
@@ -1803,8 +1847,20 @@ async def get_revenue_lead(lead_id: str, db = Depends(get_db)):
     return {"success": True, "lead": lead}
 
 @router.get("/revenue/leads/{lead_id}/activities")
-async def get_lead_activities(lead_id: str, db = Depends(get_db)):
+async def get_lead_activities(
+    lead_id: str, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Get all manual activities for a lead (sorted desc) with enrichment"""
+    # Verify lead ownership
+    lead = await db.revenue_workflow_leads.find_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    }, {"_id": 1})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
     activities = await db.revenue_workflow_activities.find(
         {"lead_id": lead_id}, {"_id": 0}
     ).sort("created_at", -1).to_list(100)
@@ -1832,11 +1888,24 @@ async def get_lead_activities(lead_id: str, db = Depends(get_db)):
                 
     return {"success": True, "activities": activities}
 
-@router.post("/revenue/leads/{lead_id}/activities")
-async def log_lead_activity(lead_id: str, act: RevenueActivityCreate, db = Depends(get_db)):
+@router.post("/revenue/leads/{lead_id}/activities", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def log_lead_activity(
+    lead_id: str, 
+    act: RevenueActivityCreate, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Log a new activity, recompute signals and update lead health"""
     now_iso = datetime.now(timezone.utc).isoformat()
     
+    # Verify lead ownership
+    lead = await db.revenue_workflow_leads.find_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    })
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+        
     # 1. Store activity
     activity_doc = {
         "activity_id": f"ACT-LOG-{uuid.uuid4().hex[:6].upper()}",
@@ -1849,7 +1918,7 @@ async def log_lead_activity(lead_id: str, act: RevenueActivityCreate, db = Depen
         "from_email": act.from_email,
         "to_email": act.to_email,
         "created_at": now_iso,
-        "actor_id": "system"  # In real app, pulled from auth token
+        "actor_id": current_user.user_id
     }
     await db.revenue_workflow_activities.insert_one(activity_doc)
     
@@ -1859,10 +1928,6 @@ async def log_lead_activity(lead_id: str, act: RevenueActivityCreate, db = Depen
     signals = _extract_signals(summaries)
     
     # 3. Update Lead (last_activity_at, signals, _computed)
-    lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id})
-    if not lead:
-        raise HTTPException(status_code=404, detail="Lead not found")
-    
     current_stage = lead.get("stage", "new")
     
     # --- Auto-Promotion (Activity -> Contacted) ---
@@ -1922,8 +1987,13 @@ class EmailEngagementCreate(BaseModel):
     html: str                    # HTML body
     text: Optional[str] = None   # plain-text fallback (optional)
 
-@router.post("/revenue/leads/{lead_id}/engagements/email")
-async def send_lead_email(lead_id: str, payload: EmailEngagementCreate, db = Depends(get_db)):
+@router.post("/revenue/leads/{lead_id}/engagements/email", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def send_lead_email(
+    lead_id: str, 
+    payload: EmailEngagementCreate, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """
     Compose and send an outbound email to a lead via SendGrid.
     Creates an engagement record and updates it with delivery status.
@@ -1932,7 +2002,10 @@ async def send_lead_email(lead_id: str, payload: EmailEngagementCreate, db = Dep
     now_iso = datetime.now(timezone.utc).isoformat()
 
     # 1. Validate lead exists
-    lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id}, {"_id": 0})
+    lead = await db.revenue_workflow_leads.find_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    }, {"_id": 0})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
 
@@ -1957,7 +2030,7 @@ async def send_lead_email(lead_id: str, payload: EmailEngagementCreate, db = Dep
         "status": "queued",
         "provider": "sendgrid",
         "provider_message_id": None,
-        "created_by": "system",   # TODO: replace with auth user_id when auth added to this endpoint
+        "created_by": current_user.user_id,
         "created_at": now_iso,
         "updated_at": now_iso,
     }
@@ -2008,7 +2081,7 @@ async def send_lead_email(lead_id: str, payload: EmailEngagementCreate, db = Dep
         "engagement_id": engagement_id,
         "status": new_status,
         "created_at": now_iso,
-        "actor_id": "system",
+        "actor_id": current_user.user_id,
     }
     await db.revenue_workflow_activities.insert_one(activity_doc)
 
@@ -2057,13 +2130,20 @@ async def send_lead_email(lead_id: str, payload: EmailEngagementCreate, db = Dep
 
 
 @router.get("/revenue/leads/{lead_id}/engagements")
-async def get_lead_engagements(lead_id: str, db = Depends(get_db)):
+async def get_lead_engagements(
+    lead_id: str, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """
     Return all email-type engagements for a lead (newest first).
     Pure engagement records (status tracking, provider metadata).
     Use /activities for the unified activity log.
     """
-    lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id}, {"_id": 0, "lead_id": 1})
+    lead = await db.revenue_workflow_leads.find_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    }, {"_id": 0, "lead_id": 1})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
 
@@ -2075,12 +2155,20 @@ async def get_lead_engagements(lead_id: str, db = Depends(get_db)):
 
 
 
-@router.patch("/revenue/leads/{lead_id}/status")
-async def update_lead_status(lead_id: str, req: RevenueStatusUpdate, db = Depends(get_db)):
+@router.patch("/revenue/leads/{lead_id}/status", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
+async def update_lead_status(
+    lead_id: str, 
+    req: RevenueStatusUpdate, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Gated status update with BANT signal validation"""
     now_iso = datetime.now(timezone.utc).isoformat()
     
-    lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id})
+    lead = await db.revenue_workflow_leads.find_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    })
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
@@ -2166,7 +2254,7 @@ async def update_lead_status(lead_id: str, req: RevenueStatusUpdate, db = Depend
         })
     
     await db.revenue_workflow_leads.update_one(
-        {"lead_id": lead_id},
+        {"lead_id": lead_id, "org_id": current_user.org_id},
         {"$set": update_doc}
     )
     
@@ -2296,11 +2384,19 @@ def _validate_evaluation_progression(eval_data: dict, current_stage: Any, target
     return True, "", []
 
 
-@router.patch("/revenue/leads/{lead_id}/evaluate-stage")
-async def update_evaluate_stage(lead_id: str, req: EvaluateStageUpdate, db = Depends(get_db)):
+@router.patch("/revenue/leads/{lead_id}/evaluate-stage", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
+async def update_evaluate_stage(
+    lead_id: str, 
+    req: EvaluateStageUpdate, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Update evaluate sub-stage with validation and optional atomic save"""
     try:
-        lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id})
+        lead = await db.revenue_workflow_leads.find_one({
+            "lead_id": lead_id,
+            "org_id": current_user.org_id
+        })
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -2331,7 +2427,7 @@ async def update_evaluate_stage(lead_id: str, req: EvaluateStageUpdate, db = Dep
 
         now_iso = datetime.now(timezone.utc).isoformat()
         await db.revenue_workflow_leads.update_one(
-            {"lead_id": lead_id},
+            {"lead_id": lead_id, "org_id": current_user.org_id},
             {"$set": {
                 "evaluate_stage": new_stage,
                 "updated_at": now_iso
@@ -2372,8 +2468,13 @@ async def update_evaluate_stage(lead_id: str, req: EvaluateStageUpdate, db = Dep
         }
 
 
-@router.put("/revenue/leads/{lead_id}/evaluation-data")
-async def update_evaluation_data(lead_id: str, req: EvaluationDataUpdate, db = Depends(get_db)):
+@router.put("/revenue/leads/{lead_id}/evaluation-data", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def update_evaluation_data(
+    lead_id: str, 
+    req: EvaluationDataUpdate, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Update evaluation data for a specific stage"""
     now_iso = datetime.now(timezone.utc).isoformat()
     # Use dot notation to update nested field in MongoDB
@@ -2383,7 +2484,7 @@ async def update_evaluation_data(lead_id: str, req: EvaluationDataUpdate, db = D
     logger.info(f"[SAVE] Updating {lead_id} {stage_val} data with: {list(req.data.keys())}")
     
     result = await db.revenue_workflow_leads.update_one(
-        {"lead_id": lead_id},
+        {"lead_id": lead_id, "org_id": current_user.org_id},
         {"$set": {
             update_key: req.data,
             "updated_at": now_iso
@@ -2393,20 +2494,35 @@ async def update_evaluation_data(lead_id: str, req: EvaluationDataUpdate, db = D
         raise HTTPException(status_code=404, detail="Lead not found")
     return {"success": True, "message": f"Evaluation data for {req.stage} updated"}
 
-@router.put("/revenue/leads/{lead_id}")
-async def update_revenue_lead(lead_id: str, lead: RevenueLeadCreate, db = Depends(get_db)):
+@router.put("/revenue/leads/{lead_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
+async def update_revenue_lead(
+    lead_id: str, 
+    lead: RevenueLeadCreate, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Update lead"""
     data = lead.dict()
     data["updated_at"] = datetime.now(timezone.utc).isoformat()
-    result = await db.revenue_workflow_leads.update_one({"lead_id": lead_id}, {"$set": data})
+    result = await db.revenue_workflow_leads.update_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id}, 
+        {"$set": data}
+    )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Lead not found")
     return {"success": True, "message": "Lead updated"}
 
-@router.delete("/revenue/leads/{lead_id}")
-async def delete_revenue_lead(lead_id: str, db = Depends(get_db)):
+@router.delete("/revenue/leads/{lead_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
+async def delete_revenue_lead(
+    lead_id: str, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Delete a revenue lead"""
-    result = await db.revenue_workflow_leads.delete_one({"lead_id": lead_id})
+    result = await db.revenue_workflow_leads.delete_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    })
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Lead not found")
     
@@ -2416,14 +2532,22 @@ async def delete_revenue_lead(lead_id: str, db = Depends(get_db)):
     
     return {"success": True, "message": "Lead deleted successfully"}
 
-@router.put("/revenue/leads/{lead_id}/stage")
-async def change_lead_stage(lead_id: str, new_stage: str, db = Depends(get_db)):
+@router.put("/revenue/leads/{lead_id}/stage", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
+async def change_lead_stage(
+    lead_id: str, 
+    new_stage: str, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Change lead stage"""
     valid_stages = [s.value for s in LeadStage]
     if new_stage not in valid_stages:
         raise HTTPException(status_code=400, detail=f"Invalid stage. Must be one of: {valid_stages}")
     
-    lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id})
+    lead = await db.revenue_workflow_leads.find_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    })
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
@@ -2440,15 +2564,22 @@ async def change_lead_stage(lead_id: str, new_stage: str, db = Depends(get_db)):
         raise HTTPException(status_code=400, detail=f"Cannot transition from {current_stage} to {new_stage}")
     
     await db.revenue_workflow_leads.update_one(
-        {"lead_id": lead_id},
+        {"lead_id": lead_id, "org_id": current_user.org_id},
         {"$set": {"stage": new_stage, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
     return {"success": True, "message": f"Stage changed to {new_stage}"}
 
-@router.post("/revenue/leads/{lead_id}/convert-to-evaluate")
-async def convert_lead_to_evaluate(lead_id: str, db = Depends(get_db)):
+@router.post("/revenue/leads/{lead_id}/convert-to-evaluate", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
+async def convert_lead_to_evaluate(
+    lead_id: str, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Convert qualified lead to evaluation - Creates draft party and evaluation record"""
-    lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id})
+    lead = await db.revenue_workflow_leads.find_one({
+        "lead_id": lead_id,
+        "org_id": current_user.org_id
+    })
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
@@ -2475,6 +2606,7 @@ async def convert_lead_to_evaluate(lead_id: str, db = Depends(get_db)):
             "phone": lead.get("contact_phone"),
             "is_primary": True
         }],
+        "org_id": current_user.org_id,
         "created_at": now
     }
     await db.revenue_workflow_parties.insert_one(party_data)
@@ -2496,6 +2628,7 @@ async def convert_lead_to_evaluate(lead_id: str, db = Depends(get_db)):
         "lead_source": lead.get("lead_source"),
         "owner": lead.get("owner_id") or lead.get("owner_name"),
         "notes": lead.get("notes"),
+        "org_id": current_user.org_id,
         
         "opportunity_type": "New Business",
         "expected_deal_value": lead.get("estimated_deal_value", 0),
@@ -2518,7 +2651,7 @@ async def convert_lead_to_evaluate(lead_id: str, db = Depends(get_db)):
     
     # Lock Lead
     await db.revenue_workflow_leads.update_one(
-        {"lead_id": lead_id},
+        {"lead_id": lead_id, "org_id": current_user.org_id},
         {"$set": {
             "is_converted": True,
             "converted_at": now,
@@ -3080,7 +3213,7 @@ async def recalculate_evaluation_economics(evaluation_id: str, db):
     
     return summary_data
 
-@router.post("/revenue/evaluations/{evaluation_id}/items")
+@router.post("/revenue/evaluations/{evaluation_id}/items", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def add_evaluation_items(evaluation_id: str, payload: RevenueEvaluationSingleItemCreate, db = Depends(get_db)):
     """Add a selected catalog item into the evaluation as an evaluation item entry"""
     eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
@@ -3223,7 +3356,7 @@ async def resolve_catalog_item(db, item_id: str):
 async def create_conversion_audit(db, lead_id: str, evaluation_id: str, user_id: str):
     pass # Placeholder for actual implementation
 
-@router.patch("/revenue/evaluations/{evaluation_id}/items/{item_id}")
+@router.patch("/revenue/evaluations/{evaluation_id}/items/{item_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_evaluation_item(evaluation_id: str, item_id: str, payload: RevenueEvaluationItemUpdate, db = Depends(get_db)):
     """Update a specific evaluation item and recalculate financials"""
     eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
@@ -3289,7 +3422,7 @@ async def update_evaluation_item(evaluation_id: str, item_id: str, payload: Reve
         "evaluation_summary": summary
     }
 
-@router.delete("/revenue/evaluations/{evaluation_id}/items/{item_id}")
+@router.delete("/revenue/evaluations/{evaluation_id}/items/{item_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def delete_evaluation_item(evaluation_id: str, item_id: str, db = Depends(get_db)):
     """Delete an item from an evaluation and recalculate financials"""
     eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
@@ -3318,7 +3451,7 @@ async def delete_evaluation_item(evaluation_id: str, item_id: str, db = Depends(
         "evaluation_summary": summary
     }
 
-@router.put("/revenue/evaluations/{evaluation_id}")
+@router.put("/revenue/evaluations/{evaluation_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_revenue_evaluation(evaluation_id: str, payload: RevenueEvaluationUpdate, db = Depends(get_db)):
     """Update core evaluation fields while preserving linked lead and calculated financials"""
     eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
@@ -3482,7 +3615,7 @@ async def update_revenue_evaluation(evaluation_id: str, payload: RevenueEvaluati
         "evaluation_summary": summary
     }
 
-@router.patch("/revenue/evaluations/{evaluation_id}/status")
+@router.patch("/revenue/evaluations/{evaluation_id}/status", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_evaluation_status(evaluation_id: str, payload: RevenueEvaluationStatusUpdate, db = Depends(get_db)):
     """Controlled update of evaluation status based on transition rules"""
     eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
@@ -3537,7 +3670,7 @@ async def update_evaluation_status(evaluation_id: str, payload: RevenueEvaluatio
         "current_status": new_status
     }
 
-@router.post("/revenue/evaluations/{evaluation_id}/party/legal-profile/verify")
+@router.post("/revenue/evaluations/{evaluation_id}/party/legal-profile/verify", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def verify_evaluation_party_legal_profile(
     evaluation_id: str, 
     payload: LegalProfilePayload, 
@@ -3575,7 +3708,7 @@ async def verify_evaluation_party_legal_profile(
         "verification": verification
     }
 
-@router.put("/revenue/evaluations/{evaluation_id}/party/legal-profile")
+@router.put("/revenue/evaluations/{evaluation_id}/party/legal-profile", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_evaluation_party_legal_profile(
     evaluation_id: str, 
     payload: LegalProfilePayload, 
@@ -3661,7 +3794,7 @@ async def update_evaluation_party_legal_profile(
         "party_readiness": party_readiness
     }
 
-@router.put("/parties/{party_id}/tax/verify")
+@router.put("/parties/{party_id}/tax/verify", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def verify_party_tax(
     party_id: str,
     payload: Dict[str, str],
@@ -3701,7 +3834,7 @@ async def verify_party_tax(
     party_readiness = await validate_party_readiness(party_id, db)
     return {"success": True, "party_readiness": party_readiness}
 
-@router.put("/parties/{party_id}/compliance/verify")
+@router.put("/parties/{party_id}/compliance/verify", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def verify_party_compliance(
     party_id: str,
     payload: Dict[str, str],
@@ -3735,7 +3868,7 @@ async def verify_party_compliance(
     party_readiness = await validate_party_readiness(party_id, db)
     return {"success": True, "party_readiness": party_readiness}
 
-@router.post("/revenue/evaluations/{evaluation_id}/submit")
+@router.post("/revenue/evaluations/{evaluation_id}/submit", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def submit_evaluation_for_commit(evaluation_id: str, db = Depends(get_db)):
     """Submit evaluation for commit stage (Strict Governance)"""
     eval_data = await db.revenue_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
@@ -3879,7 +4012,7 @@ async def get_revenue_commit(commit_id: str, db = Depends(get_db)):
     
     return {"success": True, "commit": commit, "evaluation": evaluation}
 
-@router.post("/revenue/commits/{commit_id}/approve")
+@router.post("/revenue/commits/{commit_id}/approve", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def approve_revenue_commit(commit_id: str, approver_role: str, db = Depends(get_db)):
     """Approve a commit"""
     commit = await db.revenue_workflow_commits.find_one({"commit_id": commit_id})
@@ -3919,7 +4052,7 @@ async def approve_revenue_commit(commit_id: str, approver_role: str, db = Depend
     
     return {"success": True, "message": "Approval recorded", "all_approved": all_approved}
 
-@router.post("/revenue/commits/{commit_id}/reject")
+@router.post("/revenue/commits/{commit_id}/reject", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def reject_revenue_commit(commit_id: str, approver_role: str, reason: str, db = Depends(get_db)):
     """Reject a commit - goes back to evaluation"""
     commit = await db.revenue_workflow_commits.find_one({"commit_id": commit_id})
@@ -3947,7 +4080,7 @@ async def reject_revenue_commit(commit_id: str, approver_role: str, reason: str,
     
     return {"success": True, "message": "Commit rejected, evaluation reopened"}
 
-@router.post("/revenue/commits/{commit_id}/create-contract")
+@router.post("/revenue/commits/{commit_id}/create-contract", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_contract_from_commit(commit_id: str, db = Depends(get_db)):
     """Create contract from approved commit"""
     commit = await db.revenue_workflow_commits.find_one({"commit_id": commit_id})
@@ -4038,7 +4171,7 @@ async def get_revenue_contract(contract_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Contract not found")
     return {"success": True, "contract": contract}
 
-@router.put("/revenue/contracts/{contract_id}")
+@router.put("/revenue/contracts/{contract_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_revenue_contract(contract_id: str, data: RevenueContractCreate, db = Depends(get_db)):
     """Update contract terms (only legal text editable)"""
     update_data = {
@@ -4052,7 +4185,7 @@ async def update_revenue_contract(contract_id: str, data: RevenueContractCreate,
         raise HTTPException(status_code=404, detail="Contract not found")
     return {"success": True, "message": "Contract updated"}
 
-@router.post("/revenue/contracts/{contract_id}/sign")
+@router.post("/revenue/contracts/{contract_id}/sign", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def sign_revenue_contract(contract_id: str, db = Depends(get_db)):
     """Sign contract - freeze it"""
     now = datetime.now(timezone.utc).isoformat()
@@ -4064,7 +4197,7 @@ async def sign_revenue_contract(contract_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Contract not found")
     return {"success": True, "message": "Contract signed"}
 
-@router.post("/revenue/contracts/{contract_id}/handoff")
+@router.post("/revenue/contracts/{contract_id}/handoff", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_handoff_from_contract(contract_id: str, authorization: str = Header(None), db = Depends(get_db)):
     """Create handoff from signed contract and auto-create Work Order in Operations"""
     # Get org_id from auth token
@@ -4236,7 +4369,7 @@ async def get_revenue_handoff(handoff_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Handoff not found")
     return {"success": True, "handoff": handoff}
 
-@router.post("/revenue/handoffs/{handoff_id}/complete")
+@router.post("/revenue/handoffs/{handoff_id}/complete", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def complete_revenue_handoff(handoff_id: str, db = Depends(get_db)):
     """Mark handoff as completed"""
     now = datetime.now(timezone.utc).isoformat()
@@ -4259,7 +4392,7 @@ async def get_procure_requests(status: Optional[str] = None, db = Depends(get_db
     requests = await db.procure_workflow_requests.find(query, {"_id": 0}).to_list(1000)
     return {"success": True, "requests": requests, "count": len(requests)}
 
-@router.post("/procure/requests")
+@router.post("/procure/requests", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_procure_request(request: ProcureRequestCreate, db = Depends(get_db)):
     """Create procurement request - Stage 1"""
     data = request.dict()
@@ -4279,7 +4412,7 @@ async def get_procure_request(request_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Request not found")
     return {"success": True, "request": request}
 
-@router.put("/procure/requests/{request_id}")
+@router.put("/procure/requests/{request_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_procure_request(request_id: str, request: ProcureRequestCreate, db = Depends(get_db)):
     """Update request"""
     data = request.dict()
@@ -4289,7 +4422,7 @@ async def update_procure_request(request_id: str, request: ProcureRequestCreate,
         raise HTTPException(status_code=404, detail="Request not found")
     return {"success": True, "message": "Request updated"}
 
-@router.post("/procure/requests/{request_id}/submit")
+@router.post("/procure/requests/{request_id}/submit", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def submit_procure_request(request_id: str, db = Depends(get_db)):
     """Submit request for evaluation"""
     request = await db.procure_workflow_requests.find_one({"request_id": request_id})
@@ -4360,7 +4493,7 @@ async def get_procure_evaluation(evaluation_id: str, db = Depends(get_db)):
         "budget_validation": budget_info
     }
 
-@router.put("/procure/evaluations/{evaluation_id}")
+@router.put("/procure/evaluations/{evaluation_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_procure_evaluation(evaluation_id: str, data: ProcureEvaluationCreate, db = Depends(get_db)):
     """Update procurement evaluation"""
     eval_data = data.dict()
@@ -4402,7 +4535,7 @@ async def update_procure_evaluation(evaluation_id: str, data: ProcureEvaluationC
     
     return {"success": True, "message": "Evaluation updated", "status": eval_data.get("status")}
 
-@router.post("/procure/evaluations/{evaluation_id}/submit")
+@router.post("/procure/evaluations/{evaluation_id}/submit", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def submit_procure_evaluation(evaluation_id: str, db = Depends(get_db)):
     """Submit evaluation for commit"""
     eval_data = await db.procure_workflow_evaluations.find_one({"evaluation_id": evaluation_id})
@@ -4489,7 +4622,7 @@ async def get_procure_commit(commit_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Commit not found")
     return {"success": True, "commit": commit}
 
-@router.post("/procure/commits/{commit_id}/approve")
+@router.post("/procure/commits/{commit_id}/approve", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def approve_procure_commit(commit_id: str, approver_role: str, db = Depends(get_db)):
     """Approve procurement commit"""
     commit = await db.procure_workflow_commits.find_one({"commit_id": commit_id})
@@ -4519,7 +4652,7 @@ async def approve_procure_commit(commit_id: str, approver_role: str, db = Depend
     
     return {"success": True, "message": "Approval recorded", "all_approved": all_approved}
 
-@router.post("/procure/commits/{commit_id}/reject")
+@router.post("/procure/commits/{commit_id}/reject", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def reject_procure_commit(commit_id: str, approver_role: str, reason: str, db = Depends(get_db)):
     """Reject procurement commit"""
     now = datetime.now(timezone.utc).isoformat()
@@ -4547,7 +4680,7 @@ async def reject_procure_commit(commit_id: str, approver_role: str, reason: str,
     
     return {"success": True, "message": "Commit rejected"}
 
-@router.post("/procure/commits/{commit_id}/create-contract")
+@router.post("/procure/commits/{commit_id}/create-contract", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_procure_contract(commit_id: str, db = Depends(get_db)):
     """Create procurement contract"""
     commit = await db.procure_workflow_commits.find_one({"commit_id": commit_id})
@@ -4600,7 +4733,7 @@ async def get_procure_contract(contract_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Contract not found")
     return {"success": True, "contract": contract}
 
-@router.put("/procure/contracts/{contract_id}")
+@router.put("/procure/contracts/{contract_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_procure_contract(contract_id: str, data: ProcureContractCreate, db = Depends(get_db)):
     """Update procurement contract"""
     update_data = {
@@ -4615,7 +4748,7 @@ async def update_procure_contract(contract_id: str, data: ProcureContractCreate,
         raise HTTPException(status_code=404, detail="Contract not found")
     return {"success": True, "message": "Contract updated"}
 
-@router.post("/procure/contracts/{contract_id}/sign")
+@router.post("/procure/contracts/{contract_id}/sign", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def sign_procure_contract(contract_id: str, db = Depends(get_db)):
     """Sign procurement contract"""
     now = datetime.now(timezone.utc).isoformat()
@@ -4627,7 +4760,7 @@ async def sign_procure_contract(contract_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Contract not found")
     return {"success": True, "message": "Contract signed"}
 
-@router.post("/procure/contracts/{contract_id}/handoff")
+@router.post("/procure/contracts/{contract_id}/handoff", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_procure_handoff(contract_id: str, db = Depends(get_db)):
     """Create procurement handoff and auto-create Work Order in Operations"""
     contract = await db.procure_workflow_contracts.find_one({"contract_id": contract_id})
@@ -4737,7 +4870,7 @@ async def get_procure_handoff(handoff_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Handoff not found")
     return {"success": True, "handoff": handoff}
 
-@router.post("/procure/handoffs/{handoff_id}/complete")
+@router.post("/procure/handoffs/{handoff_id}/complete", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def complete_procure_handoff(handoff_id: str, db = Depends(get_db)):
     """Complete procurement handoff"""
     now = datetime.now(timezone.utc).isoformat()
@@ -4751,7 +4884,7 @@ async def complete_procure_handoff(handoff_id: str, db = Depends(get_db)):
 
 # ============== SEED DATA ==============
 
-@router.post("/seed-workflow-data")
+@router.post("/seed-workflow-data", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def seed_workflow_data(db = Depends(get_db)):
     """Seed sample data for Revenue and Procurement workflows"""
     now = datetime.now(timezone.utc).isoformat()

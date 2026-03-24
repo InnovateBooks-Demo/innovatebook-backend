@@ -8,9 +8,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 import uuid
-import os
-# import jwt # Removed
-from auth_utils import verify_token
+from routes.deps import get_current_user, User, security, get_db
+
+router = APIRouter(tags=["Workspace"])
 
 from workspace_models import (
     # Enums
@@ -36,62 +36,10 @@ from workspace_models import (
 )
 from pydantic import BaseModel
 
-# Simple user model for workspace (avoids auth_models dependency issues)
-class WorkspaceUser(BaseModel):
-    id: str
-    email: str
-    full_name: str
-    org_id: str = "default"
-    roles: List[str] = []
-
-router = APIRouter(prefix="/api/workspace", tags=["workspace"])
-security = HTTPBearer()
-
-# JWT_SECRET and JWT_ALGORITHM removed in favor of auth_utils
+# Auth moved to routes.deps
 
 
-# Get database dependency to avoid circular imports
-def get_db():
-    from main import db
-    return db
-
-
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> WorkspaceUser:
-    """Local get_current_user to avoid circular imports"""
-    db = get_db()
-    try:
-        token = credentials.credentials
-        # Use auth_utils.verify_token
-        payload = verify_token(token, verify_type="access")
-        
-        user_id = payload.get("user_id")
-        
-        # Try to find user by _id first in users collection
-        user = await db.users.find_one({"_id": user_id})
-        
-        # If not found, try enterprise_users collection
-        if user is None:
-            user = await db.enterprise_users.find_one({"user_id": user_id}, {"_id": 0})
-        
-        if user is None:
-            raise HTTPException(status_code=401, detail="User not found")
-        
-        return WorkspaceUser(
-            id=user.get("_id") or user.get("user_id") or user_id,
-            email=user.get("email", ""),
-            full_name=user.get("full_name", "User"),
-            org_id=payload.get("org_id", "default"),
-            roles=user.get("roles", [])
-        )
-    except Exception as e:
-        # verify_token raises HTTPException, but we catch generic here just in case?
-        # Actually verify_token raises HTTPException for expired/invalid.
-        # So we should just let that bubble up or catch specific if needed.
-        # But here we were catching jwt errors. verify_token handles that.
-        # So we can just let it bubble if it's HTTPException.
-        if isinstance(e, HTTPException):
-            raise e
-        raise HTTPException(status_code=401, detail=f"Authentication failed: {str(e)}")
+# get_current_user moved to routes.deps
 
 
 # ============= HELPER FUNCTIONS =============
@@ -171,7 +119,7 @@ async def create_notification_helper(
 @router.post("/contexts", response_model=Context)
 async def create_context(
     data: ContextCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new context for a business object"""
     db = get_db()
@@ -192,7 +140,7 @@ async def create_context(
 @router.get("/contexts/{context_id}")
 async def get_context(
     context_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get context details"""
     db = get_db()
@@ -209,7 +157,7 @@ async def get_context(
 @router.post("/tasks", response_model=WorkspaceTask)
 async def create_task(
     data: WorkspaceTaskCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new task"""
     db = get_db()
@@ -266,7 +214,7 @@ async def get_tasks(
     status: Optional[TaskStatus] = None,
     priority: Optional[TaskPriority] = None,
     context_id: Optional[str] = None,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get tasks with filters"""
     db = get_db()
@@ -302,7 +250,7 @@ async def get_tasks(
 @router.get("/tasks/{task_id}", response_model=WorkspaceTask)
 async def get_task(
     task_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get task details"""
     db = get_db()
@@ -324,7 +272,7 @@ async def get_task(
 async def update_task(
     task_id: str,
     data: WorkspaceTaskUpdate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update a task"""
     db = get_db()
@@ -369,7 +317,7 @@ async def update_task(
 @router.post("/tasks/{task_id}/complete")
 async def complete_task(
     task_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Mark a task as completed"""
     db = get_db()
@@ -397,7 +345,7 @@ async def complete_task(
 @router.post("/approvals", response_model=WorkspaceApproval)
 async def create_approval(
     data: WorkspaceApprovalCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new approval request"""
     db = get_db()
@@ -451,7 +399,7 @@ async def get_approvals(
     decision: Optional[ApprovalDecision] = None,
     pending_for_me: bool = False,
     requested_by_me: bool = False,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get approvals with filters"""
     db = get_db()
@@ -488,7 +436,7 @@ async def get_approvals(
 @router.get("/approvals/{approval_id}", response_model=WorkspaceApproval)
 async def get_approval(
     approval_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get approval details"""
     db = get_db()
@@ -509,7 +457,7 @@ async def get_approval(
 async def decide_approval(
     approval_id: str,
     data: ApprovalDecisionInput,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Make a decision on an approval"""
     db = get_db()
@@ -563,7 +511,7 @@ async def decide_approval(
 @router.post("/channels", response_model=WorkspaceChannel)
 async def create_channel(
     data: WorkspaceChannelCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new workspace channel"""
     db = get_db()
@@ -595,7 +543,7 @@ async def create_channel(
 @router.get("/channels", response_model=List[WorkspaceChannel])
 async def get_channels(
     channel_type: Optional[ChannelType] = None,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all channels user has access to"""
     db = get_db()
@@ -620,7 +568,7 @@ async def get_channels(
 @router.get("/channels/{channel_id}", response_model=WorkspaceChannel)
 async def get_channel(
     channel_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get channel details"""
     db = get_db()
@@ -639,7 +587,7 @@ async def get_channel(
 async def send_channel_message(
     channel_id: str,
     data: ChannelMessageCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Send a message in a channel"""
     db = get_db()
@@ -678,7 +626,7 @@ async def send_channel_message(
 async def get_channel_messages(
     channel_id: str,
     limit: int = 50,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get messages from a channel"""
     db = get_db()
@@ -704,7 +652,7 @@ async def get_channel_messages(
 @router.post("/chats", response_model=WorkspaceChat)
 async def create_chat(
     data: WorkspaceChatCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new context-bound chat"""
     db = get_db()
@@ -748,7 +696,7 @@ async def create_chat(
 @router.get("/chats", response_model=List[WorkspaceChat])
 async def get_chats(
     context_id: Optional[str] = None,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all chats for current user"""
     db = get_db()
@@ -775,7 +723,7 @@ async def get_chats(
 @router.get("/chats/{chat_id}", response_model=WorkspaceChat)
 async def get_chat(
     chat_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get chat details"""
     db = get_db()
@@ -797,7 +745,7 @@ async def get_chat(
 async def send_chat_message(
     chat_id: str,
     data: ChatMessageCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Send a message in a chat"""
     db = get_db()
@@ -841,7 +789,7 @@ async def send_chat_message(
 async def get_chat_messages(
     chat_id: str,
     limit: int = 50,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get messages from a chat"""
     db = get_db()
@@ -868,7 +816,7 @@ async def get_chat_messages(
 async def get_notifications(
     unread_only: bool = False,
     limit: int = 50,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get notifications for current user"""
     db = get_db()
@@ -891,7 +839,7 @@ async def get_notifications(
 
 @router.get("/notifications/unread-count")
 async def get_unread_count(
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get count of unread notifications"""
     db = get_db()
@@ -906,7 +854,7 @@ async def get_unread_count(
 @router.post("/notifications/{notification_id}/read")
 async def mark_notification_read(
     notification_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Mark a notification as read"""
     db = get_db()
@@ -925,7 +873,7 @@ async def mark_notification_read(
 
 @router.post("/notifications/read-all")
 async def mark_all_notifications_read(
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Mark all notifications as read"""
     db = get_db()
@@ -942,7 +890,7 @@ async def mark_all_notifications_read(
 @router.delete("/notifications/{notification_id}")
 async def delete_notification(
     notification_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a notification"""
     db = get_db()
@@ -961,7 +909,7 @@ async def delete_notification(
 
 @router.get("/stats", response_model=WorkspaceStats)
 async def get_workspace_stats(
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get workspace statistics for dashboard"""
     db = get_db()
@@ -1013,7 +961,7 @@ async def get_workspace_stats(
 
 @router.get("/seed")
 async def seed_workspace_data(
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Seed sample workspace data"""
     db = get_db()

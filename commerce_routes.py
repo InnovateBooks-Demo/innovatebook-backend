@@ -116,11 +116,12 @@ async def get_leads(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     status: Optional[LeadStatus] = None,
+    org_id: Optional[str] = Depends(get_org_scope),
     db=Depends(get_db)
 ):
     """Get all leads with pagination and filters"""
     try:
-        query = {}
+        query = {"org_id": org_id} if org_id else {}
         if status:
             query["lead_status"] = status.value
         
@@ -132,11 +133,16 @@ async def get_leads(
         raise HTTPException(status_code=500, detail=f"Failed to fetch leads: {str(e)}")
 
 
+
 @router.get("/leads/{lead_id}", response_model=Lead)
-async def get_lead(lead_id: str, db=Depends(get_db)):
+async def get_lead(lead_id: str, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Get a specific lead by ID"""
     try:
-        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
+        query = {"lead_id": lead_id}
+        if org_id:
+            query["org_id"] = org_id
+        lead = await db.commerce_leads.find_one(query)
+
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         return Lead(**lead)
@@ -146,23 +152,31 @@ async def get_lead(lead_id: str, db=Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Failed to fetch lead: {str(e)}")
 
 
-@router.put("/leads/{lead_id}", response_model=Lead)
-async def update_lead(lead_id: str, lead_data: LeadCreate, db=Depends(get_db)):
+
+@commerce_router.put("/leads/{lead_id}", response_model=Lead)
+async def update_lead(lead_id: str, lead_data: LeadCreate, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Update a lead"""
     try:
-        existing_lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
+        query = {"lead_id": lead_id}
+        if org_id:
+            query["org_id"] = org_id
+            
+        existing_lead = await db.commerce_leads.find_one(query)
+
         if not existing_lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
         updated_data = lead_data.dict()
         updated_data["updated_at"] = datetime.now(timezone.utc)
         
-        await get_db().commerce_leads.update_one(
-            {"lead_id": lead_id},
+
+        await db.commerce_leads.update_one(
+            query,
             {"$set": updated_data}
         )
         
-        updated_lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
+        updated_lead = await db.commerce_leads.find_one(query)
+
         return Lead(**updated_lead)
     except HTTPException:
         raise
@@ -170,11 +184,17 @@ async def update_lead(lead_id: str, lead_data: LeadCreate, db=Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Failed to update lead: {str(e)}")
 
 
-@router.delete("/leads/{lead_id}")
-async def delete_lead(lead_id: str, db=Depends(get_db)):
+
+@commerce_router.delete("/leads/{lead_id}")
+async def delete_lead(lead_id: str, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Delete a lead"""
     try:
-        result = await get_db().commerce_leads.delete_one({"lead_id": lead_id})
+        query = {"lead_id": lead_id}
+        if org_id:
+            query["org_id"] = org_id
+            
+        result = await db.commerce_leads.delete_one(query)
+
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Lead not found")
         return {"message": "Lead deleted successfully"}
@@ -184,12 +204,18 @@ async def delete_lead(lead_id: str, db=Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Failed to delete lead: {str(e)}")
 
 
-@router.patch("/leads/{lead_id}/status")
-async def update_lead_status(lead_id: str, status: LeadStatus, db=Depends(get_db)):
+
+@commerce_router.patch("/leads/{lead_id}/status")
+async def update_lead_status(lead_id: str, status: LeadStatus, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Update lead status (workflow transition)"""
     try:
-        result = await get_db().commerce_leads.update_one(
-            {"lead_id": lead_id},
+        query = {"lead_id": lead_id}
+        if org_id:
+            query["org_id"] = org_id
+            
+        result = await db.commerce_leads.update_one(
+            query,
+
             {
                 "$set": {
                     "lead_status": status.value,
@@ -200,7 +226,9 @@ async def update_lead_status(lead_id: str, status: LeadStatus, db=Depends(get_db
         if result.modified_count == 0:
             raise HTTPException(status_code=404, detail="Lead not found")
         
-        updated_lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
+
+        updated_lead = await db.commerce_leads.find_one(query)
+
         return Lead(**updated_lead)
     except HTTPException:
         raise
@@ -210,16 +238,20 @@ async def update_lead_status(lead_id: str, status: LeadStatus, db=Depends(get_db
 
 # ==================== MODULE 2: EVALUATE ROUTES ====================
 
-@router.post("/evaluate", response_model=Evaluate)
-async def create_evaluation(eval_data: EvaluateCreate, db=Depends(get_db)):
+
+@commerce_router.post("/evaluate", response_model=Evaluate)
+async def create_evaluation(eval_data: EvaluateCreate, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Create a new evaluation"""
     try:
-        count = await get_db().commerce_evaluate.count_documents({})
+        query = {"org_id": org_id} if org_id else {}
+        count = await db.commerce_evaluate.count_documents(query)
+
         
         evaluation = Evaluate(
             **eval_data.dict(),
             evaluation_id=generate_sequential_id("EVAL", count),
-            initiated_by="current_user_id"
+            initiated_by="current_user_id",
+            org_id=org_id
         )
         
         # Calculate margin
@@ -245,11 +277,12 @@ async def get_evaluations(
     skip: int = 0,
     limit: int = 50,
     status: Optional[EvaluationStatus] = None,
+    org_id: Optional[str] = Depends(get_org_scope),
     db=Depends(get_db)
 ):
     """Get all evaluations"""
     try:
-        query = {}
+        query = {"org_id": org_id} if org_id else {}
         if status:
             query["evaluation_status"] = status.value
         
@@ -261,11 +294,17 @@ async def get_evaluations(
         raise HTTPException(status_code=500, detail=f"Failed to fetch evaluations: {str(e)}")
 
 
+
 @router.get("/evaluate/{evaluation_id}", response_model=Evaluate)
-async def get_evaluation(evaluation_id: str, db=Depends(get_db)):
+async def get_evaluation(evaluation_id: str, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Get a specific evaluation"""
     try:
-        evaluation = await get_db().commerce_evaluate.find_one({"evaluation_id": evaluation_id})
+        query = {"evaluation_id": evaluation_id}
+        if org_id:
+            query["org_id"] = org_id
+            
+        evaluation = await db.commerce_evaluate.find_one(query)
+
         if not evaluation:
             raise HTTPException(status_code=404, detail="Evaluation not found")
         return Evaluate(**evaluation)
@@ -275,11 +314,17 @@ async def get_evaluation(evaluation_id: str, db=Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Failed to fetch evaluation: {str(e)}")
 
 
-@router.put("/evaluate/{evaluation_id}", response_model=Evaluate)
-async def update_evaluation(evaluation_id: str, eval_data: EvaluateCreate, db=Depends(get_db)):
+
+@commerce_router.put("/evaluate/{evaluation_id}", response_model=Evaluate)
+async def update_evaluation(evaluation_id: str, eval_data: EvaluateCreate, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Update an evaluation"""
     try:
-        existing_eval = await get_db().commerce_evaluate.find_one({"evaluation_id": evaluation_id})
+        query = {"evaluation_id": evaluation_id}
+        if org_id:
+            query["org_id"] = org_id
+            
+        existing_eval = await db.commerce_evaluate.find_one(query)
+
         if not existing_eval:
             raise HTTPException(status_code=404, detail="Evaluation not found")
         
@@ -298,12 +343,14 @@ async def update_evaluation(evaluation_id: str, eval_data: EvaluateCreate, db=De
                 (estimated_revenue - estimated_cost) / estimated_revenue
             ) * 100
         
-        await get_db().commerce_evaluate.update_one(
-            {"evaluation_id": evaluation_id},
+
+        await db.commerce_evaluate.update_one(
+            query,
             {"$set": updated_data}
         )
         
-        updated_eval = await get_db().commerce_evaluate.find_one({"evaluation_id": evaluation_id})
+        updated_eval = await db.commerce_evaluate.find_one(query)
+
         return Evaluate(**updated_eval)
     except HTTPException:
         raise
@@ -311,11 +358,17 @@ async def update_evaluation(evaluation_id: str, eval_data: EvaluateCreate, db=De
         raise HTTPException(status_code=500, detail=f"Failed to update evaluation: {str(e)}")
 
 
-@router.delete("/evaluate/{evaluation_id}")
-async def delete_evaluation(evaluation_id: str, db=Depends(get_db)):
+
+@commerce_router.delete("/evaluate/{evaluation_id}")
+async def delete_evaluation(evaluation_id: str, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Delete an evaluation"""
     try:
-        result = await get_db().commerce_evaluate.delete_one({"evaluation_id": evaluation_id})
+        query = {"evaluation_id": evaluation_id}
+        if org_id:
+            query["org_id"] = org_id
+            
+        result = await db.commerce_evaluate.delete_one(query)
+
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Evaluation not found")
         return {"message": "Evaluation deleted successfully"}
@@ -325,12 +378,18 @@ async def delete_evaluation(evaluation_id: str, db=Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Failed to delete evaluation: {str(e)}")
 
 
-@router.patch("/evaluate/{evaluation_id}/status")
-async def update_evaluation_status(evaluation_id: str, status: EvaluationStatus, db=Depends(get_db)):
+
+@commerce_router.patch("/evaluate/{evaluation_id}/status")
+async def update_evaluation_status(evaluation_id: str, status: EvaluationStatus, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Update evaluation status (workflow transition)"""
     try:
-        result = await get_db().commerce_evaluate.update_one(
-            {"evaluation_id": evaluation_id},
+        query = {"evaluation_id": evaluation_id}
+        if org_id:
+            query["org_id"] = org_id
+            
+        result = await db.commerce_evaluate.update_one(
+            query,
+
             {
                 "$set": {
                     "evaluation_status": status.value,
@@ -341,7 +400,9 @@ async def update_evaluation_status(evaluation_id: str, status: EvaluationStatus,
         if result.modified_count == 0:
             raise HTTPException(status_code=404, detail="Evaluation not found")
         
-        updated_eval = await get_db().commerce_evaluate.find_one({"evaluation_id": evaluation_id})
+
+        updated_eval = await db.commerce_evaluate.find_one(query)
+
         return Evaluate(**updated_eval)
     except HTTPException:
         raise
@@ -1848,20 +1909,36 @@ async def get_dashboard_stats(db=Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Failed to fetch dashboard stats: {str(e)}")
 
 
+
 @router.get("/users")
-async def get_users(db=Depends(get_db)):
-    """Get all active users for assignment"""
+async def get_users(
+    db=Depends(get_db),
+    org_id: str = Depends(get_org_scope)
+):
+    """Get all active users for assignment in this organization"""
     try:
-        users = await get_db().users.find({"status": "Active"}).to_list(length=100)
+        pipeline = [
+            {"$match": {"org_id": org_id, "status": "active"}},
+            {"$lookup": {
+                "from": "users",
+                "localField": "user_id",
+                "foreignField": "user_id",
+                "as": "user_info"
+            }},
+            {"$unwind": {"path": "$user_info", "preserveNullAndEmptyArrays": True}}
+        ]
+        org_users = await db.org_users.aggregate(pipeline).to_list(length=100)
+        
+
         return [
             {
                 "user_id": user.get("user_id"),
-                "name": user.get("name"),
-                "email": user.get("email"),
+                "name": user.get("user_info", {}).get("full_name", "Unknown"),
+                "email": user.get("user_info", {}).get("email", ""),
                 "role": user.get("role"),
-                "department": user.get("department")
+                "department": user.get("user_info", {}).get("department", "")
             }
-            for user in users
+            for user in org_users
         ]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch users: {str(e)}")

@@ -314,7 +314,7 @@ async def create_lead(
 
 #         if owner_ids:
 #             # If your users are in enterprise_users, change db.users ->A:
-#             # users = await db.enterprise_users.find(...)
+#             # users = await db.users.find(...)
 #             users = await db.users.find(
 #                 {"user_id": {"$in": owner_ids}},
 #                 {"_id": 0, "user_id": 1, "first_name": 1, "last_name": 1, "full_name": 1, "email": 1},
@@ -372,7 +372,7 @@ async def get_leads(
 
         if owner_ids:
             # 1) ensure these users exist in this org (enterprise_users)
-            ent_users = await db.enterprise_users.find(
+            ent_users = await db.users.find(
                 {"user_id": {"$in": owner_ids}, "org_id": org_id},
                 {"_id": 0, "user_id": 1},
             ).to_list(None)

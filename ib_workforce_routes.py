@@ -1,21 +1,10 @@
-"""
-IB Workforce Module - Human Capacity, Accountability & Compliance Engine
-6 Core Modules: People, Roles, Capacity, Time, Payroll, Compliance
-"""
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
+from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
-from typing import Optional
 import uuid
+from routes.deps import get_current_user, User, get_db
 
-router = APIRouter(prefix="/api/ib-workforce", tags=["IB Workforce"])
-
-def get_db():
-    from main import db
-    return db
-
-async def get_current_user():
-    """Get current user - simplified for now"""
-    return {"user_id": "admin", "org_id": "org_demo"}
+router = APIRouter(prefix="/api/workforce", tags=["Workforce"])
 
 
 # ==================== HELPER FUNCTIONS ====================
@@ -27,10 +16,10 @@ def generate_id(prefix: str) -> str:
 # ==================== DASHBOARD ====================
 
 @router.get("/dashboard")
-async def get_workforce_dashboard(current_user: dict = Depends(get_current_user)):
+async def get_workforce_dashboard(current_user: User = Depends(get_current_user)):
     """Get IB Workforce dashboard metrics"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # People stats
     people_total = await db.wf_people.count_documents({"org_id": org_id, "deleted": {"$ne": True}})
@@ -85,11 +74,11 @@ async def list_people(
     person_type: Optional[str] = None,
     department: Optional[str] = None,
     search: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """List all people with filters"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id"), "deleted": {"$ne": True}}
+    query = {"org_id": current_user.org_id, "deleted": {"$ne": True}}
     
     if status:
         query["status"] = status
@@ -109,12 +98,12 @@ async def list_people(
 
 
 @router.get("/people/{person_id}")
-async def get_person(person_id: str, current_user: dict = Depends(get_current_user)):
+async def get_person(person_id: str, current_user: User = Depends(get_current_user)):
     """Get person details with all profiles"""
     db = get_db()
     
     person = await db.wf_people.find_one(
-        {"person_id": person_id, "org_id": current_user.get("org_id"), "deleted": {"$ne": True}},
+        {"person_id": person_id, "org_id": current_user.org_id, "deleted": {"$ne": True}},
         {"_id": 0}
     )
     if not person:
@@ -142,14 +131,14 @@ async def get_person(person_id: str, current_user: dict = Depends(get_current_us
 
 
 @router.post("/people")
-async def create_person(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_person(data: dict, current_user: User = Depends(get_current_user)):
     """Create a new person"""
     db = get_db()
     
     # Check for duplicate email
     existing = await db.wf_people.find_one({
         "email": data.get("email"),
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "deleted": {"$ne": True}
     })
     if existing:
@@ -160,7 +149,7 @@ async def create_person(data: dict, current_user: dict = Depends(get_current_use
     
     person = {
         "person_id": person_id,
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "first_name": data.get("first_name"),
         "last_name": data.get("last_name"),
         "email": data.get("email"),
@@ -174,7 +163,7 @@ async def create_person(data: dict, current_user: dict = Depends(get_current_use
         "exit_date": None,
         "status": "draft",  # draft | active | suspended | exited
         "created_at": now,
-        "created_by": current_user.get("user_id"),
+        "created_by": current_user.id,
         "updated_at": now
     }
     
@@ -184,7 +173,7 @@ async def create_person(data: dict, current_user: dict = Depends(get_current_use
     if data.get("employee_code") or data.get("designation"):
         emp_profile = {
             "person_id": person_id,
-            "org_id": current_user.get("org_id"),
+            "org_id": current_user.org_id,
             "employee_code": data.get("employee_code"),
             "designation": data.get("designation"),
             "reporting_manager_id": data.get("reporting_manager_id"),
@@ -197,12 +186,12 @@ async def create_person(data: dict, current_user: dict = Depends(get_current_use
 
 
 @router.put("/people/{person_id}")
-async def update_person(person_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def update_person(person_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Update person details"""
     db = get_db()
     
     existing = await db.wf_people.find_one(
-        {"person_id": person_id, "org_id": current_user.get("org_id"), "deleted": {"$ne": True}},
+        {"person_id": person_id, "org_id": current_user.org_id, "deleted": {"$ne": True}},
         {"_id": 0}
     )
     if not existing:
@@ -230,12 +219,12 @@ async def update_person(person_id: str, data: dict, current_user: dict = Depends
 
 
 @router.post("/people/{person_id}/activate")
-async def activate_person(person_id: str, current_user: dict = Depends(get_current_user)):
+async def activate_person(person_id: str, current_user: User = Depends(get_current_user)):
     """Activate a person (from draft or suspended)"""
     db = get_db()
     
     person = await db.wf_people.find_one(
-        {"person_id": person_id, "org_id": current_user.get("org_id"), "deleted": {"$ne": True}},
+        {"person_id": person_id, "org_id": current_user.org_id, "deleted": {"$ne": True}},
         {"_id": 0}
     )
     if not person:
@@ -258,12 +247,12 @@ async def activate_person(person_id: str, current_user: dict = Depends(get_curre
 
 
 @router.post("/people/{person_id}/suspend")
-async def suspend_person(person_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def suspend_person(person_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Suspend a person"""
     db = get_db()
     
     person = await db.wf_people.find_one(
-        {"person_id": person_id, "org_id": current_user.get("org_id"), "deleted": {"$ne": True}},
+        {"person_id": person_id, "org_id": current_user.org_id, "deleted": {"$ne": True}},
         {"_id": 0}
     )
     if not person:
@@ -285,12 +274,12 @@ async def suspend_person(person_id: str, data: dict, current_user: dict = Depend
 
 
 @router.post("/people/{person_id}/exit")
-async def exit_person(person_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def exit_person(person_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Exit a person (irreversible)"""
     db = get_db()
     
     person = await db.wf_people.find_one(
-        {"person_id": person_id, "org_id": current_user.get("org_id"), "deleted": {"$ne": True}},
+        {"person_id": person_id, "org_id": current_user.org_id, "deleted": {"$ne": True}},
         {"_id": 0}
     )
     if not person:
@@ -325,11 +314,11 @@ async def list_roles(
     category: Optional[str] = None,
     is_active: Optional[bool] = None,
     search: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """List all roles"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id"), "deleted": {"$ne": True}}
+    query = {"org_id": current_user.org_id, "deleted": {"$ne": True}}
     
     if category:
         query["role_category"] = category
@@ -353,12 +342,12 @@ async def list_roles(
 
 
 @router.get("/roles/{role_id}")
-async def get_role(role_id: str, current_user: dict = Depends(get_current_user)):
+async def get_role(role_id: str, current_user: User = Depends(get_current_user)):
     """Get role details with permissions and assignments"""
     db = get_db()
     
     role = await db.wf_roles.find_one(
-        {"role_id": role_id, "org_id": current_user.get("org_id"), "deleted": {"$ne": True}},
+        {"role_id": role_id, "org_id": current_user.org_id, "deleted": {"$ne": True}},
         {"_id": 0}
     )
     if not role:
@@ -384,7 +373,7 @@ async def get_role(role_id: str, current_user: dict = Depends(get_current_user))
 
 
 @router.post("/roles")
-async def create_role(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_role(data: dict, current_user: User = Depends(get_current_user)):
     """Create a new role"""
     db = get_db()
     
@@ -393,13 +382,13 @@ async def create_role(data: dict, current_user: dict = Depends(get_current_user)
     
     role = {
         "role_id": role_id,
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "role_name": data.get("role_name"),
         "role_category": data.get("role_category", "operational"),  # operational | financial | governance | admin
         "description": data.get("description"),
         "is_active": True,
         "created_at": now,
-        "created_by": current_user.get("user_id"),
+        "created_by": current_user.id,
         "updated_at": now
     }
     
@@ -421,12 +410,12 @@ async def create_role(data: dict, current_user: dict = Depends(get_current_user)
 
 
 @router.put("/roles/{role_id}")
-async def update_role(role_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def update_role(role_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Update a role"""
     db = get_db()
     
     existing = await db.wf_roles.find_one(
-        {"role_id": role_id, "org_id": current_user.get("org_id"), "deleted": {"$ne": True}},
+        {"role_id": role_id, "org_id": current_user.org_id, "deleted": {"$ne": True}},
         {"_id": 0}
     )
     if not existing:
@@ -447,13 +436,13 @@ async def update_role(role_id: str, data: dict, current_user: dict = Depends(get
 
 
 @router.post("/roles/{role_id}/assign")
-async def assign_role(role_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def assign_role(role_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Assign a role to a person"""
     db = get_db()
     
     # Verify role exists
     role = await db.wf_roles.find_one(
-        {"role_id": role_id, "org_id": current_user.get("org_id"), "is_active": True},
+        {"role_id": role_id, "org_id": current_user.org_id, "is_active": True},
         {"_id": 0}
     )
     if not role:
@@ -461,14 +450,14 @@ async def assign_role(role_id: str, data: dict, current_user: dict = Depends(get
     
     # Verify person exists and is active
     person = await db.wf_people.find_one(
-        {"person_id": data.get("person_id"), "org_id": current_user.get("org_id"), "status": "active"},
+        {"person_id": data.get("person_id"), "org_id": current_user.org_id, "status": "active"},
         {"_id": 0}
     )
     if not person:
         raise HTTPException(status_code=404, detail="Person not found or not active")
     
     # Check SoD rules
-    sod_violations = await check_sod_rules(db, data.get("person_id"), role_id, current_user.get("org_id"))
+    sod_violations = await check_sod_rules(db, data.get("person_id"), role_id, current_user.org_id)
     if sod_violations:
         raise HTTPException(status_code=400, detail=f"Segregation of Duties violation: {sod_violations}")
     
@@ -477,14 +466,14 @@ async def assign_role(role_id: str, data: dict, current_user: dict = Depends(get
     
     assignment = {
         "assignment_id": assignment_id,
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "person_id": data.get("person_id"),
         "role_id": role_id,
         "effective_from": data.get("effective_from", now),
         "effective_to": data.get("effective_to"),
         "status": "active",
         "created_at": now,
-        "created_by": current_user.get("user_id")
+        "created_by": current_user.id
     }
     
     await db.wf_role_assignments.insert_one(assignment)
@@ -519,11 +508,11 @@ async def check_sod_rules(db, person_id: str, new_role_id: str, org_id: str) -> 
 @router.get("/capacity")
 async def list_capacity_profiles(
     person_id: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """List capacity profiles"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id"), "deleted": {"$ne": True}}
+    query = {"org_id": current_user.org_id, "deleted": {"$ne": True}}
     
     if person_id:
         query["person_id"] = person_id
@@ -533,12 +522,12 @@ async def list_capacity_profiles(
 
 
 @router.get("/capacity/{person_id}")
-async def get_capacity_profile(person_id: str, current_user: dict = Depends(get_current_user)):
+async def get_capacity_profile(person_id: str, current_user: User = Depends(get_current_user)):
     """Get capacity profile for a person"""
     db = get_db()
     
     profile = await db.wf_capacity.find_one(
-        {"person_id": person_id, "org_id": current_user.get("org_id"), "deleted": {"$ne": True}},
+        {"person_id": person_id, "org_id": current_user.org_id, "deleted": {"$ne": True}},
         {"_id": 0}
     )
     
@@ -565,14 +554,14 @@ async def get_capacity_profile(person_id: str, current_user: dict = Depends(get_
 
 
 @router.post("/capacity")
-async def create_capacity_profile(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_capacity_profile(data: dict, current_user: User = Depends(get_current_user)):
     """Create capacity profile for a person"""
     db = get_db()
     
     # Check if profile already exists
     existing = await db.wf_capacity.find_one({
         "person_id": data.get("person_id"),
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "deleted": {"$ne": True}
     })
     if existing:
@@ -583,7 +572,7 @@ async def create_capacity_profile(data: dict, current_user: dict = Depends(get_c
     
     profile = {
         "capacity_id": capacity_id,
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "person_id": data.get("person_id"),
         "standard_hours_per_day": data.get("standard_hours_per_day", 8),
         "working_days": data.get("working_days", ["Mon", "Tue", "Wed", "Thu", "Fri"]),
@@ -591,7 +580,7 @@ async def create_capacity_profile(data: dict, current_user: dict = Depends(get_c
         "effective_from": data.get("effective_from", now),
         "effective_to": data.get("effective_to"),
         "created_at": now,
-        "created_by": current_user.get("user_id")
+        "created_by": current_user.id
     }
     
     await db.wf_capacity.insert_one(profile)
@@ -604,11 +593,11 @@ async def list_allocations(
     person_id: Optional[str] = None,
     allocation_type: Optional[str] = None,
     status: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """List allocations"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id"), "deleted": {"$ne": True}}
+    query = {"org_id": current_user.org_id, "deleted": {"$ne": True}}
     
     if person_id:
         query["person_id"] = person_id
@@ -622,14 +611,14 @@ async def list_allocations(
 
 
 @router.post("/allocations")
-async def create_allocation(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_allocation(data: dict, current_user: User = Depends(get_current_user)):
     """Create a new allocation"""
     db = get_db()
     
     # Check capacity
     capacity = await db.wf_capacity.find_one({
         "person_id": data.get("person_id"),
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "deleted": {"$ne": True}
     })
     if not capacity:
@@ -654,7 +643,7 @@ async def create_allocation(data: dict, current_user: dict = Depends(get_current
     
     allocation = {
         "allocation_id": allocation_id,
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "person_id": data.get("person_id"),
         "allocation_type": data.get("allocation_type", "project"),  # project | service | internal
         "reference_id": data.get("reference_id"),
@@ -665,7 +654,7 @@ async def create_allocation(data: dict, current_user: dict = Depends(get_current
         "commitment_type": data.get("commitment_type", "soft"),  # hard | soft
         "status": "active",
         "created_at": now,
-        "created_by": current_user.get("user_id")
+        "created_by": current_user.id
     }
     
     await db.wf_allocations.insert_one(allocation)
@@ -680,11 +669,11 @@ async def list_attendance(
     person_id: Optional[str] = None,
     date: Optional[str] = None,
     status: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """List attendance records"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id"), "deleted": {"$ne": True}}
+    query = {"org_id": current_user.org_id, "deleted": {"$ne": True}}
     
     if person_id:
         query["person_id"] = person_id
@@ -698,18 +687,18 @@ async def list_attendance(
 
 
 @router.post("/attendance/check-in")
-async def check_in(data: dict, current_user: dict = Depends(get_current_user)):
+async def check_in(data: dict, current_user: User = Depends(get_current_user)):
     """Record check-in"""
     db = get_db()
     
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    person_id = data.get("person_id") or current_user.get("user_id")
+    person_id = data.get("person_id") or current_user.id
     
     # Check if already checked in today
     existing = await db.wf_attendance.find_one({
         "person_id": person_id,
         "date": today,
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     })
     if existing:
         raise HTTPException(status_code=400, detail="Already checked in today")
@@ -719,7 +708,7 @@ async def check_in(data: dict, current_user: dict = Depends(get_current_user)):
     
     attendance = {
         "attendance_id": attendance_id,
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "person_id": person_id,
         "date": today,
         "check_in_time": now,
@@ -734,17 +723,17 @@ async def check_in(data: dict, current_user: dict = Depends(get_current_user)):
 
 
 @router.post("/attendance/check-out")
-async def check_out(data: dict, current_user: dict = Depends(get_current_user)):
+async def check_out(data: dict, current_user: User = Depends(get_current_user)):
     """Record check-out"""
     db = get_db()
     
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    person_id = data.get("person_id") or current_user.get("user_id")
+    person_id = data.get("person_id") or current_user.id
     
     attendance = await db.wf_attendance.find_one({
         "person_id": person_id,
         "date": today,
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     })
     if not attendance:
         raise HTTPException(status_code=400, detail="No check-in found for today")
@@ -766,11 +755,11 @@ async def list_time_entries(
     person_id: Optional[str] = None,
     status: Optional[str] = None,
     work_type: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """List time entries"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id"), "deleted": {"$ne": True}}
+    query = {"org_id": current_user.org_id, "deleted": {"$ne": True}}
     
     if person_id:
         query["person_id"] = person_id
@@ -784,7 +773,7 @@ async def list_time_entries(
 
 
 @router.post("/time-entries")
-async def create_time_entry(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_time_entry(data: dict, current_user: User = Depends(get_current_user)):
     """Create a time entry"""
     db = get_db()
     
@@ -793,8 +782,8 @@ async def create_time_entry(data: dict, current_user: dict = Depends(get_current
     
     entry = {
         "time_entry_id": entry_id,
-        "org_id": current_user.get("org_id"),
-        "person_id": data.get("person_id") or current_user.get("user_id"),
+        "org_id": current_user.org_id,
+        "person_id": data.get("person_id") or current_user.id,
         "date": data.get("date"),
         "hours": data.get("hours"),
         "work_type": data.get("work_type", "project"),  # project | service | internal
@@ -803,7 +792,7 @@ async def create_time_entry(data: dict, current_user: dict = Depends(get_current
         "description": data.get("description"),
         "status": "draft",  # draft | submitted | approved | rejected
         "created_at": now,
-        "created_by": current_user.get("user_id")
+        "created_by": current_user.id
     }
     
     await db.wf_time_entries.insert_one(entry)
@@ -816,11 +805,11 @@ async def list_timesheets(
     person_id: Optional[str] = None,
     status: Optional[str] = None,
     period: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """List timesheets"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id"), "deleted": {"$ne": True}}
+    query = {"org_id": current_user.org_id, "deleted": {"$ne": True}}
     
     if person_id:
         query["person_id"] = person_id
@@ -834,7 +823,7 @@ async def list_timesheets(
 
 
 @router.post("/timesheets")
-async def create_timesheet(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_timesheet(data: dict, current_user: User = Depends(get_current_user)):
     """Create a timesheet"""
     db = get_db()
     
@@ -842,26 +831,26 @@ async def create_timesheet(data: dict, current_user: dict = Depends(get_current_
     now = datetime.now(timezone.utc).isoformat()
     
     # Calculate total hours from time entries
-    person_id = data.get("person_id") or current_user.get("user_id")
+    person_id = data.get("person_id") or current_user.id
     period = data.get("period")
     
     entries = await db.wf_time_entries.find({
         "person_id": person_id,
         "date": {"$regex": f"^{period}"},
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }, {"_id": 0}).to_list(1000)
     
     total_hours = sum(e.get("hours", 0) for e in entries)
     
     timesheet = {
         "timesheet_id": timesheet_id,
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "person_id": person_id,
         "period": period,
         "total_hours": total_hours,
         "status": "open",  # open | submitted | approved | locked
         "created_at": now,
-        "created_by": current_user.get("user_id")
+        "created_by": current_user.id
     }
     
     await db.wf_timesheets.insert_one(timesheet)
@@ -870,12 +859,12 @@ async def create_timesheet(data: dict, current_user: dict = Depends(get_current_
 
 
 @router.post("/timesheets/{timesheet_id}/submit")
-async def submit_timesheet(timesheet_id: str, current_user: dict = Depends(get_current_user)):
+async def submit_timesheet(timesheet_id: str, current_user: User = Depends(get_current_user)):
     """Submit timesheet for approval"""
     db = get_db()
     
     timesheet = await db.wf_timesheets.find_one(
-        {"timesheet_id": timesheet_id, "org_id": current_user.get("org_id")},
+        {"timesheet_id": timesheet_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not timesheet:
@@ -893,12 +882,12 @@ async def submit_timesheet(timesheet_id: str, current_user: dict = Depends(get_c
 
 
 @router.post("/timesheets/{timesheet_id}/approve")
-async def approve_timesheet(timesheet_id: str, current_user: dict = Depends(get_current_user)):
+async def approve_timesheet(timesheet_id: str, current_user: User = Depends(get_current_user)):
     """Approve a timesheet"""
     db = get_db()
     
     timesheet = await db.wf_timesheets.find_one(
-        {"timesheet_id": timesheet_id, "org_id": current_user.get("org_id")},
+        {"timesheet_id": timesheet_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not timesheet:
@@ -913,7 +902,7 @@ async def approve_timesheet(timesheet_id: str, current_user: dict = Depends(get_
         {"$set": {
             "status": "approved",
             "approved_at": now,
-            "approved_by": current_user.get("user_id")
+            "approved_by": current_user.id
         }}
     )
     
@@ -931,11 +920,11 @@ async def approve_timesheet(timesheet_id: str, current_user: dict = Depends(get_
 @router.get("/compensation")
 async def list_compensation_profiles(
     person_id: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """List compensation profiles"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id"), "deleted": {"$ne": True}}
+    query = {"org_id": current_user.org_id, "deleted": {"$ne": True}}
     
     if person_id:
         query["person_id"] = person_id
@@ -945,7 +934,7 @@ async def list_compensation_profiles(
 
 
 @router.post("/compensation")
-async def create_compensation_profile(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_compensation_profile(data: dict, current_user: User = Depends(get_current_user)):
     """Create compensation profile"""
     db = get_db()
     
@@ -960,7 +949,7 @@ async def create_compensation_profile(data: dict, current_user: dict = Depends(g
     
     profile = {
         "compensation_id": comp_id,
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "person_id": data.get("person_id"),
         "pay_type": data.get("pay_type", "salaried"),  # salaried | hourly | contract
         "base_pay": data.get("base_pay"),
@@ -970,7 +959,7 @@ async def create_compensation_profile(data: dict, current_user: dict = Depends(g
         "effective_to": None,
         "status": "active",
         "created_at": now,
-        "created_by": current_user.get("user_id")
+        "created_by": current_user.id
     }
     
     await db.wf_compensation.insert_one(profile)
@@ -982,11 +971,11 @@ async def create_compensation_profile(data: dict, current_user: dict = Depends(g
 async def list_payruns(
     status: Optional[str] = None,
     period: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """List pay runs"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id"), "deleted": {"$ne": True}}
+    query = {"org_id": current_user.org_id, "deleted": {"$ne": True}}
     
     if status:
         query["status"] = status
@@ -998,12 +987,12 @@ async def list_payruns(
 
 
 @router.get("/payruns/{payrun_id}")
-async def get_payrun(payrun_id: str, current_user: dict = Depends(get_current_user)):
+async def get_payrun(payrun_id: str, current_user: User = Depends(get_current_user)):
     """Get pay run details with payslips"""
     db = get_db()
     
     payrun = await db.wf_payruns.find_one(
-        {"payrun_id": payrun_id, "org_id": current_user.get("org_id")},
+        {"payrun_id": payrun_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not payrun:
@@ -1022,7 +1011,7 @@ async def get_payrun(payrun_id: str, current_user: dict = Depends(get_current_us
 
 
 @router.post("/payruns")
-async def create_payrun(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_payrun(data: dict, current_user: User = Depends(get_current_user)):
     """Create a new pay run"""
     db = get_db()
     
@@ -1031,7 +1020,7 @@ async def create_payrun(data: dict, current_user: dict = Depends(get_current_use
     
     payrun = {
         "payrun_id": payrun_id,
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "period": data.get("period"),
         "payroll_group": data.get("payroll_group", "default"),
         "status": "draft",  # draft | calculated | approved | posted
@@ -1039,7 +1028,7 @@ async def create_payrun(data: dict, current_user: dict = Depends(get_current_use
         "total_deductions": 0,
         "total_net": 0,
         "created_at": now,
-        "created_by": current_user.get("user_id")
+        "created_by": current_user.id
     }
     
     await db.wf_payruns.insert_one(payrun)
@@ -1048,12 +1037,12 @@ async def create_payrun(data: dict, current_user: dict = Depends(get_current_use
 
 
 @router.post("/payruns/{payrun_id}/calculate")
-async def calculate_payrun(payrun_id: str, current_user: dict = Depends(get_current_user)):
+async def calculate_payrun(payrun_id: str, current_user: User = Depends(get_current_user)):
     """Calculate payroll for all eligible employees"""
     db = get_db()
     
     payrun = await db.wf_payruns.find_one(
-        {"payrun_id": payrun_id, "org_id": current_user.get("org_id")},
+        {"payrun_id": payrun_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not payrun:
@@ -1063,7 +1052,7 @@ async def calculate_payrun(payrun_id: str, current_user: dict = Depends(get_curr
         raise HTTPException(status_code=400, detail="Cannot recalculate approved/posted pay run")
     
     # Get all active people with compensation profiles
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     active_people = await db.wf_people.find(
         {"org_id": org_id, "status": "active", "deleted": {"$ne": True}},
         {"_id": 0}
@@ -1158,12 +1147,12 @@ async def calculate_payrun(payrun_id: str, current_user: dict = Depends(get_curr
 
 
 @router.post("/payruns/{payrun_id}/approve")
-async def approve_payrun(payrun_id: str, current_user: dict = Depends(get_current_user)):
+async def approve_payrun(payrun_id: str, current_user: User = Depends(get_current_user)):
     """Approve pay run"""
     db = get_db()
     
     payrun = await db.wf_payruns.find_one(
-        {"payrun_id": payrun_id, "org_id": current_user.get("org_id")},
+        {"payrun_id": payrun_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not payrun:
@@ -1177,7 +1166,7 @@ async def approve_payrun(payrun_id: str, current_user: dict = Depends(get_curren
         {"$set": {
             "status": "approved",
             "approved_at": datetime.now(timezone.utc).isoformat(),
-            "approved_by": current_user.get("user_id")
+            "approved_by": current_user.id
         }}
     )
     
@@ -1188,11 +1177,11 @@ async def approve_payrun(payrun_id: str, current_user: dict = Depends(get_curren
 async def list_payslips(
     person_id: Optional[str] = None,
     period: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """List payslips"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     
     if person_id:
         query["person_id"] = person_id
@@ -1206,10 +1195,10 @@ async def list_payslips(
 # ==================== COMPLIANCE MODULE ====================
 
 @router.get("/compliance/dashboard")
-async def get_compliance_dashboard(current_user: dict = Depends(get_current_user)):
+async def get_compliance_dashboard(current_user: User = Depends(get_current_user)):
     """Get compliance dashboard"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Document stats
     total_docs = await db.wf_compliance_documents.count_documents({"org_id": org_id, "deleted": {"$ne": True}})
@@ -1263,11 +1252,11 @@ async def list_compliance_documents(
     person_id: Optional[str] = None,
     document_type: Optional[str] = None,
     status: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """List compliance documents"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id"), "deleted": {"$ne": True}}
+    query = {"org_id": current_user.org_id, "deleted": {"$ne": True}}
     
     if person_id:
         query["person_id"] = person_id
@@ -1281,7 +1270,7 @@ async def list_compliance_documents(
 
 
 @router.post("/compliance/documents")
-async def create_compliance_document(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_compliance_document(data: dict, current_user: User = Depends(get_current_user)):
     """Create a compliance document record"""
     db = get_db()
     
@@ -1290,7 +1279,7 @@ async def create_compliance_document(data: dict, current_user: dict = Depends(ge
     
     document = {
         "document_id": doc_id,
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "person_id": data.get("person_id"),
         "document_type": data.get("document_type"),  # contract | id | visa | certificate
         "document_number": data.get("document_number"),
@@ -1299,7 +1288,7 @@ async def create_compliance_document(data: dict, current_user: dict = Depends(ge
         "issuing_authority": data.get("issuing_authority"),
         "verification_status": "pending",  # pending | verified | rejected | expired
         "created_at": now,
-        "created_by": current_user.get("user_id")
+        "created_by": current_user.id
     }
     
     await db.wf_compliance_documents.insert_one(document)
@@ -1308,12 +1297,12 @@ async def create_compliance_document(data: dict, current_user: dict = Depends(ge
 
 
 @router.post("/compliance/documents/{document_id}/verify")
-async def verify_document(document_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def verify_document(document_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Verify a compliance document"""
     db = get_db()
     
     doc = await db.wf_compliance_documents.find_one(
-        {"document_id": document_id, "org_id": current_user.get("org_id")},
+        {"document_id": document_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not doc:
@@ -1326,7 +1315,7 @@ async def verify_document(document_id: str, data: dict, current_user: dict = Dep
         {"$set": {
             "verification_status": status,
             "verified_at": datetime.now(timezone.utc).isoformat(),
-            "verified_by": current_user.get("user_id"),
+            "verified_by": current_user.id,
             "verification_notes": data.get("notes")
         }}
     )
@@ -1339,11 +1328,11 @@ async def list_violations(
     person_id: Optional[str] = None,
     severity: Optional[str] = None,
     status: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """List compliance violations"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id"), "deleted": {"$ne": True}}
+    query = {"org_id": current_user.org_id, "deleted": {"$ne": True}}
     
     if person_id:
         query["person_id"] = person_id
@@ -1357,7 +1346,7 @@ async def list_violations(
 
 
 @router.post("/compliance/violations")
-async def create_violation(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_violation(data: dict, current_user: User = Depends(get_current_user)):
     """Create a compliance violation"""
     db = get_db()
     
@@ -1366,7 +1355,7 @@ async def create_violation(data: dict, current_user: dict = Depends(get_current_
     
     violation = {
         "violation_id": violation_id,
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "person_id": data.get("person_id"),
         "violation_type": data.get("violation_type"),
         "description": data.get("description"),
@@ -1374,24 +1363,24 @@ async def create_violation(data: dict, current_user: dict = Depends(get_current_
         "detected_on": now,
         "status": "open",  # open | mitigated | closed
         "created_at": now,
-        "created_by": current_user.get("user_id")
+        "created_by": current_user.id
     }
     
     await db.wf_compliance_violations.insert_one(violation)
     
     # Update person compliance status
-    await update_compliance_status(db, data.get("person_id"), current_user.get("org_id"))
+    await update_compliance_status(db, data.get("person_id"), current_user.org_id)
     
     return {"success": True, "data": {**violation, "_id": None}, "violation_id": violation_id}
 
 
 @router.post("/compliance/violations/{violation_id}/resolve")
-async def resolve_violation(violation_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def resolve_violation(violation_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Resolve a violation"""
     db = get_db()
     
     violation = await db.wf_compliance_violations.find_one(
-        {"violation_id": violation_id, "org_id": current_user.get("org_id")},
+        {"violation_id": violation_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not violation:
@@ -1404,13 +1393,13 @@ async def resolve_violation(violation_id: str, data: dict, current_user: dict = 
         {"$set": {
             "status": status,
             "resolved_at": datetime.now(timezone.utc).isoformat(),
-            "resolved_by": current_user.get("user_id"),
+            "resolved_by": current_user.id,
             "resolution_notes": data.get("notes")
         }}
     )
     
     # Update person compliance status
-    await update_compliance_status(db, violation["person_id"], current_user.get("org_id"))
+    await update_compliance_status(db, violation["person_id"], current_user.org_id)
     
     return {"success": True, "message": f"Violation {status}"}
 
@@ -1446,10 +1435,10 @@ async def update_compliance_status(db, person_id: str, org_id: str):
 # ==================== SEED DATA ====================
 
 @router.post("/seed-data")
-async def seed_workforce_data(current_user: dict = Depends(get_current_user)):
+async def seed_workforce_data(current_user: User = Depends(get_current_user)):
     """Seed sample workforce data"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     now = datetime.now(timezone.utc).isoformat()
     
     # Sample People

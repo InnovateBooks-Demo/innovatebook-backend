@@ -10,11 +10,13 @@ import shutil
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
-import uuid
-import jwt
 import os
+import uuid
+from routes.deps import get_current_user, User, security, get_db
+
+router = APIRouter(tags=["Workspace"])
 from typing import List, Optional, Dict, Any
-from auth_utils import verify_token  # (kept as-is; NOT used in WS)
+# workspace_models imports
 
 from workspace_models import (
     # Enums
@@ -41,20 +43,7 @@ from workspace_models import (
 from pydantic import BaseModel
 
 
-# Simple user model for workspace (avoids auth_models dependency issues)
-class WorkspaceUser(BaseModel):
-    id: str
-    email: str
-    full_name: str
-    org_id: str = "default"
-    roles: List[str] = []
-
-
-router = APIRouter(tags=["workspace"])  # Prefix added in main.py include_router
-security = HTTPBearer()
-
-JWT_SECRET = os.environ.get("JWT_SECRET_KEY", "fallback-secret-key")
-JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
+# Auth moved to routes.deps
 
 # ============= WEBSOCKET MANAGER =============
 # Room format required: chat:{chat_id}
@@ -103,43 +92,10 @@ class WorkspaceConnectionManager:
 manager = WorkspaceConnectionManager()
 
 
-# Get database dependency to avoid circular imports
-def get_db():
-    from main import db
-    return db
+# get_db moved to routes.deps
 
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> WorkspaceUser:
-    """Local get_current_user to avoid circular imports"""
-    db = get_db()
-    try:
-        token = credentials.credentials
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id = payload.get("sub") or payload.get("sub")
-        if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-
-        # Try to find user by _id first in users collection
-        user = await db.users.find_one({"_id": user_id})
-
-        # If not found, try enterprise_users collection
-        if user is None:
-            user = await db.enterprise_users.find_one({"user_id": user_id}, {"_id": 0})
-
-        if user is None:
-            raise HTTPException(status_code=401, detail="User not found")
-
-        return WorkspaceUser(
-            id=user.get("_id") or user.get("user_id") or user_id,
-            email=user.get("email", ""),
-            full_name=user.get("full_name", "User"),
-            org_id=payload.get("org_id", "default"),
-            roles=user.get("roles", [])
-        )
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+# get_current_user moved to routes.deps
 
 
 # ============= HELPER FUNCTIONS =============
@@ -219,7 +175,7 @@ async def create_notification_helper(
 @router.post("/contexts", response_model=Context)
 async def create_context(
     data: ContextCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new context for a business object"""
     db = get_db()
@@ -239,11 +195,14 @@ async def create_context(
 @router.get("/contexts/{context_id}")
 async def get_context(
     context_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get context details"""
     db = get_db()
-    context = await db.workspace_contexts.find_one({"context_id": context_id})
+    context = await db.workspace_contexts.find_one({
+        "context_id": context_id,
+        "org_id": current_user.org_id
+    })
     if not context:
         raise HTTPException(status_code=404, detail="Context not found")
 
@@ -256,7 +215,7 @@ async def get_context(
 @router.post("/tasks", response_model=WorkspaceTask)
 async def create_task(
     data: WorkspaceTaskCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new task"""
     db = get_db()
@@ -276,6 +235,7 @@ async def create_task(
         "status": TaskStatus.OPEN,
         "visibility_scope": data.visibility_scope,
         "source": data.source,
+        "org_id": current_user.org_id,
         "created_by": current_user.id,
         "created_at": now.isoformat(),
         "updated_at": now.isoformat(),
@@ -313,11 +273,12 @@ async def get_tasks(
     status: Optional[TaskStatus] = None,
     priority: Optional[TaskPriority] = None,
     context_id: Optional[str] = None,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get tasks with filters"""
     db = get_db()
     query = {
+        "org_id": current_user.org_id,
         "$or": [
             {"assigned_to_user": current_user.id},
             {"created_by": current_user.id}
@@ -349,11 +310,14 @@ async def get_tasks(
 @router.get("/tasks/{task_id}", response_model=WorkspaceTask)
 async def get_task(
     task_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get task details"""
     db = get_db()
-    task = await db.workspace_tasks.find_one({"task_id": task_id})
+    task = await db.workspace_tasks.find_one({
+        "task_id": task_id,
+        "org_id": current_user.org_id
+    })
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
@@ -371,7 +335,7 @@ async def get_task(
 async def update_task(
     task_id: str,
     data: WorkspaceTaskUpdate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update a task"""
     db = get_db()
@@ -416,7 +380,7 @@ async def update_task(
 @router.post("/tasks/{task_id}/complete")
 async def complete_task(
     task_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Mark a task as completed"""
     db = get_db()
@@ -444,7 +408,7 @@ async def complete_task(
 @router.post("/approvals", response_model=WorkspaceApproval)
 async def create_approval(
     data: WorkspaceApprovalCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new approval request"""
     db = get_db()
@@ -465,6 +429,7 @@ async def create_approval(
         "decided_at": None,
         "decided_by": None,
         "context_snapshot": data.context_snapshot,
+        "org_id": current_user.org_id,
         "requested_by": current_user.id,
         "created_at": now.isoformat(),
         "due_at": data.due_at.isoformat() if data.due_at else None,
@@ -498,11 +463,11 @@ async def get_approvals(
     decision: Optional[ApprovalDecision] = None,
     pending_for_me: bool = False,
     requested_by_me: bool = False,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get approvals with filters"""
     db = get_db()
-    query = {}
+    query = {"org_id": current_user.org_id}
 
     if decision:
         query["decision"] = decision
@@ -535,11 +500,14 @@ async def get_approvals(
 @router.get("/approvals/{approval_id}", response_model=WorkspaceApproval)
 async def get_approval(
     approval_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get approval details"""
     db = get_db()
-    approval = await db.workspace_approvals.find_one({"approval_id": approval_id})
+    approval = await db.workspace_approvals.find_one({
+        "approval_id": approval_id,
+        "org_id": current_user.org_id
+    })
     if not approval:
         raise HTTPException(status_code=404, detail="Approval not found")
 
@@ -556,7 +524,7 @@ async def get_approval(
 async def decide_approval(
     approval_id: str,
     data: ApprovalDecisionInput,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Make a decision on an approval"""
     db = get_db()
@@ -609,7 +577,7 @@ async def decide_approval(
 @router.post("/channels", response_model=WorkspaceChannel)
 async def create_channel(
     data: WorkspaceChannelCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new workspace channel"""
     db = get_db()
@@ -627,6 +595,7 @@ async def create_channel(
         "member_roles": data.member_roles,
         "member_users": member_users,
         "visibility_scope": data.visibility_scope,
+        "org_id": current_user.org_id,
         "created_by": current_user.id,
         "created_at": now.isoformat(),
         "is_active": True
@@ -641,11 +610,12 @@ async def create_channel(
 @router.get("/channels", response_model=List[WorkspaceChannel])
 async def get_channels(
     channel_type: Optional[ChannelType] = None,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all channels user has access to"""
     db = get_db()
     query = {
+        "org_id": current_user.org_id,
         "is_active": True,
         "member_users": current_user.id
     }
@@ -666,11 +636,14 @@ async def get_channels(
 @router.get("/channels/{channel_id}", response_model=WorkspaceChannel)
 async def get_channel(
     channel_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get channel details"""
     db = get_db()
-    channel = await db.workspace_channels.find_one({"channel_id": channel_id})
+    channel = await db.workspace_channels.find_one({
+        "channel_id": channel_id,
+        "org_id": current_user.org_id
+    })
     if not channel:
         raise HTTPException(status_code=404, detail="Channel not found")
 
@@ -685,7 +658,7 @@ async def get_channel(
 async def send_channel_message(
     channel_id: str,
     data: ChannelMessageCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Send a message in a channel"""
     db = get_db()
@@ -743,7 +716,7 @@ async def send_channel_message(
 async def get_channel_messages(
     channel_id: str,
     limit: int = 50,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get messages from a channel"""
     db = get_db()
@@ -769,7 +742,7 @@ async def get_channel_messages(
 @router.post("/chats", response_model=WorkspaceChat)
 async def create_chat(
     data: WorkspaceChatCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new context-bound chat"""
     db = get_db()
@@ -797,7 +770,7 @@ async def create_chat(
         found_ids = set()
         async for u in db.users.find({"_id": {"$in": participants}}, {"_id": 1}):
             found_ids.add(u["_id"])
-        async for u in db.enterprise_users.find({"user_id": {"$in": participants}}, {"user_id": 1}):
+        async for u in db.users.find({"user_id": {"$in": participants}}, {"user_id": 1}):
             found_ids.add(u["user_id"])
 
         if len(found_ids) != len(set(participants)):
@@ -811,6 +784,7 @@ async def create_chat(
         "created_by": current_user.id,
         "participants": participants,
         "visibility_scope": data.visibility_scope,
+        "org_id": current_user.org_id,
         "created_at": now.isoformat(),
         "is_archived": False,
         "last_message_at": None
@@ -825,11 +799,12 @@ async def create_chat(
 @router.get("/chats", response_model=List[WorkspaceChat])
 async def get_chats(
     context_id: Optional[str] = None,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all chats for current user"""
     db = get_db()
     query = {
+        "org_id": current_user.org_id,
         "participants": current_user.id,
         "is_archived": False
     }
@@ -852,11 +827,14 @@ async def get_chats(
 @router.get("/chats/{chat_id}", response_model=WorkspaceChat)
 async def get_chat(
     chat_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get chat details"""
     db = get_db()
-    chat = await db.workspace_chats.find_one({"chat_id": chat_id})
+    chat = await db.workspace_chats.find_one({
+        "chat_id": chat_id,
+        "org_id": current_user.org_id
+    })
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
 
@@ -874,7 +852,7 @@ async def get_chat(
 async def send_chat_message(
     chat_id: str,
     data: ChatMessageCreate,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Send a message in a chat (REST) + Broadcast real-time event"""
     db = get_db()
@@ -947,7 +925,7 @@ async def send_chat_message(
 async def get_chat_messages(
     chat_id: str,
     limit: int = 50,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get messages from a chat"""
     db = get_db()
@@ -1040,7 +1018,7 @@ async def workspace_chat_ws(websocket: WebSocket, chat_id: str, token: str = Que
 async def get_notifications(
     unread_only: bool = False,
     limit: int = 50,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get notifications for current user"""
     db = get_db()
@@ -1063,7 +1041,7 @@ async def get_notifications(
 
 @router.get("/notifications/unread-count")
 async def get_unread_count(
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get count of unread notifications"""
     db = get_db()
@@ -1077,7 +1055,7 @@ async def get_unread_count(
 @router.post("/notifications/{notification_id}/read")
 async def mark_notification_read(
     notification_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Mark a notification as read"""
     db = get_db()
@@ -1096,7 +1074,7 @@ async def mark_notification_read(
 
 @router.post("/notifications/read-all")
 async def mark_all_notifications_read(
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Mark all notifications as read"""
     db = get_db()
@@ -1113,7 +1091,7 @@ async def mark_all_notifications_read(
 @router.delete("/notifications/{notification_id}")
 async def delete_notification(
     notification_id: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a notification"""
     db = get_db()
@@ -1132,7 +1110,7 @@ async def delete_notification(
 
 @router.get("/stats", response_model=WorkspaceStats)
 async def get_workspace_stats(
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get workspace statistics for dashboard"""
     db = get_db()
@@ -1184,7 +1162,7 @@ async def get_workspace_stats(
 
 @router.get("/seed")
 async def seed_workspace_data(
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Seed sample workspace data"""
     db = get_db()
@@ -1328,7 +1306,7 @@ async def seed_workspace_data(
 async def upload_chat_attachment(
     chat_id: str,
     file: UploadFile = File(...),
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Upload a file attachment to a chat"""
     db = get_db()
@@ -1416,7 +1394,7 @@ async def upload_chat_attachment(
 async def get_chat_attachment(
     chat_id: str,
     filename: str,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Serve a chat attachment"""
     db = get_db()
@@ -1440,7 +1418,7 @@ async def get_chat_attachment(
 
 @router.get("/legacy/chat/channels")
 async def legacy_get_channels(
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Alias for /api/workspace/channels for legacy callers"""
     return await get_channels(channel_type=None, current_user=current_user)
@@ -1449,7 +1427,7 @@ async def legacy_get_channels(
 async def legacy_get_channel_messages(
     channel_id: str,
     limit: int = 50,
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Alias for /api/workspace/channels/{id}/messages"""
     return await get_channel_messages(channel_id, limit, current_user)
@@ -1457,7 +1435,7 @@ async def legacy_get_channel_messages(
 @router.post("/legacy/chat/messages")
 async def legacy_send_chat_message(
     data: ChatMessageCreate, # Note: this is for context chats, but legacy used it for channels too
-    current_user: WorkspaceUser = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Thin adapter for legacy single-endpoint message sending"""
     # This is complex because legacy had a mixed model. 

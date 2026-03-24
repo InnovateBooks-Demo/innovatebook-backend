@@ -85,7 +85,7 @@ async def main():
     
     if old_user:
         # Create enterprise user from old user
-        existing_enterprise_user = await db.enterprise_users.find_one(
+        existing_enterprise_user = await db.users.find_one(
             {"email": "demo@innovatebooks.com"},
             {"_id": 0}
         )
@@ -109,7 +109,7 @@ async def main():
                 "created_at": datetime.now(timezone.utc),
                 "updated_at": datetime.now(timezone.utc)
             }
-            await db.enterprise_users.insert_one(enterprise_user_doc)
+            await db.users.insert_one(enterprise_user_doc)
             logger.info(f"✅ Migrated user: {old_user['email']}")
     
     # Step 3: Add org_id to all collections

@@ -50,8 +50,8 @@ async def get_organizations_overview(token_payload: dict = Depends(require_super
             org_id = org["org_id"]
             
             # Get user counts
-            total_users = await db.enterprise_users.count_documents({"org_id": org_id})
-            active_users = await db.enterprise_users.count_documents({"org_id": org_id, "is_active": True})
+            total_users = await db.users.count_documents({"org_id": org_id})
+            active_users = await db.users.count_documents({"org_id": org_id, "is_active": True})
             inactive_users = total_users - active_users
             
             # Get subscription details
@@ -183,7 +183,7 @@ async def get_platform_growth(token_payload: dict = Depends(require_super_admin)
             monthly_signups[month_key] = monthly_signups.get(month_key, 0) + 1
         
         # Get user growth
-        users = await db.enterprise_users.find(
+        users = await db.users.find(
             {"created_at": {"$gte": twelve_months_ago}, "is_super_admin": False},
             {"_id": 0, "created_at": 1}
         ).to_list(None)
@@ -215,7 +215,7 @@ async def get_organization_details(org_id: str, token_payload: dict = Depends(re
             raise HTTPException(status_code=404, detail="Organization not found")
         
         # Get all users
-        users = await db.enterprise_users.find({"org_id": org_id}, {"_id": 0, "password_hash": 0}).to_list(None)
+        users = await db.users.find({"org_id": org_id}, {"_id": 0, "password_hash": 0}).to_list(None)
         
         # Get subscription
         subscription = await db.subscriptions.find_one({"org_id": org_id}, {"_id": 0})
@@ -250,15 +250,15 @@ async def get_organization_details(org_id: str, token_payload: dict = Depends(re
 async def get_user_activity(token_payload: dict = Depends(require_super_admin)):
     """Get platform-wide user activity metrics"""
     try:
-        total_users = await db.enterprise_users.count_documents({"is_super_admin": False})
-        active_users = await db.enterprise_users.count_documents({"is_super_admin": False, "is_active": True})
+        total_users = await db.users.count_documents({"is_super_admin": False})
+        active_users = await db.users.count_documents({"is_super_admin": False, "is_active": True})
         
         # Get users by org
         orgs = await db.organizations.find({}, {"_id": 0, "org_id": 1, "org_name": 1}).to_list(None)
         
         user_distribution = []
         for org in orgs:
-            count = await db.enterprise_users.count_documents({"org_id": org["org_id"]})
+            count = await db.users.count_documents({"org_id": org["org_id"]})
             user_distribution.append({
                 "org_name": org["org_name"],
                 "user_count": count

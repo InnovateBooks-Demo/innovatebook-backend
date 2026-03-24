@@ -7,35 +7,12 @@ from fastapi import APIRouter, HTTPException, Depends, Header
 from typing import List, Optional
 from datetime import datetime
 import uuid
-import jwt
 import os
+from routes.deps import get_current_user, User, get_db
 
 router = APIRouter(prefix="/api/operations", tags=["Operations"])
 
-JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
-
-def get_db():
-    """Get database instance from main"""
-    from main import db
-    return db
-
-async def get_current_user(authorization: str = Header(None)):
-    """Extract current user from JWT token"""
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        return {
-            "user_id": payload.get("user_id"),
-            "org_id": payload.get("org_id"),
-            "role_id": payload.get("role_id")
-        }
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+# Auth moved to routes.deps
 
 
 # ==================== WORK INTAKE ROUTES ====================
@@ -44,11 +21,11 @@ async def get_current_user(authorization: str = Header(None)):
 async def get_work_orders(
     status: Optional[str] = None,
     delivery_type: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all work orders in the intake queue"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     if status:
         query["status"] = status
     if delivery_type:
@@ -60,11 +37,11 @@ async def get_work_orders(
 
 
 @router.get("/work-intake/{work_order_id}")
-async def get_work_order(work_order_id: str, current_user: dict = Depends(get_current_user)):
+async def get_work_order(work_order_id: str, current_user: User = Depends(get_current_user)):
     """Get work order details"""
     db = get_db()
     work_order = await db.ops_work_orders.find_one(
-        {"work_order_id": work_order_id, "org_id": current_user.get("org_id")},
+        {"work_order_id": work_order_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not work_order:
@@ -73,7 +50,7 @@ async def get_work_order(work_order_id: str, current_user: dict = Depends(get_cu
 
 
 @router.post("/work-intake")
-async def create_work_order(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_work_order(data: dict, current_user: User = Depends(get_current_user)):
     """Create a new work order from contract"""
     db = get_db()
     work_order = {
@@ -90,7 +67,7 @@ async def create_work_order(data: dict, current_user: dict = Depends(get_current
         "status": "pending",
         "risk_flag": False,
         "created_at": datetime.utcnow().isoformat(),
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     await db.ops_work_orders.insert_one(work_order)
     work_order.pop("_id", None)
@@ -98,14 +75,14 @@ async def create_work_order(data: dict, current_user: dict = Depends(get_current
 
 
 @router.put("/work-intake/{work_order_id}/accept")
-async def accept_work_order(work_order_id: str, current_user: dict = Depends(get_current_user)):
+async def accept_work_order(work_order_id: str, current_user: User = Depends(get_current_user)):
     """Accept a work order and route to execution"""
     db = get_db()
     result = await db.ops_work_orders.update_one(
-        {"work_order_id": work_order_id, "org_id": current_user.get("org_id")},
+        {"work_order_id": work_order_id, "org_id": current_user.org_id},
         {"$set": {
             "status": "accepted",
-            "accepted_by": current_user.get("user_id"),
+            "accepted_by": current_user.id,
             "accepted_at": datetime.utcnow().isoformat()
         }}
     )
@@ -115,11 +92,11 @@ async def accept_work_order(work_order_id: str, current_user: dict = Depends(get
 
 
 @router.put("/work-intake/{work_order_id}/block")
-async def block_work_order(work_order_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def block_work_order(work_order_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Block a work order with reason"""
     db = get_db()
     result = await db.ops_work_orders.update_one(
-        {"work_order_id": work_order_id, "org_id": current_user.get("org_id")},
+        {"work_order_id": work_order_id, "org_id": current_user.org_id},
         {"$set": {
             "status": "blocked",
             "blocked_reason": data.get("reason", "Validation failed"),
@@ -138,11 +115,11 @@ async def get_projects(
     status: Optional[str] = None,
     project_type: Optional[str] = None,
     owner_id: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all projects"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     if status:
         query["status"] = status
     if project_type:
@@ -156,11 +133,11 @@ async def get_projects(
 
 
 @router.get("/projects/{project_id}")
-async def get_project(project_id: str, current_user: dict = Depends(get_current_user)):
+async def get_project(project_id: str, current_user: User = Depends(get_current_user)):
     """Get project details with milestones, tasks, resources"""
     db = get_db()
     project = await db.ops_projects.find_one(
-        {"project_id": project_id, "org_id": current_user.get("org_id")},
+        {"project_id": project_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not project:
@@ -187,7 +164,7 @@ async def get_project(project_id: str, current_user: dict = Depends(get_current_
 
 
 @router.post("/projects")
-async def create_project(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_project(data: dict, current_user: User = Depends(get_current_user)):
     """Create a project from work order"""
     db = get_db()
     project = {
@@ -201,12 +178,12 @@ async def create_project(data: dict, current_user: dict = Depends(get_current_us
         "status": "planned",
         "scope_snapshot": data.get("scope_snapshot", {}),
         "sla_snapshot": data.get("sla_snapshot", {}),
-        "owner_id": data.get("owner_id", current_user.get("user_id")),
+        "owner_id": data.get("owner_id", current_user.id),
         "owner_name": data.get("owner_name"),
         "progress_percent": 0,
         "sla_status": "on_track",
         "created_at": datetime.utcnow().isoformat(),
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     await db.ops_projects.insert_one(project)
     
@@ -222,7 +199,7 @@ async def create_project(data: dict, current_user: dict = Depends(get_current_us
 
 
 @router.put("/projects/{project_id}/status")
-async def update_project_status(project_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def update_project_status(project_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Update project status"""
     db = get_db()
     new_status = data.get("status")
@@ -231,7 +208,7 @@ async def update_project_status(project_id: str, data: dict, current_user: dict 
         update["actual_end_date"] = datetime.utcnow().isoformat()
     
     result = await db.ops_projects.update_one(
-        {"project_id": project_id, "org_id": current_user.get("org_id")},
+        {"project_id": project_id, "org_id": current_user.org_id},
         {"$set": update}
     )
     if result.modified_count == 0:
@@ -246,11 +223,11 @@ async def get_all_tasks(
     status: Optional[str] = None,
     assignee_id: Optional[str] = None,
     project_id: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all tasks (My Tasks view)"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     if status:
         query["status"] = status
     if assignee_id:
@@ -264,11 +241,11 @@ async def get_all_tasks(
 
 
 @router.get("/tasks/my")
-async def get_my_tasks(current_user: dict = Depends(get_current_user)):
+async def get_my_tasks(current_user: User = Depends(get_current_user)):
     """Get tasks assigned to current user"""
     db = get_db()
     cursor = db.ops_tasks.find(
-        {"assignee_id": current_user.get("user_id"), "org_id": current_user.get("org_id")},
+        {"assignee_id": current_user.id, "org_id": current_user.org_id},
         {"_id": 0}
     ).sort("due_date", 1)
     tasks = await cursor.to_list(length=1000)
@@ -276,11 +253,11 @@ async def get_my_tasks(current_user: dict = Depends(get_current_user)):
 
 
 @router.get("/tasks/{task_id}")
-async def get_task(task_id: str, current_user: dict = Depends(get_current_user)):
+async def get_task(task_id: str, current_user: User = Depends(get_current_user)):
     """Get task details"""
     db = get_db()
     task = await db.ops_tasks.find_one(
-        {"task_id": task_id, "org_id": current_user.get("org_id")},
+        {"task_id": task_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not task:
@@ -289,7 +266,7 @@ async def get_task(task_id: str, current_user: dict = Depends(get_current_user))
 
 
 @router.post("/tasks")
-async def create_task(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_task(data: dict, current_user: User = Depends(get_current_user)):
     """Create a new task"""
     db = get_db()
     task = {
@@ -307,7 +284,7 @@ async def create_task(data: dict, current_user: dict = Depends(get_current_user)
         "dependencies": data.get("dependencies", []),
         "sla_impact": data.get("sla_impact", "none"),
         "created_at": datetime.utcnow().isoformat(),
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     
     # Check if dependencies are all completed
@@ -320,7 +297,7 @@ async def create_task(data: dict, current_user: dict = Depends(get_current_user)
 
 
 @router.put("/tasks/{task_id}/status")
-async def update_task_status(task_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def update_task_status(task_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Update task status"""
     db = get_db()
     new_status = data.get("status")
@@ -334,7 +311,7 @@ async def update_task_status(task_id: str, data: dict, current_user: dict = Depe
         update["blocked_reason"] = data.get("reason")
     
     result = await db.ops_tasks.update_one(
-        {"task_id": task_id, "org_id": current_user.get("org_id")},
+        {"task_id": task_id, "org_id": current_user.org_id},
         {"$set": update}
     )
     if result.modified_count == 0:
@@ -346,16 +323,16 @@ async def update_task_status(task_id: str, data: dict, current_user: dict = Depe
 # ==================== INVENTORY ROUTES ====================
 
 @router.get("/inventory")
-async def get_inventory(current_user: dict = Depends(get_current_user)):
+async def get_inventory(current_user: User = Depends(get_current_user)):
     """Get all inventory items"""
     db = get_db()
-    cursor = db.ops_inventory.find({"org_id": current_user.get("org_id")}, {"_id": 0})
+    cursor = db.ops_inventory.find({"org_id": current_user.org_id}, {"_id": 0})
     items = await cursor.to_list(length=1000)
     return {"success": True, "data": items, "count": len(items)}
 
 
 @router.post("/inventory")
-async def create_inventory_item(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_inventory_item(data: dict, current_user: User = Depends(get_current_user)):
     """Create inventory item"""
     db = get_db()
     item = {
@@ -366,7 +343,7 @@ async def create_inventory_item(data: dict, current_user: dict = Depends(get_cur
         "available_quantity": data.get("available_quantity", 0),
         "reserved_quantity": 0,
         "status": "active",
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     await db.ops_inventory.insert_one(item)
     item.pop("_id", None)
@@ -376,16 +353,16 @@ async def create_inventory_item(data: dict, current_user: dict = Depends(get_cur
 # ==================== RESOURCES ROUTES ====================
 
 @router.get("/resources")
-async def get_resources(current_user: dict = Depends(get_current_user)):
+async def get_resources(current_user: User = Depends(get_current_user)):
     """Get all resources"""
     db = get_db()
-    cursor = db.ops_resources.find({"org_id": current_user.get("org_id")}, {"_id": 0})
+    cursor = db.ops_resources.find({"org_id": current_user.org_id}, {"_id": 0})
     resources = await cursor.to_list(length=1000)
     return {"success": True, "data": resources, "count": len(resources)}
 
 
 @router.post("/resources")
-async def create_resource(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_resource(data: dict, current_user: User = Depends(get_current_user)):
     """Create a resource"""
     db = get_db()
     resource = {
@@ -395,7 +372,7 @@ async def create_resource(data: dict, current_user: dict = Depends(get_current_u
         "skill_tags": data.get("skill_tags", []),
         "availability_percent": 100.0,
         "status": "available",
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     await db.ops_resources.insert_one(resource)
     resource.pop("_id", None)
@@ -408,11 +385,11 @@ async def create_resource(data: dict, current_user: dict = Depends(get_current_u
 async def get_services(
     status: Optional[str] = None,
     service_type: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all service instances"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     if status:
         query["status"] = status
     if service_type:
@@ -424,11 +401,11 @@ async def get_services(
 
 
 @router.get("/services/{service_instance_id}")
-async def get_service(service_instance_id: str, current_user: dict = Depends(get_current_user)):
+async def get_service(service_instance_id: str, current_user: User = Depends(get_current_user)):
     """Get service instance details"""
     db = get_db()
     service = await db.ops_services.find_one(
-        {"service_instance_id": service_instance_id, "org_id": current_user.get("org_id")},
+        {"service_instance_id": service_instance_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not service:
@@ -441,7 +418,7 @@ async def get_service(service_instance_id: str, current_user: dict = Depends(get
 
 
 @router.post("/services")
-async def create_service(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_service(data: dict, current_user: User = Depends(get_current_user)):
     """Create a service instance"""
     db = get_db()
     service = {
@@ -461,7 +438,7 @@ async def create_service(data: dict, current_user: dict = Depends(get_current_us
         "status": "created",
         "sla_status": "on_track",
         "created_at": datetime.utcnow().isoformat(),
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     await db.ops_services.insert_one(service)
     service.pop("_id", None)
@@ -469,11 +446,11 @@ async def create_service(data: dict, current_user: dict = Depends(get_current_us
 
 
 @router.put("/services/{service_instance_id}/status")
-async def update_service_status(service_instance_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def update_service_status(service_instance_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Update service status"""
     db = get_db()
     result = await db.ops_services.update_one(
-        {"service_instance_id": service_instance_id, "org_id": current_user.get("org_id")},
+        {"service_instance_id": service_instance_id, "org_id": current_user.org_id},
         {"$set": {"status": data.get("status")}}
     )
     if result.modified_count == 0:
@@ -488,11 +465,11 @@ async def get_alerts(
     severity: Optional[str] = None,
     status: Optional[str] = None,
     category: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get execution alerts"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     if severity:
         query["severity"] = severity
     if status:
@@ -506,11 +483,11 @@ async def get_alerts(
 
 
 @router.get("/governance/alerts/{alert_id}")
-async def get_alert(alert_id: str, current_user: dict = Depends(get_current_user)):
+async def get_alert(alert_id: str, current_user: User = Depends(get_current_user)):
     """Get alert details"""
     db = get_db()
     alert = await db.ops_alerts.find_one(
-        {"alert_id": alert_id, "org_id": current_user.get("org_id")},
+        {"alert_id": alert_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not alert:
@@ -519,12 +496,12 @@ async def get_alert(alert_id: str, current_user: dict = Depends(get_current_user
 
 
 @router.put("/governance/alerts/{alert_id}/acknowledge")
-async def acknowledge_alert(alert_id: str, current_user: dict = Depends(get_current_user)):
+async def acknowledge_alert(alert_id: str, current_user: User = Depends(get_current_user)):
     """Acknowledge an alert"""
     db = get_db()
     result = await db.ops_alerts.update_one(
-        {"alert_id": alert_id, "org_id": current_user.get("org_id")},
-        {"$set": {"status": "acknowledged", "acknowledged_by": current_user.get("user_id")}}
+        {"alert_id": alert_id, "org_id": current_user.org_id},
+        {"$set": {"status": "acknowledged", "acknowledged_by": current_user.id}}
     )
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Alert not found")
@@ -532,11 +509,11 @@ async def acknowledge_alert(alert_id: str, current_user: dict = Depends(get_curr
 
 
 @router.put("/governance/alerts/{alert_id}/resolve")
-async def resolve_alert(alert_id: str, current_user: dict = Depends(get_current_user)):
+async def resolve_alert(alert_id: str, current_user: User = Depends(get_current_user)):
     """Resolve an alert"""
     db = get_db()
     result = await db.ops_alerts.update_one(
-        {"alert_id": alert_id, "org_id": current_user.get("org_id")},
+        {"alert_id": alert_id, "org_id": current_user.org_id},
         {"$set": {"status": "resolved", "resolved_at": datetime.utcnow().isoformat()}}
     )
     if result.modified_count == 0:
@@ -545,10 +522,10 @@ async def resolve_alert(alert_id: str, current_user: dict = Depends(get_current_
 
 
 @router.get("/governance/dashboard")
-async def get_governance_dashboard(current_user: dict = Depends(get_current_user)):
+async def get_governance_dashboard(current_user: User = Depends(get_current_user)):
     """Get governance dashboard metrics"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Aggregate metrics
     open_alerts = await db.ops_alerts.count_documents({"org_id": org_id, "status": "open"})
@@ -572,10 +549,10 @@ async def get_governance_dashboard(current_user: dict = Depends(get_current_user
 # ==================== SEED DATA ROUTE ====================
 
 @router.post("/seed")
-async def seed_operations_data(current_user: dict = Depends(get_current_user)):
+async def seed_operations_data(current_user: User = Depends(get_current_user)):
     """Seed sample operations data"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Clear existing data
     for collection in ["ops_work_orders", "ops_projects", "ops_tasks", "ops_milestones", 
@@ -648,7 +625,7 @@ async def seed_operations_data(current_user: dict = Depends(get_current_user)):
             "status": "active",
             "scope_snapshot": {"deliverables": ["ERP Implementation", "Training", "Support"]},
             "sla_snapshot": {"response_time": "4h", "resolution_time": "24h"},
-            "owner_id": current_user.get("user_id"),
+            "owner_id": current_user.id,
             "owner_name": "Rajesh Kumar",
             "progress_percent": 35,
             "sla_status": "on_track",
@@ -666,7 +643,7 @@ async def seed_operations_data(current_user: dict = Depends(get_current_user)):
             "status": "planned",
             "scope_snapshot": {"items": ["Server Hardware", "Network Equipment"]},
             "sla_snapshot": {"delivery_days": 30},
-            "owner_id": current_user.get("user_id"),
+            "owner_id": current_user.id,
             "owner_name": "Priya Sharma",
             "progress_percent": 0,
             "sla_status": "on_track",

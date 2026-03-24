@@ -78,6 +78,8 @@ security = HTTPBearer()
 
 # Imported from auth_utils to ensure consistency
 from auth_utils import create_access_token, verify_token
+from routes.rbac_deps import require_min_role
+from routes.deps import get_db, User, get_current_user
 
 # Create the main app without a prefix
 print("STEP 5: Creating FastAPI app")
@@ -147,28 +149,14 @@ async def api_health_check():
 # ==================== MODELS ====================
 
 # Auth Models
-class UserRegister(BaseModel):
-    email: EmailStr
-    password: str
-    full_name: str
-    role: Optional[str] = "Finance Manager"
 
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
-
-class User(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    email: EmailStr
-    full_name: str
-    role: str
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+# User model moved to routes.deps
 
 class Token(BaseModel):
     access_token: str
     token_type: str
     user: User
+    success: bool = True
 
 # Customer Models
 class CustomerCreate(BaseModel):
@@ -185,6 +173,7 @@ class CustomerCreate(BaseModel):
 class Customer(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    org_id: Optional[str] = None  # Multi-tenant isolation
     customer_id: Optional[str] = None  # Sequential ID like CUST-001
     name: str
     contact_person: str
@@ -217,6 +206,7 @@ class VendorCreate(BaseModel):
 class Vendor(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    org_id: Optional[str] = None  # Multi-tenant isolation
     name: str
     contact_person: str
     email: EmailStr
@@ -257,6 +247,7 @@ class InvoiceCreate(BaseModel):
 class Invoice(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    org_id: Optional[str] = None  # Multi-tenant isolation
     invoice_number: str
     customer_id: str
     customer_name: str = ""
@@ -306,6 +297,7 @@ class BillCreate(BaseModel):
 class Bill(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    org_id: Optional[str] = None  # Multi-tenant isolation
     bill_number: str
     vendor_id: str
     vendor_name: str = ""
@@ -339,6 +331,7 @@ class BankAccountCreate(BaseModel):
 class BankAccount(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    org_id: Optional[str] = None  # Multi-tenant isolation
     bank_name: str
     account_number: str
     account_type: str
@@ -361,6 +354,7 @@ class TransactionCreate(BaseModel):
 class Transaction(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    org_id: Optional[str] = None  # Multi-tenant isolation
     bank_account_id: str
     bank_name: str = ""
     transaction_date: datetime
@@ -377,6 +371,7 @@ class Transaction(BaseModel):
 class CashFlowEntry(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    org_id: Optional[str] = None  # Multi-tenant isolation
     date: datetime
     type: str  # Inflow or Outflow
     category: str
@@ -391,6 +386,7 @@ class CashFlowEntry(BaseModel):
 class Category(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str
+    org_id: Optional[str] = None  # Multi-tenant isolation
     category_name: str
     coa_account: str
     fs_head: str
@@ -421,6 +417,7 @@ class JournalEntryCreate(BaseModel):
 class JournalEntry(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    org_id: Optional[str] = None  # Multi-tenant isolation
     transaction_id: str
     transaction_type: str
     entry_date: datetime
@@ -476,83 +473,10 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 # Local create_access_token removed. Using auth_utils.create_access_token instead.
 
+# get_database is the standard dependency to get the database instance
 async def get_database():
     """Dependency to get database instance"""
     return db
-
-# async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-#     try:
-#         token = credentials.credentials
-#         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-#         # Support both 'sub' and 'user_id' for compatibility
-#         user_id = payload.get("sub") or payload.get("user_id")
-#         if user_id is None:
-#             raise HTTPException(status_code=401, detail="Invalid token")
-#         # Try multiple lookup methods
-#         user = await db.users.find_one({"_id": user_id})
-#         if user is None:
-#             user = await db.users.find_one({"user_id": user_id})
-#         if user is None:
-#             user = await db.users.find_one({"id": user_id})
-#         if user is None:
-#             # Create a minimal user dict for API compatibility
-#             user = {
-#                 "_id": user_id,
-#                 "id": user_id,
-#                 "user_id": user_id,
-#                 "email": payload.get("email") or f"{user_id}@system.local",
-#                 "full_name": payload.get("full_name") or "System User",
-#                 "role": payload.get("role_id", "user"),
-#                 "org_id": payload.get("org_id")
-#             }
-#         # Fix: Explicitly set id to _id to avoid UUID generation
-#         user["id"] = user.get("_id") or user.get("user_id") or user_id
-#         return User(**user)
-#     except jwt.ExpiredSignatureError:
-#         raise HTTPException(status_code=401, detail="Token expired")
-#     except jwt.InvalidTokenError:
-#         raise HTTPException(status_code=401, detail="Invalid token")
-
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    try:
-        token = credentials.credentials
-        # Use centralized verify_token from auth_utils
-        payload = verify_token(token, verify_type="access")
-
-        user_id = payload.get("user_id") # auth_utils normalizes this
-        
-        user = await db.users.find_one({"_id": user_id})
-        if user is None:
-            user = await db.users.find_one({"user_id": user_id})
-        if user is None:
-            user = await db.users.find_one({"id": user_id})
-
-        if user is None:
-            user = {
-                "_id": user_id,
-                "email": payload.get("email") or f"{user_id}@system.local",
-                "full_name": payload.get("full_name") or "System User",
-                "role": payload.get("role_id", "user"),
-                "org_id": payload.get("org_id"),
-            }
-
-        mongo_id = user.get("_id") or user.get("user_id") or user_id
-
-        user_data = {
-            "id": str(mongo_id),
-            "email": user.get("email"),
-            "full_name": user.get("full_name", "System User"),
-            "role": user.get("role"),
-            "org_id": user.get("org_id"),
-        }
-
-        return User(**user_data)
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error in get_current_user: {e}")
-        raise HTTPException(status_code=401, detail="Invalid token")
 
 
 # async def generate_ai_insight(prompt: str) -> str:
@@ -604,31 +528,6 @@ async def generate_ai_insight(prompt: str) -> str:
 
 
 # ==================== AUTH ROUTES ====================
-
-@api_router.post("/auth/register", response_model=Token)
-async def register(user_data: UserRegister):
-    # Check if user exists
-    existing = await db.users.find_one({"email": user_data.email})
-    if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    # Create user
-    user = User(
-        email=user_data.email,
-        full_name=user_data.full_name,
-        role=user_data.role or "Finance Manager"
-    )
-    
-    user_dict = user.model_dump()
-    user_dict['password'] = hash_password(user_data.password)
-    user_dict['created_at'] = user_dict['created_at'].isoformat()
-    
-    await db.users.insert_one(user_dict)
-    
-    # Create token
-    access_token = create_access_token(user_id=user.id, role_id=user.role)
-    
-    return Token(access_token=access_token, token_type="bearer", user=user)
 
 # OLD LOGIN ROUTE - COMMENTED OUT TO USE NEW AUTH SYSTEM
 # @api_router.post("/auth/login", response_model=Token)
@@ -700,7 +599,7 @@ async def debug_token(credentials: HTTPAuthorizationCredentials = Depends(securi
 
 # ==================== DASHBOARD ROUTES ====================
 
-@api_router.post("/admin/fix-invoice-totals")
+@api_router.post("/admin/fix-invoice-totals", dependencies=[Depends(require_min_role("admin"))])
 async def fix_invoice_totals(current_user: User = Depends(get_current_user)):
     """Fix invoice total_amount for all invoices: total_amount = base_amount + gst_amount"""
     invoices = await db.invoices.find({}, {"_id": 0}).to_list(None)
@@ -1056,11 +955,11 @@ async def get_cashflow_charts(
 @api_router.get("/dashboard/metrics")
 async def get_dashboard_metrics(current_user: User = Depends(get_current_user)):
     # Get cash on hand
-    bank_accounts = await db.bank_accounts.find({"status": "Active"}, {"_id": 0}).to_list(100)
+    bank_accounts = await db.bank_accounts.find({"org_id": current_user.org_id, "status": "Active"}, {"_id": 0}).to_list(100)
     cash_on_hand = sum(acc.get('current_balance', 0) for acc in bank_accounts)
     
     # Get AR outstanding
-    invoices = await db.invoices.find({"status": {"$in": ["Unpaid", "Partially Paid"]}}, {"_id": 0}).to_list(1000)
+    invoices = await db.invoices.find({"org_id": current_user.org_id, "status": {"$in": ["Unpaid", "Partially Paid"]}}, {"_id": 0}).to_list(1000)
     ar_outstanding = sum(inv.get('amount_outstanding', 0) for inv in invoices)
     
     overdue_invoices = []
@@ -1078,7 +977,7 @@ async def get_dashboard_metrics(current_user: User = Depends(get_current_user)):
     ar_overdue_percent = (len(overdue_invoices) / len(invoices) * 100) if invoices else 0
     
     # Get AP outstanding
-    bills = await db.bills.find({"status": {"$in": ["Pending", "Partially Paid"]}}, {"_id": 0}).to_list(1000)
+    bills = await db.bills.find({"org_id": current_user.org_id, "status": {"$in": ["Pending", "Partially Paid"]}}, {"_id": 0}).to_list(1000)
     ap_outstanding = sum(bill.get('amount_outstanding', 0) for bill in bills)
     
     overdue_bills = []
@@ -1103,12 +1002,14 @@ async def get_dashboard_metrics(current_user: User = Depends(get_current_user)):
     thirty_days_ago = now - timedelta(days=30)
     
     cash_inflows = await db.cash_flow.find({
+        "org_id": current_user.org_id,
         "type": "Inflow",
         "is_actual": True,
         "date": {"$gte": thirty_days_ago}
     }, {"_id": 0}).to_list(1000)
     
     cash_outflows = await db.cash_flow.find({
+        "org_id": current_user.org_id,
         "type": "Outflow",
         "is_actual": True,
         "date": {"$gte": thirty_days_ago}
@@ -1158,13 +1059,13 @@ async def get_dashboard_metrics(current_user: User = Depends(get_current_user)):
 
 # ==================== CUSTOMER ROUTES ====================
 
-@api_router.post("/customers", response_model=Customer)
+@api_router.post("/customers", response_model=Customer, dependencies=[Depends(require_min_role("member"))])
 async def create_customer(customer_data: CustomerCreate, current_user: User = Depends(get_current_user)):
     # Generate sequential customer_id
-    count = await db.parties_customers.count_documents({})
+    count = await db.parties_customers.count_documents({"org_id": current_user.org_id})
     customer_id = f"CUST-{str(count + 1).zfill(3)}"
     
-    customer = Customer(**customer_data.model_dump(), customer_id=customer_id)
+    customer = Customer(**customer_data.model_dump(), customer_id=customer_id, org_id=current_user.org_id)
     doc = customer.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.parties_customers.insert_one(doc)
@@ -1172,7 +1073,7 @@ async def create_customer(customer_data: CustomerCreate, current_user: User = De
 
 @api_router.get("/customers", response_model=List[Customer])
 async def get_customers(current_user: User = Depends(get_current_user)):
-    customers = await db.parties_customers.find({}, {"_id": 0}).to_list(1000)
+    customers = await db.parties_customers.find({"org_id": current_user.org_id}, {"_id": 0}).to_list(1000)
     for c in customers:
         if isinstance(c.get('created_at'), str):
             c['created_at'] = datetime.fromisoformat(c['created_at'])
@@ -1180,7 +1081,7 @@ async def get_customers(current_user: User = Depends(get_current_user)):
 
 @api_router.get("/customers/{customer_id}", response_model=Customer)
 async def get_customer(customer_id: str, current_user: User = Depends(get_current_user)):
-    customer = await db.parties_customers.find_one({"id": customer_id}, {"_id": 0})
+    customer = await db.parties_customers.find_one({"id": customer_id, "org_id": current_user.org_id}, {"_id": 0})
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     if isinstance(customer.get('created_at'), str):
@@ -1190,15 +1091,16 @@ async def get_customer(customer_id: str, current_user: User = Depends(get_curren
 @api_router.get("/customers/{customer_id}/details")
 async def get_customer_details(customer_id: str, current_user: User = Depends(get_current_user)):
     """Get complete customer details with invoices and payment history"""
-    customer = await db.parties_customers.find_one({"id": customer_id}, {"_id": 0})
+    customer = await db.parties_customers.find_one({"id": customer_id, "org_id": current_user.org_id}, {"_id": 0})
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     
     # Get all invoices for this customer
-    invoices = await db.invoices.find({"customer_id": customer_id}, {"_id": 0}).to_list(1000)
+    invoices = await db.invoices.find({"customer_id": customer_id, "org_id": current_user.org_id}, {"_id": 0}).to_list(1000)
     
     # Get payment history (from matched transactions)
     payments = await db.transactions.find({
+        "org_id": current_user.org_id,
         "transaction_type": "Credit",
         "linked_entity": {"$regex": f".*{customer['name']}.*"}
     }, {"_id": 0}).to_list(1000)
@@ -1213,30 +1115,30 @@ async def get_customer_details(customer_id: str, current_user: User = Depends(ge
         "notes": []
     }
 
-@api_router.put("/customers/{customer_id}")
+@api_router.put("/customers/{customer_id}", dependencies=[Depends(require_min_role("manager"))])
 async def update_customer(customer_id: str, customer_data: CustomerCreate, current_user: User = Depends(get_current_user)):
     """Update customer"""
     result = await db.parties_customers.update_one(
-        {"id": customer_id},
+        {"id": customer_id, "org_id": current_user.org_id},
         {"$set": customer_data.model_dump()}
     )
-    if result.modified_count == 0:
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Customer not found")
     return {"message": "Customer updated successfully"}
 
-@api_router.delete("/customers/{customer_id}")
+@api_router.delete("/customers/{customer_id}", dependencies=[Depends(require_min_role("admin"))])
 async def delete_customer(customer_id: str, current_user: User = Depends(get_current_user)):
     """Delete customer"""
-    result = await db.parties_customers.delete_one({"id": customer_id})
+    result = await db.parties_customers.delete_one({"id": customer_id, "org_id": current_user.org_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Customer not found")
     return {"message": "Customer deleted successfully"}
 
 # ==================== VENDOR ROUTES ====================
 
-@api_router.post("/vendors", response_model=Vendor)
+@api_router.post("/vendors", response_model=Vendor, dependencies=[Depends(require_min_role("member"))])
 async def create_vendor(vendor_data: VendorCreate, current_user: User = Depends(get_current_user)):
-    vendor = Vendor(**vendor_data.model_dump())
+    vendor = Vendor(**vendor_data.model_dump(), org_id=current_user.org_id)
     doc = vendor.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.parties_vendors.insert_one(doc)
@@ -1244,7 +1146,7 @@ async def create_vendor(vendor_data: VendorCreate, current_user: User = Depends(
 
 @api_router.get("/vendors", response_model=List[Vendor])
 async def get_vendors(current_user: User = Depends(get_current_user)):
-    vendors = await db.parties_vendors.find({}, {"_id": 0}).to_list(1000)
+    vendors = await db.parties_vendors.find({"org_id": current_user.org_id}, {"_id": 0}).to_list(1000)
     for v in vendors:
         if isinstance(v.get('created_at'), str):
             v['created_at'] = datetime.fromisoformat(v['created_at'])
@@ -1252,7 +1154,7 @@ async def get_vendors(current_user: User = Depends(get_current_user)):
 
 @api_router.get("/vendors/{vendor_id}", response_model=Vendor)
 async def get_vendor(vendor_id: str, current_user: User = Depends(get_current_user)):
-    vendor = await db.parties_vendors.find_one({"id": vendor_id}, {"_id": 0})
+    vendor = await db.parties_vendors.find_one({"id": vendor_id, "org_id": current_user.org_id}, {"_id": 0})
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found")
     if isinstance(vendor.get('created_at'), str):
@@ -1285,7 +1187,7 @@ async def get_vendor_details(vendor_id: str, current_user: User = Depends(get_cu
         "notes": []
     }
 
-@api_router.put("/vendors/{vendor_id}")
+@api_router.put("/vendors/{vendor_id}", dependencies=[Depends(require_min_role("manager"))])
 async def update_vendor(vendor_id: str, vendor_data: VendorCreate, current_user: User = Depends(get_current_user)):
     """Update vendor"""
     result = await db.parties_vendors.update_one(
@@ -1296,7 +1198,7 @@ async def update_vendor(vendor_id: str, vendor_data: VendorCreate, current_user:
         raise HTTPException(status_code=404, detail="Vendor not found")
     return {"message": "Vendor updated successfully"}
 
-@api_router.delete("/vendors/{vendor_id}")
+@api_router.delete("/vendors/{vendor_id}", dependencies=[Depends(require_min_role("admin"))])
 async def delete_vendor(vendor_id: str, current_user: User = Depends(get_current_user)):
     """Delete vendor"""
     result = await db.parties_vendors.delete_one({"id": vendor_id})
@@ -1306,10 +1208,14 @@ async def delete_vendor(vendor_id: str, current_user: User = Depends(get_current
 
 # ==================== INVOICE ROUTES ====================
 
-@api_router.post("/invoices", response_model=Invoice)
+@api_router.post("/invoices", response_model=Invoice, dependencies=[Depends(require_min_role("member"))])
 async def create_invoice(invoice_data: InvoiceCreate, current_user: User = Depends(get_current_user)):
     # Phase 2: Validate and fetch category
-    category = await db.category_master.find_one({"id": invoice_data.category_id}, {"_id": 0})
+    category = await db.category_master.find_one({"id": invoice_data.category_id, "org_id": current_user.org_id}, {"_id": 0})
+    if not category:
+        # Fallback to check if it's a "global" category if org-specific not found (if system supports it)
+        category = await db.category_master.find_one({"id": invoice_data.category_id, "org_id": None}, {"_id": 0})
+        
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
     
@@ -1321,12 +1227,12 @@ async def create_invoice(invoice_data: InvoiceCreate, current_user: User = Depen
         )
     
     # Get customer
-    customer = await db.parties_customers.find_one({"id": invoice_data.customer_id}, {"_id": 0})
+    customer = await db.parties_customers.find_one({"id": invoice_data.customer_id, "org_id": current_user.org_id}, {"_id": 0})
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     
     # Generate invoice number
-    count = await db.invoices.count_documents({})
+    count = await db.invoices.count_documents({"org_id": current_user.org_id})
     invoice_number = f"INV-{count + 1001}"
     
     invoice = Invoice(
@@ -1334,6 +1240,7 @@ async def create_invoice(invoice_data: InvoiceCreate, current_user: User = Depen
         customer_name=customer['name'],
         amount_outstanding=invoice_data.total_amount,
         coa_account=category['coa_account'],  # Phase 2: Set COA from category
+        org_id=current_user.org_id,
         **invoice_data.model_dump()
     )
     
@@ -1357,12 +1264,13 @@ async def create_invoice(invoice_data: InvoiceCreate, current_user: User = Depen
                 'total_amount': invoice.total_amount,
                 'coa_account': category['coa_account']
             },
-            current_user.id
+            current_user.id,
+            current_user.org_id
         )
         
         # Update invoice with journal_entry_id
         await db.invoices.update_one(
-            {"id": invoice.id},
+            {"id": invoice.id, "org_id": current_user.org_id},
             {"$set": {"journal_entry_id": journal['id']}}
         )
         invoice.journal_entry_id = journal['id']
@@ -1371,7 +1279,7 @@ async def create_invoice(invoice_data: InvoiceCreate, current_user: User = Depen
 
 @api_router.get("/invoices", response_model=List[Invoice])
 async def get_invoices(current_user: User = Depends(get_current_user)):
-    invoices = await db.invoices.find({}, {"_id": 0}).to_list(1000)
+    invoices = await db.invoices.find({"org_id": current_user.org_id}, {"_id": 0}).to_list(1000)
     for inv in invoices:
         for date_field in ['invoice_date', 'due_date', 'created_at', 'payment_date']:
             if isinstance(inv.get(date_field), str):
@@ -1398,7 +1306,7 @@ async def get_invoices(current_user: User = Depends(get_current_user)):
 @api_router.get("/invoices/{invoice_id}/details")
 async def get_invoice_details(invoice_id: str, current_user: User = Depends(get_current_user)):
     """Get complete invoice details with activity timeline"""
-    invoice = await db.invoices.find_one({"id": invoice_id}, {"_id": 0})
+    invoice = await db.invoices.find_one({"id": invoice_id, "org_id": current_user.org_id}, {"_id": 0})
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
@@ -1445,7 +1353,7 @@ async def get_invoice_details(invoice_id: str, current_user: User = Depends(get_
             bucket = "90+ Days"
     
     # Get activity timeline
-    activities = await db.invoice_activities.find({"invoice_id": invoice_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    activities = await db.invoice_activities.find({"invoice_id": invoice_id, "org_id": current_user.org_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
     
     # Calculate DSO for this invoice
     invoice_date = invoice.get('invoice_date')
@@ -1485,7 +1393,7 @@ async def get_invoice_details(invoice_id: str, current_user: User = Depends(get_
 
 @api_router.get("/invoices/aging")
 async def get_invoice_aging(current_user: User = Depends(get_current_user)):
-    invoices = await db.invoices.find({"status": {"$in": ["Unpaid", "Partially Paid"]}}, {"_id": 0}).to_list(1000)
+    invoices = await db.invoices.find({"org_id": current_user.org_id, "status": {"$in": ["Unpaid", "Partially Paid"]}}, {"_id": 0}).to_list(1000)
     
     aging = {
         "0-30": {"amount": 0, "count": 0, "invoices": []},
@@ -1532,18 +1440,22 @@ async def get_invoice_aging(current_user: User = Depends(get_current_user)):
     
     return aging
 
-@api_router.put("/invoices/{invoice_id}")
+@api_router.put("/invoices/{invoice_id}", dependencies=[Depends(require_min_role("manager"))])
 async def update_invoice(invoice_id: str, invoice_data: InvoiceCreate, current_user: User = Depends(get_current_user)):
     """Update invoice and auto-post journal entry on status change to Finalized"""
     
     # Get existing invoice
-    existing_invoice = await db.invoices.find_one({"id": invoice_id}, {"_id": 0})
+    existing_invoice = await db.invoices.find_one({"id": invoice_id, "org_id": current_user.org_id}, {"_id": 0})
     if not existing_invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
     # Phase 2: Validate and fetch category if provided
     if invoice_data.category_id:
-        category = await db.category_master.find_one({"id": invoice_data.category_id}, {"_id": 0})
+        category = await db.category_master.find_one({"id": invoice_data.category_id, "org_id": current_user.org_id}, {"_id": 0})
+        if not category:
+            # Fallback to check if it's a "global" category
+            category = await db.category_master.find_one({"id": invoice_data.category_id, "org_id": None}, {"_id": 0})
+        
         if not category:
             raise HTTPException(status_code=404, detail="Category not found")
         
@@ -1567,7 +1479,7 @@ async def update_invoice(invoice_id: str, invoice_data: InvoiceCreate, current_u
     
     if new_status == "Finalized" and old_status != "Finalized" and not has_journal:
         # Get customer for journal entry
-        customer = await db.parties_customers.find_one({"id": invoice_data.customer_id}, {"_id": 0})
+        customer = await db.parties_customers.find_one({"id": invoice_data.customer_id, "org_id": current_user.org_id}, {"_id": 0})
         if customer:
             # Auto-post journal entry
             journal = await create_invoice_journal_entry(
@@ -1581,24 +1493,25 @@ async def update_invoice(invoice_id: str, invoice_data: InvoiceCreate, current_u
                     'total_amount': invoice_data.total_amount,
                     'coa_account': update_data.get('coa_account', 'Sales Revenue')
                 },
-                current_user.id
+                current_user.id,
+                current_user.org_id
             )
             update_data['journal_entry_id'] = journal['id']
     
     result = await db.invoices.update_one(
-        {"id": invoice_id},
+        {"id": invoice_id, "org_id": current_user.org_id},
         {"$set": update_data}
     )
     
-    if result.modified_count == 0:
-        raise HTTPException(status_code=404, detail="Invoice not found or no changes made")
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Invoice not found")
     
     return {"message": "Invoice updated successfully", "journal_posted": bool(update_data.get('journal_entry_id'))}
 
-@api_router.delete("/invoices/{invoice_id}")
+@api_router.delete("/invoices/{invoice_id}", dependencies=[Depends(require_min_role("admin"))])
 async def delete_invoice(invoice_id: str, current_user: User = Depends(get_current_user)):
     """Delete invoice"""
-    result = await db.invoices.delete_one({"id": invoice_id})
+    result = await db.invoices.delete_one({"id": invoice_id, "org_id": current_user.org_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Invoice not found")
     return {"message": "Invoice deleted successfully"}
@@ -1607,7 +1520,7 @@ async def delete_invoice(invoice_id: str, current_user: User = Depends(get_curre
 @api_router.get("/invoices/{invoice_id}/journal")
 async def get_invoice_journal(invoice_id: str, current_user: User = Depends(get_current_user)):
     """Get journal entry for an invoice"""
-    invoice = await db.invoices.find_one({"id": invoice_id}, {"_id": 0})
+    invoice = await db.invoices.find_one({"id": invoice_id, "org_id": current_user.org_id}, {"_id": 0})
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
@@ -1615,15 +1528,18 @@ async def get_invoice_journal(invoice_id: str, current_user: User = Depends(get_
     if not journal_entry_id:
         return {"message": "No journal entry posted for this invoice", "journal_entry": None}
     
-    journal = await db.journal_entries.find_one({"id": journal_entry_id}, {"_id": 0})
+    journal = await db.journal_entries.find_one({"id": journal_entry_id, "org_id": current_user.org_id}, {"_id": 0})
     return {"journal_entry": journal}
 
 # ==================== BILL ROUTES ====================
 
-@api_router.post("/bills", response_model=Bill)
+@api_router.post("/bills", response_model=Bill, dependencies=[Depends(require_min_role("member"))])
 async def create_bill(bill_data: BillCreate, current_user: User = Depends(get_current_user)):
     # Phase 2: Validate and fetch category
-    category = await db.category_master.find_one({"id": bill_data.category_id}, {"_id": 0})
+    category = await db.category_master.find_one({"id": bill_data.category_id, "org_id": current_user.org_id}, {"_id": 0})
+    if not category:
+        category = await db.category_master.find_one({"id": bill_data.category_id, "org_id": None}, {"_id": 0})
+        
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
     
@@ -1635,12 +1551,12 @@ async def create_bill(bill_data: BillCreate, current_user: User = Depends(get_cu
         )
     
     # Get vendor
-    vendor = await db.parties_vendors.find_one({"id": bill_data.vendor_id}, {"_id": 0})
+    vendor = await db.parties_vendors.find_one({"id": bill_data.vendor_id, "org_id": current_user.org_id}, {"_id": 0})
     if not vendor:
         raise HTTPException(status_code=404, detail="Vendor not found")
     
     # Generate bill number
-    count = await db.bills.count_documents({})
+    count = await db.bills.count_documents({"org_id": current_user.org_id})
     bill_number = f"BILL-{count + 2001}"
     
     bill = Bill(
@@ -1648,6 +1564,7 @@ async def create_bill(bill_data: BillCreate, current_user: User = Depends(get_cu
         vendor_name=vendor['name'],
         amount_outstanding=bill_data.total_amount,
         coa_account=category['coa_account'],  # Phase 2: Set COA from category
+        org_id=current_user.org_id,
         **bill_data.model_dump()
     )
     
@@ -1671,12 +1588,13 @@ async def create_bill(bill_data: BillCreate, current_user: User = Depends(get_cu
                 'total_amount': bill.total_amount,
                 'coa_account': category['coa_account']
             },
-            current_user.id
+            current_user.id,
+            current_user.org_id
         )
         
         # Update bill with journal_entry_id
         await db.bills.update_one(
-            {"id": bill.id},
+            {"id": bill.id, "org_id": current_user.org_id},
             {"$set": {"journal_entry_id": journal['id']}}
         )
         bill.journal_entry_id = journal['id']
@@ -1685,7 +1603,7 @@ async def create_bill(bill_data: BillCreate, current_user: User = Depends(get_cu
 
 @api_router.get("/bills", response_model=List[Bill])
 async def get_bills(current_user: User = Depends(get_current_user)):
-    bills = await db.bills.find({}, {"_id": 0}).to_list(1000)
+    bills = await db.bills.find({"org_id": current_user.org_id}, {"_id": 0}).to_list(1000)
     for bill in bills:
         for date_field in ['bill_date', 'due_date', 'created_at']:
             if isinstance(bill.get(date_field), str):
@@ -1695,7 +1613,7 @@ async def get_bills(current_user: User = Depends(get_current_user)):
 @api_router.get("/bills/{bill_id}/details")
 async def get_bill_details(bill_id: str, current_user: User = Depends(get_current_user)):
     """Get complete bill details"""
-    bill = await db.bills.find_one({"id": bill_id}, {"_id": 0})
+    bill = await db.bills.find_one({"id": bill_id, "org_id": current_user.org_id}, {"_id": 0})
     if not bill:
         raise HTTPException(status_code=404, detail="Bill not found")
     
@@ -1726,7 +1644,7 @@ async def get_bill_details(bill_id: str, current_user: User = Depends(get_curren
 
 @api_router.get("/bills/aging")
 async def get_bill_aging(current_user: User = Depends(get_current_user)):
-    bills = await db.bills.find({"status": {"$in": ["Pending", "Partially Paid"]}}, {"_id": 0}).to_list(1000)
+    bills = await db.bills.find({"org_id": current_user.org_id, "status": {"$in": ["Pending", "Partially Paid"]}}, {"_id": 0}).to_list(1000)
     
     aging = {
         "0-30": {"amount": 0, "count": 0, "bills": []},
@@ -1773,18 +1691,22 @@ async def get_bill_aging(current_user: User = Depends(get_current_user)):
     
     return aging
 
-@api_router.put("/bills/{bill_id}")
+@api_router.put("/bills/{bill_id}", dependencies=[Depends(require_min_role("manager"))])
 async def update_bill(bill_id: str, bill_data: BillCreate, current_user: User = Depends(get_current_user)):
     """Update bill and auto-post journal entry on status change to Approved"""
     
     # Get existing bill
-    existing_bill = await db.bills.find_one({"id": bill_id}, {"_id": 0})
+    existing_bill = await db.bills.find_one({"id": bill_id, "org_id": current_user.org_id}, {"_id": 0})
     if not existing_bill:
         raise HTTPException(status_code=404, detail="Bill not found")
     
     # Phase 2: Validate and fetch category if provided
     if bill_data.category_id:
-        category = await db.category_master.find_one({"id": bill_data.category_id}, {"_id": 0})
+        category = await db.category_master.find_one({"id": bill_data.category_id, "org_id": current_user.org_id}, {"_id": 0})
+        if not category:
+            # Fallback to check if it's a "global" category
+            category = await db.category_master.find_one({"id": bill_data.category_id, "org_id": None}, {"_id": 0})
+        
         if not category:
             raise HTTPException(status_code=404, detail="Category not found")
         
@@ -1808,7 +1730,7 @@ async def update_bill(bill_id: str, bill_data: BillCreate, current_user: User = 
     
     if new_status == "Approved" and old_status != "Approved" and not has_journal:
         # Get vendor for journal entry
-        vendor = await db.parties_vendors.find_one({"id": bill_data.vendor_id}, {"_id": 0})
+        vendor = await db.parties_vendors.find_one({"id": bill_data.vendor_id, "org_id": current_user.org_id}, {"_id": 0})
         if vendor:
             # Auto-post journal entry
             journal = await create_bill_journal_entry(
@@ -1822,24 +1744,25 @@ async def update_bill(bill_id: str, bill_data: BillCreate, current_user: User = 
                     'total_amount': bill_data.total_amount,
                     'coa_account': update_data.get('coa_account', 'Expense')
                 },
-                current_user.id
+                current_user.id,
+                current_user.org_id
             )
             update_data['journal_entry_id'] = journal['id']
     
     result = await db.bills.update_one(
-        {"id": bill_id},
+        {"id": bill_id, "org_id": current_user.org_id},
         {"$set": update_data}
     )
     
-    if result.modified_count == 0:
-        raise HTTPException(status_code=404, detail="Bill not found or no changes made")
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Bill not found")
     
     return {"message": "Bill updated successfully", "journal_posted": bool(update_data.get('journal_entry_id'))}
 
-@api_router.delete("/bills/{bill_id}")
+@api_router.delete("/bills/{bill_id}", dependencies=[Depends(require_min_role("admin"))])
 async def delete_bill(bill_id: str, current_user: User = Depends(get_current_user)):
     """Delete bill"""
-    result = await db.bills.delete_one({"id": bill_id})
+    result = await db.bills.delete_one({"id": bill_id, "org_id": current_user.org_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Bill not found")
     return {"message": "Bill deleted successfully"}
@@ -1848,7 +1771,7 @@ async def delete_bill(bill_id: str, current_user: User = Depends(get_current_use
 @api_router.get("/bills/{bill_id}/journal")
 async def get_bill_journal(bill_id: str, current_user: User = Depends(get_current_user)):
     """Get journal entry for a bill"""
-    bill = await db.bills.find_one({"id": bill_id}, {"_id": 0})
+    bill = await db.bills.find_one({"id": bill_id, "org_id": current_user.org_id}, {"_id": 0})
     if not bill:
         raise HTTPException(status_code=404, detail="Bill not found")
     
@@ -1856,16 +1779,17 @@ async def get_bill_journal(bill_id: str, current_user: User = Depends(get_curren
     if not journal_entry_id:
         return {"message": "No journal entry posted for this bill", "journal_entry": None}
     
-    journal = await db.journal_entries.find_one({"id": journal_entry_id}, {"_id": 0})
+    journal = await db.journal_entries.find_one({"id": journal_entry_id, "org_id": current_user.org_id}, {"_id": 0})
     return {"journal_entry": journal}
 
 # ==================== BANK ACCOUNT ROUTES ====================
 
-@api_router.post("/bank-accounts", response_model=BankAccount)
+@api_router.post("/bank-accounts", response_model=BankAccount, dependencies=[Depends(require_min_role("admin"))])
 async def create_bank_account(account_data: BankAccountCreate, current_user: User = Depends(get_current_user)):
     account = BankAccount(
         **account_data.model_dump(),
-        current_balance=account_data.opening_balance
+        current_balance=account_data.opening_balance,
+        org_id=current_user.org_id
     )
     doc = account.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
@@ -1874,7 +1798,7 @@ async def create_bank_account(account_data: BankAccountCreate, current_user: Use
 
 @api_router.get("/bank-accounts", response_model=List[BankAccount])
 async def get_bank_accounts(current_user: User = Depends(get_current_user)):
-    accounts = await db.bank_accounts.find({}, {"_id": 0}).to_list(100)
+    accounts = await db.bank_accounts.find({"org_id": current_user.org_id}, {"_id": 0}).to_list(100)
     for acc in accounts:
         if isinstance(acc.get('created_at'), str):
             acc['created_at'] = datetime.fromisoformat(acc['created_at'])
@@ -1882,15 +1806,16 @@ async def get_bank_accounts(current_user: User = Depends(get_current_user)):
 
 # ==================== TRANSACTION ROUTES ====================
 
-@api_router.post("/transactions", response_model=Transaction)
+@api_router.post("/transactions", response_model=Transaction, dependencies=[Depends(require_min_role("member"))])
 async def create_transaction(trans_data: TransactionCreate, current_user: User = Depends(get_current_user)):
     # Get bank account
-    account = await db.bank_accounts.find_one({"id": trans_data.bank_account_id}, {"_id": 0})
+    account = await db.bank_accounts.find_one({"id": trans_data.bank_account_id, "org_id": current_user.org_id}, {"_id": 0})
     if not account:
         raise HTTPException(status_code=404, detail="Bank account not found")
     
     transaction = Transaction(
         bank_name=account['bank_name'],
+        org_id=current_user.org_id,
         **trans_data.model_dump()
     )
     
@@ -1910,7 +1835,7 @@ async def create_transaction(trans_data: TransactionCreate, current_user: User =
     
     # Update bank account balance
     await db.bank_accounts.update_one(
-        {"id": trans_data.bank_account_id},
+        {"id": trans_data.bank_account_id, "org_id": current_user.org_id},
         {"$set": {"current_balance": new_balance}}
     )
     
@@ -1918,7 +1843,7 @@ async def create_transaction(trans_data: TransactionCreate, current_user: User =
 
 @api_router.get("/transactions", response_model=List[Transaction])
 async def get_transactions(current_user: User = Depends(get_current_user)):
-    transactions = await db.transactions.find({}, {"_id": 0}).sort("transaction_date", -1).to_list(1000)
+    transactions = await db.transactions.find({"org_id": current_user.org_id}, {"_id": 0}).sort("transaction_date", -1).to_list(1000)
     for trans in transactions:
         for date_field in ['transaction_date', 'created_at']:
             if isinstance(trans.get(date_field), str):
@@ -1928,7 +1853,7 @@ async def get_transactions(current_user: User = Depends(get_current_user)):
 @api_router.get("/transactions/{transaction_id}/match-suggestions")
 async def get_match_suggestions(transaction_id: str, current_user: User = Depends(get_current_user)):
     """Get invoice/bill suggestions for transaction matching"""
-    transaction = await db.transactions.find_one({"id": transaction_id}, {"_id": 0})
+    transaction = await db.transactions.find_one({"id": transaction_id, "org_id": current_user.org_id}, {"_id": 0})
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")
     
@@ -1940,6 +1865,7 @@ async def get_match_suggestions(transaction_id: str, current_user: User = Depend
     if trans_type == "Credit":
         # Match with unpaid invoices
         invoices = await db.invoices.find({
+            "org_id": current_user.org_id,
             "status": {"$in": ["Unpaid", "Partially Paid"]},
             "amount_outstanding": {"$gte": amount * 0.95, "$lte": amount * 1.05}  # ±5% tolerance
         }, {"_id": 0}).to_list(50)
@@ -1957,6 +1883,7 @@ async def get_match_suggestions(transaction_id: str, current_user: User = Depend
     elif trans_type == "Debit":
         # Match with pending bills
         bills = await db.bills.find({
+            "org_id": current_user.org_id,
             "status": {"$in": ["Pending", "Partially Paid"]},
             "amount_outstanding": {"$gte": amount * 0.95, "$lte": amount * 1.05}
         }, {"_id": 0}).to_list(50)
@@ -1976,7 +1903,7 @@ async def get_match_suggestions(transaction_id: str, current_user: User = Depend
     
     return suggestions[:10]  # Top 10 matches
 
-@api_router.post("/transactions/{transaction_id}/match")
+@api_router.post("/transactions/{transaction_id}/match", dependencies=[Depends(require_min_role("member"))])
 async def match_transaction(
     transaction_id: str,
     entity_type: str,  # "invoice" or "bill"
@@ -1984,14 +1911,14 @@ async def match_transaction(
     current_user: User = Depends(get_current_user)
 ):
     """Match transaction with invoice or bill"""
-    transaction = await db.transactions.find_one({"id": transaction_id}, {"_id": 0})
+    transaction = await db.transactions.find_one({"id": transaction_id, "org_id": current_user.org_id}, {"_id": 0})
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")
     
     amount = transaction.get('amount', 0)
     
     if entity_type == "invoice":
-        invoice = await db.invoices.find_one({"id": entity_id}, {"_id": 0})
+        invoice = await db.invoices.find_one({"id": entity_id, "org_id": current_user.org_id}, {"_id": 0})
         if not invoice:
             raise HTTPException(status_code=404, detail="Invoice not found")
         
@@ -2021,13 +1948,13 @@ async def match_transaction(
             update_data["payment_date"] = datetime.now(timezone.utc)
         
         await db.invoices.update_one(
-            {"id": entity_id},
+            {"id": entity_id, "org_id": current_user.org_id},
             {"$set": update_data}
         )
         
         # Update transaction
         await db.transactions.update_one(
-            {"id": transaction_id},
+            {"id": transaction_id, "org_id": current_user.org_id},
             {
                 "$set": {
                     "status": "Matched",
@@ -2045,11 +1972,12 @@ async def match_transaction(
             "activity_type": "payment_received",
             "comment": f"Payment received ₹{amount:,.2f} via {transaction['description']}",
             "user": current_user.full_name,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "org_id": current_user.org_id
         })
         
     elif entity_type == "bill":
-        bill = await db.bills.find_one({"id": entity_id}, {"_id": 0})
+        bill = await db.bills.find_one({"id": entity_id, "org_id": current_user.org_id}, {"_id": 0})
         if not bill:
             raise HTTPException(status_code=404, detail="Bill not found")
         
@@ -2059,7 +1987,7 @@ async def match_transaction(
         new_status = "Paid" if new_outstanding <= 0 else "Partially Paid"
         
         await db.bills.update_one(
-            {"id": entity_id},
+            {"id": entity_id, "org_id": current_user.org_id},
             {
                 "$set": {
                     "amount_paid": new_paid,
@@ -2071,7 +1999,7 @@ async def match_transaction(
         
         # Update transaction
         await db.transactions.update_one(
-            {"id": transaction_id},
+            {"id": transaction_id, "org_id": current_user.org_id},
             {
                 "$set": {
                     "status": "Matched",
@@ -2085,10 +2013,10 @@ async def match_transaction(
     return {"message": "Transaction matched successfully"}
 
 
-@api_router.put("/bank-accounts/{account_id}")
+@api_router.put("/bank-accounts/{account_id}", dependencies=[Depends(require_min_role("admin"))])
 async def update_bank_account(account_id: str, account_data: dict, current_user: User = Depends(get_current_user)):
     """Update bank account details"""
-    account = await db.bank_accounts.find_one({"id": account_id}, {"_id": 0})
+    account = await db.bank_accounts.find_one({"id": account_id, "org_id": current_user.org_id}, {"_id": 0})
     if not account:
         raise HTTPException(status_code=404, detail="Bank account not found")
     
@@ -2097,31 +2025,31 @@ async def update_bank_account(account_id: str, account_data: dict, current_user:
     update_data = {k: v for k, v in account_data.items() if k in allowed_fields}
     
     await db.bank_accounts.update_one(
-        {"id": account_id},
+        {"id": account_id, "org_id": current_user.org_id},
         {"$set": update_data}
     )
     
     return {"message": "Bank account updated successfully"}
 
-@api_router.delete("/bank-accounts/{account_id}")
+@api_router.delete("/bank-accounts/{account_id}", dependencies=[Depends(require_min_role("admin"))])
 async def delete_bank_account(account_id: str, current_user: User = Depends(get_current_user)):
     """Delete bank account and all its transactions"""
-    account = await db.bank_accounts.find_one({"id": account_id}, {"_id": 0})
+    account = await db.bank_accounts.find_one({"id": account_id, "org_id": current_user.org_id}, {"_id": 0})
     if not account:
         raise HTTPException(status_code=404, detail="Bank account not found")
     
     # Delete all transactions for this account
-    await db.transactions.delete_many({"bank_account_id": account_id})
+    await db.transactions.delete_many({"bank_account_id": account_id, "org_id": current_user.org_id})
     
     # Delete the account
-    await db.bank_accounts.delete_one({"id": account_id})
+    await db.bank_accounts.delete_one({"id": account_id, "org_id": current_user.org_id})
     
     return {"message": "Bank account and transactions deleted successfully"}
 
-@api_router.delete("/transactions/{transaction_id}")
+@api_router.delete("/transactions/{transaction_id}", dependencies=[Depends(require_min_role("admin"))])
 async def delete_transaction(transaction_id: str, current_user: User = Depends(get_current_user)):
     """Delete a transaction (only if not reconciled)"""
-    transaction = await db.transactions.find_one({"id": transaction_id}, {"_id": 0})
+    transaction = await db.transactions.find_one({"id": transaction_id, "org_id": current_user.org_id}, {"_id": 0})
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")
     
@@ -2129,7 +2057,7 @@ async def delete_transaction(transaction_id: str, current_user: User = Depends(g
         raise HTTPException(status_code=400, detail="Cannot delete reconciled transaction. Please de-reconcile first.")
     
     # Update bank balance
-    account = await db.bank_accounts.find_one({"id": transaction['bank_account_id']}, {"_id": 0})
+    account = await db.bank_accounts.find_one({"id": transaction['bank_account_id'], "org_id": current_user.org_id}, {"_id": 0})
     if account:
         if transaction['transaction_type'] == "Credit":
             new_balance = account['current_balance'] - transaction['amount']
@@ -2137,35 +2065,35 @@ async def delete_transaction(transaction_id: str, current_user: User = Depends(g
             new_balance = account['current_balance'] + transaction['amount']
         
         await db.bank_accounts.update_one(
-            {"id": transaction['bank_account_id']},
+            {"id": transaction['bank_account_id'], "org_id": current_user.org_id},
             {"$set": {"current_balance": new_balance}}
         )
     
     # Delete the transaction
-    await db.transactions.delete_one({"id": transaction_id})
+    await db.transactions.delete_one({"id": transaction_id, "org_id": current_user.org_id})
     
     return {"message": "Transaction deleted successfully"}
 
-@api_router.post("/transactions/reconcile")
+@api_router.post("/transactions/reconcile", dependencies=[Depends(require_min_role("manager"))])
 async def reconcile_transactions(transaction_ids: List[str], period: dict, current_user: User = Depends(get_current_user)):
     """Reconcile multiple transactions"""
     for trans_id in transaction_ids:
         await db.transactions.update_one(
-            {"id": trans_id},
+            {"id": trans_id, "org_id": current_user.org_id},
             {"$set": {"is_reconciled": True, "reconciled_date": datetime.now(timezone.utc).isoformat()}}
         )
     
     return {"message": f"Successfully reconciled {len(transaction_ids)} transactions"}
 
-@api_router.post("/transactions/{transaction_id}/de-reconcile")
+@api_router.post("/transactions/{transaction_id}/de-reconcile", dependencies=[Depends(require_min_role("manager"))])
 async def de_reconcile_transaction(transaction_id: str, current_user: User = Depends(get_current_user)):
     """De-reconcile a transaction"""
-    transaction = await db.transactions.find_one({"id": transaction_id}, {"_id": 0})
+    transaction = await db.transactions.find_one({"id": transaction_id, "org_id": current_user.org_id}, {"_id": 0})
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")
     
     await db.transactions.update_one(
-        {"id": transaction_id},
+        {"id": transaction_id, "org_id": current_user.org_id},
         {"$set": {"is_reconciled": False}, "$unset": {"reconciled_date": ""}}
     )
     
@@ -2328,7 +2256,7 @@ async def get_enhanced_match_suggestions(transaction_id: str, current_user: User
     
     return suggestions[:20]  # Top 20 matches
 
-@api_router.post("/transactions/{transaction_id}/match-manual")
+@api_router.post("/transactions/{transaction_id}/match-manual", dependencies=[Depends(require_min_role("member"))])
 async def match_transaction_manual(
     transaction_id: str,
     matches: List[dict],  # [{"entity_type": "invoice", "entity_id": "inv-123", "amount": 50000}]
@@ -2448,7 +2376,7 @@ async def match_transaction_manual(
         "status": status
     }
 
-@api_router.post("/transactions/{transaction_id}/dematch")
+@api_router.post("/transactions/{transaction_id}/dematch", dependencies=[Depends(require_min_role("member"))])
 async def dematch_transaction(
     transaction_id: str,
     current_user: User = Depends(get_current_user)
@@ -2617,7 +2545,7 @@ async def get_payments_due(current_user: User = Depends(get_current_user)):
     
     return payments
 
-@api_router.post("/payments/{bill_id}/status")
+@api_router.post("/payments/{bill_id}/status", dependencies=[Depends(require_min_role("manager"))])
 async def update_payment_status(
     bill_id: str,
     status: str,
@@ -2683,7 +2611,7 @@ async def get_collections(current_user: User = Depends(get_current_user)):
     
     return collections
 
-@api_router.post("/collections/{invoice_id}/status")
+@api_router.post("/collections/{invoice_id}/status", dependencies=[Depends(require_min_role("manager"))])
 async def update_collection_status(
     invoice_id: str,
     status: str,
@@ -2841,7 +2769,7 @@ async def get_cashflow_forecast(current_user: User = Depends(get_current_user)):
         "ai_insights": None
     }
 
-@api_router.post("/cashflow/forecast/generate")
+@api_router.post("/cashflow/forecast/generate", dependencies=[Depends(require_min_role("manager"))])
 async def generate_ai_forecast(current_user: User = Depends(get_current_user)):
     """Generate AI-powered cash flow forecast"""
     try:
@@ -3529,7 +3457,7 @@ async def get_cashflow_statement(
 
 # ==================== EXCEL/CSV UPLOAD ROUTES ====================
 
-@api_router.post("/customers/upload")
+@api_router.post("/customers/upload", dependencies=[Depends(require_min_role("manager"))])
 async def upload_customers(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
     """Upload customers via Excel/CSV"""
     try:
@@ -3629,7 +3557,7 @@ async def export_customers(current_user: User = Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Export failed: {str(e)}")
 
-@api_router.post("/bills/upload")
+@api_router.post("/bills/upload", dependencies=[Depends(require_min_role("manager"))])
 async def upload_bills(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
     """Upload bills via Excel/CSV"""
     try:
@@ -3695,7 +3623,7 @@ async def upload_bills(file: UploadFile = File(...), current_user: User = Depend
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Upload failed: {str(e)}")
 
-@api_router.post("/vendors/upload")
+@api_router.post("/vendors/upload", dependencies=[Depends(require_min_role("manager"))])
 async def upload_vendors(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
     """Upload vendors via Excel/CSV"""
     try:
@@ -3741,7 +3669,7 @@ async def upload_vendors(file: UploadFile = File(...), current_user: User = Depe
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Upload failed: {str(e)}")
 
-@api_router.post("/invoices/upload")
+@api_router.post("/invoices/upload", dependencies=[Depends(require_min_role("manager"))])
 async def upload_invoices(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
     """Upload invoices via Excel/CSV with new calculation logic"""
     try:
@@ -3830,7 +3758,7 @@ async def upload_invoices(file: UploadFile = File(...), current_user: User = Dep
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Upload failed: {str(e)}")
 
-@api_router.post("/transactions/upload")
+@api_router.post("/transactions/upload", dependencies=[Depends(require_min_role("manager"))])
 async def upload_transactions(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
     """Upload bank transactions via Excel/CSV with new format"""
     try:
@@ -4135,7 +4063,7 @@ async def get_category_stats(current_user: User = Depends(get_current_user)):
         "by_activity": stats
     }
 
-@api_router.post("/categories", response_model=Category)
+@api_router.post("/categories", response_model=Category, dependencies=[Depends(require_min_role("admin"))])
 async def create_category(
     category: Category,
     current_user: User = Depends(get_current_user)
@@ -4155,7 +4083,7 @@ async def create_category(
 
 # ==================== JOURNAL ENTRY ENDPOINTS ====================
 
-@api_router.post("/journal-entries", response_model=JournalEntry)
+@api_router.post("/journal-entries", response_model=JournalEntry, dependencies=[Depends(require_min_role("member"))])
 async def create_journal_entry(
     entry: JournalEntryCreate,
     current_user: User = Depends(get_current_user)
@@ -4215,7 +4143,7 @@ async def get_journal_entry(
         raise HTTPException(status_code=404, detail="Journal entry not found")
     return JournalEntry(**entry)
 
-@api_router.delete("/journal-entries/{entry_id}")
+@api_router.delete("/journal-entries/{entry_id}", dependencies=[Depends(require_min_role("admin"))])
 async def delete_journal_entry(
     entry_id: str,
     current_user: User = Depends(get_current_user)
@@ -4229,7 +4157,7 @@ async def delete_journal_entry(
 
 # ==================== ADJUSTMENT ENTRY ENDPOINTS ====================
 
-@api_router.post("/adjustment-entries", response_model=AdjustmentEntry)
+@api_router.post("/adjustment-entries", response_model=AdjustmentEntry, dependencies=[Depends(require_min_role("member"))])
 async def create_adjustment_entry(
     entry: AdjustmentEntryCreate,
     current_user: User = Depends(get_current_user)
@@ -4298,7 +4226,7 @@ async def get_adjustment_entry(
         raise HTTPException(status_code=404, detail="Adjustment entry not found")
     return AdjustmentEntry(**entry)
 
-@api_router.put("/adjustment-entries/{entry_id}", response_model=AdjustmentEntry)
+@api_router.put("/adjustment-entries/{entry_id}", response_model=AdjustmentEntry, dependencies=[Depends(require_min_role("member"))])
 async def update_adjustment_entry(
     entry_id: str,
     entry_update: AdjustmentEntryCreate,
@@ -4340,7 +4268,7 @@ async def update_adjustment_entry(
     updated = await db.adjustment_entries.find_one({"id": entry_id}, {"_id": 0})
     return AdjustmentEntry(**updated)
 
-@api_router.put("/adjustment-entries/{entry_id}/review")
+@api_router.put("/adjustment-entries/{entry_id}/review", dependencies=[Depends(require_min_role("manager"))])
 async def move_to_review(
     entry_id: str,
     current_user: User = Depends(get_current_user)
@@ -4368,7 +4296,7 @@ async def move_to_review(
     
     return {"message": "Adjustment entry moved to Review"}
 
-@api_router.put("/adjustment-entries/{entry_id}/approve")
+@api_router.put("/adjustment-entries/{entry_id}/approve", dependencies=[Depends(require_min_role("admin"))])
 async def approve_and_post(
     entry_id: str,
     current_user: User = Depends(get_current_user)
@@ -4422,13 +4350,13 @@ async def approve_and_post(
     
     return {"message": "Adjustment entry approved and posted to journal", "journal_entry_id": journal_dict['id']}
 
-@api_router.delete("/adjustment-entries/{entry_id}")
+@api_router.delete("/adjustment-entries/{entry_id}", dependencies=[Depends(require_min_role("admin"))])
 async def delete_adjustment_entry(
     entry_id: str,
     current_user: User = Depends(get_current_user)
 ):
     """Delete an adjustment entry (only if status is Draft)"""
-    existing = await db.adjustment_entries.find_one({"id": entry_id}, {"_id": 0})
+    existing = await db.adjustment_entries.find_one({"id": entry_id, "org_id": current_user.org_id}, {"_id": 0})
     if not existing:
         raise HTTPException(status_code=404, detail="Adjustment entry not found")
     
@@ -4438,14 +4366,14 @@ async def delete_adjustment_entry(
             detail=f"Can only delete Draft entries. Current status: {existing['status']}"
         )
     
-    result = await db.adjustment_entries.delete_one({"id": entry_id})
+    result = await db.adjustment_entries.delete_one({"id": entry_id, "org_id": current_user.org_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Adjustment entry not found")
     return {"message": "Adjustment entry deleted successfully"}
 
 
 # Helper function to auto-generate journal entry for invoice
-async def create_invoice_journal_entry(invoice_id: str, invoice_data: dict, user_id: str):
+async def create_invoice_journal_entry(invoice_id: str, invoice_data: dict, user_id: str, org_id: str):
     """Auto-generate journal entry when invoice is finalized"""
     
     # DR: Accounts Receivable
@@ -4495,6 +4423,7 @@ async def create_invoice_journal_entry(invoice_id: str, invoice_data: dict, user
     journal_dict = journal_entry.model_dump()
     journal_dict['id'] = str(uuid.uuid4())
     journal_dict['posted_by'] = user_id
+    journal_dict['org_id'] = org_id
     journal_dict['status'] = "Posted"
     journal_dict['created_at'] = datetime.now(timezone.utc).isoformat()
     journal_dict['entry_date'] = journal_dict['entry_date'].isoformat()
@@ -4504,7 +4433,7 @@ async def create_invoice_journal_entry(invoice_id: str, invoice_data: dict, user
     return journal_dict
 
 # Helper function to auto-generate journal entry for bill
-async def create_bill_journal_entry(bill_id: str, bill_data: dict, user_id: str):
+async def create_bill_journal_entry(bill_id: str, bill_data: dict, user_id: str, org_id: str):
     """Auto-generate journal entry when bill is approved"""
     
     # DR: Expense (from category COA)
@@ -4554,6 +4483,7 @@ async def create_bill_journal_entry(bill_id: str, bill_data: dict, user_id: str)
     journal_dict = journal_entry.model_dump()
     journal_dict['id'] = str(uuid.uuid4())
     journal_dict['posted_by'] = user_id
+    journal_dict['org_id'] = org_id
     journal_dict['status'] = "Posted"
     journal_dict['created_at'] = datetime.now(timezone.utc).isoformat()
     journal_dict['entry_date'] = journal_dict['entry_date'].isoformat()

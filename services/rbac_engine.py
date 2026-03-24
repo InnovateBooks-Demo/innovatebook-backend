@@ -194,7 +194,7 @@ async def get_user_permissions(user_id: str, db) -> List[str]:
     Get all permissions for a user
     Returns list of submodule_ids user has access to
     """
-    user = await db.enterprise_users.find_one({"user_id": user_id}, {"_id": 0})
+    user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
     if not user:
         return []
     

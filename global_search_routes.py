@@ -1,7 +1,3 @@
-"""
-INNOVATE BOOKS - GLOBAL SEARCH API
-Federated search across all modules
-"""
 
 from fastapi import APIRouter, Depends, Query
 from typing import Optional, List

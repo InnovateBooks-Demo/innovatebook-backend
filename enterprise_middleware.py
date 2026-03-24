@@ -3,38 +3,23 @@ Enterprise Middleware Pipeline
 Handles: Authentication → Tenant Validation → Subscription Guard → RBAC Guard
 """
 from fastapi import HTTPException, status, Depends, Request
+import logging
+
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from motor.motor_asyncio import AsyncIOMotorClient
 import jwt
 import os
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
-import logging
-from dotenv import load_dotenv
-from pathlib import Path
+from routes.deps import get_db, User
 from auth_utils import verify_token as verify_jwt
-
-# Load environment variables
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
 
 logger = logging.getLogger(__name__)
 
 security = HTTPBearer()
 
-# Direct MongoDB connection (avoid circular import)
-_mongo_client = None
-_db_instance = None
 
-def get_db():
-    """Get database instance (lazy-loaded)"""
-    global _mongo_client, _db_instance
-    if _db_instance is None:
-        print("[Antigravity] Initializing Lazy MongoDB client in enterprise_middleware")
-        mongo_url = os.environ['MONGO_URL']
-        _mongo_client = AsyncIOMotorClient(mongo_url)
-        _db_instance = _mongo_client[os.environ['DB_NAME']]
-    return _db_instance
+
 
 # ==================== AUTHENTICATION MIDDLEWARE ====================
 
@@ -208,7 +193,7 @@ async def check_permission(
     """
     try:
         # Get user's role
-        user = await db.enterprise_users.find_one({"user_id": user_id}, {"_id": 0})
+        user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
         if not user:
             return False
         
@@ -257,6 +242,11 @@ def require_permission(module: str, action: str):
         db = Depends(get_db)
     ):
         user_id = token_payload.get("user_id")
+        if not user_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User ID not found in token"
+            )
         
         # Super admin bypass
         if token_payload.get("is_super_admin"):

@@ -4,7 +4,7 @@ WebSocket events for period close alerts and finance notifications
 """
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, Header, HTTPException
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Optional
 import json
 import asyncio
 from datetime import datetime, timezone
@@ -108,8 +108,10 @@ async def trigger_period_close_alert(org_id: str, period: str, checklist_status:
     })
 
 
-async def trigger_overdue_receivable_alert(org_id: str, receivable_id: str, customer_name: str, amount: float, days_overdue: int):
+async def trigger_overdue_receivable_alert(org_id: Optional[str], receivable_id: str, customer_name: str, amount: float, days_overdue: int):
     """Trigger overdue receivable alert"""
+    if not org_id:
+        return
     await manager.broadcast_to_org(org_id, {
         "type": "overdue_receivable",
         "receivable_id": receivable_id,

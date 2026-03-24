@@ -8,9 +8,9 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
 import uuid
-import jwt
 import os
 import json
+from routes.deps import get_current_user, User, get_db
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,24 +21,7 @@ JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
 EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
 
 
-def get_db():
-    from main import db
-    return db
-
-
-async def get_current_user(authorization: str = Header(None)):
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        return {
-            "user_id": payload.get("user_id"),
-            "org_id": payload.get("org_id")
-        }
-    except:
-        raise HTTPException(status_code=401, detail="Invalid token")
+# Auth moved to routes.deps
 
 
 class MLMatchRequest(BaseModel):
@@ -219,7 +202,7 @@ def rule_based_matching(bank_entries: List[dict], accounting_records: List[dict]
 
 
 @router.post("/analyze")
-async def ml_analyze_transactions(request: MLMatchRequest, current_user: dict = Depends(get_current_user)):
+async def ml_analyze_transactions(request: MLMatchRequest, current_user: User = Depends(get_current_user)):
     """Analyze transactions using ML for intelligent matching suggestions"""
     
     if not request.bank_entries:
@@ -241,10 +224,10 @@ async def ml_analyze_transactions(request: MLMatchRequest, current_user: dict = 
 
 
 @router.post("/auto-match")
-async def ml_auto_match(current_user: dict = Depends(get_current_user)):
+async def ml_auto_match(current_user: User = Depends(get_current_user)):
     """Automatically match all unmatched bank entries using ML"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Get unmatched bank statements
     bank_entries = await db.fin_bank_statements.find({
@@ -295,7 +278,7 @@ async def ml_auto_match(current_user: dict = Depends(get_current_user)):
                     "match_reasons": top_match["match_reasons"],
                     "status": "auto_matched",
                     "created_at": datetime.now(timezone.utc).isoformat(),
-                    "created_by": current_user.get("user_id")
+                    "created_by": current_user.id
                 })
                 
                 # Mark bank entry as matched
@@ -317,10 +300,10 @@ async def ml_auto_match(current_user: dict = Depends(get_current_user)):
 
 
 @router.get("/suggestions/{entry_id}")
-async def get_match_suggestions(entry_id: str, current_user: dict = Depends(get_current_user)):
+async def get_match_suggestions(entry_id: str, current_user: User = Depends(get_current_user)):
     """Get ML-powered match suggestions for a specific bank entry"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Get the bank entry
     entry = await db.fin_bank_statements.find_one(
@@ -359,10 +342,10 @@ async def get_match_suggestions(entry_id: str, current_user: dict = Depends(get_
 
 
 @router.post("/confirm-match")
-async def confirm_match(data: dict, current_user: dict = Depends(get_current_user)):
+async def confirm_match(data: dict, current_user: User = Depends(get_current_user)):
     """Confirm an ML-suggested match"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     bank_entry_id = data.get("bank_entry_id")
     accounting_record_id = data.get("accounting_record_id")
@@ -385,7 +368,7 @@ async def confirm_match(data: dict, current_user: dict = Depends(get_current_use
         "bank_entry_id": bank_entry_id,
         "accounting_record_id": accounting_record_id,
         "status": "confirmed",
-        "confirmed_by": current_user.get("user_id"),
+        "confirmed_by": current_user.id,
         "created_at": datetime.now(timezone.utc).isoformat()
     })
     
