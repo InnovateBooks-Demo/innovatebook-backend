@@ -2,58 +2,20 @@
 Super Admin Portal - Organization & User Management with Real-time WebSocket
 """
 from fastapi import APIRouter, HTTPException, Depends, WebSocket, WebSocketDisconnect
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
-from passlib.context import CryptContext
 import uuid
 import json
 import asyncio
-import jwt
 import os
+from routes.deps import get_current_user, User, get_db
 
 router = APIRouter(prefix="/super-admin", tags=["Super Admin"])
 
-# Import shared dependencies
 from main import db, pwd_context
 
-# JWT configuration (same as enterprise auth)
-JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
-JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
-security = HTTPBearer()
-
-async def get_current_user_enterprise(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Get current user from enterprise auth token"""
-    try:
-        token = credentials.credentials
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id = payload.get("sub")  # Enterprise auth uses user_id
-        if user_id is None:
-            # Fallback to sub for standard auth
-            user_id = payload.get("sub")
-        if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        
-        # Check enterprise_users first
-        user = await db.enterprise_users.find_one({"user_id": user_id}, {"_id": 0})
-        if not user:
-            # Fallback to users collection
-            user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
-        if not user:
-            user = await db.users.find_one({"id": user_id}, {"_id": 0})
-        if not user:
-            raise HTTPException(status_code=401, detail="User not found")
-        
-        # Add is_super_admin from token if available
-        if payload.get("is_super_admin"):
-            user["is_super_admin"] = True
-            
-        return user
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+# verify_super_admin updated below
 
 # ==================== MODELS ====================
 
@@ -152,18 +114,16 @@ def serialize_doc(doc):
 def serialize_docs(docs):
     return [serialize_doc(d) for d in docs]
 
-async def verify_super_admin(current_user: dict = Depends(get_current_user_enterprise)):
+async def verify_super_admin(current_user: User = Depends(get_current_user)):
     """Verify that the current user is a super admin"""
-    # Check both role and is_super_admin flag for compatibility
-    is_super = current_user.get("role") == "super_admin" or current_user.get("is_super_admin", False)
-    if not is_super:
+    if "super_admin" not in current_user.roles:
         raise HTTPException(status_code=403, detail="Super admin access required")
     return current_user
 
 # ==================== ORGANIZATION ENDPOINTS ====================
 
 @router.get("/organizations")
-async def list_organizations(current_user: dict = Depends(verify_super_admin)):
+async def list_organizations(current_user: User = Depends(verify_super_admin)):
     """List all organizations (Super Admin only)"""
     orgs = await db.organizations.find({}).to_list(1000)
     
@@ -175,7 +135,7 @@ async def list_organizations(current_user: dict = Depends(verify_super_admin)):
     return {"organizations": serialize_docs(orgs)}
 
 @router.get("/organizations/{org_id}")
-async def get_organization(org_id: str, current_user: dict = Depends(verify_super_admin)):
+async def get_organization(org_id: str, current_user: User = Depends(verify_super_admin)):
     """Get organization details"""
     org = await db.organizations.find_one({"org_id": org_id})
     if not org:
@@ -195,7 +155,7 @@ async def get_organization(org_id: str, current_user: dict = Depends(verify_supe
     return serialize_doc(org)
 
 @router.post("/organizations")
-async def create_organization(org_data: OrganizationCreate, current_user: dict = Depends(verify_super_admin)):
+async def create_organization(org_data: OrganizationCreate, current_user: User = Depends(verify_super_admin)):
     """Create a new organization"""
     # Check if org name already exists
     existing = await db.organizations.find_one({"name": org_data.name})
@@ -216,7 +176,7 @@ async def create_organization(org_data: OrganizationCreate, current_user: dict =
         "features": org_data.features or ["finance", "commerce"],
         "is_active": True,
         "created_at": now,
-        "created_by": current_user.get("user_id"),
+        "created_by": current_user.id,
         "subscription_start": now,
         "subscription_end": None
     }
@@ -233,7 +193,7 @@ async def create_organization(org_data: OrganizationCreate, current_user: dict =
     return {"success": True, "organization": serialize_doc(new_org)}
 
 @router.put("/organizations/{org_id}")
-async def update_organization(org_id: str, org_data: OrganizationUpdate, current_user: dict = Depends(verify_super_admin)):
+async def update_organization(org_id: str, org_data: OrganizationUpdate, current_user: User = Depends(verify_super_admin)):
     """Update organization"""
     existing = await db.organizations.find_one({"org_id": org_id})
     if not existing:
@@ -241,7 +201,7 @@ async def update_organization(org_id: str, org_data: OrganizationUpdate, current
     
     update_data = {k: v for k, v in org_data.dict().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
-    update_data["updated_by"] = current_user.get("user_id")
+    update_data["updated_by"] = current_user.id
     
     await db.organizations.update_one({"org_id": org_id}, {"$set": update_data})
     
@@ -257,7 +217,7 @@ async def update_organization(org_id: str, org_data: OrganizationUpdate, current
     return {"success": True, "organization": serialize_doc(updated)}
 
 @router.delete("/organizations/{org_id}")
-async def deactivate_organization(org_id: str, current_user: dict = Depends(verify_super_admin)):
+async def deactivate_organization(org_id: str, current_user: User = Depends(verify_super_admin)):
     """Deactivate an organization (soft delete)"""
     existing = await db.organizations.find_one({"org_id": org_id})
     if not existing:
@@ -268,7 +228,7 @@ async def deactivate_organization(org_id: str, current_user: dict = Depends(veri
         {"$set": {
             "is_active": False,
             "deactivated_at": datetime.now(timezone.utc).isoformat(),
-            "deactivated_by": current_user.get("user_id")
+            "deactivated_by": current_user.id
         }}
     )
     
@@ -290,7 +250,7 @@ async def deactivate_organization(org_id: str, current_user: dict = Depends(veri
 # ==================== USER MANAGEMENT ENDPOINTS ====================
 
 @router.get("/users")
-async def list_all_users(org_id: Optional[str] = None, current_user: dict = Depends(verify_super_admin)):
+async def list_all_users(org_id: Optional[str] = None, current_user: User = Depends(verify_super_admin)):
     """List all users (optionally filtered by org)"""
     query = {}
     if org_id:
@@ -300,7 +260,7 @@ async def list_all_users(org_id: Optional[str] = None, current_user: dict = Depe
     return {"users": serialize_docs(users)}
 
 @router.post("/users")
-async def create_user(user_data: UserCreate, current_user: dict = Depends(verify_super_admin)):
+async def create_user(user_data: UserCreate, current_user: User = Depends(verify_super_admin)):
     """Create a new user for an organization"""
     # Check if email exists
     existing = await db.users.find_one({"email": user_data.email})
@@ -332,7 +292,7 @@ async def create_user(user_data: UserCreate, current_user: dict = Depends(verify
         "org_id": user_data.org_id,
         "is_active": True,
         "created_at": now,
-        "created_by": current_user.get("user_id")
+        "created_by": current_user.id
     }
     
     await db.users.insert_one(new_user)
@@ -356,7 +316,7 @@ async def create_user(user_data: UserCreate, current_user: dict = Depends(verify
     return {"success": True, "user": serialize_doc(new_user)}
 
 @router.put("/users/{user_id}")
-async def update_user(user_id: str, user_data: UserUpdate, current_user: dict = Depends(verify_super_admin)):
+async def update_user(user_id: str, user_data: UserUpdate, current_user: User = Depends(verify_super_admin)):
     """Update a user"""
     existing = await db.users.find_one({"user_id": user_id})
     if not existing:
@@ -379,7 +339,7 @@ async def update_user(user_id: str, user_data: UserUpdate, current_user: dict = 
     return {"success": True, "user": serialize_doc(updated)}
 
 @router.delete("/users/{user_id}")
-async def deactivate_user(user_id: str, current_user: dict = Depends(verify_super_admin)):
+async def deactivate_user(user_id: str, current_user: User = Depends(verify_super_admin)):
     """Deactivate a user"""
     existing = await db.users.find_one({"user_id": user_id})
     if not existing:
@@ -396,7 +356,7 @@ async def deactivate_user(user_id: str, current_user: dict = Depends(verify_supe
     return {"success": True, "message": "User deactivated"}
 
 @router.post("/users/{user_id}/reset-password")
-async def reset_user_password(user_id: str, new_password: str, current_user: dict = Depends(verify_super_admin)):
+async def reset_user_password(user_id: str, new_password: str, current_user: User = Depends(verify_super_admin)):
     """Reset a user's password"""
     existing = await db.users.find_one({"user_id": user_id})
     if not existing:
@@ -407,7 +367,7 @@ async def reset_user_password(user_id: str, new_password: str, current_user: dic
         {"$set": {
             "password_hash": pwd_context.hash(new_password),
             "password_reset_at": datetime.now(timezone.utc).isoformat(),
-            "password_reset_by": current_user.get("user_id")
+            "password_reset_by": current_user.id
         }}
     )
     
@@ -416,7 +376,7 @@ async def reset_user_password(user_id: str, new_password: str, current_user: dic
 # ==================== DASHBOARD STATS ====================
 
 @router.get("/dashboard")
-async def get_super_admin_dashboard(current_user: dict = Depends(verify_super_admin)):
+async def get_super_admin_dashboard(current_user: User = Depends(verify_super_admin)):
     """Get super admin dashboard stats"""
     total_orgs = await db.organizations.count_documents({})
     active_orgs = await db.organizations.count_documents({"is_active": True})
@@ -479,7 +439,7 @@ async def admin_websocket_endpoint(websocket: WebSocket):
 async def seed_super_admin():
     """Create initial super admin user (no auth required - run once)"""
     # Check if super admin exists in enterprise_users
-    existing = await db.enterprise_users.find_one({"is_super_admin": True})
+    existing = await db.users.find_one({"is_super_admin": True})
     if existing:
         return {"message": "Super admin already exists", "email": existing.get("email")}
     
@@ -521,7 +481,7 @@ async def seed_super_admin():
         "created_at": now
     }
     
-    await db.enterprise_users.insert_one(enterprise_user)
+    await db.users.insert_one(enterprise_user)
     
     # For users collection (used by standard auth)
     if not existing_user:

@@ -9,7 +9,6 @@ Features:
 - Executive dashboard with KPIs from all solutions
 """
 from fastapi import APIRouter, HTTPException, Depends, Query, WebSocket, WebSocketDisconnect, BackgroundTasks
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
@@ -18,7 +17,7 @@ import uuid
 import json
 import asyncio
 import os
-import jwt
+from routes.deps import get_current_user, User, get_db
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -28,10 +27,7 @@ router = APIRouter(prefix="/intelligence", tags=["Intelligence"])
 # Import shared dependencies
 from main import db
 
-# JWT configuration
-JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
-JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
-security = HTTPBearer()
+# Auth moved to routes.deps
 
 # ==================== WEBSOCKET CONNECTION MANAGER ====================
 
@@ -141,30 +137,13 @@ Always respond in valid JSON format with structure:
 
 # ==================== AUTH ====================
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Get current user from JWT token with org_id for multi-tenancy"""
-    try:
-        token = credentials.credentials
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id = payload.get("sub") or payload.get("user_id")
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        return {
-            "user_id": user_id,
-            "org_id": payload.get("org_id"),
-            "role": payload.get("role_id") or payload.get("role"),
-            "is_super_admin": payload.get("is_super_admin", False)
-        }
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+# Auth moved to routes.deps
 
-def get_org_filter(current_user: dict) -> dict:
+def get_org_filter(current_user: User) -> dict:
     """Get MongoDB filter for multi-tenancy"""
-    if current_user.get("is_super_admin"):
+    if "super_admin" in current_user.roles:
         return {}  # Super admins see all
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     if org_id:
         return {"org_id": org_id}
     return {"org_id": {"$exists": False}}  # Legacy data without org_id
@@ -304,7 +283,7 @@ async def get_signals(
     signal_type: Optional[str] = None,
     limit: int = Query(default=50, le=200),
     skip: int = 0,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get signals filtered by org_id (multi-tenant)"""
     query = get_org_filter(current_user)
@@ -332,17 +311,17 @@ async def get_signals(
 async def create_signal(
     signal: SignalCreate,
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new signal and broadcast via WebSocket"""
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     signal_doc = {
         "signal_id": generate_id("SIG"),
         "org_id": org_id,
         **signal.dict(),
         "detected_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
+        "created_by": current_user.id,
         "acknowledged": False,
         "acknowledged_by": None,
         "acknowledged_at": None
@@ -369,7 +348,7 @@ async def create_signal(
 async def acknowledge_signal(
     signal_id: str,
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Acknowledge a signal"""
     query = {"signal_id": signal_id, **get_org_filter(current_user)}
@@ -378,7 +357,7 @@ async def acknowledge_signal(
         query,
         {"$set": {
             "acknowledged": True,
-            "acknowledged_by": current_user.get("user_id"),
+            "acknowledged_by": current_user.id,
             "acknowledged_at": datetime.now(timezone.utc).isoformat()
         }}
     )
@@ -387,19 +366,19 @@ async def acknowledge_signal(
         raise HTTPException(status_code=404, detail="Signal not found")
     
     # Broadcast acknowledgment
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     if org_id:
         background_tasks.add_task(ws_manager.broadcast_to_org, org_id, {
             "type": "SIGNAL_ACKNOWLEDGED",
             "signal_id": signal_id,
-            "acknowledged_by": current_user.get("user_id"),
+            "acknowledged_by": current_user.id,
             "timestamp": datetime.now(timezone.utc).isoformat()
         })
     
     return {"success": True, "message": "Signal acknowledged"}
 
 @router.get("/signals/summary")
-async def get_signals_summary(current_user: dict = Depends(get_current_user)):
+async def get_signals_summary(current_user: User = Depends(get_current_user)):
     """Get signals summary by source and severity"""
     base_query = get_org_filter(current_user)
     
@@ -447,7 +426,7 @@ async def get_metrics(
     domain: Optional[str] = None,
     period: Optional[str] = None,
     limit: int = Query(default=50, le=200),
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get metrics filtered by org_id"""
     query = get_org_filter(current_user)
@@ -462,11 +441,11 @@ async def get_metrics(
 @router.post("/metrics")
 async def create_or_update_metric(
     metric: MetricCreate,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create or update a metric with org_id"""
     now = datetime.now(timezone.utc).isoformat()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     existing = await db.intel_metrics.find_one({
         "name": metric.name, 
@@ -498,7 +477,7 @@ async def create_or_update_metric(
         return {"success": True, "metric_id": metric_doc["metric_id"], "action": "created"}
 
 @router.get("/metrics/dashboard")
-async def get_metrics_dashboard(current_user: dict = Depends(get_current_user)):
+async def get_metrics_dashboard(current_user: User = Depends(get_current_user)):
     """Get metrics dashboard with KPIs by domain"""
     base_query = get_org_filter(current_user)
     domains = ["commercial", "operational", "financial", "workforce", "capital"]
@@ -521,7 +500,7 @@ async def get_metrics_dashboard(current_user: dict = Depends(get_current_user)):
     }
 
 @router.get("/metrics/{metric_id}/history")
-async def get_metric_history(metric_id: str, current_user: dict = Depends(get_current_user)):
+async def get_metric_history(metric_id: str, current_user: User = Depends(get_current_user)):
     """Get historical values for a metric"""
     query = {"metric_id": metric_id, **get_org_filter(current_user)}
     metric = await db.intel_metrics.find_one(query, {"_id": 0})
@@ -545,7 +524,7 @@ async def get_risks(
     status: Optional[str] = None,
     min_score: Optional[float] = None,
     limit: int = Query(default=50, le=200),
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get risks filtered by org_id"""
     query = get_org_filter(current_user)
@@ -565,11 +544,11 @@ async def get_risks(
 async def create_risk(
     risk: RiskCreate,
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new risk with org_id"""
     risk_score = risk.probability_score * risk.impact_score
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     risk_doc = {
         "risk_id": generate_id("RSK"),
@@ -579,7 +558,7 @@ async def create_risk(
         "status": RiskStatus.OPEN.value,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "updated_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
+        "created_by": current_user.id,
         "history": []
     }
     
@@ -606,7 +585,7 @@ async def update_risk_status(
     status: RiskStatus,
     notes: Optional[str] = None,
     background_tasks: BackgroundTasks = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update risk status"""
     now = datetime.now(timezone.utc).isoformat()
@@ -619,7 +598,7 @@ async def update_risk_status(
             "$push": {"history": {
                 "action": f"Status changed to {status.value}",
                 "notes": notes,
-                "by": current_user.get("user_id"),
+                "by": current_user.id,
                 "at": now
             }}
         }
@@ -629,7 +608,7 @@ async def update_risk_status(
         raise HTTPException(status_code=404, detail="Risk not found")
     
     # Broadcast
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     if org_id and background_tasks:
         background_tasks.add_task(ws_manager.broadcast_to_org, org_id, {
             "type": "RISK_STATUS_CHANGED",
@@ -641,7 +620,7 @@ async def update_risk_status(
     return {"success": True, "message": f"Risk status updated to {status.value}"}
 
 @router.get("/risks/heatmap")
-async def get_risk_heatmap(current_user: dict = Depends(get_current_user)):
+async def get_risk_heatmap(current_user: User = Depends(get_current_user)):
     """Get risk heatmap data"""
     base_query = get_org_filter(current_user)
     
@@ -690,7 +669,7 @@ async def get_forecasts(
     domain: Optional[str] = None,
     horizon: Optional[str] = None,
     limit: int = Query(default=50, le=200),
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get forecasts filtered by org_id"""
     query = get_org_filter(current_user)
@@ -705,10 +684,10 @@ async def get_forecasts(
 @router.post("/forecasts")
 async def create_forecast(
     forecast: ForecastCreate,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new forecast with org_id"""
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     forecast_doc = {
         "forecast_id": generate_id("FCT"),
@@ -720,7 +699,7 @@ async def create_forecast(
             "range": forecast.confidence_upper - forecast.confidence_lower
         },
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
+        "created_by": current_user.id,
         "status": "active",
         "actual_value": None,
         "accuracy": None
@@ -733,7 +712,7 @@ async def create_forecast(
 async def record_actual_value(
     forecast_id: str,
     actual_value: float,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Record actual value for a forecast"""
     query = {"forecast_id": forecast_id, **get_org_filter(current_user)}
@@ -758,7 +737,7 @@ async def record_actual_value(
     # Create learning record
     await db.intel_learning.insert_one({
         "record_id": generate_id("LRN"),
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "model_id": "forecast_engine",
         "prediction_type": forecast.get("domain"),
         "prediction_value": projected,
@@ -772,7 +751,7 @@ async def record_actual_value(
     return {"success": True, "accuracy": round(accuracy * 100, 1), "deviation": projected - actual_value}
 
 @router.get("/forecasts/scenarios")
-async def get_forecast_scenarios(current_user: dict = Depends(get_current_user)):
+async def get_forecast_scenarios(current_user: User = Depends(get_current_user)):
     """Get what-if scenario templates"""
     scenarios = [
         {
@@ -823,7 +802,7 @@ async def get_forecast_scenarios(current_user: dict = Depends(get_current_user))
 async def run_forecast_simulation(
     scenario_id: str,
     parameters: Dict[str, Any],
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Run a what-if simulation with optional AI enhancement"""
     base_metrics = {
@@ -876,7 +855,7 @@ async def ai_generate_forecast(
     domain: str,
     metric_name: str,
     horizon: str = "90d",
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Use AI to generate a forecast based on historical data"""
     base_query = get_org_filter(current_user)
@@ -903,7 +882,7 @@ async def ai_generate_forecast(
         forecast = ai_response["forecast"]
         forecast_doc = {
             "forecast_id": generate_id("FCT"),
-            "org_id": current_user.get("org_id"),
+            "org_id": current_user.org_id,
             "domain": domain,
             "metric_name": forecast.get("metric", metric_name),
             "horizon": horizon,
@@ -918,7 +897,7 @@ async def ai_generate_forecast(
             "assumptions": ["AI-generated based on historical data"],
             "ai_generated": True,
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "created_by": current_user.get("user_id"),
+            "created_by": current_user.id,
             "status": "active"
         }
         await db.intel_forecasts.insert_one(forecast_doc)
@@ -935,7 +914,7 @@ async def get_recommendations(
     priority: Optional[int] = None,
     status: Optional[str] = None,
     limit: int = Query(default=50, le=200),
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get recommendations filtered by org_id"""
     query = {**get_org_filter(current_user), "status": {"$ne": "dismissed"}}
@@ -955,10 +934,10 @@ async def get_recommendations(
 async def create_recommendation(
     recommendation: RecommendationCreate,
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new recommendation with org_id"""
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     rec_doc = {
         "recommendation_id": generate_id("REC"),
@@ -966,7 +945,7 @@ async def create_recommendation(
         **recommendation.dict(),
         "status": "pending",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
+        "created_by": current_user.id,
         "acted_on": False,
         "acted_by": None,
         "acted_at": None,
@@ -993,7 +972,7 @@ async def act_on_recommendation(
     action: str,
     notes: Optional[str] = None,
     background_tasks: BackgroundTasks = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Record action taken on a recommendation"""
     now = datetime.now(timezone.utc).isoformat()
@@ -1004,7 +983,7 @@ async def act_on_recommendation(
         {"$set": {
             "status": action,
             "acted_on": True,
-            "acted_by": current_user.get("user_id"),
+            "acted_by": current_user.id,
             "acted_at": now,
             "action_taken": notes
         }}
@@ -1018,7 +997,7 @@ async def act_on_recommendation(
     if rec:
         await db.intel_learning.insert_one({
             "record_id": generate_id("LRN"),
-            "org_id": current_user.get("org_id"),
+            "org_id": current_user.org_id,
             "model_id": "recommendation_engine",
             "prediction_type": rec.get("action_type"),
             "prediction_value": rec.get("confidence_score"),
@@ -1028,7 +1007,7 @@ async def act_on_recommendation(
         })
     
     # Broadcast
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     if org_id and background_tasks:
         background_tasks.add_task(ws_manager.broadcast_to_org, org_id, {
             "type": "RECOMMENDATION_ACTED",
@@ -1040,7 +1019,7 @@ async def act_on_recommendation(
     return {"success": True, "message": f"Recommendation marked as {action}"}
 
 @router.get("/recommendations/summary")
-async def get_recommendations_summary(current_user: dict = Depends(get_current_user)):
+async def get_recommendations_summary(current_user: User = Depends(get_current_user)):
     """Get recommendations summary"""
     base_query = get_org_filter(current_user)
     
@@ -1188,10 +1167,10 @@ async def auto_generate_recommendation_for_risk(risk: dict, user: dict):
 @router.post("/scan-solutions")
 async def scan_solutions_for_signals(
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Scan all solutions for potential signals - connects Intelligence to live data"""
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     signals_created = []
     
     # Scan Commerce - Overdue Invoices
@@ -1338,7 +1317,7 @@ async def scan_solutions_for_signals(
 @router.post("/auto-analyze")
 async def auto_analyze_and_recommend(
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Use AI to analyze all data and generate recommendations"""
     base_query = get_org_filter(current_user)
@@ -1373,7 +1352,7 @@ async def auto_analyze_and_recommend(
             
             rec_doc = {
                 "recommendation_id": generate_id("REC"),
-                "org_id": current_user.get("org_id"),
+                "org_id": current_user.org_id,
                 "action_type": action_type,
                 "target_module": "intelligence/analysis",
                 "title": ai_rec.get("action", f"AI Recommendation #{i+1}"),
@@ -1395,7 +1374,7 @@ async def auto_analyze_and_recommend(
         for ai_risk in ai_response["risks"][:3]:  # Max 3 new risks
             risk_doc = {
                 "risk_id": generate_id("RSK"),
-                "org_id": current_user.get("org_id"),
+                "org_id": current_user.org_id,
                 "domain": "intelligence",
                 "risk_type": "revenue",
                 "title": ai_risk.get("title", "AI-Identified Risk"),
@@ -1428,7 +1407,7 @@ async def auto_analyze_and_recommend(
 async def get_learning_records(
     model_id: Optional[str] = None,
     limit: int = Query(default=100, le=500),
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get learning records filtered by org_id"""
     query = get_org_filter(current_user)
@@ -1439,7 +1418,7 @@ async def get_learning_records(
     return {"records": records, "total": len(records)}
 
 @router.get("/learning/accuracy")
-async def get_model_accuracy(current_user: dict = Depends(get_current_user)):
+async def get_model_accuracy(current_user: User = Depends(get_current_user)):
     """Get accuracy metrics for intelligence models"""
     base_query = get_org_filter(current_user)
     
@@ -1475,7 +1454,7 @@ async def submit_feedback(
     prediction_value: float,
     actual_outcome: Optional[float] = None,
     feedback: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Submit feedback for learning"""
     deviation = None
@@ -1484,7 +1463,7 @@ async def submit_feedback(
     
     learning_doc = {
         "record_id": generate_id("LRN"),
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         "model_id": model_id,
         "prediction_type": prediction_type,
         "prediction_value": prediction_value,
@@ -1492,7 +1471,7 @@ async def submit_feedback(
         "deviation": deviation,
         "feedback": feedback,
         "recorded_at": datetime.now(timezone.utc).isoformat(),
-        "submitted_by": current_user.get("user_id")
+        "submitted_by": current_user.id
     }
     
     await db.intel_learning.insert_one(learning_doc)
@@ -1501,7 +1480,7 @@ async def submit_feedback(
 # ==================== EXECUTIVE DASHBOARD ====================
 
 @router.get("/executive-dashboard")
-async def get_executive_dashboard(current_user: dict = Depends(get_current_user)):
+async def get_executive_dashboard(current_user: User = Depends(get_current_user)):
     """Comprehensive executive dashboard pulling data from all solutions"""
     base_query = get_org_filter(current_user)
     
@@ -1580,7 +1559,7 @@ async def get_executive_dashboard(current_user: dict = Depends(get_current_user)
 # ==================== DASHBOARD ====================
 
 @router.get("/dashboard")
-async def get_intelligence_dashboard(current_user: dict = Depends(get_current_user)):
+async def get_intelligence_dashboard(current_user: User = Depends(get_current_user)):
     """Get comprehensive intelligence dashboard"""
     base_query = get_org_filter(current_user)
     
@@ -1624,10 +1603,10 @@ async def get_intelligence_dashboard(current_user: dict = Depends(get_current_us
 # ==================== SEED DATA ====================
 
 @router.post("/seed")
-async def seed_intelligence_data(current_user: dict = Depends(get_current_user)):
+async def seed_intelligence_data(current_user: User = Depends(get_current_user)):
     """Seed sample intelligence data for demo"""
     now = datetime.now(timezone.utc)
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Clear existing data for this org
     await db.intel_signals.delete_many(get_org_filter(current_user))
@@ -1758,10 +1737,10 @@ async def seed_intelligence_data(current_user: dict = Depends(get_current_user))
 @router.post("/connect/finance")
 async def connect_finance_data(
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Connect to Finance module and generate intelligence from live data"""
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     signals_created = []
     recommendations_created = []
     metrics_updated = []
@@ -1930,10 +1909,10 @@ async def connect_finance_data(
 @router.post("/connect/commerce")
 async def connect_commerce_data(
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Connect to Commerce module and generate intelligence from live data"""
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     signals_created = []
     recommendations_created = []
     metrics_updated = []
@@ -2130,7 +2109,7 @@ async def connect_commerce_data(
 @router.post("/connect/all")
 async def connect_all_live_data(
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Connect to all modules and sync intelligence data"""
     results = {

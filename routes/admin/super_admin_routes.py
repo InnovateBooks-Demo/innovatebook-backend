@@ -32,7 +32,7 @@ async def get_current_user_enterprise(credentials: HTTPAuthorizationCredentials 
         user_id = payload.get("user_id")
         
         # Check enterprise_users first
-        user = await db.enterprise_users.find_one({"user_id": user_id}, {"_id": 0})
+        user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
         if not user:
             # Fallback to users collection
             user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
@@ -475,7 +475,7 @@ async def admin_websocket_endpoint(websocket: WebSocket):
 async def seed_super_admin():
     """Create initial super admin user (no auth required - run once)"""
     # Check if super admin exists in enterprise_users
-    existing = await db.enterprise_users.find_one({"is_super_admin": True})
+    existing = await db.users.find_one({"is_super_admin": True})
     if existing:
         return {"message": "Super admin already exists", "email": existing.get("email")}
     
@@ -517,7 +517,7 @@ async def seed_super_admin():
         "created_at": now
     }
     
-    await db.enterprise_users.insert_one(enterprise_user)
+    await db.users.insert_one(enterprise_user)
     
     # For users collection (used by standard auth)
     if not existing_user:

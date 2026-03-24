@@ -145,7 +145,7 @@ async def accept_invite(payload: AcceptInviteIn, db=Depends(get_db)):
         
         # Check inviter permissions
         # 1. Check if global super admin (enterprise_users has is_super_admin)
-        inviter_ent = await db.enterprise_users.find_one({"user_id": invited_by})
+        inviter_ent = await db.users.find_one({"user_id": invited_by})
         is_global_super = inviter_ent and inviter_ent.get("is_super_admin")
         
         # 2. Check org role (org_users)
@@ -241,9 +241,9 @@ async def accept_invite(payload: AcceptInviteIn, db=Depends(get_db)):
         upsert=True
     )
 
-    # 4. Upsert into db.enterprise_users (Directory Listing ONLY - No Auth)
+    # 4. Upsert into db.users (Directory Listing ONLY - No Auth)
     # Allows user to appear in team lists without affecting authentication
-    await db.enterprise_users.update_one(
+    await db.users.update_one(
         {
             "org_id": org_id,
             "email": email

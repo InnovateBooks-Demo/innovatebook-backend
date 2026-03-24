@@ -4,39 +4,16 @@ Financial Truth & Settlement Engine
 7 Core Modules: Billing, Receivables, Payables, Ledger, Assets, Tax, Close
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Header
-from typing import List, Optional
+from fastapi import APIRouter, HTTPException, Depends, Header, status as http_status, Query
+from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
 import uuid
-import jwt
-import os
+from routes.deps import get_db, get_current_user
+from routes.rbac_deps import _require_role
 
 router = APIRouter(prefix="/api/ib-finance", tags=["IB Finance"])
 
-JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
 
-def get_db():
-    """Get database instance from main"""
-    from main import db
-    return db
-
-async def get_current_user(authorization: str = Header(None)):
-    """Extract current user from JWT token"""
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        return {
-            "user_id": payload.get("user_id"),
-            "org_id": payload.get("org_id"),
-            "role_id": payload.get("role_id")
-        }
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
 
 
 # ==================== DASHBOARD ====================
@@ -111,7 +88,7 @@ async def get_billing_record(billing_id: str, current_user: dict = Depends(get_c
     return {"success": True, "data": record}
 
 
-@router.post("/billing")
+@router.post("/billing", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_billing_record(data: dict, current_user: dict = Depends(get_current_user)):
     """Create a new billing record"""
     db = get_db()
@@ -140,7 +117,7 @@ async def create_billing_record(data: dict, current_user: dict = Depends(get_cur
     return {"success": True, "data": billing_record}
 
 
-@router.put("/billing/{billing_id}/approve")
+@router.put("/billing/{billing_id}/approve", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def approve_billing(billing_id: str, current_user: dict = Depends(get_current_user)):
     """Approve a billing record"""
     db = get_db()
@@ -157,7 +134,7 @@ async def approve_billing(billing_id: str, current_user: dict = Depends(get_curr
     return {"success": True, "message": "Billing record approved"}
 
 
-@router.put("/billing/{billing_id}/issue")
+@router.put("/billing/{billing_id}/issue", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def issue_billing(billing_id: str, current_user: dict = Depends(get_current_user)):
     """Issue a billing record (create invoice)"""
     db = get_db()
@@ -207,7 +184,7 @@ async def issue_billing(billing_id: str, current_user: dict = Depends(get_curren
     return {"success": True, "message": "Invoice issued", "invoice_number": invoice_number}
 
 
-@router.put("/billing/{billing_id}/cancel")
+@router.put("/billing/{billing_id}/cancel", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def cancel_billing(billing_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Cancel a billing record"""
     db = get_db()
@@ -309,7 +286,7 @@ async def get_receivable(receivable_id: str, current_user: dict = Depends(get_cu
     return {"success": True, "data": {**receivable, "payment_applications": applications}}
 
 
-@router.post("/receivables/payment")
+@router.post("/receivables/payment", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def record_payment_receipt(data: dict, current_user: dict = Depends(get_current_user)):
     """Record a payment receipt"""
     db = get_db()
@@ -334,7 +311,7 @@ async def record_payment_receipt(data: dict, current_user: dict = Depends(get_cu
     return {"success": True, "data": receipt}
 
 
-@router.post("/receivables/apply-cash")
+@router.post("/receivables/apply-cash", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def apply_cash_to_invoice(data: dict, current_user: dict = Depends(get_current_user)):
     """Apply cash receipt to invoice"""
     db = get_db()
@@ -383,7 +360,7 @@ async def apply_cash_to_invoice(data: dict, current_user: dict = Depends(get_cur
     return {"success": True, "message": "Cash applied successfully"}
 
 
-@router.put("/receivables/{receivable_id}/write-off")
+@router.put("/receivables/{receivable_id}/write-off", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def write_off_receivable(receivable_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Write off a receivable"""
     db = get_db()
@@ -498,7 +475,7 @@ async def get_payable(payable_id: str, current_user: dict = Depends(get_current_
     return {"success": True, "data": {**payable, "matches": matches, "settlements": settlements}}
 
 
-@router.post("/payables")
+@router.post("/payables", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_payable(data: dict, current_user: dict = Depends(get_current_user)):
     """Create a vendor payable (bill)"""
     db = get_db()
@@ -527,7 +504,7 @@ async def create_payable(data: dict, current_user: dict = Depends(get_current_us
     return {"success": True, "data": payable}
 
 
-@router.put("/payables/{payable_id}/match")
+@router.put("/payables/{payable_id}/match", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def match_payable(payable_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Match payable with contract/delivery"""
     db = get_db()
@@ -553,7 +530,7 @@ async def match_payable(payable_id: str, data: dict, current_user: dict = Depend
     return {"success": True, "message": "Payable matched"}
 
 
-@router.put("/payables/{payable_id}/approve")
+@router.put("/payables/{payable_id}/approve", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def approve_payable(payable_id: str, current_user: dict = Depends(get_current_user)):
     """Approve payable for payment"""
     db = get_db()
@@ -570,7 +547,7 @@ async def approve_payable(payable_id: str, current_user: dict = Depends(get_curr
     return {"success": True, "message": "Payable approved for payment"}
 
 
-@router.put("/payables/{payable_id}/dispute")
+@router.put("/payables/{payable_id}/dispute", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def dispute_payable(payable_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Mark payable as disputed"""
     db = get_db()
@@ -594,7 +571,7 @@ async def dispute_payable(payable_id: str, data: dict, current_user: dict = Depe
     return {"success": True, "message": "Payable marked as disputed"}
 
 
-@router.post("/payables/{payable_id}/pay")
+@router.post("/payables/{payable_id}/pay", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def record_payment(payable_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Record payment against payable"""
     db = get_db()
@@ -645,7 +622,7 @@ async def get_chart_of_accounts(current_user: dict = Depends(get_current_user)):
     return {"success": True, "data": accounts, "count": len(accounts)}
 
 
-@router.post("/ledger/accounts")
+@router.post("/ledger/accounts", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def create_account(data: dict, current_user: dict = Depends(get_current_user)):
     """Create a new account in chart of accounts"""
     db = get_db()
@@ -706,7 +683,7 @@ async def get_journal_entry(journal_id: str, current_user: dict = Depends(get_cu
     return {"success": True, "data": {**entry, "lines": lines}}
 
 
-@router.post("/ledger/journals")
+@router.post("/ledger/journals", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_journal_entry(data: dict, current_user: dict = Depends(get_current_user)):
     """Create a journal entry"""
     db = get_db()
@@ -758,7 +735,7 @@ async def create_journal_entry(data: dict, current_user: dict = Depends(get_curr
     return {"success": True, "data": entry}
 
 
-@router.put("/ledger/journals/{journal_id}/post")
+@router.put("/ledger/journals/{journal_id}/post", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def post_journal_entry(journal_id: str, current_user: dict = Depends(get_current_user)):
     """Post a journal entry"""
     db = get_db()
@@ -789,7 +766,7 @@ async def post_journal_entry(journal_id: str, current_user: dict = Depends(get_c
     return {"success": True, "message": "Journal entry posted"}
 
 
-@router.put("/ledger/journals/{journal_id}/reverse")
+@router.put("/ledger/journals/{journal_id}/reverse", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def reverse_journal_entry(journal_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Reverse a posted journal entry"""
     db = get_db()
@@ -932,7 +909,7 @@ async def get_asset(asset_id: str, current_user: dict = Depends(get_current_user
     return {"success": True, "data": {**asset, "depreciation_schedule": schedule}}
 
 
-@router.post("/assets")
+@router.post("/assets", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_asset(data: dict, current_user: dict = Depends(get_current_user)):
     """Create/capitalize an asset"""
     db = get_db()
@@ -963,7 +940,7 @@ async def create_asset(data: dict, current_user: dict = Depends(get_current_user
     return {"success": True, "data": asset}
 
 
-@router.post("/assets/{asset_id}/depreciate")
+@router.post("/assets/{asset_id}/depreciate", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def run_depreciation(asset_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Run depreciation for an asset"""
     db = get_db()
@@ -1024,7 +1001,7 @@ async def run_depreciation(asset_id: str, data: dict, current_user: dict = Depen
     }}
 
 
-@router.put("/assets/{asset_id}/dispose")
+@router.put("/assets/{asset_id}/dispose", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def dispose_asset(asset_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Dispose an asset"""
     db = get_db()
@@ -1158,7 +1135,7 @@ async def get_tax_dashboard(period: Optional[str] = None, current_user: dict = D
     }
 
 
-@router.post("/tax/transactions")
+@router.post("/tax/transactions", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_tax_transaction(data: dict, current_user: dict = Depends(get_current_user)):
     """Create a tax transaction"""
     db = get_db()
@@ -1506,7 +1483,7 @@ async def get_cash_flow_statement(period: str, current_user: dict = Depends(get_
 
 # ==================== UPDATE/EDIT ENDPOINTS ====================
 
-@router.put("/billing/{billing_id}")
+@router.put("/billing/{billing_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_billing_record(billing_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Update a billing record (only draft status)"""
     db = get_db()
@@ -1575,7 +1552,7 @@ async def update_receivable(receivable_id: str, data: dict, current_user: dict =
     return {"success": True, "data": updated}
 
 
-@router.put("/payables/{payable_id}")
+@router.put("/payables/{payable_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_payable(payable_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Update a payable record"""
     db = get_db()
@@ -1607,7 +1584,7 @@ async def update_payable(payable_id: str, data: dict, current_user: dict = Depen
     return {"success": True, "data": updated}
 
 
-@router.put("/assets/{asset_id}")
+@router.put("/assets/{asset_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def update_asset(asset_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Update an asset record"""
     db = get_db()
@@ -1642,7 +1619,7 @@ async def update_asset(asset_id: str, data: dict, current_user: dict = Depends(g
     return {"success": True, "data": updated}
 
 
-@router.put("/ledger/accounts/{account_id}")
+@router.put("/ledger/accounts/{account_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def update_account(account_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Update a chart of accounts entry"""
     db = get_db()
@@ -1671,7 +1648,7 @@ async def update_account(account_id: str, data: dict, current_user: dict = Depen
     return {"success": True, "data": updated}
 
 
-@router.put("/ledger/journals/{journal_id}")
+@router.put("/ledger/journals/{journal_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_journal_entry(journal_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Update a journal entry (only draft status)"""
     db = get_db()
@@ -1730,7 +1707,7 @@ async def update_journal_entry(journal_id: str, data: dict, current_user: dict =
     return {"success": True, "data": updated}
 
 
-@router.put("/tax/transactions/{tax_txn_id}")
+@router.put("/tax/transactions/{tax_txn_id}", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def update_tax_transaction(tax_txn_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     """Update a tax transaction"""
     db = get_db()
@@ -1763,7 +1740,7 @@ async def update_tax_transaction(tax_txn_id: str, data: dict, current_user: dict
 
 # ==================== DELETE ENDPOINTS (Soft Delete) ====================
 
-@router.delete("/billing/{billing_id}")
+@router.delete("/billing/{billing_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def delete_billing_record(billing_id: str, current_user: dict = Depends(get_current_user)):
     """Soft delete a billing record (only draft or cancelled status)"""
     db = get_db()
@@ -1789,7 +1766,7 @@ async def delete_billing_record(billing_id: str, current_user: dict = Depends(ge
     return {"success": True, "message": "Billing record deleted"}
 
 
-@router.delete("/receivables/{receivable_id}")
+@router.delete("/receivables/{receivable_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def delete_receivable(receivable_id: str, current_user: dict = Depends(get_current_user)):
     """Soft delete a receivable (only open status with zero payments)"""
     db = get_db()
@@ -1818,7 +1795,7 @@ async def delete_receivable(receivable_id: str, current_user: dict = Depends(get
     return {"success": True, "message": "Receivable deleted"}
 
 
-@router.delete("/payables/{payable_id}")
+@router.delete("/payables/{payable_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def delete_payable(payable_id: str, current_user: dict = Depends(get_current_user)):
     """Soft delete a payable (only open status)"""
     db = get_db()
@@ -1844,7 +1821,7 @@ async def delete_payable(payable_id: str, current_user: dict = Depends(get_curre
     return {"success": True, "message": "Payable deleted"}
 
 
-@router.delete("/assets/{asset_id}")
+@router.delete("/assets/{asset_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def delete_asset(asset_id: str, current_user: dict = Depends(get_current_user)):
     """Soft delete an asset (only draft status before activation)"""
     db = get_db()
@@ -1870,7 +1847,7 @@ async def delete_asset(asset_id: str, current_user: dict = Depends(get_current_u
     return {"success": True, "message": "Asset deleted"}
 
 
-@router.delete("/ledger/journals/{journal_id}")
+@router.delete("/ledger/journals/{journal_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def delete_journal_entry(journal_id: str, current_user: dict = Depends(get_current_user)):
     """Soft delete a journal entry (only draft status)"""
     db = get_db()
@@ -1900,7 +1877,7 @@ async def delete_journal_entry(journal_id: str, current_user: dict = Depends(get
     return {"success": True, "message": "Journal entry deleted"}
 
 
-@router.delete("/tax/transactions/{tax_txn_id}")
+@router.delete("/tax/transactions/{tax_txn_id}", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def delete_tax_transaction(tax_txn_id: str, current_user: dict = Depends(get_current_user)):
     """Soft delete a tax transaction (only pending status)"""
     db = get_db()
@@ -1977,7 +1954,7 @@ async def auto_create_tax_transaction(db, org_id: str, user_id: str, source_type
     return tax_txn
 
 
-@router.post("/billing/with-tax")
+@router.post("/billing/with-tax", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_billing_with_auto_tax(data: dict, current_user: dict = Depends(get_current_user)):
     """Create billing record with automatic tax transaction"""
     db = get_db()
@@ -2031,7 +2008,7 @@ async def create_billing_with_auto_tax(data: dict, current_user: dict = Depends(
     return {"success": True, "data": billing_record}
 
 
-@router.post("/payables/with-tax")
+@router.post("/payables/with-tax", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_payable_with_auto_tax(data: dict, current_user: dict = Depends(get_current_user)):
     """Create payable with automatic input tax transaction (for ITC claim)"""
     db = get_db()
@@ -2162,7 +2139,7 @@ async def get_accounting_periods(current_user: dict = Depends(get_current_user))
     return {"success": True, "data": periods}
 
 
-@router.post("/close/periods")
+@router.post("/close/periods", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def create_accounting_period(data: dict, current_user: dict = Depends(get_current_user)):
     """Create an accounting period"""
     db = get_db()
@@ -2271,7 +2248,7 @@ async def get_reconciliations(period: str, current_user: dict = Depends(get_curr
     return {"success": True, "data": reconciliations}
 
 
-@router.post("/close/reconciliations")
+@router.post("/close/reconciliations", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_reconciliation(data: dict, current_user: dict = Depends(get_current_user)):
     """Create a reconciliation record"""
     db = get_db()
@@ -2294,7 +2271,7 @@ async def create_reconciliation(data: dict, current_user: dict = Depends(get_cur
     return {"success": True, "data": reconciliation}
 
 
-@router.post("/close/adjustments")
+@router.post("/close/adjustments", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_closing_adjustment(data: dict, current_user: dict = Depends(get_current_user)):
     """Create a closing adjustment"""
     db = get_db()
@@ -2316,7 +2293,7 @@ async def create_closing_adjustment(data: dict, current_user: dict = Depends(get
     return {"success": True, "data": adjustment}
 
 
-@router.put("/close/periods/{period_id}/start-close")
+@router.put("/close/periods/{period_id}/start-close", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def start_period_close(period_id: str, current_user: dict = Depends(get_current_user)):
     """Start period close process"""
     db = get_db()
@@ -2333,7 +2310,7 @@ async def start_period_close(period_id: str, current_user: dict = Depends(get_cu
     return {"success": True, "message": "Period close started"}
 
 
-@router.put("/close/periods/{period_id}/complete-close")
+@router.put("/close/periods/{period_id}/complete-close", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def complete_period_close(period_id: str, current_user: dict = Depends(get_current_user)):
     """Complete period close and lock books"""
     db = get_db()
@@ -2366,7 +2343,7 @@ async def complete_period_close(period_id: str, current_user: dict = Depends(get
 
 # ==================== SEED DATA ====================
 
-@router.post("/seed")
+@router.post("/seed", dependencies=[Depends(_require_role(["admin", "owner"]))])
 async def seed_finance_data(current_user: dict = Depends(get_current_user)):
     """Seed sample IB Finance data"""
     db = get_db()
@@ -2618,7 +2595,7 @@ async def seed_finance_data(current_user: dict = Depends(get_current_user)):
     
     return {"success": True, "message": "IB Finance data seeded successfully"}
 
-@router.post("/integrate/contract-handoff")
+@router.post("/integrate/contract-handoff", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_billing_from_contract(data: dict, current_user: dict = Depends(get_current_user)):
     """Create billing record from Commerce contract handoff"""
     db = get_db()
@@ -2661,7 +2638,7 @@ async def create_billing_from_contract(data: dict, current_user: dict = Depends(
     return {"success": True, "data": billing_record, "message": "Billing record created from contract handoff"}
 
 
-@router.post("/integrate/milestone-complete")
+@router.post("/integrate/milestone-complete", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_billing_from_milestone(data: dict, current_user: dict = Depends(get_current_user)):
     """Create billing record from Operations milestone completion"""
     db = get_db()
@@ -2704,7 +2681,7 @@ async def create_billing_from_milestone(data: dict, current_user: dict = Depends
     return {"success": True, "data": billing_record}
 
 
-@router.post("/integrate/vendor-invoice")
+@router.post("/integrate/vendor-invoice", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
 async def create_payable_from_vendor(data: dict, current_user: dict = Depends(get_current_user)):
     """Create payable from vendor invoice (Procurement integration)"""
     db = get_db()

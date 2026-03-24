@@ -19,11 +19,13 @@ from passlib.context import CryptContext
 import jwt
 import os
 import secrets
+import uuid
 from datetime import datetime, timezone, timedelta
 import logging
 from typing import Optional
 
 from auth_models import (
+    UserRegister,
     SignupStep1Request, SignupStep2Request, SignupStep3Request,
     VerifyEmailRequest, VerifyMobileRequest, LoginRequest,
     TenantSelectionRequest, ForgotPasswordRequest, ResetPasswordRequest,
@@ -615,11 +617,17 @@ async def login(request: LoginRequest, db=Depends(get_db)):
 
         auth_logger.login_success(request.email, user_id=user_id, org_id=org_id)
 
+        org = await db.organizations.find_one({"org_id": org_id}, {"_id": 0})
+        org_name = org.get("name") if org else None
+
         return LoginResponse(
             success=True,
             message="Login successful",
             access_token=access_token,
             token_type="bearer",
+            org_id=org_id,
+            org_name=org_name,
+            role=org_mappings[0].get("role"),
             user={
                 "id": user_id,
                 "email": user["email"],
@@ -637,6 +645,100 @@ async def login(request: LoginRequest, db=Depends(get_db)):
         auth_logger.error("login_exception", error=e, email=request.email)
         raise HTTPException(status_code=500, detail="Login failed")
 
+
+@router.post("/register", response_model=LoginResponse)
+async def register(user_data: UserRegister, db=Depends(get_db)):
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database disabled")
+    # Check if user exists
+    existing = await db.users.find_one({"email": user_data.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    user_id = str(uuid.uuid4())
+    org_id = str(uuid.uuid4())
+    full_name = f"{user_data.first_name} {user_data.last_name}".strip()
+
+    # Create user record
+    # IMPORTANT: login expects 'password_hash' and 'user_id'
+    user_dict = {
+        "id": user_id,
+        "user_id": user_id,
+        "email": user_data.email,
+        "full_name": full_name,
+        "role": user_data.role or "admin",
+        "password_hash": pwd_context.hash(user_data.password),
+        "email_verified": True,
+        "status": "active",
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc),
+        "org_id": org_id
+    }
+    
+    await db.users.insert_one(user_dict)
+
+    # Create Organization
+    # IMPORTANT: login queries by 'org_id'
+    org_doc = {
+        "org_id": org_id,
+        "name": user_data.company_name,
+        "industry": user_data.industry,
+        "company_size": user_data.company_size,
+        "country": user_data.country,
+        "timezone": user_data.timezone,
+        "language": user_data.language,
+        "status": "active",
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc),
+    }
+    await db.organizations.insert_one(org_doc)
+
+    # Create Mapping
+    mapping_doc = {
+        "org_id": org_id,
+        "user_id": user_id,
+        "role": "owner",
+        "status": "active",
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc),
+    }
+    await db.org_users.insert_one(mapping_doc)
+    
+    # Create token using Standardized method
+    access_token = create_access_token(
+        user_id=user_id, 
+        org_id=org_id, 
+        role_id="owner",
+        subscription_status="active"
+    )
+    
+    # Create Session
+    await db.user_sessions.insert_one({
+        "_id": secrets.token_urlsafe(16),
+        "user_id": user_id,
+        "org_id": org_id,
+        "session_token": access_token,
+        "expires_at": datetime.now(timezone.utc) + timedelta(days=30),
+        "created_at": datetime.now(timezone.utc),
+    })
+
+    return LoginResponse(
+        success=True,
+        message="Registration successful",
+        access_token=access_token,
+        token_type="bearer",
+        org_id=org_id,
+        org_name=org_doc["name"],
+        role="owner",
+        user={
+            "id": user_id,
+            "email": user_data.email,
+            "full_name": full_name,
+            "role": user_data.role or "admin"
+        }
+    )
 
 @router.post("/select-tenant", response_model=LoginResponse)
 async def select_tenant(
@@ -676,11 +778,17 @@ async def select_tenant(
             "expires_at": datetime.now(timezone.utc) + timedelta(days=30),
         })
 
+        org = await db.organizations.find_one({"org_id": org_id}, {"_id": 0})
+        org_name = org.get("name") if org else None
+
         return LoginResponse(
             success=True,
             message="Organization selected",
             access_token=access_token,
             token_type="bearer",
+            org_id=org_id,
+            org_name=org_name,
+            role=mapping["role"],
             user={
                 "id": current_user["user_id"],
                 "email": current_user["email"],

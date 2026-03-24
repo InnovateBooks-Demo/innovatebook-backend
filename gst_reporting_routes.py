@@ -3,49 +3,24 @@ GST Reporting Module - GSTR-1 and GSTR-3B Reports
 Tax Compliance for India GST Regulations
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Header
-from typing import Optional
+from fastapi import APIRouter, Depends
 from datetime import datetime, timezone
-import jwt
-import os
+from routes.deps import get_current_user, User, get_db
 
-router = APIRouter(prefix="/api/ib-finance/gst", tags=["GST Reports"])
+router = APIRouter(prefix="/api/gst", tags=["GST Reporting"])
 
-JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
-
-def get_db():
-    from main import db
-    return db
-
-async def get_current_user(authorization: str = Header(None)):
-    """Extract current user from JWT token"""
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        return {
-            "user_id": payload.get("user_id"),
-            "org_id": payload.get("org_id"),
-            "role_id": payload.get("role_id")
-        }
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
 
 
 # ==================== GSTR-1 (Outward Supplies) ====================
 
 @router.get("/gstr1")
-async def get_gstr1_report(period: str, current_user: dict = Depends(get_current_user)):
+async def get_gstr1_report(period: str, current_user: User = Depends(get_current_user)):
     """
     Generate GSTR-1 Report - Details of outward supplies
     Includes: B2B, B2C Large, B2C Small, Credit/Debit Notes, Exports, NIL Rated
     """
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Get all output tax transactions for the period
     output_taxes = await db.fin_tax_transactions.find({
@@ -188,13 +163,13 @@ async def get_gstr1_report(period: str, current_user: dict = Depends(get_current
 # ==================== GSTR-3B (Summary Return) ====================
 
 @router.get("/gstr3b")
-async def get_gstr3b_report(period: str, current_user: dict = Depends(get_current_user)):
+async def get_gstr3b_report(period: str, current_user: User = Depends(get_current_user)):
     """
     Generate GSTR-3B Report - Monthly Summary Return
     Includes: Outward Supplies, ITC, Tax Payable, Interest/Penalty
     """
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Get all tax transactions for the period
     output_taxes = await db.fin_tax_transactions.find({
@@ -405,10 +380,10 @@ async def get_gstr3b_report(period: str, current_user: dict = Depends(get_curren
 # ==================== GST Dashboard Summary ====================
 
 @router.get("/dashboard")
-async def get_gst_dashboard(period: str, current_user: dict = Depends(get_current_user)):
+async def get_gst_dashboard(period: str, current_user: User = Depends(get_current_user)):
     """Get GST Dashboard summary for a period"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Get tax transactions for the period
     output_taxes = await db.fin_tax_transactions.find({

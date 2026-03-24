@@ -8,44 +8,21 @@ from fastapi import APIRouter, HTTPException, Depends, Header
 from typing import List, Optional
 from datetime import datetime, timezone
 import uuid
-import jwt
 import os
+from routes.deps import get_current_user, User, get_db
 
 router = APIRouter(prefix="/api/ib-finance", tags=["IB Finance"])
 
-JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
-
-def get_db():
-    """Get database instance from main"""
-    from main import db
-    return db
-
-async def get_current_user(authorization: str = Header(None)):
-    """Extract current user from JWT token"""
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        return {
-            "user_id": payload.get("user_id"),
-            "org_id": payload.get("org_id"),
-            "role_id": payload.get("role_id")
-        }
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+# Auth moved to routes.deps
 
 
 # ==================== DASHBOARD ====================
 
 @router.get("/dashboard")
-async def get_finance_dashboard(current_user: dict = Depends(get_current_user)):
+async def get_finance_dashboard(current_user: User = Depends(get_current_user)):
     """Get IB Finance dashboard metrics"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Aggregate metrics
     total_billing = await db.fin_billing_records.count_documents({"org_id": org_id})
@@ -83,11 +60,11 @@ async def get_finance_dashboard(current_user: dict = Depends(get_current_user)):
 async def get_billing_records(
     status: Optional[str] = None,
     billing_type: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all billing records"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     if status:
         query["status"] = status
     if billing_type:
@@ -99,11 +76,11 @@ async def get_billing_records(
 
 
 @router.get("/billing/{billing_id}")
-async def get_billing_record(billing_id: str, current_user: dict = Depends(get_current_user)):
+async def get_billing_record(billing_id: str, current_user: User = Depends(get_current_user)):
     """Get billing record details"""
     db = get_db()
     record = await db.fin_billing_records.find_one(
-        {"billing_id": billing_id, "org_id": current_user.get("org_id")},
+        {"billing_id": billing_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not record:
@@ -112,7 +89,7 @@ async def get_billing_record(billing_id: str, current_user: dict = Depends(get_c
 
 
 @router.post("/billing")
-async def create_billing_record(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_billing_record(data: dict, current_user: User = Depends(get_current_user)):
     """Create a new billing record"""
     db = get_db()
     billing_record = {
@@ -132,8 +109,8 @@ async def create_billing_record(data: dict, current_user: dict = Depends(get_cur
         "line_items": data.get("line_items", []),
         "status": "draft",  # draft | approved | issued | cancelled
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id")
+        "created_by": current_user.id,
+        "org_id": current_user.org_id
     }
     await db.fin_billing_records.insert_one(billing_record)
     billing_record.pop("_id", None)
@@ -141,14 +118,14 @@ async def create_billing_record(data: dict, current_user: dict = Depends(get_cur
 
 
 @router.put("/billing/{billing_id}/approve")
-async def approve_billing(billing_id: str, current_user: dict = Depends(get_current_user)):
+async def approve_billing(billing_id: str, current_user: User = Depends(get_current_user)):
     """Approve a billing record"""
     db = get_db()
     result = await db.fin_billing_records.update_one(
-        {"billing_id": billing_id, "org_id": current_user.get("org_id"), "status": "draft"},
+        {"billing_id": billing_id, "org_id": current_user.org_id, "status": "draft"},
         {"$set": {
             "status": "approved",
-            "approved_by": current_user.get("user_id"),
+            "approved_by": current_user.id,
             "approved_at": datetime.now(timezone.utc).isoformat()
         }}
     )
@@ -158,20 +135,20 @@ async def approve_billing(billing_id: str, current_user: dict = Depends(get_curr
 
 
 @router.put("/billing/{billing_id}/issue")
-async def issue_billing(billing_id: str, current_user: dict = Depends(get_current_user)):
+async def issue_billing(billing_id: str, current_user: User = Depends(get_current_user)):
     """Issue a billing record (create invoice)"""
     db = get_db()
     
     # Get billing record
     record = await db.fin_billing_records.find_one(
-        {"billing_id": billing_id, "org_id": current_user.get("org_id")},
+        {"billing_id": billing_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not record or record.get("status") != "approved":
         raise HTTPException(status_code=400, detail="Billing must be approved before issuing")
     
     # Generate invoice number
-    count = await db.fin_billing_records.count_documents({"org_id": current_user.get("org_id"), "invoice_number": {"$exists": True}})
+    count = await db.fin_billing_records.count_documents({"org_id": current_user.org_id, "invoice_number": {"$exists": True}})
     invoice_number = f"INV-{datetime.now().strftime('%Y%m')}-{str(count + 1).zfill(4)}"
     
     # Update billing record
@@ -181,7 +158,7 @@ async def issue_billing(billing_id: str, current_user: dict = Depends(get_curren
             "status": "issued",
             "invoice_number": invoice_number,
             "issued_at": datetime.now(timezone.utc).isoformat(),
-            "issued_by": current_user.get("user_id")
+            "issued_by": current_user.id
         }}
     )
     
@@ -200,7 +177,7 @@ async def issue_billing(billing_id: str, current_user: dict = Depends(get_curren
         "status": "open",
         "aging_bucket": "0-30",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     await db.fin_receivables.insert_one(receivable)
     
@@ -208,15 +185,15 @@ async def issue_billing(billing_id: str, current_user: dict = Depends(get_curren
 
 
 @router.put("/billing/{billing_id}/cancel")
-async def cancel_billing(billing_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def cancel_billing(billing_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Cancel a billing record"""
     db = get_db()
     result = await db.fin_billing_records.update_one(
-        {"billing_id": billing_id, "org_id": current_user.get("org_id"), "status": {"$in": ["draft", "approved"]}},
+        {"billing_id": billing_id, "org_id": current_user.org_id, "status": {"$in": ["draft", "approved"]}},
         {"$set": {
             "status": "cancelled",
             "cancel_reason": data.get("reason", ""),
-            "cancelled_by": current_user.get("user_id"),
+            "cancelled_by": current_user.id,
             "cancelled_at": datetime.now(timezone.utc).isoformat()
         }}
     )
@@ -231,11 +208,11 @@ async def cancel_billing(billing_id: str, data: dict, current_user: dict = Depen
 async def get_receivables(
     status: Optional[str] = None,
     customer_id: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all receivables"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     if status:
         query["status"] = status
     if customer_id:
@@ -247,10 +224,10 @@ async def get_receivables(
 
 
 @router.get("/receivables/dashboard")
-async def get_receivables_dashboard(current_user: dict = Depends(get_current_user)):
+async def get_receivables_dashboard(current_user: User = Depends(get_current_user)):
     """Get receivables dashboard with aging"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Get totals by status
     pipeline = [
@@ -290,11 +267,11 @@ async def get_receivables_dashboard(current_user: dict = Depends(get_current_use
 
 
 @router.get("/receivables/{receivable_id}")
-async def get_receivable(receivable_id: str, current_user: dict = Depends(get_current_user)):
+async def get_receivable(receivable_id: str, current_user: User = Depends(get_current_user)):
     """Get receivable details with payment history"""
     db = get_db()
     receivable = await db.fin_receivables.find_one(
-        {"receivable_id": receivable_id, "org_id": current_user.get("org_id")},
+        {"receivable_id": receivable_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not receivable:
@@ -310,7 +287,7 @@ async def get_receivable(receivable_id: str, current_user: dict = Depends(get_cu
 
 
 @router.post("/receivables/payment")
-async def record_payment_receipt(data: dict, current_user: dict = Depends(get_current_user)):
+async def record_payment_receipt(data: dict, current_user: User = Depends(get_current_user)):
     """Record a payment receipt"""
     db = get_db()
     receipt = {
@@ -326,8 +303,8 @@ async def record_payment_receipt(data: dict, current_user: dict = Depends(get_cu
         "status": "unapplied",  # unapplied | partially_applied | applied
         "unapplied_amount": data.get("amount_received", 0),
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id")
+        "created_by": current_user.id,
+        "org_id": current_user.org_id
     }
     await db.fin_payment_receipts.insert_one(receipt)
     receipt.pop("_id", None)
@@ -335,7 +312,7 @@ async def record_payment_receipt(data: dict, current_user: dict = Depends(get_cu
 
 
 @router.post("/receivables/apply-cash")
-async def apply_cash_to_invoice(data: dict, current_user: dict = Depends(get_current_user)):
+async def apply_cash_to_invoice(data: dict, current_user: User = Depends(get_current_user)):
     """Apply cash receipt to invoice"""
     db = get_db()
     receipt_id = data.get("receipt_id")
@@ -359,8 +336,8 @@ async def apply_cash_to_invoice(data: dict, current_user: dict = Depends(get_cur
         "receivable_id": receivable_id,
         "applied_amount": amount,
         "applied_at": datetime.now(timezone.utc).isoformat(),
-        "applied_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id")
+        "applied_by": current_user.id,
+        "org_id": current_user.org_id
     }
     await db.fin_cash_applications.insert_one(application)
     
@@ -384,7 +361,7 @@ async def apply_cash_to_invoice(data: dict, current_user: dict = Depends(get_cur
 
 
 @router.put("/receivables/{receivable_id}/write-off")
-async def write_off_receivable(receivable_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def write_off_receivable(receivable_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Write off a receivable"""
     db = get_db()
     
@@ -394,15 +371,15 @@ async def write_off_receivable(receivable_id: str, data: dict, current_user: dic
         "receivable_id": receivable_id,
         "amount": data.get("amount", 0),
         "reason": data.get("reason", ""),
-        "approved_by": current_user.get("user_id"),
+        "approved_by": current_user.id,
         "approved_at": datetime.now(timezone.utc).isoformat(),
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     await db.fin_writeoffs.insert_one(writeoff)
     
     # Update receivable
     await db.fin_receivables.update_one(
-        {"receivable_id": receivable_id, "org_id": current_user.get("org_id")},
+        {"receivable_id": receivable_id, "org_id": current_user.org_id},
         {"$set": {"status": "written_off", "written_off_at": datetime.now(timezone.utc).isoformat()}}
     )
     
@@ -415,11 +392,11 @@ async def write_off_receivable(receivable_id: str, data: dict, current_user: dic
 async def get_payables(
     status: Optional[str] = None,
     vendor_id: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all payables"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     if status:
         query["status"] = status
     if vendor_id:
@@ -431,10 +408,10 @@ async def get_payables(
 
 
 @router.get("/payables/dashboard")
-async def get_payables_dashboard(current_user: dict = Depends(get_current_user)):
+async def get_payables_dashboard(current_user: User = Depends(get_current_user)):
     """Get payables dashboard with aging"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Get totals by status
     pipeline = [
@@ -473,11 +450,11 @@ async def get_payables_dashboard(current_user: dict = Depends(get_current_user))
 
 
 @router.get("/payables/{payable_id}")
-async def get_payable(payable_id: str, current_user: dict = Depends(get_current_user)):
+async def get_payable(payable_id: str, current_user: User = Depends(get_current_user)):
     """Get payable details"""
     db = get_db()
     payable = await db.fin_payables.find_one(
-        {"payable_id": payable_id, "org_id": current_user.get("org_id")},
+        {"payable_id": payable_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not payable:
@@ -499,7 +476,7 @@ async def get_payable(payable_id: str, current_user: dict = Depends(get_current_
 
 
 @router.post("/payables")
-async def create_payable(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_payable(data: dict, current_user: User = Depends(get_current_user)):
     """Create a vendor payable (bill)"""
     db = get_db()
     payable = {
@@ -519,8 +496,8 @@ async def create_payable(data: dict, current_user: dict = Depends(get_current_us
         "line_items": data.get("line_items", []),
         "aging_bucket": "0-30",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id")
+        "created_by": current_user.id,
+        "org_id": current_user.org_id
     }
     await db.fin_payables.insert_one(payable)
     payable.pop("_id", None)
@@ -528,7 +505,7 @@ async def create_payable(data: dict, current_user: dict = Depends(get_current_us
 
 
 @router.put("/payables/{payable_id}/match")
-async def match_payable(payable_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def match_payable(payable_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Match payable with contract/delivery"""
     db = get_db()
     match_record = {
@@ -539,8 +516,8 @@ async def match_payable(payable_id: str, data: dict, current_user: dict = Depend
         "match_status": data.get("match_status", "matched"),  # matched | mismatch | pending
         "variance_amount": data.get("variance_amount", 0),
         "matched_at": datetime.now(timezone.utc).isoformat(),
-        "matched_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id")
+        "matched_by": current_user.id,
+        "org_id": current_user.org_id
     }
     await db.fin_bill_matches.insert_one(match_record)
     
@@ -554,14 +531,14 @@ async def match_payable(payable_id: str, data: dict, current_user: dict = Depend
 
 
 @router.put("/payables/{payable_id}/approve")
-async def approve_payable(payable_id: str, current_user: dict = Depends(get_current_user)):
+async def approve_payable(payable_id: str, current_user: User = Depends(get_current_user)):
     """Approve payable for payment"""
     db = get_db()
     result = await db.fin_payables.update_one(
-        {"payable_id": payable_id, "org_id": current_user.get("org_id"), "match_status": "matched"},
+        {"payable_id": payable_id, "org_id": current_user.org_id, "match_status": "matched"},
         {"$set": {
             "approved_for_payment": True,
-            "approved_by": current_user.get("user_id"),
+            "approved_by": current_user.id,
             "approved_at": datetime.now(timezone.utc).isoformat()
         }}
     )
@@ -571,7 +548,7 @@ async def approve_payable(payable_id: str, current_user: dict = Depends(get_curr
 
 
 @router.put("/payables/{payable_id}/dispute")
-async def dispute_payable(payable_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def dispute_payable(payable_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Mark payable as disputed"""
     db = get_db()
     
@@ -581,8 +558,8 @@ async def dispute_payable(payable_id: str, data: dict, current_user: dict = Depe
         "reason": data.get("reason", ""),
         "status": "open",  # open | resolved | escalated
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id")
+        "created_by": current_user.id,
+        "org_id": current_user.org_id
     }
     await db.fin_payable_disputes.insert_one(dispute)
     
@@ -595,7 +572,7 @@ async def dispute_payable(payable_id: str, data: dict, current_user: dict = Depe
 
 
 @router.post("/payables/{payable_id}/pay")
-async def record_payment(payable_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def record_payment(payable_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Record payment against payable"""
     db = get_db()
     
@@ -615,8 +592,8 @@ async def record_payment(payable_id: str, data: dict, current_user: dict = Depen
         "payment_mode": data.get("payment_mode", "bank"),
         "reference_number": data.get("reference_number"),
         "applied_at": datetime.now(timezone.utc).isoformat(),
-        "applied_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id")
+        "applied_by": current_user.id,
+        "org_id": current_user.org_id
     }
     await db.fin_payable_settlements.insert_one(settlement)
     
@@ -634,11 +611,11 @@ async def record_payment(payable_id: str, data: dict, current_user: dict = Depen
 # ==================== MODULE 4: LEDGER ====================
 
 @router.get("/ledger/accounts")
-async def get_chart_of_accounts(current_user: dict = Depends(get_current_user)):
+async def get_chart_of_accounts(current_user: User = Depends(get_current_user)):
     """Get chart of accounts"""
     db = get_db()
     cursor = db.fin_accounts.find(
-        {"org_id": current_user.get("org_id")},
+        {"org_id": current_user.org_id},
         {"_id": 0}
     ).sort("account_code", 1)
     accounts = await cursor.to_list(length=1000)
@@ -646,7 +623,7 @@ async def get_chart_of_accounts(current_user: dict = Depends(get_current_user)):
 
 
 @router.post("/ledger/accounts")
-async def create_account(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_account(data: dict, current_user: User = Depends(get_current_user)):
     """Create a new account in chart of accounts"""
     db = get_db()
     account = {
@@ -657,7 +634,7 @@ async def create_account(data: dict, current_user: dict = Depends(get_current_us
         "parent_account_id": data.get("parent_account_id"),
         "is_active": True,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     await db.fin_accounts.insert_one(account)
     account.pop("_id", None)
@@ -669,11 +646,11 @@ async def get_journal_entries(
     status: Optional[str] = None,
     source_module: Optional[str] = None,
     period: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get journal entries"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     if status:
         query["status"] = status
     if source_module:
@@ -687,11 +664,11 @@ async def get_journal_entries(
 
 
 @router.get("/ledger/journals/{journal_id}")
-async def get_journal_entry(journal_id: str, current_user: dict = Depends(get_current_user)):
+async def get_journal_entry(journal_id: str, current_user: User = Depends(get_current_user)):
     """Get journal entry details"""
     db = get_db()
     entry = await db.fin_journal_entries.find_one(
-        {"journal_id": journal_id, "org_id": current_user.get("org_id")},
+        {"journal_id": journal_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not entry:
@@ -707,7 +684,7 @@ async def get_journal_entry(journal_id: str, current_user: dict = Depends(get_cu
 
 
 @router.post("/ledger/journals")
-async def create_journal_entry(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_journal_entry(data: dict, current_user: User = Depends(get_current_user)):
     """Create a journal entry"""
     db = get_db()
     
@@ -732,8 +709,8 @@ async def create_journal_entry(data: dict, current_user: dict = Depends(get_curr
         "status": "draft",  # draft | posted | reversed
         "period": data.get("period"),
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id")
+        "created_by": current_user.id,
+        "org_id": current_user.org_id
     }
     await db.fin_journal_entries.insert_one(entry)
     
@@ -750,7 +727,7 @@ async def create_journal_entry(data: dict, current_user: dict = Depends(get_curr
             "currency": line.get("currency", "INR"),
             "exchange_rate": line.get("exchange_rate", 1),
             "description": line.get("description", ""),
-            "org_id": current_user.get("org_id")
+            "org_id": current_user.org_id
         }
         await db.fin_journal_lines.insert_one(journal_line)
     
@@ -759,7 +736,7 @@ async def create_journal_entry(data: dict, current_user: dict = Depends(get_curr
 
 
 @router.put("/ledger/journals/{journal_id}/post")
-async def post_journal_entry(journal_id: str, current_user: dict = Depends(get_current_user)):
+async def post_journal_entry(journal_id: str, current_user: User = Depends(get_current_user)):
     """Post a journal entry"""
     db = get_db()
     
@@ -769,7 +746,7 @@ async def post_journal_entry(journal_id: str, current_user: dict = Depends(get_c
         raise HTTPException(status_code=404, detail="Journal entry not found")
     
     period = await db.fin_accounting_periods.find_one(
-        {"period": entry.get("period"), "org_id": current_user.get("org_id")},
+        {"period": entry.get("period"), "org_id": current_user.org_id},
         {"_id": 0}
     )
     if period and period.get("status") == "closed":
@@ -779,7 +756,7 @@ async def post_journal_entry(journal_id: str, current_user: dict = Depends(get_c
         {"journal_id": journal_id, "status": "draft"},
         {"$set": {
             "status": "posted",
-            "posted_by": current_user.get("user_id"),
+            "posted_by": current_user.id,
             "posted_at": datetime.now(timezone.utc).isoformat()
         }}
     )
@@ -790,7 +767,7 @@ async def post_journal_entry(journal_id: str, current_user: dict = Depends(get_c
 
 
 @router.put("/ledger/journals/{journal_id}/reverse")
-async def reverse_journal_entry(journal_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def reverse_journal_entry(journal_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Reverse a posted journal entry"""
     db = get_db()
     
@@ -817,10 +794,10 @@ async def reverse_journal_entry(journal_id: str, data: dict, current_user: dict 
         "status": "posted",
         "period": data.get("period"),
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "posted_by": current_user.get("user_id"),
+        "created_by": current_user.id,
+        "posted_by": current_user.id,
         "posted_at": datetime.now(timezone.utc).isoformat(),
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     await db.fin_journal_entries.insert_one(reversal)
     
@@ -837,7 +814,7 @@ async def reverse_journal_entry(journal_id: str, data: dict, current_user: dict 
             "currency": line.get("currency", "INR"),
             "exchange_rate": line.get("exchange_rate", 1),
             "description": f"Reversal: {line.get('description', '')}",
-            "org_id": current_user.get("org_id")
+            "org_id": current_user.org_id
         }
         await db.fin_journal_lines.insert_one(journal_line)
     
@@ -851,12 +828,12 @@ async def reverse_journal_entry(journal_id: str, data: dict, current_user: dict 
 
 
 @router.get("/ledger/trial-balance")
-async def get_trial_balance(period: str, current_user: dict = Depends(get_current_user)):
+async def get_trial_balance(period: str, current_user: User = Depends(get_current_user)):
     """Get trial balance for a period"""
     db = get_db()
     
     pipeline = [
-        {"$match": {"org_id": current_user.get("org_id"), "status": "posted"}},
+        {"$match": {"org_id": current_user.org_id, "status": "posted"}},
         {"$lookup": {
             "from": "fin_journal_lines",
             "localField": "journal_id",
@@ -897,11 +874,11 @@ async def get_trial_balance(period: str, current_user: dict = Depends(get_curren
 async def get_assets(
     status: Optional[str] = None,
     asset_type: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get all assets"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     if status:
         query["status"] = status
     if asset_type:
@@ -913,11 +890,11 @@ async def get_assets(
 
 
 @router.get("/assets/{asset_id}")
-async def get_asset(asset_id: str, current_user: dict = Depends(get_current_user)):
+async def get_asset(asset_id: str, current_user: User = Depends(get_current_user)):
     """Get asset details with depreciation schedule"""
     db = get_db()
     asset = await db.fin_assets.find_one(
-        {"asset_id": asset_id, "org_id": current_user.get("org_id")},
+        {"asset_id": asset_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not asset:
@@ -933,7 +910,7 @@ async def get_asset(asset_id: str, current_user: dict = Depends(get_current_user
 
 
 @router.post("/assets")
-async def create_asset(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_asset(data: dict, current_user: User = Depends(get_current_user)):
     """Create/capitalize an asset"""
     db = get_db()
     
@@ -955,8 +932,8 @@ async def create_asset(data: dict, current_user: dict = Depends(get_current_user
         "location": data.get("location"),
         "serial_number": data.get("serial_number"),
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id")
+        "created_by": current_user.id,
+        "org_id": current_user.org_id
     }
     await db.fin_assets.insert_one(asset)
     asset.pop("_id", None)
@@ -964,7 +941,7 @@ async def create_asset(data: dict, current_user: dict = Depends(get_current_user
 
 
 @router.post("/assets/{asset_id}/depreciate")
-async def run_depreciation(asset_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def run_depreciation(asset_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Run depreciation for an asset"""
     db = get_db()
     
@@ -1002,7 +979,7 @@ async def run_depreciation(asset_id: str, data: dict, current_user: dict = Depen
         "accumulated_depreciation": new_accumulated,
         "net_book_value": new_nbv,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     await db.fin_depreciation_schedules.insert_one(schedule_entry)
     
@@ -1025,7 +1002,7 @@ async def run_depreciation(asset_id: str, data: dict, current_user: dict = Depen
 
 
 @router.put("/assets/{asset_id}/dispose")
-async def dispose_asset(asset_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def dispose_asset(asset_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Dispose an asset"""
     db = get_db()
     
@@ -1046,8 +1023,8 @@ async def dispose_asset(asset_id: str, data: dict, current_user: dict = Depends(
         "gain_or_loss": gain_or_loss,
         "disposal_reason": data.get("reason", ""),
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id")
+        "created_by": current_user.id,
+        "org_id": current_user.org_id
     }
     await db.fin_asset_disposals.insert_one(disposal)
     disposal.pop("_id", None)
@@ -1063,11 +1040,11 @@ async def dispose_asset(asset_id: str, data: dict, current_user: dict = Depends(
 # ==================== MODULE 6: TAX ====================
 
 @router.get("/tax/registrations")
-async def get_tax_registrations(current_user: dict = Depends(get_current_user)):
+async def get_tax_registrations(current_user: User = Depends(get_current_user)):
     """Get tax registrations"""
     db = get_db()
     cursor = db.fin_tax_registrations.find(
-        {"org_id": current_user.get("org_id")},
+        {"org_id": current_user.org_id},
         {"_id": 0}
     )
     registrations = await cursor.to_list(length=100)
@@ -1079,11 +1056,11 @@ async def get_tax_transactions(
     tax_type: Optional[str] = None,
     direction: Optional[str] = None,
     period: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get tax transactions"""
     db = get_db()
-    query = {"org_id": current_user.get("org_id")}
+    query = {"org_id": current_user.org_id}
     if tax_type:
         query["tax_type"] = tax_type
     if direction:
@@ -1097,12 +1074,12 @@ async def get_tax_transactions(
 
 
 @router.get("/tax/transactions/{tax_txn_id}")
-async def get_tax_transaction(tax_txn_id: str, current_user: dict = Depends(get_current_user)):
+async def get_tax_transaction(tax_txn_id: str, current_user: User = Depends(get_current_user)):
     """Get a single tax transaction by ID"""
     db = get_db()
     
     transaction = await db.fin_tax_transactions.find_one(
-        {"tax_txn_id": tax_txn_id, "org_id": current_user.get("org_id")},
+        {"tax_txn_id": tax_txn_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not transaction:
@@ -1112,10 +1089,10 @@ async def get_tax_transaction(tax_txn_id: str, current_user: dict = Depends(get_
 
 
 @router.get("/tax/dashboard")
-async def get_tax_dashboard(period: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+async def get_tax_dashboard(period: Optional[str] = None, current_user: User = Depends(get_current_user)):
     """Get tax dashboard"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     query = {"org_id": org_id}
     if period:
@@ -1159,7 +1136,7 @@ async def get_tax_dashboard(period: Optional[str] = None, current_user: dict = D
 
 
 @router.post("/tax/transactions")
-async def create_tax_transaction(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_tax_transaction(data: dict, current_user: User = Depends(get_current_user)):
     """Create a tax transaction"""
     db = get_db()
     
@@ -1176,7 +1153,7 @@ async def create_tax_transaction(data: dict, current_user: dict = Depends(get_cu
         "status": "final",  # provisional | final
         "period": data.get("period"),
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     await db.fin_tax_transactions.insert_one(transaction)
     transaction.pop("_id", None)
@@ -1184,11 +1161,11 @@ async def create_tax_transaction(data: dict, current_user: dict = Depends(get_cu
 
 
 @router.get("/tax/input-credits")
-async def get_input_tax_credits(current_user: dict = Depends(get_current_user)):
+async def get_input_tax_credits(current_user: User = Depends(get_current_user)):
     """Get input tax credits"""
     db = get_db()
     cursor = db.fin_input_tax_credits.find(
-        {"org_id": current_user.get("org_id")},
+        {"org_id": current_user.org_id},
         {"_id": 0}
     )
     credits = await cursor.to_list(length=1000)
@@ -1196,12 +1173,12 @@ async def get_input_tax_credits(current_user: dict = Depends(get_current_user)):
 
 
 @router.get("/tax/reports/summary")
-async def get_tax_summary_report(period: str, current_user: dict = Depends(get_current_user)):
+async def get_tax_summary_report(period: str, current_user: User = Depends(get_current_user)):
     """Get tax summary report"""
     db = get_db()
     
     pipeline = [
-        {"$match": {"org_id": current_user.get("org_id"), "period": period}},
+        {"$match": {"org_id": current_user.org_id, "period": period}},
         {"$group": {
             "_id": {"tax_type": "$tax_type", "direction": "$direction", "jurisdiction": "$jurisdiction"},
             "taxable_amount": {"$sum": "$taxable_amount"},
@@ -1218,10 +1195,10 @@ async def get_tax_summary_report(period: str, current_user: dict = Depends(get_c
 # ==================== FINANCIAL STATEMENTS API ====================
 
 @router.get("/statements/profit-loss")
-async def get_profit_loss_statement(period: str, current_user: dict = Depends(get_current_user)):
+async def get_profit_loss_statement(period: str, current_user: User = Depends(get_current_user)):
     """Generate Profit & Loss statement from ledger data"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Get posted journal entries for the period
     pipeline = [
@@ -1301,10 +1278,10 @@ async def get_profit_loss_statement(period: str, current_user: dict = Depends(ge
 
 
 @router.get("/statements/balance-sheet")
-async def get_balance_sheet(period: str, current_user: dict = Depends(get_current_user)):
+async def get_balance_sheet(period: str, current_user: User = Depends(get_current_user)):
     """Generate Balance Sheet from ledger data"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Get account balances
     pipeline = [
@@ -1438,10 +1415,10 @@ async def get_balance_sheet(period: str, current_user: dict = Depends(get_curren
 
 
 @router.get("/statements/cash-flow")
-async def get_cash_flow_statement(period: str, current_user: dict = Depends(get_current_user)):
+async def get_cash_flow_statement(period: str, current_user: User = Depends(get_current_user)):
     """Generate Cash Flow statement"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Get net income from P&L
     pnl = await get_profit_loss_statement(period, current_user)
@@ -1507,13 +1484,13 @@ async def get_cash_flow_statement(period: str, current_user: dict = Depends(get_
 # ==================== UPDATE/EDIT ENDPOINTS ====================
 
 @router.put("/billing/{billing_id}")
-async def update_billing_record(billing_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def update_billing_record(billing_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Update a billing record (only draft status)"""
     db = get_db()
     
     # Check if billing exists and is in draft status
     existing = await db.fin_billing_records.find_one(
-        {"billing_id": billing_id, "org_id": current_user.get("org_id")},
+        {"billing_id": billing_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1535,7 +1512,7 @@ async def update_billing_record(billing_id: str, data: dict, current_user: dict 
         "description": data.get("description", existing.get("description")),
         "line_items": data.get("line_items", existing.get("line_items", [])),
         "updated_at": datetime.now(timezone.utc).isoformat(),
-        "updated_by": current_user.get("user_id")
+        "updated_by": current_user.id
     }
     
     await db.fin_billing_records.update_one(
@@ -1548,12 +1525,12 @@ async def update_billing_record(billing_id: str, data: dict, current_user: dict 
 
 
 @router.put("/receivables/{receivable_id}")
-async def update_receivable(receivable_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def update_receivable(receivable_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Update a receivable record"""
     db = get_db()
     
     existing = await db.fin_receivables.find_one(
-        {"receivable_id": receivable_id, "org_id": current_user.get("org_id")},
+        {"receivable_id": receivable_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1576,12 +1553,12 @@ async def update_receivable(receivable_id: str, data: dict, current_user: dict =
 
 
 @router.put("/payables/{payable_id}")
-async def update_payable(payable_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def update_payable(payable_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Update a payable record"""
     db = get_db()
     
     existing = await db.fin_payables.find_one(
-        {"payable_id": payable_id, "org_id": current_user.get("org_id")},
+        {"payable_id": payable_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1608,12 +1585,12 @@ async def update_payable(payable_id: str, data: dict, current_user: dict = Depen
 
 
 @router.put("/assets/{asset_id}")
-async def update_asset(asset_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def update_asset(asset_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Update an asset record"""
     db = get_db()
     
     existing = await db.fin_assets.find_one(
-        {"asset_id": asset_id, "org_id": current_user.get("org_id")},
+        {"asset_id": asset_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1643,12 +1620,12 @@ async def update_asset(asset_id: str, data: dict, current_user: dict = Depends(g
 
 
 @router.put("/ledger/accounts/{account_id}")
-async def update_account(account_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def update_account(account_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Update a chart of accounts entry"""
     db = get_db()
     
     existing = await db.fin_accounts.find_one(
-        {"account_id": account_id, "org_id": current_user.get("org_id")},
+        {"account_id": account_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1672,12 +1649,12 @@ async def update_account(account_id: str, data: dict, current_user: dict = Depen
 
 
 @router.put("/ledger/journals/{journal_id}")
-async def update_journal_entry(journal_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def update_journal_entry(journal_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Update a journal entry (only draft status)"""
     db = get_db()
     
     existing = await db.fin_journal_entries.find_one(
-        {"journal_id": journal_id, "org_id": current_user.get("org_id")},
+        {"journal_id": journal_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1707,7 +1684,7 @@ async def update_journal_entry(journal_id: str, data: dict, current_user: dict =
                 "credit_amount": line.get("credit_amount", 0),
                 "currency": line.get("currency", "INR"),
                 "description": line.get("description", ""),
-                "org_id": current_user.get("org_id")
+                "org_id": current_user.org_id
             }
             await db.fin_journal_lines.insert_one(journal_line)
     
@@ -1731,12 +1708,12 @@ async def update_journal_entry(journal_id: str, data: dict, current_user: dict =
 
 
 @router.put("/tax/transactions/{tax_txn_id}")
-async def update_tax_transaction(tax_txn_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+async def update_tax_transaction(tax_txn_id: str, data: dict, current_user: User = Depends(get_current_user)):
     """Update a tax transaction"""
     db = get_db()
     
     existing = await db.fin_tax_transactions.find_one(
-        {"tax_txn_id": tax_txn_id, "org_id": current_user.get("org_id")},
+        {"tax_txn_id": tax_txn_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1764,12 +1741,12 @@ async def update_tax_transaction(tax_txn_id: str, data: dict, current_user: dict
 # ==================== DELETE ENDPOINTS (Soft Delete) ====================
 
 @router.delete("/billing/{billing_id}")
-async def delete_billing_record(billing_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_billing_record(billing_id: str, current_user: User = Depends(get_current_user)):
     """Soft delete a billing record (only draft or cancelled status)"""
     db = get_db()
     
     existing = await db.fin_billing_records.find_one(
-        {"billing_id": billing_id, "org_id": current_user.get("org_id")},
+        {"billing_id": billing_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1783,19 +1760,19 @@ async def delete_billing_record(billing_id: str, current_user: dict = Depends(ge
         {"$set": {
             "deleted": True,
             "deleted_at": datetime.now(timezone.utc).isoformat(),
-            "deleted_by": current_user.get("user_id")
+            "deleted_by": current_user.id
         }}
     )
     return {"success": True, "message": "Billing record deleted"}
 
 
 @router.delete("/receivables/{receivable_id}")
-async def delete_receivable(receivable_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_receivable(receivable_id: str, current_user: User = Depends(get_current_user)):
     """Soft delete a receivable (only open status with zero payments)"""
     db = get_db()
     
     existing = await db.fin_receivables.find_one(
-        {"receivable_id": receivable_id, "org_id": current_user.get("org_id")},
+        {"receivable_id": receivable_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1812,19 +1789,19 @@ async def delete_receivable(receivable_id: str, current_user: dict = Depends(get
         {"$set": {
             "deleted": True,
             "deleted_at": datetime.now(timezone.utc).isoformat(),
-            "deleted_by": current_user.get("user_id")
+            "deleted_by": current_user.id
         }}
     )
     return {"success": True, "message": "Receivable deleted"}
 
 
 @router.delete("/payables/{payable_id}")
-async def delete_payable(payable_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_payable(payable_id: str, current_user: User = Depends(get_current_user)):
     """Soft delete a payable (only open status)"""
     db = get_db()
     
     existing = await db.fin_payables.find_one(
-        {"payable_id": payable_id, "org_id": current_user.get("org_id")},
+        {"payable_id": payable_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1838,19 +1815,19 @@ async def delete_payable(payable_id: str, current_user: dict = Depends(get_curre
         {"$set": {
             "deleted": True,
             "deleted_at": datetime.now(timezone.utc).isoformat(),
-            "deleted_by": current_user.get("user_id")
+            "deleted_by": current_user.id
         }}
     )
     return {"success": True, "message": "Payable deleted"}
 
 
 @router.delete("/assets/{asset_id}")
-async def delete_asset(asset_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_asset(asset_id: str, current_user: User = Depends(get_current_user)):
     """Soft delete an asset (only draft status before activation)"""
     db = get_db()
     
     existing = await db.fin_assets.find_one(
-        {"asset_id": asset_id, "org_id": current_user.get("org_id")},
+        {"asset_id": asset_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1864,19 +1841,19 @@ async def delete_asset(asset_id: str, current_user: dict = Depends(get_current_u
         {"$set": {
             "deleted": True,
             "deleted_at": datetime.now(timezone.utc).isoformat(),
-            "deleted_by": current_user.get("user_id")
+            "deleted_by": current_user.id
         }}
     )
     return {"success": True, "message": "Asset deleted"}
 
 
 @router.delete("/ledger/journals/{journal_id}")
-async def delete_journal_entry(journal_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_journal_entry(journal_id: str, current_user: User = Depends(get_current_user)):
     """Soft delete a journal entry (only draft status)"""
     db = get_db()
     
     existing = await db.fin_journal_entries.find_one(
-        {"journal_id": journal_id, "org_id": current_user.get("org_id")},
+        {"journal_id": journal_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1894,19 +1871,19 @@ async def delete_journal_entry(journal_id: str, current_user: dict = Depends(get
         {"$set": {
             "deleted": True,
             "deleted_at": datetime.now(timezone.utc).isoformat(),
-            "deleted_by": current_user.get("user_id")
+            "deleted_by": current_user.id
         }}
     )
     return {"success": True, "message": "Journal entry deleted"}
 
 
 @router.delete("/tax/transactions/{tax_txn_id}")
-async def delete_tax_transaction(tax_txn_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_tax_transaction(tax_txn_id: str, current_user: User = Depends(get_current_user)):
     """Soft delete a tax transaction (only pending status)"""
     db = get_db()
     
     existing = await db.fin_tax_transactions.find_one(
-        {"tax_txn_id": tax_txn_id, "org_id": current_user.get("org_id")},
+        {"tax_txn_id": tax_txn_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not existing:
@@ -1920,7 +1897,7 @@ async def delete_tax_transaction(tax_txn_id: str, current_user: dict = Depends(g
         {"$set": {
             "deleted": True,
             "deleted_at": datetime.now(timezone.utc).isoformat(),
-            "deleted_by": current_user.get("user_id")
+            "deleted_by": current_user.id
         }}
     )
     return {"success": True, "message": "Tax transaction deleted"}
@@ -1978,11 +1955,11 @@ async def auto_create_tax_transaction(db, org_id: str, user_id: str, source_type
 
 
 @router.post("/billing/with-tax")
-async def create_billing_with_auto_tax(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_billing_with_auto_tax(data: dict, current_user: User = Depends(get_current_user)):
     """Create billing record with automatic tax transaction"""
     db = get_db()
-    org_id = current_user.get("org_id")
-    user_id = current_user.get("user_id")
+    org_id = current_user.org_id
+    user_id = current_user.id
     
     billing_id = f"BIL-{uuid.uuid4().hex[:8].upper()}"
     
@@ -2032,11 +2009,11 @@ async def create_billing_with_auto_tax(data: dict, current_user: dict = Depends(
 
 
 @router.post("/payables/with-tax")
-async def create_payable_with_auto_tax(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_payable_with_auto_tax(data: dict, current_user: User = Depends(get_current_user)):
     """Create payable with automatic input tax transaction (for ITC claim)"""
     db = get_db()
-    org_id = current_user.get("org_id")
-    user_id = current_user.get("user_id")
+    org_id = current_user.org_id
+    user_id = current_user.id
     
     payable_id = f"PAY-{uuid.uuid4().hex[:8].upper()}"
     
@@ -2093,10 +2070,10 @@ async def create_payable_with_auto_tax(data: dict, current_user: dict = Depends(
 
 
 @router.get("/tax/auto-summary")
-async def get_auto_tax_summary(period: str = None, current_user: dict = Depends(get_current_user)):
+async def get_auto_tax_summary(period: str = None, current_user: User = Depends(get_current_user)):
     """Get summary of auto-generated tax transactions for compliance"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     if not period:
         period = datetime.now().strftime("%Y-%m")
@@ -2151,11 +2128,11 @@ async def get_auto_tax_summary(period: str = None, current_user: dict = Depends(
 # ==================== MODULE 7: CLOSE ====================
 
 @router.get("/close/periods")
-async def get_accounting_periods(current_user: dict = Depends(get_current_user)):
+async def get_accounting_periods(current_user: User = Depends(get_current_user)):
     """Get accounting periods"""
     db = get_db()
     cursor = db.fin_accounting_periods.find(
-        {"org_id": current_user.get("org_id")},
+        {"org_id": current_user.org_id},
         {"_id": 0}
     ).sort("start_date", -1)
     periods = await cursor.to_list(length=100)
@@ -2163,7 +2140,7 @@ async def get_accounting_periods(current_user: dict = Depends(get_current_user))
 
 
 @router.post("/close/periods")
-async def create_accounting_period(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_accounting_period(data: dict, current_user: User = Depends(get_current_user)):
     """Create an accounting period"""
     db = get_db()
     period = {
@@ -2173,7 +2150,7 @@ async def create_accounting_period(data: dict, current_user: dict = Depends(get_
         "end_date": data.get("end_date"),
         "status": "open",  # open | closing | closed
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "org_id": current_user.get("org_id")
+        "org_id": current_user.org_id
     }
     await db.fin_accounting_periods.insert_one(period)
     period.pop("_id", None)
@@ -2181,10 +2158,10 @@ async def create_accounting_period(data: dict, current_user: dict = Depends(get_
 
 
 @router.get("/close/checklist")
-async def get_close_checklist(period: str, current_user: dict = Depends(get_current_user)):
+async def get_close_checklist(period: str, current_user: User = Depends(get_current_user)):
     """Get period close checklist"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Check each sub-ledger
     checklist = {
@@ -2260,11 +2237,11 @@ async def get_close_checklist(period: str, current_user: dict = Depends(get_curr
 
 
 @router.get("/close/reconciliations")
-async def get_reconciliations(period: str, current_user: dict = Depends(get_current_user)):
+async def get_reconciliations(period: str, current_user: User = Depends(get_current_user)):
     """Get sub-ledger reconciliations"""
     db = get_db()
     cursor = db.fin_reconciliations.find(
-        {"org_id": current_user.get("org_id"), "period": period},
+        {"org_id": current_user.org_id, "period": period},
         {"_id": 0}
     )
     reconciliations = await cursor.to_list(length=100)
@@ -2272,7 +2249,7 @@ async def get_reconciliations(period: str, current_user: dict = Depends(get_curr
 
 
 @router.post("/close/reconciliations")
-async def create_reconciliation(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_reconciliation(data: dict, current_user: User = Depends(get_current_user)):
     """Create a reconciliation record"""
     db = get_db()
     reconciliation = {
@@ -2286,8 +2263,8 @@ async def create_reconciliation(data: dict, current_user: dict = Depends(get_cur
         "status": "matched" if data.get("source_amount", 0) == data.get("target_amount", 0) else "mismatch",
         "notes": data.get("notes", ""),
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id")
+        "created_by": current_user.id,
+        "org_id": current_user.org_id
     }
     await db.fin_reconciliations.insert_one(reconciliation)
     reconciliation.pop("_id", None)
@@ -2295,7 +2272,7 @@ async def create_reconciliation(data: dict, current_user: dict = Depends(get_cur
 
 
 @router.post("/close/adjustments")
-async def create_closing_adjustment(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_closing_adjustment(data: dict, current_user: User = Depends(get_current_user)):
     """Create a closing adjustment"""
     db = get_db()
     adjustment = {
@@ -2308,8 +2285,8 @@ async def create_closing_adjustment(data: dict, current_user: dict = Depends(get
         "approved_by": None,
         "status": "pending",  # pending | approved | posted
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id")
+        "created_by": current_user.id,
+        "org_id": current_user.org_id
     }
     await db.fin_closing_adjustments.insert_one(adjustment)
     adjustment.pop("_id", None)
@@ -2317,15 +2294,15 @@ async def create_closing_adjustment(data: dict, current_user: dict = Depends(get
 
 
 @router.put("/close/periods/{period_id}/start-close")
-async def start_period_close(period_id: str, current_user: dict = Depends(get_current_user)):
+async def start_period_close(period_id: str, current_user: User = Depends(get_current_user)):
     """Start period close process"""
     db = get_db()
     result = await db.fin_accounting_periods.update_one(
-        {"period_id": period_id, "org_id": current_user.get("org_id"), "status": "open"},
+        {"period_id": period_id, "org_id": current_user.org_id, "status": "open"},
         {"$set": {
             "status": "closing",
             "close_started_at": datetime.now(timezone.utc).isoformat(),
-            "close_started_by": current_user.get("user_id")
+            "close_started_by": current_user.id
         }}
     )
     if result.modified_count == 0:
@@ -2334,13 +2311,13 @@ async def start_period_close(period_id: str, current_user: dict = Depends(get_cu
 
 
 @router.put("/close/periods/{period_id}/complete-close")
-async def complete_period_close(period_id: str, current_user: dict = Depends(get_current_user)):
+async def complete_period_close(period_id: str, current_user: User = Depends(get_current_user)):
     """Complete period close and lock books"""
     db = get_db()
     
     # Get period
     period = await db.fin_accounting_periods.find_one(
-        {"period_id": period_id, "org_id": current_user.get("org_id")},
+        {"period_id": period_id, "org_id": current_user.org_id},
         {"_id": 0}
     )
     if not period or period.get("status") != "closing":
@@ -2357,7 +2334,7 @@ async def complete_period_close(period_id: str, current_user: dict = Depends(get
         {"$set": {
             "status": "closed",
             "closed_at": datetime.now(timezone.utc).isoformat(),
-            "closed_by": current_user.get("user_id")
+            "closed_by": current_user.id
         }}
     )
     
@@ -2367,10 +2344,10 @@ async def complete_period_close(period_id: str, current_user: dict = Depends(get
 # ==================== SEED DATA ====================
 
 @router.post("/seed")
-async def seed_finance_data(current_user: dict = Depends(get_current_user)):
+async def seed_finance_data(current_user: User = Depends(get_current_user)):
     """Seed sample IB Finance data"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Clear existing data
     collections = [
@@ -2619,7 +2596,7 @@ async def seed_finance_data(current_user: dict = Depends(get_current_user)):
     return {"success": True, "message": "IB Finance data seeded successfully"}
 
 @router.post("/integrate/contract-handoff")
-async def create_billing_from_contract(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_billing_from_contract(data: dict, current_user: User = Depends(get_current_user)):
     """Create billing record from Commerce contract handoff"""
     db = get_db()
     
@@ -2651,8 +2628,8 @@ async def create_billing_from_contract(data: dict, current_user: dict = Depends(
         "line_items": data.get("line_items", []),
         "status": "draft",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id"),
+        "created_by": current_user.id,
+        "org_id": current_user.org_id,
         "auto_created": True,
         "source": "commerce_handoff"
     }
@@ -2662,7 +2639,7 @@ async def create_billing_from_contract(data: dict, current_user: dict = Depends(
 
 
 @router.post("/integrate/milestone-complete")
-async def create_billing_from_milestone(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_billing_from_milestone(data: dict, current_user: User = Depends(get_current_user)):
     """Create billing record from Operations milestone completion"""
     db = get_db()
     
@@ -2694,8 +2671,8 @@ async def create_billing_from_milestone(data: dict, current_user: dict = Depends
         "description": f"Milestone: {milestone_name} (Project: {project_id})",
         "status": "draft",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id"),
+        "created_by": current_user.id,
+        "org_id": current_user.org_id,
         "auto_created": True,
         "source": "operations_milestone"
     }
@@ -2705,7 +2682,7 @@ async def create_billing_from_milestone(data: dict, current_user: dict = Depends
 
 
 @router.post("/integrate/vendor-invoice")
-async def create_payable_from_vendor(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_payable_from_vendor(data: dict, current_user: User = Depends(get_current_user)):
     """Create payable from vendor invoice (Procurement integration)"""
     db = get_db()
     
@@ -2726,8 +2703,8 @@ async def create_payable_from_vendor(data: dict, current_user: dict = Depends(ge
         "line_items": data.get("line_items", []),
         "aging_bucket": "0-30",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "org_id": current_user.get("org_id"),
+        "created_by": current_user.id,
+        "org_id": current_user.org_id,
         "auto_created": True,
         "source": "procurement"
     }
@@ -2739,10 +2716,10 @@ async def create_payable_from_vendor(data: dict, current_user: dict = Depends(ge
 # ==================== NOTIFICATIONS & ALERTS ====================
 
 @router.get("/alerts")
-async def get_finance_alerts(current_user: dict = Depends(get_current_user)):
+async def get_finance_alerts(current_user: User = Depends(get_current_user)):
     """Get real-time finance alerts for SLA breaches"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     alerts = []
     

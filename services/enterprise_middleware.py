@@ -471,7 +471,7 @@ async def check_permission(
     """
     try:
         # Get user's role
-        user = await db.enterprise_users.find_one({"user_id": user_id}, {"_id": 0})
+        user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
         if not user:
             return False
         

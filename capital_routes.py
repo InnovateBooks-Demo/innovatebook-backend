@@ -17,21 +17,17 @@ from enterprise_middleware import (
     require_permission,
     get_org_scope
 )
+from routes.deps import get_db, User
 
 router = APIRouter(prefix="/api/capital", tags=["Capital"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-DB_NAME = os.environ['DB_NAME']
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
 
 # ========================
 # PORTFOLIO
 # ========================
 
 @router.get("/portfolio", dependencies=[Depends(require_permission("capital", "view"))])
-async def get_portfolio(org_id: Optional[str] = Depends(get_org_scope)):
+async def get_portfolio(org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Get all portfolio items (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
@@ -41,7 +37,7 @@ async def get_portfolio(org_id: Optional[str] = Depends(get_org_scope)):
         return {"success": False, "portfolio": [], "error": str(e)}
 
 @router.get("/portfolio/{portfolio_id}", dependencies=[Depends(require_permission("capital", "view"))])
-async def get_portfolio_item(portfolio_id: str, org_id: Optional[str] = Depends(get_org_scope)):
+async def get_portfolio_item(portfolio_id: str, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Get portfolio item by ID (org-scoped)"""
     try:
         query = {"id": portfolio_id}
@@ -55,7 +51,7 @@ async def get_portfolio_item(portfolio_id: str, org_id: Optional[str] = Depends(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/portfolio", dependencies=[Depends(require_active_subscription), Depends(require_permission("capital", "create"))])
-async def create_portfolio_item(portfolio_data: dict, org_id: Optional[str] = Depends(get_org_scope)):
+async def create_portfolio_item(portfolio_data: dict, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Create portfolio item (org-scoped, requires active subscription)"""
     try:
         portfolio_data["id"] = str(uuid4())
@@ -68,7 +64,7 @@ async def create_portfolio_item(portfolio_data: dict, org_id: Optional[str] = De
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/portfolio/{portfolio_id}", dependencies=[Depends(require_active_subscription)])
-async def update_portfolio_item(portfolio_id: str, portfolio_data: dict, org_id: Optional[str] = Depends(get_org_scope)):
+async def update_portfolio_item(portfolio_id: str, portfolio_data: dict, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Update portfolio item (org-scoped, requires active subscription)"""
     try:
         query = {"id": portfolio_id}
@@ -86,7 +82,7 @@ async def update_portfolio_item(portfolio_id: str, portfolio_data: dict, org_id:
 # ========================
 
 @router.get("/investments", dependencies=[Depends(subscription_guard)])
-async def get_investments(org_id: Optional[str] = Depends(get_org_scope)):
+async def get_investments(org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Get all investments (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
@@ -100,7 +96,7 @@ async def get_investments(org_id: Optional[str] = Depends(get_org_scope)):
 # ========================
 
 @router.get("/assets", dependencies=[Depends(subscription_guard)])
-async def get_assets(org_id: Optional[str] = Depends(get_org_scope)):
+async def get_assets(org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Get all assets (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}

@@ -238,7 +238,7 @@ async def invite_user(
         org_id = token_payload.get("org_id")
         
         # Check if user already exists
-        existing = await db.enterprise_users.find_one(
+        existing = await db.users.find_one(
             {"email": user_data.email},
             {"_id": 0}
         )
@@ -273,7 +273,7 @@ async def invite_user(
             "created_at": datetime.now(timezone.utc),
             "updated_at": datetime.now(timezone.utc)
         }
-        await db.enterprise_users.insert_one(user_doc)
+        await db.users.insert_one(user_doc)
         
         logger.info(f"✅ User invited: {user_id} to org {org_id}")
         
@@ -302,7 +302,7 @@ async def list_org_users(
     try:
         org_id = token_payload.get("org_id")
         
-        users = await db.enterprise_users.find(
+        users = await db.users.find(
             {"org_id": org_id},
             {"_id": 0, "password_hash": 0}
         ).to_list(None)
@@ -337,7 +337,7 @@ async def update_user_role(
         org_id = token_payload.get("org_id")
         
         # Verify user belongs to org
-        user = await db.enterprise_users.find_one(
+        user = await db.users.find_one(
             {"user_id": user_id, "org_id": org_id},
             {"_id": 0}
         )
@@ -350,7 +350,7 @@ async def update_user_role(
             raise HTTPException(status_code=404, detail="Role not found")
         
         # Update user
-        await db.enterprise_users.update_one(
+        await db.users.update_one(
             {"user_id": user_id},
             {
                 "$set": {

@@ -9,23 +9,12 @@ from datetime import datetime, timezone, timedelta
 from pydantic import BaseModel
 import uuid
 import json
+import os
+from routes.deps import get_current_user, User, get_db
 
 router = APIRouter(prefix="/api/reports-builder", tags=["reports-builder"])
 
-def get_db():
-    from main import db
-    return db
-
-async def get_current_user_simple(credentials = Depends(__import__('fastapi.security', fromlist=['HTTPBearer']).HTTPBearer())):
-    import jwt
-    import os
-    token = credentials.credentials
-    JWT_SECRET = os.environ.get("JWT_SECRET_KEY")
-    if not JWT_SECRET:
-        raise RuntimeError("JWT_SECRET_KEY is missing in environment")
-
-    payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-    return {"user_id": payload.get("user_id") or payload.get("sub"), "org_id": payload.get("org_id", "default"), "full_name": payload.get("full_name", "User"), "email": payload.get("email")}
+# Auth moved to routes.deps
 
 def generate_id(prefix: str) -> str:
     return f"{prefix}-{uuid.uuid4().hex[:8].upper()}"
@@ -148,7 +137,7 @@ async def get_data_sources():
 @router.post("/")
 async def create_report(
     report: ReportConfig,
-    current_user: dict = Depends(get_current_user_simple)
+    current_user: User = Depends(get_current_user)
 ):
     """Create a new custom report"""
     db = get_db()
@@ -158,11 +147,11 @@ async def create_report(
     
     report_doc = {
         "report_id": generate_id("RPT"),
-        "org_id": current_user.get("org_id"),
+        "org_id": current_user.org_id,
         **report.dict(),
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
-        "created_by_name": current_user.get("full_name"),
+        "created_by": current_user.id,
+        "created_by_name": current_user.full_name,
         "last_run_at": None,
         "run_count": 0
     }
@@ -174,13 +163,13 @@ async def create_report(
 
 @router.get("/")
 async def list_reports(
-    current_user: dict = Depends(get_current_user_simple)
+    current_user: User = Depends(get_current_user)
 ):
     """List all custom reports"""
     db = get_db()
     
     reports = await db.custom_reports.find(
-        {"$or": [{"org_id": current_user.get("org_id")}, {"is_public": True}]},
+        {"$or": [{"org_id": current_user.org_id}, {"is_public": True}]},
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
     
@@ -189,7 +178,7 @@ async def list_reports(
 @router.get("/{report_id}")
 async def get_report(
     report_id: str,
-    current_user: dict = Depends(get_current_user_simple)
+    current_user: User = Depends(get_current_user)
 ):
     """Get report configuration"""
     db = get_db()
@@ -204,7 +193,7 @@ async def get_report(
 async def update_report(
     report_id: str,
     report: ReportConfig,
-    current_user: dict = Depends(get_current_user_simple)
+    current_user: User = Depends(get_current_user)
 ):
     """Update a report configuration"""
     db = get_db()
@@ -222,7 +211,7 @@ async def update_report(
 @router.delete("/{report_id}")
 async def delete_report(
     report_id: str,
-    current_user: dict = Depends(get_current_user_simple)
+    current_user: User = Depends(get_current_user)
 ):
     """Delete a report"""
     db = get_db()
@@ -238,7 +227,7 @@ async def delete_report(
 async def run_report(
     report_id: str,
     limit: int = Query(1000, le=10000),
-    current_user: dict = Depends(get_current_user_simple)
+    current_user: User = Depends(get_current_user)
 ):
     """Execute a report and return results"""
     db = get_db()
@@ -348,7 +337,7 @@ async def run_report(
 async def export_report(
     report_id: str,
     format: str = Query("json", enum=["json", "csv"]),
-    current_user: dict = Depends(get_current_user_simple)
+    current_user: User = Depends(get_current_user)
 ):
     """Export report results"""
     # Run the report first
@@ -382,7 +371,7 @@ async def schedule_report(
     frequency: str = Query(..., enum=["daily", "weekly", "monthly"]),
     time: str = Query("09:00"),
     recipients: List[str] = [],
-    current_user: dict = Depends(get_current_user_simple)
+    current_user: User = Depends(get_current_user)
 ):
     """Schedule a report to run automatically"""
     db = get_db()

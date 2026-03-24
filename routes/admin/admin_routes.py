@@ -17,8 +17,8 @@
 #     try:
 #         org_id = current_user["org_id"]
 
-#         total_users = await db.enterprise_users.count_documents({"org_id": org_id})
-#         active_users = await db.enterprise_users.count_documents(
+#         total_users = await db.users.count_documents({"org_id": org_id})
+#         active_users = await db.users.count_documents(
 #             {"org_id": org_id, "is_active": True}
 #         )
 
@@ -52,7 +52,7 @@
 #     try:
 #         org_id = current_user["org_id"]
 
-#         users = await db.enterprise_users.find(
+#         users = await db.users.find(
 #             {"org_id": org_id},
 #             {"_id": 0, "password_hash": 0}
 #         ).to_list(length=200)
@@ -67,7 +67,7 @@
 # async def deactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
 #     org_id = current_user["org_id"]
 
-#     result = await db.enterprise_users.update_one(
+#     result = await db.users.update_one(
 #         {"user_id": user_id, "org_id": org_id},
 #         {"$set": {
 #             "is_active": False,
@@ -85,7 +85,7 @@
 # async def reactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
 #     org_id = current_user["org_id"]
 
-#     result = await db.enterprise_users.update_one(
+#     result = await db.users.update_one(
 #         {"user_id": user_id, "org_id": org_id},
 #         {"$set": {"is_active": True, "deactivated_at": None}}
 #     )
@@ -123,7 +123,7 @@
 #     if not role_id:
 #         raise HTTPException(status_code=400, detail="Role required")
 
-#     existing_user = await db.enterprise_users.find_one({
+#     existing_user = await db.users.find_one({
 #         "email": email,
 #         "org_id": org_id
 #     })
@@ -308,8 +308,8 @@
 # #     try:
 # #         org_id = current_user["org_id"]
 
-# #         total_users = await db.enterprise_users.count_documents({"org_id": org_id})
-# #         active_users = await db.enterprise_users.count_documents(
+# #         total_users = await db.users.count_documents({"org_id": org_id})
+# #         active_users = await db.users.count_documents(
 # #             {"org_id": org_id, "is_active": True}
 # #         )
 
@@ -343,7 +343,7 @@
 # #     try:
 # #         org_id = current_user["org_id"]
 
-# #         users = await db.enterprise_users.find(
+# #         users = await db.users.find(
 # #             {"org_id": org_id},
 # #             {"_id": 0, "password_hash": 0},
 # #         ).to_list(length=200)
@@ -363,7 +363,7 @@
 # # ):
 # #     org_id = current_user["org_id"]
 
-# #     result = await db.enterprise_users.update_one(
+# #     result = await db.users.update_one(
 # #         {"user_id": user_id, "org_id": org_id},
 # #         {"$set": {
 # #             "is_active": False,
@@ -387,7 +387,7 @@
 # # ):
 # #     org_id = current_user["org_id"]
 
-# #     result = await db.enterprise_users.update_one(
+# #     result = await db.users.update_one(
 # #         {"user_id": user_id, "org_id": org_id},
 # #         {"$set": {
 # #             "is_active": True,
@@ -438,7 +438,7 @@
 # #         raise HTTPException(status_code=400, detail="Invalid role")
 
 # #     # 2) prevent inviting existing user
-# #     existing_user = await db.enterprise_users.find_one({"email": email, "org_id": org_id}, {"_id": 0})
+# #     existing_user = await db.users.find_one({"email": email, "org_id": org_id}, {"_id": 0})
 # #     if existing_user:
 # #         raise HTTPException(status_code=400, detail="User already exists")
 
@@ -635,12 +635,11 @@
 # #     return {"success": True}
 
 
-
 from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks
 from datetime import datetime, timezone, timedelta
 import secrets
 import logging
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -694,6 +693,10 @@ class RoleCreateIn(BaseModel):
     permissions: List[str] = []
 
 
+class SettingsUpdateIn(BaseModel):
+    data: Dict[str, Any] = {}
+
+
 # ==================== DASHBOARD ====================
 
 @router.get("/dashboard")
@@ -701,8 +704,8 @@ async def get_admin_dashboard(db=Depends(get_db), current_user=Depends(get_curre
     try:
         org_id = current_user["org_id"]
 
-        total_users = await db.enterprise_users.count_documents({"org_id": org_id})
-        active_users = await db.enterprise_users.count_documents({"org_id": org_id, "is_active": True})
+        total_users = await db.users.count_documents({"org_id": org_id})
+        active_users = await db.users.count_documents({"org_id": org_id, "is_active": True})
 
         pending_invites = await db.user_invites.count_documents({
             "org_id": org_id,
@@ -729,56 +732,6 @@ async def get_admin_dashboard(db=Depends(get_db), current_user=Depends(get_curre
 
 # ==================== USERS ====================
 
-# @router.get("/users")
-# async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
-#     """
-#     List users in current org.
-#     Returns demo-like shape so frontend renders:
-#       user_id, email, full_name, role_id, role_name, is_active, last_login
-#     """
-#     try:
-#         org_id = current_user["org_id"]
-
-#         users = await db.enterprise_users.find(
-#             {"org_id": org_id},
-#             {"_id": 0, "password_hash": 0}
-#         ).to_list(length=200)
-
-#         # Role map (org + system)
-#         roles = await db.roles.find(
-#             {"$or": [{"org_id": org_id}, {"is_system": True}]},
-#             {"_id": 0, "role_id": 1, "role_name": 1}
-#         ).to_list(length=200)
-#         role_map = {r["role_id"]: r.get("role_name") for r in roles}
-
-#         enriched = []
-#         for u in users:
-#             last_dt = _to_dt(u.get("last_active_at")) or _to_dt(u.get("last_login_at")) or _to_dt(u.get("created_at"))
-
-#             enriched.append({
-#                 "user_id": u.get("user_id"),
-#                 "email": (u.get("email") or "").strip().lower(),
-#                 "full_name": (
-#                     u.get("full_name")
-#                     or f"{u.get('first_name','')} {u.get('last_name','')}".strip()
-#                     or u.get("user_id")
-#                     or ""
-#                 ),
-#                 "role_id": u.get("role_id"),
-#                 "role_name": role_map.get(u.get("role_id")) or u.get("role_id") or "",
-#                 "is_active": u.get("is_active", True),
-#                 "last_login": _last_login_label(last_dt),
-#                 # keep these if frontend wants later; harmless if unused
-#                 "org_id": u.get("org_id"),
-#                 "is_super_admin": u.get("is_super_admin", False),
-#                 "created_at": u.get("created_at"),
-#             })
-
-#         return {"success": True, "users": enriched}
-
-#     except Exception as e:
-#         logger.exception(f"List users error: {e}")
-#         raise HTTPException(status_code=500, detail="Failed to fetch users")
 @router.get("/users")
 async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
     try:
@@ -802,7 +755,7 @@ async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_a
             {"_id": 0, "password_hash": 0, "password": 0}
         ).to_list(length=500)
 
-        # 3) Role map (optional)
+        # 3) Role map
         roles = await db.roles.find(
             {"$or": [{"org_id": org_id}, {"is_system": True}]},
             {"_id": 0, "role_id": 1, "role_name": 1}
@@ -833,7 +786,6 @@ async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_a
                 "created_at": u.get("created_at"),
             })
 
-        # Keep stable ordering
         enriched.sort(key=lambda x: (not x["is_active"], x["full_name"].lower()))
         return {"success": True, "users": enriched}
 
@@ -841,11 +793,12 @@ async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_a
         logger.exception(f"List users error: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch users")
 
+
 @router.post("/users/{user_id}/deactivate")
 async def deactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
     org_id = current_user["org_id"]
 
-    result = await db.enterprise_users.update_one(
+    result = await db.users.update_one(
         {"user_id": user_id, "org_id": org_id},
         {"$set": {
             "is_active": False,
@@ -865,7 +818,7 @@ async def deactivate_user(user_id: str, db=Depends(get_db), current_user=Depends
 async def reactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
     org_id = current_user["org_id"]
 
-    result = await db.enterprise_users.update_one(
+    result = await db.users.update_one(
         {"user_id": user_id, "org_id": org_id},
         {"$set": {
             "is_active": True,
@@ -906,7 +859,7 @@ async def create_invite(
     email = payload.email.strip().lower()
     role_id = (payload.role_id or "member").strip()
 
-    # 1. Validate Allowed Roles Semantics
+    # 1. Validate Allowed Roles
     allowed_roles = ["member", "manager", "admin"]
     if role_id not in allowed_roles:
          raise HTTPException(status_code=400, detail=f"Role must be one of {allowed_roles}")
@@ -915,19 +868,13 @@ async def create_invite(
     if role_id == "admin":
         inviter_role = current_user.get("role_id")
         is_super = current_user.get("is_super_admin", False)
-        # Only Owner/Super Admin can invite Admins
-        # (Assuming 'admin' in current_user means org admin, but checking for 'owner'/'super_admin' as requested)
-        # Verify if 'admin' key is sufficient based on user request "OR org_role == 'owner/super_admin'"
-        # If the inviter is just an 'admin', they might NOT be allowed to invite other admins?
-        # User said: "only allow if inviter is super_admin (global) OR org_role == 'owner/super_admin'"
-        # So 'admin' cannot invite 'admin'. Correct.
-        if not is_super and inviter_role not in ["owner", "super_admin"]:
+        if not is_super and inviter_role not in ["owner"]:
              raise HTTPException(
                  status_code=403, 
                  detail="Only Owners or Super Admins can invite Admins."
              )
 
-    # validate role exists (org role or system role)
+    # validate role exists
     role = await db.roles.find_one(
         {"role_id": role_id, "$or": [{"org_id": org_id}, {"is_system": True}]},
         {"_id": 0}
@@ -935,13 +882,12 @@ async def create_invite(
     if not role:
         raise HTTPException(status_code=400, detail="Invalid role")
 
-    existing_user = await db.enterprise_users.find_one({"email": email, "org_id": org_id}, {"_id": 0})
+    existing_user = await db.users.find_one({"email": email, "org_id": org_id})
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
 
     existing_invite = await db.user_invites.find_one(
-        {"org_id": org_id, "email": email, "status": "pending", "expires_at": {"$gt": utc_now()}},
-        {"_id": 0}
+        {"org_id": org_id, "email": email, "status": "pending", "expires_at": {"$gt": utc_now()}}
     )
     if existing_invite:
         raise HTTPException(status_code=400, detail="Active invite already exists")
@@ -968,7 +914,6 @@ async def create_invite(
 
     await db.user_invites.insert_one(invite_doc)
 
-    # org name from settings if present
     org_settings = await db.org_settings.find_one({"org_id": org_id}, {"_id": 0, "org_name": 1})
     org_name = (org_settings or {}).get("org_name") or "Your Organization"
 
@@ -991,7 +936,7 @@ async def resend_invite(
 ):
     org_id = current_user["org_id"]
 
-    invite = await db.user_invites.find_one({"invite_id": invite_id, "org_id": org_id}, {"_id": 0})
+    invite = await db.user_invites.find_one({"invite_id": invite_id, "org_id": org_id})
     if not invite:
         raise HTTPException(status_code=404, detail="Invite not found")
 
@@ -1014,6 +959,30 @@ async def resend_invite(
         invite_token=invite["invite_token"],
         org_name=org_name,
     )
+
+    return {"success": True}
+
+
+@router.post("/invites/{invite_id}/revoke")
+async def revoke_invite(
+    invite_id: str,
+    db=Depends(get_db),
+    current_user=Depends(get_current_user_admin),
+):
+    org_id = current_user["org_id"]
+
+    result = await db.user_invites.update_one(
+        {"invite_id": invite_id, "org_id": org_id, "status": "pending"},
+        {"$set": {
+            "status": "revoked",
+            "revoked_at": utc_now(),
+            "updated_at": utc_now(),
+            "updated_by": current_user["user_id"],
+        }},
+    )
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Invite not found or not pending")
 
     return {"success": True}
 
@@ -1050,3 +1019,38 @@ async def create_role(payload: RoleCreateIn, db=Depends(get_db), current_user=De
     })
 
     return {"success": True, "role_id": role_id}
+
+
+# ==================== SETTINGS ====================
+
+@router.get("/settings")
+async def get_settings(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+    org_id = current_user["org_id"]
+
+    settings = await db.org_settings.find_one({"org_id": org_id}, {"_id": 0})
+    return {"success": True, "settings": settings or {}}
+
+
+@router.put("/settings")
+async def update_settings(
+    payload: SettingsUpdateIn,
+    db=Depends(get_db),
+    current_user=Depends(get_current_user_admin),
+):
+    org_id = current_user["org_id"]
+
+    update_doc = {
+        **(payload.data or {}),
+        "org_id": org_id,
+        "updated_at": utc_now(),
+        "updated_by": current_user["user_id"],
+    }
+
+    await db.org_settings.update_one(
+        {"org_id": org_id},
+        {"$set": update_doc},
+        upsert=True,
+    )
+
+    return {"success": True}
+

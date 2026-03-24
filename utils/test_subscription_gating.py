@@ -67,7 +67,7 @@ async def main():
         "created_at": datetime.now(timezone.utc),
         "updated_at": datetime.now(timezone.utc)
     }
-    await db.enterprise_users.insert_one(trial_user_doc)
+    await db.users.insert_one(trial_user_doc)
     logger.info(f"✅ Trial user created: {trial_user_doc['email']}")
     
     # Step 3: Verify subscription status

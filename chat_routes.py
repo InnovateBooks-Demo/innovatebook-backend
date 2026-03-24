@@ -14,7 +14,7 @@ from chat_models import (
     UserPresence, UserStatus,
     WSMessage, WSMessageType
 )
-from main import get_database, get_current_user
+from routes.deps import get_database, get_current_user
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 

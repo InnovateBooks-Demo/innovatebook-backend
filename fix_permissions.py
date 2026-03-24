@@ -22,7 +22,7 @@ async def solution_1_change_user_to_admin():
     
     user_id = '75aa8f5a-7351-4851-b94a-3a4283c5b7a7'
     
-    result = await db.enterprise_users.update_one(
+    result = await db.users.update_one(
         {'user_id': user_id},
         {'$set': {'role_id': 'admin'}}
     )
@@ -30,7 +30,7 @@ async def solution_1_change_user_to_admin():
     print(f"✓ Updated user role to 'admin' (matched: {result.matched_count}, modified: {result.modified_count})")
     
     # Verify
-    user = await db.enterprise_users.find_one({'user_id': user_id})
+    user = await db.users.find_one({'user_id': user_id})
     print(f"✓ User now has role: {user.get('role_id')}")
 
 async def solution_2_grant_permissions_to_member():

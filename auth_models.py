@@ -142,6 +142,21 @@ class MobileVerification(BaseModel):
 
 # ==================== REQUEST/RESPONSE MODELS ====================
 
+# ==================== AUTH REQUEST MODELS ====================
+
+class UserRegister(BaseModel):
+    email: EmailStr
+    password: str
+    first_name: str
+    last_name: str
+    company_name: str
+    industry: Optional[str] = "Other"
+    company_size: Optional[str] = "1-10"
+    role: Optional[str] = "admin"
+    country: Optional[str] = "India"
+    timezone: Optional[str] = "UTC"
+    language: Optional[str] = "en"
+
 class SignupStep1Request(BaseModel):
     full_name: str = Field(..., min_length=2, max_length=200)
     email: EmailStr
@@ -227,6 +242,9 @@ class LoginResponse(BaseModel):
     access_token: Optional[str] = None
     token_type: str = "bearer"
     user: Optional[Dict] = None
+    org_id: Optional[str] = None
+    org_name: Optional[str] = None
+    role: Optional[str] = None
     tenants: Optional[List[Dict]] = None
     requires_tenant_selection: bool = False
 

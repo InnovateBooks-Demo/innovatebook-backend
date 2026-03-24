@@ -1,47 +1,19 @@
-"""
-Finance Multi-Currency & Bank Reconciliation Module
-Exchange rate management and bank statement reconciliation
-"""
-
-from fastapi import APIRouter, HTTPException, Depends, Header
-from typing import Optional
-from datetime import datetime, timezone
+from fastapi import APIRouter, HTTPException, Depends, Query
+from typing import Optional, List, Dict, Any
+from datetime import datetime, timezone, timedelta
 import uuid
-import jwt
-import os
+from routes.deps import get_current_user, User, get_db
 
-router = APIRouter(prefix="/api/ib-finance", tags=["Finance Multi-Currency & Bank"])
-
-JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
-
-
-def get_db():
-    from main import db
-    return db
-
-
-async def get_current_user(authorization: str = Header(None)):
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        return {
-            "user_id": payload.get("user_id"),
-            "org_id": payload.get("org_id")
-        }
-    except:
-        raise HTTPException(status_code=401, detail="Invalid token")
+router = APIRouter(prefix="/api/finance/advanced", tags=["Finance Advanced"])
 
 
 # ==================== MULTI-CURRENCY ====================
 
 @router.get("/currencies")
-async def get_currencies(current_user: dict = Depends(get_current_user)):
+async def get_currencies(current_user: User = Depends(get_current_user)):
     """Get supported currencies with exchange rates"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     # Get custom rates for org
     custom_rates = await db.fin_exchange_rates.find(
@@ -73,10 +45,10 @@ async def get_currencies(current_user: dict = Depends(get_current_user)):
 
 
 @router.post("/currencies/rates")
-async def update_exchange_rate(data: dict, current_user: dict = Depends(get_current_user)):
+async def update_exchange_rate(data: dict, current_user: User = Depends(get_current_user)):
     """Update exchange rate for a currency"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     currency_code = data.get("currency_code")
     rate_to_base = data.get("rate_to_base")
@@ -92,7 +64,7 @@ async def update_exchange_rate(data: dict, current_user: dict = Depends(get_curr
             "rate_to_base": float(rate_to_base),
             "effective_date": datetime.now(timezone.utc).isoformat(),
             "is_active": True,
-            "updated_by": current_user.get("user_id"),
+            "updated_by": current_user.id,
             "org_id": org_id
         }},
         upsert=True
@@ -104,7 +76,7 @@ async def update_exchange_rate(data: dict, current_user: dict = Depends(get_curr
         "currency_code": currency_code,
         "rate_to_base": float(rate_to_base),
         "effective_date": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
+        "created_by": current_user.id,
         "org_id": org_id
     })
     
@@ -112,10 +84,10 @@ async def update_exchange_rate(data: dict, current_user: dict = Depends(get_curr
 
 
 @router.post("/convert")
-async def convert_currency(data: dict, current_user: dict = Depends(get_current_user)):
+async def convert_currency(data: dict, current_user: User = Depends(get_current_user)):
     """Convert amount between currencies"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     amount = data.get("amount", 0)
     from_currency = data.get("from_currency", "INR")
@@ -151,10 +123,10 @@ async def convert_currency(data: dict, current_user: dict = Depends(get_current_
 # ==================== BANK RECONCILIATION ====================
 
 @router.get("/bank/accounts")
-async def get_bank_accounts(current_user: dict = Depends(get_current_user)):
+async def get_bank_accounts(current_user: User = Depends(get_current_user)):
     """Get bank accounts"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     accounts = await db.fin_bank_accounts.find(
         {"org_id": org_id, "deleted": {"$ne": True}},
@@ -165,10 +137,10 @@ async def get_bank_accounts(current_user: dict = Depends(get_current_user)):
 
 
 @router.post("/bank/accounts")
-async def create_bank_account(data: dict, current_user: dict = Depends(get_current_user)):
+async def create_bank_account(data: dict, current_user: User = Depends(get_current_user)):
     """Create a bank account"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     account = {
         "account_id": f"BANK-{uuid.uuid4().hex[:8].upper()}",
@@ -183,7 +155,7 @@ async def create_bank_account(data: dict, current_user: dict = Depends(get_curre
         "gl_account_id": data.get("gl_account_id"),  # Link to chart of accounts
         "is_active": True,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": current_user.get("user_id"),
+        "created_by": current_user.id,
         "org_id": org_id
     }
     
@@ -196,11 +168,11 @@ async def create_bank_account(data: dict, current_user: dict = Depends(get_curre
 async def get_bank_statements(
     account_id: Optional[str] = None,
     status: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get bank statement entries"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     query = {"org_id": org_id}
     if account_id:
@@ -216,10 +188,10 @@ async def get_bank_statements(
 
 
 @router.post("/bank/statements/import")
-async def import_bank_statement(data: dict, current_user: dict = Depends(get_current_user)):
+async def import_bank_statement(data: dict, current_user: User = Depends(get_current_user)):
     """Import bank statement entries"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     account_id = data.get("account_id")
     entries = data.get("entries", [])
@@ -252,10 +224,10 @@ async def import_bank_statement(data: dict, current_user: dict = Depends(get_cur
 
 
 @router.post("/bank/reconcile/auto-match")
-async def auto_match_transactions(data: dict, current_user: dict = Depends(get_current_user)):
+async def auto_match_transactions(data: dict, current_user: User = Depends(get_current_user)):
     """Auto-match bank statement entries with transactions"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     account_id = data.get("account_id")
     
@@ -335,7 +307,7 @@ async def auto_match_transactions(data: dict, current_user: dict = Depends(get_c
 
 
 @router.post("/bank/reconcile/manual-match")
-async def manual_match_transaction(data: dict, current_user: dict = Depends(get_current_user)):
+async def manual_match_transaction(data: dict, current_user: User = Depends(get_current_user)):
     """Manually match a bank entry with a transaction"""
     db = get_db()
     
@@ -350,7 +322,7 @@ async def manual_match_transaction(data: dict, current_user: dict = Depends(get_
             "matched_transactions": [{
                 "type": transaction_type,
                 "id": transaction_id,
-                "matched_by": current_user.get("user_id"),
+                "matched_by": current_user.id,
                 "matched_at": datetime.now(timezone.utc).isoformat()
             }]
         }}
@@ -360,10 +332,10 @@ async def manual_match_transaction(data: dict, current_user: dict = Depends(get_
 
 
 @router.post("/bank/reconcile/complete")
-async def complete_reconciliation(data: dict, current_user: dict = Depends(get_current_user)):
+async def complete_reconciliation(data: dict, current_user: User = Depends(get_current_user)):
     """Complete bank reconciliation for a period"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     account_id = data.get("account_id")
     period = data.get("period")
@@ -392,7 +364,7 @@ async def complete_reconciliation(data: dict, current_user: dict = Depends(get_c
         "reconciled_entries": matched,
         "status": "completed",
         "completed_at": datetime.now(timezone.utc).isoformat(),
-        "completed_by": current_user.get("user_id"),
+        "completed_by": current_user.id,
         "org_id": org_id
     }
     
@@ -405,11 +377,11 @@ async def complete_reconciliation(data: dict, current_user: dict = Depends(get_c
 @router.get("/bank/reconciliations")
 async def get_reconciliations(
     account_id: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Get bank reconciliation history"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     query = {"org_id": org_id}
     if account_id:
@@ -425,10 +397,10 @@ async def get_reconciliations(
 # ==================== PERIOD CLOSE AUTOMATION ====================
 
 @router.post("/close/auto-close")
-async def automated_period_close(data: dict, current_user: dict = Depends(get_current_user)):
+async def automated_period_close(data: dict, current_user: User = Depends(get_current_user)):
     """Automated period-end close workflow"""
     db = get_db()
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
     
     period = data.get("period")
     
@@ -547,7 +519,7 @@ async def automated_period_close(data: dict, current_user: dict = Depends(get_cu
             {"$set": {
                 "status": "closed",
                 "closed_at": datetime.now(timezone.utc).isoformat(),
-                "closed_by": current_user.get("user_id"),
+                "closed_by": current_user.id,
                 "close_checklist": checklist
             }}
         )
