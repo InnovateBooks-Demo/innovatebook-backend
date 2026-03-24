@@ -99,184 +99,185 @@ async def accept_invite(payload: AcceptInviteIn, db=Depends(get_db)):
     full_name = payload.full_name.strip()
     password = payload.password
 
-    # DEBUG LOG
     try:
-        with open("debug_server.log", "a") as log:
-            log.write(f"\n[{datetime.now()}] Accepted invite request for token: {token[:5]}...\n")
-    except: pass
-
-    # 1. Validate Invite
-    invite = await db.user_invites.find_one(
-        {"invite_token": token},
-        {"_id": 0},
-    )
-    if not invite:
-        raise HTTPException(status_code=400, detail="Invalid token")
-
-    if invite.get("status") != "pending":
-        raise HTTPException(status_code=400, detail="Invite already used")
-
-    expires_at = invite.get("expires_at")
-    if isinstance(expires_at, str):
+        # DEBUG LOG
         try:
-            expires_at = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
-        except ValueError:
-            pass # Handle or leave as None/Original
-    
-    if isinstance(expires_at, datetime):
-        expires_at = as_utc_aware(expires_at)
+            with open("debug_server.log", "a") as log:
+                log.write(f"\n[{datetime.now()}] Accepted invite request for token: {token[:5]}...\n")
+        except: pass
 
-    if not expires_at or expires_at <= utc_now():
-        raise HTTPException(status_code=400, detail="Token expired")
-
-    org_id = invite.get("org_id")
-    email = (invite["email"] or "").strip().lower()
-    role_id = invite.get("role_id")
-
-    if not org_id or not email or not role_id:
-        raise HTTPException(status_code=400, detail="Invite is missing required fields")
-
-    # START: Role Safety Enforcement
-    if role_id == "admin":
-        invited_by = invite.get("invited_by")
-        if not invited_by:
-                # Should technically not happen for admin invites, but safety first
-                raise HTTPException(status_code=403, detail="Cannot verify inviter privileges")
-        
-        # Check inviter permissions
-        # 1. Check if global super admin (enterprise_users has is_super_admin)
-        inviter_ent = await db.users.find_one({"user_id": invited_by})
-        is_global_super = inviter_ent and inviter_ent.get("is_super_admin")
-        
-        # 2. Check org role (org_users)
-        inviter_membership = await db.org_users.find_one({
-            "user_id": invited_by, 
-            "org_id": org_id,
-            "status": "active"
-        })
-        inviter_org_role = inviter_membership.get("role") if inviter_membership else None
-        
-        # Allowed inviter roles
-        if not is_global_super and inviter_org_role not in ["owner", "super_admin"]:
-                raise HTTPException(
-                    status_code=403, 
-                    detail="Invite is invalid: Inviter lacks permission to grant Admin role."
-                )
-    # END: Role Safety Enforcement
-
-    # 2. Upsert into db.users (Auth Source)
-    # Ensure email uniqueness via logic and later via index
-    user = await db.users.find_one({"email": email})
-    
-    password_hash = pwd_context.hash(password)
-    user_id = None
-
-    if user:
-        # Use existing user_id
-        user_id = user.get("user_id")
-        # Fallback if missing (rare)
-        if not user_id:
-            user_id = secrets.token_urlsafe(16)
-
-        # Update specific fields, preserve existing role
-        update_fields = {
-            "user_id": user_id, 
-            "password_hash": password_hash,
-            "full_name": full_name,
-            "status": "active",
-            "is_active": True,
-            "email_verified": True,
-            "updated_at": utc_now(),
-        }
-        
-        # Only set role if completely missing, otherwise leave as is
-        # We want system role to be 'user' generally for invited members
-        if not user.get("role"):
-            update_fields["role"] = "user"
-
-        await db.users.update_one(
-            {"email": email},
-            {"$set": update_fields}
+        # 1. Validate Invite
+        invite = await db.user_invites.find_one(
+            {"invite_token": token},
+            {"_id": 0},
         )
-    else:
-        # Create new user
-        user_id = secrets.token_urlsafe(16)
-        user_doc = {
+        if not invite:
+            raise HTTPException(status_code=400, detail="Invalid token")
+
+        if invite.get("status") != "pending":
+            raise HTTPException(status_code=400, detail="Invite already used")
+
+        expires_at = invite.get("expires_at")
+        if isinstance(expires_at, str):
+            try:
+                expires_at = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+            except ValueError:
+                pass # Handle or leave as None/Original
+        
+        if isinstance(expires_at, datetime):
+            expires_at = as_utc_aware(expires_at)
+
+        if not expires_at or expires_at <= utc_now():
+            raise HTTPException(status_code=400, detail="Token expired")
+
+        org_id = invite.get("org_id")
+        email = (invite["email"] or "").strip().lower()
+        role_id = invite.get("role_id")
+
+        if not org_id or not email or not role_id:
+            raise HTTPException(status_code=400, detail="Invite is missing required fields")
+
+        # START: Role Safety Enforcement
+        if role_id == "admin":
+            invited_by = invite.get("invited_by")
+            if not invited_by:
+                    # Should technically not happen for admin invites, but safety first
+                    raise HTTPException(status_code=403, detail="Cannot verify inviter privileges")
+            
+            # Check inviter permissions
+            # 1. Check if global super admin (enterprise_users has is_super_admin)
+            inviter_ent = await db.users.find_one({"user_id": invited_by})
+            is_global_super = inviter_ent and inviter_ent.get("is_super_admin")
+            
+            # 2. Check org role (org_users)
+            inviter_membership = await db.org_users.find_one({
+                "user_id": invited_by, 
+                "org_id": org_id,
+                "status": "active"
+            })
+            inviter_org_role = inviter_membership.get("role") if inviter_membership else None
+            
+            # Allowed inviter roles
+            if not is_global_super and inviter_org_role not in ["owner", "super_admin"]:
+                    raise HTTPException(
+                        status_code=403, 
+                        detail="Invite is invalid: Inviter lacks permission to grant Admin role."
+                    )
+        # END: Role Safety Enforcement
+
+        # 2. Upsert into db.users (Auth Source)
+        # Ensure email uniqueness via logic and later via index
+        user = await db.users.find_one({"email": email})
+        
+        password_hash = pwd_context.hash(password)
+        user_id = None
+
+        if user:
+            existing_org_id = user.get("org_id")
+            if existing_org_id and existing_org_id != org_id:
+                raise HTTPException(status_code=400, detail="User already belongs to another organization.")
+
+            # Use existing user_id
+            user_id = user.get("user_id")
+            # Fallback if missing (rare)
+            if not user_id:
+                user_id = secrets.token_urlsafe(16)
+
+            # Update specific fields, preserve existing role
+            update_fields = {
+                "user_id": user_id, 
+                "org_id": org_id,
+                "password_hash": password_hash,
+                "full_name": full_name,
+                "status": "active",
+                "is_active": True,
+                "email_verified": True,
+                "updated_at": utc_now(),
+            }
+            
+            # Only set role if completely missing, otherwise leave as is
+            # We want system role to be 'user' generally for invited members
+            if not user.get("role"):
+                update_fields["role"] = "user"
+
+            await db.users.update_one(
+                {"email": email},
+                {"$set": update_fields}
+            )
+        else:
+            # Create new user
+            user_id = secrets.token_urlsafe(16)
+            user_doc = {
+                "user_id": user_id,
+                "email": email,
+                "org_id": org_id,
+                "full_name": full_name,
+                "password_hash": password_hash,
+                "mobile": "", 
+                "mobile_country_code": "",
+                "role": "user", # Forces system role to 'user'
+                "status": "active",
+                "is_active": True,
+                "email_verified": True,
+                "mobile_verified": False,
+                "failed_login_attempts": 0,
+                "account_locked_until": None,
+                "created_at": utc_now(),
+                "updated_at": utc_now(),
+            }
+            await db.users.insert_one(user_doc)
+
+        # 3. Upsert membership into db.org_users (Membership Source) # Note: org_users vs workspace_users?
+        await db.org_users.update_one(
+            {
+                "user_id": user_id,
+                "org_id": org_id,
+            },
+            {"$set": {
+                "role": role_id,  # This is the ORG role (e.g. admin, member)
+                "status": "active",
+                "is_active": True,
+                "updated_at": utc_now()
+            },
+            "$setOnInsert": {
+                "_id": secrets.token_urlsafe(16),
+                "created_at": utc_now(),
+                "source": "invitation"
+            }},
+            upsert=True
+        )
+
+        # Removed Step 4 completely to avoid DuplicateKeyError on unique email when creating org-specific directory linking.
+        # db.users is already upserted with unified identity. db.org_users contains the org link.
+
+        # 5. Mark Invite Accepted
+        await db.user_invites.update_one(
+            {"invite_token": token},
+            {"$set": {
+                "status": "accepted", 
+                "accepted_at": utc_now(), 
+                "user_id": user_id,
+                "updated_at": utc_now()
+            }},
+        )
+
+        return {
+            "success": True, 
+            "message": "Invite accepted. You can now login.",
             "user_id": user_id,
-            "email": email,
-            "full_name": full_name,
-            "password_hash": password_hash,
-            "mobile": "", 
-            "mobile_country_code": "",
-            "role": "user", # Forces system role to 'user'
-            "status": "active",
-            "is_active": True,
-            "email_verified": True,
-            "mobile_verified": False,
-            "failed_login_attempts": 0,
-            "account_locked_until": None,
-            "created_at": utc_now(),
-            "updated_at": utc_now(),
+            "org_id": org_id
         }
-        await db.users.insert_one(user_doc)
 
-    # 3. Upsert membership into db.org_users (Membership Source)
-    # Organization Role comes from the invite (role_id)
-    await db.org_users.update_one(
-        {
-            "user_id": user_id,
-            "org_id": org_id,
-        },
-        {"$set": {
-            "role": role_id,  # This is the ORG role (e.g. admin, member)
-            "status": "active",
-            "is_active": True,
-            "updated_at": utc_now()
-        },
-        "$setOnInsert": {
-            "_id": secrets.token_urlsafe(16),
-            "created_at": utc_now(),
-            "source": "invitation"
-        }},
-        upsert=True
-    )
-
-    # 4. Upsert into db.users (Directory Listing ONLY - No Auth)
-    # Allows user to appear in team lists without affecting authentication
-    await db.users.update_one(
-        {
-            "org_id": org_id,
-            "email": email
-        },
-        {"$set": {
-            "user_id": user_id, # Link to unified user_id
-            "full_name": full_name,
-            "role": role_id,
-            "status": "active",
-            "is_active": True,
-            "updated_at": utc_now()
-        },
-        "$setOnInsert": {
-            "_id": secrets.token_urlsafe(16),
-            "created_at": utc_now()
-        }},
-        upsert=True
-    )
-
-    # 5. Mark Invite Accepted
-    await db.user_invites.update_one(
-        {"invite_token": token},
-        {"$set": {
-            "status": "accepted", 
-            "accepted_at": utc_now(), 
-            "user_id": user_id,
-            "updated_at": utc_now()
-        }},
-    )
-
-    return {
-        "success": True, 
-        "message": "Invite accepted. You can now login.",
-        "user_id": user_id,
-        "org_id": org_id
-    }
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        import sys
+        exc_info = sys.exc_info()
+        traceback_str = "".join(traceback.format_exception(*exc_info))
+        print(f"Exception in accept_invite:\n{traceback_str}", file=sys.stderr)
+        return {
+            "success": False,
+            "error": str(e),
+            "traceback": traceback_str
+        }

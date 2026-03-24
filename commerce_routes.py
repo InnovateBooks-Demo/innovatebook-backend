@@ -153,7 +153,7 @@ async def get_lead(lead_id: str, org_id: Optional[str] = Depends(get_org_scope),
 
 
 
-@commerce_router.put("/leads/{lead_id}", response_model=Lead)
+@router.put("/leads/{lead_id}", response_model=Lead)
 async def update_lead(lead_id: str, lead_data: LeadCreate, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Update a lead"""
     try:
@@ -185,7 +185,7 @@ async def update_lead(lead_id: str, lead_data: LeadCreate, org_id: Optional[str]
 
 
 
-@commerce_router.delete("/leads/{lead_id}")
+@router.delete("/leads/{lead_id}")
 async def delete_lead(lead_id: str, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Delete a lead"""
     try:
@@ -205,7 +205,7 @@ async def delete_lead(lead_id: str, org_id: Optional[str] = Depends(get_org_scop
 
 
 
-@commerce_router.patch("/leads/{lead_id}/status")
+@router.patch("/leads/{lead_id}/status")
 async def update_lead_status(lead_id: str, status: LeadStatus, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Update lead status (workflow transition)"""
     try:
@@ -239,7 +239,7 @@ async def update_lead_status(lead_id: str, status: LeadStatus, org_id: Optional[
 # ==================== MODULE 2: EVALUATE ROUTES ====================
 
 
-@commerce_router.post("/evaluate", response_model=Evaluate)
+@router.post("/evaluate", response_model=Evaluate)
 async def create_evaluation(eval_data: EvaluateCreate, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Create a new evaluation"""
     try:
@@ -315,7 +315,7 @@ async def get_evaluation(evaluation_id: str, org_id: Optional[str] = Depends(get
 
 
 
-@commerce_router.put("/evaluate/{evaluation_id}", response_model=Evaluate)
+@router.put("/evaluate/{evaluation_id}", response_model=Evaluate)
 async def update_evaluation(evaluation_id: str, eval_data: EvaluateCreate, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Update an evaluation"""
     try:
@@ -359,7 +359,7 @@ async def update_evaluation(evaluation_id: str, eval_data: EvaluateCreate, org_i
 
 
 
-@commerce_router.delete("/evaluate/{evaluation_id}")
+@router.delete("/evaluate/{evaluation_id}")
 async def delete_evaluation(evaluation_id: str, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Delete an evaluation"""
     try:
@@ -379,7 +379,7 @@ async def delete_evaluation(evaluation_id: str, org_id: Optional[str] = Depends(
 
 
 
-@commerce_router.patch("/evaluate/{evaluation_id}/status")
+@router.patch("/evaluate/{evaluation_id}/status")
 async def update_evaluation_status(evaluation_id: str, status: EvaluationStatus, org_id: Optional[str] = Depends(get_org_scope), db=Depends(get_db)):
     """Update evaluation status (workflow transition)"""
     try:

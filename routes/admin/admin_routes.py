@@ -644,7 +644,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, EmailStr, Field
 
 from utils.email import send_invite_email
-from ..deps import get_db, get_current_user_admin
+from ..deps import get_db, get_current_user_admin,get_current_user_member
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -653,7 +653,11 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
-
+SYSTEM_ROLE_FALLBACK = [
+    {"role_id": "member", "role_name": "Member"},
+    {"role_id": "manager", "role_name": "Manager"},
+    {"role_id": "admin", "role_name": "Admin"},
+]
 def _to_dt(value):
     """Convert Mongo Date or ISO string -> datetime (UTC-aware)."""
     if not value:
@@ -733,67 +737,36 @@ async def get_admin_dashboard(db=Depends(get_db), current_user=Depends(get_curre
 # ==================== USERS ====================
 
 @router.get("/users")
-async def list_users(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
-    try:
-        org_id = current_user["org_id"]
+async def get_users(
+    current_user: dict = Depends(get_current_user_member),
+    db=Depends(get_db),
+):
+    org_id = current_user.get("org_id")
 
-        # 1) Get org membership rows
-        memberships = await db.org_users.find(
-            {"org_id": org_id, "status": {"$in": ["active", "Active"]}, "is_active": True},
-            {"_id": 0, "user_id": 1, "role": 1, "role_id": 1}
-        ).to_list(length=500)
+    query = {}
+    if org_id:
+        query["org_id"] = org_id
 
-        member_user_ids = [m["user_id"] for m in memberships if m.get("user_id")]
-        membership_map = {m["user_id"]: m for m in memberships}
+    users = await db.users.find(query).to_list(length=None)
 
-        if not member_user_ids:
-            return {"success": True, "users": []}
+    normalized_users = []
+    for user in users:
+        normalized_users.append({
+            "user_id": str(user.get("user_id") or user.get("_id") or user.get("id") or ""),
+            "full_name": user.get("full_name")
+            or f"{user.get('first_name', '')} {user.get('last_name', '')}".strip()
+            or "Unknown User",
+            "email": user.get("email", ""),
+            "role_id": user.get("role_id") or user.get("role") or "member",
+            "is_active": user.get("is_active", True),
+            "last_login": user.get("last_login"),
+            "deactivated_at": user.get("deactivated_at"),
+        })
 
-        # 2) Fetch user profiles
-        users = await db.users.find(
-            {"user_id": {"$in": member_user_ids}},
-            {"_id": 0, "password_hash": 0, "password": 0}
-        ).to_list(length=500)
-
-        # 3) Role map
-        roles = await db.roles.find(
-            {"$or": [{"org_id": org_id}, {"is_system": True}]},
-            {"_id": 0, "role_id": 1, "role_name": 1}
-        ).to_list(length=200)
-        role_map = {r["role_id"]: r.get("role_name") for r in roles}
-
-        enriched = []
-        for u in users:
-            m = membership_map.get(u.get("user_id"), {})
-            role_id = m.get("role_id") or u.get("role_id") or m.get("role") or u.get("role") or "member"
-
-            last_dt = _to_dt(u.get("last_active_at")) or _to_dt(u.get("last_login_at")) or _to_dt(u.get("created_at"))
-
-            enriched.append({
-                "user_id": u.get("user_id"),
-                "email": (u.get("email") or "").strip().lower(),
-                "full_name": (
-                    u.get("full_name")
-                    or f"{u.get('first_name','')} {u.get('last_name','')}".strip()
-                    or u.get("user_id")
-                    or ""
-                ),
-                "role_id": role_id,
-                "role_name": role_map.get(role_id) or role_id or "",
-                "is_active": u.get("is_active", True) and m.get("is_active", True),
-                "last_login": _last_login_label(last_dt),
-                "org_id": org_id,
-                "created_at": u.get("created_at"),
-            })
-
-        enriched.sort(key=lambda x: (not x["is_active"], x["full_name"].lower()))
-        return {"success": True, "users": enriched}
-
-    except Exception as e:
-        logger.exception(f"List users error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to fetch users")
-
-
+    return {
+        "success": True,
+        "users": normalized_users,
+    }
 @router.post("/users/{user_id}/deactivate")
 async def deactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
     org_id = current_user["org_id"]
@@ -837,7 +810,7 @@ async def reactivate_user(user_id: str, db=Depends(get_db), current_user=Depends
 # ==================== INVITES ====================
 
 @router.get("/invites")
-async def list_invites(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+async def list_invites(db=Depends(get_db), current_user=Depends(get_current_user_member)):
     org_id = current_user["org_id"]
 
     invites = await db.user_invites.find(
@@ -853,7 +826,7 @@ async def create_invite(
     payload: InviteCreateIn,
     background_tasks: BackgroundTasks,
     db=Depends(get_db),
-    current_user=Depends(get_current_user_admin),
+    current_user=Depends(get_current_user_member),
 ):
     org_id = current_user["org_id"]
     email = payload.email.strip().lower()
@@ -932,7 +905,7 @@ async def resend_invite(
     invite_id: str,
     background_tasks: BackgroundTasks,
     db=Depends(get_db),
-    current_user=Depends(get_current_user_admin),
+    current_user=Depends(get_current_user_member),
 ):
     org_id = current_user["org_id"]
 
@@ -967,7 +940,7 @@ async def resend_invite(
 async def revoke_invite(
     invite_id: str,
     db=Depends(get_db),
-    current_user=Depends(get_current_user_admin),
+    current_user=Depends(get_current_user_member),
 ):
     org_id = current_user["org_id"]
 
@@ -990,16 +963,34 @@ async def revoke_invite(
 # ==================== ROLES ====================
 
 @router.get("/roles")
-async def list_roles(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
-    org_id = current_user["org_id"]
+async def get_roles(
+    current_user: dict = Depends(get_current_user_admin),
+    db=Depends(get_db),
+):
+    org_id = current_user.get("org_id")
 
-    roles = await db.roles.find(
-        {"$or": [{"org_id": org_id}, {"is_system": True}]},
-        {"_id": 0}
-    ).sort("created_at", -1).to_list(length=100)
+    query = {}
+    if org_id:
+        query["org_id"] = org_id
 
-    return {"success": True, "roles": roles}
+    roles = await db.roles.find(query).to_list(length=None)
 
+    normalized_roles = []
+    for role in roles:
+        normalized_roles.append({
+            "role_id": role.get("role_id") or role.get("name") or "",
+            "role_name": role.get("role_name") or role.get("name") or "",
+        })
+
+    normalized_roles = [r for r in normalized_roles if r["role_id"]]
+
+    if not normalized_roles:
+        normalized_roles = SYSTEM_ROLE_FALLBACK
+
+    return {
+        "success": True,
+        "roles": normalized_roles,
+    }
 
 @router.post("/roles", status_code=status.HTTP_201_CREATED)
 async def create_role(payload: RoleCreateIn, db=Depends(get_db), current_user=Depends(get_current_user_admin)):

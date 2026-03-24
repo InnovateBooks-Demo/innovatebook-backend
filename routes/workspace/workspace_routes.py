@@ -8,7 +8,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 import uuid
-from routes.deps import get_current_user, User, security, get_db
+from routes.deps import get_current_user, User, security, get_db, get_current_user_member
 
 router = APIRouter(tags=["Workspace"])
 
@@ -1097,3 +1097,37 @@ async def seed_workspace_data(
         })
     
     return {"success": True, "message": "Workspace data seeded successfully"}
+
+# ============= ROLE OPTIONS =============
+
+@router.get("/roles/options")
+async def get_role_options(current_user: dict = Depends(get_current_user_member), db=Depends(get_db)):
+    """Safe endpoint to fetch assignable roles for invites based on inviter's role"""
+    user_role = current_user.get("role_id", "member")
+    is_super = current_user.get("is_super_admin", False)
+    
+    if is_super or user_role == "owner":
+        allowed_roles = ["viewer", "member", "manager", "admin", "owner"]
+    elif user_role == "admin":
+        allowed_roles = ["viewer", "member", "manager", "admin"]
+    else:  # manager or member
+        allowed_roles = ["viewer", "member"]
+        
+    roles = await db.roles.find({"role_id": {"$in": allowed_roles}}, {"_id": 0}).to_list(100)
+    
+    # Determine which ones actually came from DB to use them, else fallback
+    db_role_ids = {r.get("role_id") for r in roles}
+    
+    fallback_roles = [
+        {"role_id": "viewer", "role_name": "Viewer"},
+        {"role_id": "member", "role_name": "Member"},
+        {"role_id": "manager", "role_name": "Manager"},
+        {"role_id": "admin", "role_name": "Admin"},
+        {"role_id": "owner", "role_name": "Owner"}
+    ]
+    
+    for fr in fallback_roles:
+        if fr["role_id"] in allowed_roles and fr["role_id"] not in db_role_ids:
+            roles.append(fr)
+    
+    return {"success": True, "roles": roles}

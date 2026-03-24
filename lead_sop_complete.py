@@ -142,211 +142,12 @@ async def get_enrich_suggestions(company_name: str, db=Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Enrich lookup failed: {str(e)}")
 
 
-# ==================== CRUD ENDPOINTS ====================
-
-@router.post("")
-async def create_lead(lead_data: LeadCreate, db=Depends(get_db)):
-    """
-    STAGE 1: Add Lead - Data Capture (Lead_Intake_SOP)
-    Creates new lead with validation and fingerprint generation
-    """
-    try:
-        # Generate lead_id
-        lead_count = await get_db().commerce_leads.count_documents({})
-        year = datetime.now().year
-        lead_id = f"LD-{year}-{str(lead_count + 1).zfill(6)}"
-        
-        # Generate fingerprint for duplicate detection
-        fingerprint = generate_fingerprint(lead_data.dict())
-        
-        # Create lead document
-        lead = Lead(
-            lead_id=lead_id,
-            company_name=lead_data.company_name,
-            lead_source=lead_data.lead_source,
-            contact_name=lead_data.contact_name,
-            email_address=lead_data.email_address,
-            phone_number=lead_data.phone_number,
-            designation=lead_data.designation,
-            department=lead_data.department,
-            country=lead_data.country,
-            state=lead_data.state,
-            city=lead_data.city,
-            website_url=lead_data.website_url,
-            industry_type=lead_data.industry_type,
-            company_size=lead_data.company_size,
-            product_or_solution_interested_in=lead_data.product_or_solution_interested_in,
-            estimated_deal_value=lead_data.estimated_deal_value,
-            decision_timeline=lead_data.decision_timeline,
-            notes=lead_data.notes,
-            lead_campaign_name=lead_data.lead_campaign_name,
-            tags=lead_data.tags or [],
-            fingerprint=fingerprint,
-            captured_by="current_user",
-            lead_status=LeadStatus.NEW,
-            last_activity_at=datetime.now(timezone.utc)
-        )
-        
-        # Add audit entry
-        lead.audit_trail.append(log_audit(
-            "LEAD_CREATED",
-            "current_user",
-            f"Lead {lead_id} created from source: {lead_data.lead_source}"
-        ))
-        
-        # Mark Intake as completed
-        lead.sop_completion_status["Lead_Intake_SOP"] = True
-        lead.current_sop_stage = SOPStage.ENRICH
-        
-        lead.sop_stage_history.append(log_sop_stage(
-            "Lead_Intake_SOP",
-            "system",
-            "Completed",
-            "Lead captured successfully, all required fields validated"
-        ))
-        
-        # Insert to database
-        lead_dict = lead.dict()
-        lead_dict['captured_on'] = lead_dict['captured_on'].isoformat() if isinstance(lead_dict['captured_on'], datetime) else lead_dict['captured_on']
-        lead_dict['created_at'] = lead_dict['created_at'].isoformat() if isinstance(lead_dict['created_at'], datetime) else lead_dict['created_at']
-        lead_dict['updated_at'] = lead_dict['updated_at'].isoformat() if isinstance(lead_dict['updated_at'], datetime) else lead_dict['updated_at']
-        
-        await get_db().commerce_leads.insert_one(lead_dict)
-        
-        # Automatically trigger enrichment
-        # (In real implementation, this would be async background task)
-        
-        return {
-            "success": True,
-            "message": "Lead created successfully. Running enrichment and verification checks...",
-            "lead_id": lead_id,
-            "fingerprint": fingerprint
-        }
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to create lead: {str(e)}")
-
-
-@router.get("")
-async def list_leads(
-    status: Optional[str] = None,
-    score_category: Optional[str] = None,
-    assigned_to: Optional[str] = None,
-    skip: int = 0,
-    limit: int = 50,
-    db=Depends(get_db)
-):
-    """Get all leads with optional filtering"""
-    try:
-        query = {}
-        if status:
-            query["lead_status"] = status
-        if score_category:
-            query["lead_score_category"] = score_category
-        if assigned_to:
-            query["assigned_to"] = assigned_to
-        
-        leads = await get_db().commerce_leads.find(query).skip(skip).limit(limit).to_list(length=limit)
-        return leads
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/{lead_id}", response_model=None)
-async def get_lead(lead_id: str, db=Depends(get_db)):
-    """Get single lead by ID - Returns ALL fields including enriched data"""
-    try:
-        from bson import ObjectId as BSONObjectId
-        
-        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
-        if not lead:
-            raise HTTPException(status_code=404, detail="Lead not found")
-        
-        # Convert ObjectId to string for JSON serialization
-        if lead.get('_id'):
-            lead['_id'] = str(lead['_id'])
-        
-        # Convert datetime objects to ISO format
-        for key in list(lead.keys()):
-            value = lead[key]
-            if hasattr(value, 'isoformat'):
-                lead[key] = value.isoformat()
-            elif isinstance(value, BSONObjectId):
-                lead[key] = str(value)
-        
-        # Return as plain dict (response_model=None bypasses Pydantic)
-        return lead
-    except HTTPException:
-        raise
-    except Exception as e:
-        import traceback
-        print(f"Error in get_lead: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.put("/{lead_id}")
-async def update_lead(lead_id: str, update_data: Dict[str, Any], db=Depends(get_db)):
-    """Update lead - Full update"""
-    try:
-        print(f"📝 Updating lead {lead_id} with data: {update_data}")
-        
-        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
-        if not lead:
-            raise HTTPException(status_code=404, detail="Lead not found")
-        
-        # Update fingerprint if key fields changed
-        if any(k in update_data for k in ['company_name', 'email_address', 'phone_number', 'country']):
-            merged_data = {**lead, **update_data}
-            update_data['fingerprint'] = generate_fingerprint(merged_data)
-        
-        update_data['updated_at'] = datetime.now(timezone.utc)
-        update_data['modified_by'] = "current_user"
-        
-        await get_db().commerce_leads.update_one(
-            {"lead_id": lead_id},
-            {"$set": update_data}
-        )
-        
-        return {"success": True, "message": "Lead updated successfully"}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.patch("/{lead_id}")
-async def partial_update_lead(lead_id: str, update_data: dict, db=Depends(get_db)):
-    """Partial update lead - for assignment, status changes, etc."""
-    try:
-        print(f"📝 Partial update for lead {lead_id} with data: {update_data}")
-        
-        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
-        if not lead:
-            raise HTTPException(status_code=404, detail="Lead not found")
-        
-        # Add metadata
-        update_data['updated_at'] = datetime.now(timezone.utc)
-        update_data['modified_by'] = "current_user"
-        
-        # Update the lead
-        await get_db().commerce_leads.update_one(
-            {"lead_id": lead_id},
-            {"$set": update_data}
-        )
-        
-        print(f"✅ Lead {lead_id} updated successfully")
-        return {"success": True, "message": "Lead updated successfully", "lead_id": lead_id}
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"❌ Error updating lead: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
+from enterprise_middleware import get_org_scope
 
 # ==================== STAGE 2: ENRICHMENT ====================
 
 @router.post("/{lead_id}/enrich")
-async def enrich_lead(lead_id: str, db=Depends(get_db)):
+async def enrich_lead(lead_id: str, org_id: str = Depends(get_org_scope), db=Depends(get_db)):
     """
     STAGE 2: Data Enrichment (Lead_Enrich_SOP)
     Automatically fills missing company data using GPT-5
@@ -514,13 +315,13 @@ async def enrich_lead(lead_id: str, db=Depends(get_db)):
 # ==================== STAGE 3: VALIDATION ====================
 
 @router.post("/{lead_id}/validate")
-async def validate_lead(lead_id: str, db=Depends(get_db)):
+async def validate_lead(lead_id: str, org_id: str = Depends(get_org_scope), db=Depends(get_db)):
     """
     STAGE 3: Validation (Lead_Validate_SOP)
     Validates email, phone, checks blacklist, verifies business registry
     """
     try:
-        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id, "org_id": org_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -578,7 +379,7 @@ async def validate_lead(lead_id: str, db=Depends(get_db)):
             status = ValidationStatus.VERIFIED
         
         await get_db().commerce_leads.update_one(
-            {"lead_id": lead_id},
+            {"lead_id": lead_id, "org_id": org_id},
             {
                 "$set": {
                     "validation_status": status.value,
@@ -623,13 +424,13 @@ async def validate_lead(lead_id: str, db=Depends(get_db)):
 # ==================== STAGE 4: QUALIFICATION & SCORING ====================
 
 @router.post("/{lead_id}/qualify")
-async def qualify_lead(lead_id: str, db=Depends(get_db)):
+async def qualify_lead(lead_id: str, org_id: str = Depends(get_org_scope), db=Depends(get_db)):
     """
     STAGE 4: Qualification & Scoring (Lead_Qualify_SOP)
     Calculates Fit (40%) + Intent (30%) + Potential (30%) = Lead Score
     """
     try:
-        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id, "org_id": org_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -720,7 +521,7 @@ async def qualify_lead(lead_id: str, db=Depends(get_db)):
         reasoning = f"Fit: {fit_score}/40 (Industry match, size, geography) | Intent: {intent_score}/30 (Source quality, engagement) | Potential: {potential_score}/30 (Deal value ₹{deal_value:,.0f}, decision maker)"
         
         await get_db().commerce_leads.update_one(
-            {"lead_id": lead_id},
+            {"lead_id": lead_id, "org_id": org_id},
             {
                 "$set": {
                     "lead_score": total_score,
@@ -776,6 +577,7 @@ async def qualify_lead(lead_id: str, db=Depends(get_db)):
 async def assign_lead(
     lead_id: str,
     assigned_to: Optional[str] = None,
+    org_id: str = Depends(get_org_scope),
     db=Depends(get_db)
 ):
     """
@@ -783,7 +585,7 @@ async def assign_lead(
     Rule-based + AI-optimized assignment with follow-up tracking
     """
     try:
-        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id, "org_id": org_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -868,6 +670,7 @@ async def log_engagement(
     activity_type: str,  # Email / Call / Meeting / Demo / Proposal / Note
     notes: Optional[str] = None,
     outcome: Optional[str] = None,
+    org_id: str = Depends(get_org_scope),
     db=Depends(get_db)
 ):
     """
@@ -875,7 +678,7 @@ async def log_engagement(
     Log interaction activities (calls, emails, meetings)
     """
     try:
-        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id, "org_id": org_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -898,7 +701,7 @@ async def log_engagement(
         new_total = fit + new_intent + potential
         
         await get_db().commerce_leads.update_one(
-            {"lead_id": lead_id},
+            {"lead_id": lead_id, "org_id": org_id},
             {
                 "$push": {
                     "engagement_activities": activity,
@@ -941,13 +744,13 @@ async def log_engagement(
 # ==================== STAGE 7: REVIEW & CLEANUP ====================
 
 @router.post("/{lead_id}/review")
-async def review_lead(lead_id: str, db=Depends(get_db)):
+async def review_lead(lead_id: str, org_id: str = Depends(get_org_scope), db=Depends(get_db)):
     """
     STAGE 7: Review & Clean-up (Lead_Review_SOP)
     Check for dormant leads, update status
     """
     try:
-        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id, "org_id": org_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -961,7 +764,7 @@ async def review_lead(lead_id: str, db=Depends(get_db)):
             if days_since_activity >= 30:
                 # Mark as dormant
                 await get_db().commerce_leads.update_one(
-                    {"lead_id": lead_id},
+                    {"lead_id": lead_id, "org_id": org_id},
                     {
                         "$set": {
                             "dormant_flag": True,
@@ -1018,12 +821,13 @@ async def close_lead(
     lead_id: str,
     reason: ClosureReason,
     notes: Optional[str] = None,
+    org_id: str = Depends(get_org_scope),
     db=Depends(get_db)
 ):
     """Close a lead with reason"""
     try:
         await get_db().commerce_leads.update_one(
-            {"lead_id": lead_id},
+            {"lead_id": lead_id, "org_id": org_id},
             {
                 "$set": {
                     "lead_status": LeadStatus.CLOSED.value,
@@ -1055,13 +859,13 @@ async def close_lead(
 # ==================== STAGE 8: CONVERSION ====================
 
 @router.post("/{lead_id}/convert")
-async def convert_lead(lead_id: str, db=Depends(get_db)):
+async def convert_lead(lead_id: str, org_id: str = Depends(get_org_scope), db=Depends(get_db)):
     """
     STAGE 8: Conversion to Evaluate (Lead_Convert_SOP)
     Convert qualified lead to Evaluate module
     """
     try:
-        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id, "org_id": org_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -1104,7 +908,7 @@ async def convert_lead(lead_id: str, db=Depends(get_db)):
         
         # Update lead
         await get_db().commerce_leads.update_one(
-            {"lead_id": lead_id},
+            {"lead_id": lead_id, "org_id": org_id},
             {
                 "$set": {
                     "lead_status": LeadStatus.CONVERTED.value,
@@ -1147,13 +951,13 @@ async def convert_lead(lead_id: str, db=Depends(get_db)):
 # ==================== STAGE 9: AUDIT TRAIL ====================
 
 @router.get("/{lead_id}/audit")
-async def get_audit_trail(lead_id: str, db=Depends(get_db)):
+async def get_audit_trail(lead_id: str, org_id: str = Depends(get_org_scope), db=Depends(get_db)):
     """
     STAGE 9: Audit Trail (Lead_Audit_SOP)
     Get complete history of all actions
     """
     try:
-        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id, "org_id": org_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -1213,12 +1017,12 @@ async def review_dormant_leads(db=Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{lead_id}/raw")
-async def get_lead_raw(lead_id: str, db=Depends(get_db)):
+async def get_lead_raw(lead_id: str, org_id: str = Depends(get_org_scope), db=Depends(get_db)):
     """Test endpoint - returns raw MongoDB data"""
     from bson import json_util
     import json
     
-    lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
+    lead = await get_db().commerce_leads.find_one({"lead_id": lead_id, "org_id": org_id})
     if not lead:
         return {"error": "Not found"}
     

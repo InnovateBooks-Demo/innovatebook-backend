@@ -182,9 +182,10 @@ def require_active_subscription(
 # ==================== RBAC GUARD MIDDLEWARE ====================
 
 async def check_permission(
-    user_id: str,
+    role_id: str,
     module: str,
     action: str,
+    is_super_admin: bool,
     db
 ) -> bool:
     """
@@ -192,20 +193,17 @@ async def check_permission(
     Returns: True if allowed, False otherwise
     """
     try:
-        # Get user's role
-        user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
-        if not user:
-            return False
-        
         # Super admin has all permissions
-        if user.get("is_super_admin"):
+        if is_super_admin:
             return True
-        if user.get("role_id") == "admin":
+            
+        # Owner and Admin roles bypass granular module-level permission checks
+        if role_id in ["owner", "admin"]:
             return True
-        role_id = user.get("role_id")
+            
         if not role_id:
             return False
-        
+            
         # Find the submodule
         submodule_name = f"{module}.{action}"
         submodule = await db.submodules.find_one(
@@ -248,11 +246,14 @@ def require_permission(module: str, action: str):
                 detail="User ID not found in token"
             )
         
+        is_super_admin = bool(token_payload.get("is_super_admin"))
         # Super admin bypass
-        if token_payload.get("is_super_admin"):
+        if is_super_admin:
             return token_payload
+            
+        role_id = token_payload.get("role_id")
         
-        has_permission = await check_permission(user_id, module, action, db)
+        has_permission = await check_permission(role_id, module, action, is_super_admin, db)
         
         if not has_permission:
             raise HTTPException(
