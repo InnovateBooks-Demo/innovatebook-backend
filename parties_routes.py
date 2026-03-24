@@ -24,15 +24,14 @@ from enterprise_middleware import (
     require_active_subscription
 )
 
-from motor.motor_asyncio import AsyncIOMotorClient
+# from motor.motor_asyncio import AsyncIOMotorClient # Removed to prevent startup hang
 
 router = APIRouter(prefix="/api/commerce/parties", tags=["Parties"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-DB_NAME = os.environ['DB_NAME']
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+def get_db():
+    """Get database instance from main"""
+    from main import db
+    return db
 
 # ==================== CUSTOMERS ====================
 
@@ -60,8 +59,8 @@ async def get_customers(
         if customer_type:
             query["customer_type"] = customer_type
         
-        # customers = await db.customers.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
-        customers = await db.parties_customers.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        # customers = await get_db().customers.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        customers = await get_db().parties_customers.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
         return {"success": True, "customers": customers, "count": len(customers)}
     except Exception as e:
         return {"success": False, "customers": [], "error": str(e)}
@@ -77,7 +76,7 @@ async def get_customer(
         if org_id:
             query["org_id"] = org_id
         
-        customer = await db.parties_customers.find_one(query, {"_id": 0})
+        customer = await get_db().parties_customers.find_one(query, {"_id": 0})
         if not customer:
             raise HTTPException(status_code=404, detail="Customer not found")
         
@@ -109,7 +108,7 @@ async def create_customer(
             "last_modified_at": datetime.now(timezone.utc)
         })
         
-        await db.parties_customers.insert_one(customer_doc)
+        await get_db().parties_customers.insert_one(customer_doc)
         
         return {
             "success": True,
@@ -131,7 +130,7 @@ async def update_customer(
         if org_id:
             query["org_id"] = org_id
         
-        existing = await db.parties_customers.find_one(query, {"_id": 0})
+        existing = await get_db().parties_customers.find_one(query, {"_id": 0})
         if not existing:
             raise HTTPException(status_code=404, detail="Customer not found")
         
@@ -139,7 +138,7 @@ async def update_customer(
         update_data["last_modified_by"] = "system"
         update_data["last_modified_at"] = datetime.now(timezone.utc)
         
-        await db.parties_customers.update_one(query, {"$set": update_data})
+        await get_db().parties_customers.update_one(query, {"$set": update_data})
         
         return {"success": True, "message": "Customer updated successfully"}
     except HTTPException:
@@ -158,7 +157,7 @@ async def delete_customer(
         if org_id:
             query["org_id"] = org_id
         
-        result = await db.parties_customers.delete_one(query)
+        result = await get_db().parties_customers.delete_one(query)
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Customer not found")
         
@@ -194,7 +193,7 @@ async def get_vendors(
         if vendor_type:
             query["vendor_type"] = vendor_type
         
-        vendors = await db.parties_vendors.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        vendors = await get_db().parties_vendors.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
         return {"success": True, "vendors": vendors, "count": len(vendors)}
     except Exception as e:
         return {"success": False, "vendors": [], "error": str(e)}
@@ -221,7 +220,7 @@ async def create_vendor(
             "last_modified_at": datetime.now(timezone.utc)
         })
         
-        await db.parties_vendors.insert_one(vendor_doc)
+        await get_db().parties_vendors.insert_one(vendor_doc)
         
         return {"success": True, "message": "Vendor created successfully", "vendor": {**vendor_doc, "_id": None}}
     except Exception as e:
@@ -253,7 +252,7 @@ async def get_partners(
         if partner_type:
             query["partner_type"] = partner_type
         
-        partners = await db.partners.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        partners = await get_db().partners.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
         return {"success": True, "partners": partners, "count": len(partners)}
     except Exception as e:
         return {"success": False, "partners": [], "error": str(e)}
@@ -269,7 +268,7 @@ async def get_partner(
         if org_id:
             query["org_id"] = org_id
         
-        partner = await db.partners.find_one(query, {"_id": 0})
+        partner = await get_db().partners.find_one(query, {"_id": 0})
         if not partner:
             raise HTTPException(status_code=404, detail="Partner not found")
         
@@ -301,7 +300,7 @@ async def create_partner(
             "last_modified_at": datetime.now(timezone.utc)
         })
         
-        await db.partners.insert_one(partner_doc)
+        await get_db().partners.insert_one(partner_doc)
         return {"success": True, "message": "Partner created successfully", "partner": {**partner_doc, "_id": None}}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -318,7 +317,7 @@ async def update_partner(
         if org_id:
             query["org_id"] = org_id
         
-        existing = await db.partners.find_one(query, {"_id": 0})
+        existing = await get_db().partners.find_one(query, {"_id": 0})
         if not existing:
             raise HTTPException(status_code=404, detail="Partner not found")
         
@@ -326,7 +325,7 @@ async def update_partner(
         update_data["last_modified_by"] = "system"
         update_data["last_modified_at"] = datetime.now(timezone.utc)
         
-        await db.partners.update_one(query, {"$set": update_data})
+        await get_db().partners.update_one(query, {"$set": update_data})
         
         return {"success": True, "message": "Partner updated successfully"}
     except HTTPException:
@@ -345,7 +344,7 @@ async def delete_partner(
         if org_id:
             query["org_id"] = org_id
         
-        result = await db.partners.delete_one(query)
+        result = await get_db().partners.delete_one(query)
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Partner not found")
         
@@ -380,7 +379,7 @@ async def get_channels(
         if channel_type:
             query["channel_type"] = channel_type
         
-        channels = await db.channels.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        channels = await get_db().channels.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
         return {"success": True, "channels": channels, "count": len(channels)}
     except Exception as e:
         return {"success": False, "channels": [], "error": str(e)}
@@ -396,7 +395,7 @@ async def get_channel(
         if org_id:
             query["org_id"] = org_id
         
-        channel = await db.channels.find_one(query, {"_id": 0})
+        channel = await get_db().channels.find_one(query, {"_id": 0})
         if not channel:
             raise HTTPException(status_code=404, detail="Channel not found")
         
@@ -425,7 +424,7 @@ async def create_channel(
             "last_modified_at": datetime.now(timezone.utc)
         })
         
-        await db.channels.insert_one(channel_doc)
+        await get_db().channels.insert_one(channel_doc)
         return {"success": True, "message": "Channel created successfully", "channel": {**channel_doc, "_id": None}}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -442,7 +441,7 @@ async def update_channel(
         if org_id:
             query["org_id"] = org_id
         
-        existing = await db.channels.find_one(query, {"_id": 0})
+        existing = await get_db().channels.find_one(query, {"_id": 0})
         if not existing:
             raise HTTPException(status_code=404, detail="Channel not found")
         
@@ -450,7 +449,7 @@ async def update_channel(
         update_data["last_modified_by"] = "system"
         update_data["last_modified_at"] = datetime.now(timezone.utc)
         
-        await db.channels.update_one(query, {"$set": update_data})
+        await get_db().channels.update_one(query, {"$set": update_data})
         
         return {"success": True, "message": "Channel updated successfully"}
     except HTTPException:
@@ -469,7 +468,7 @@ async def delete_channel(
         if org_id:
             query["org_id"] = org_id
         
-        result = await db.channels.delete_one(query)
+        result = await get_db().channels.delete_one(query)
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Channel not found")
         
@@ -504,7 +503,7 @@ async def get_profiles(
         if status:
             query["status"] = status
         
-        profiles = await db.profiles.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        profiles = await get_db().profiles.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
         return {"success": True, "profiles": profiles, "count": len(profiles)}
     except Exception as e:
         return {"success": False, "profiles": [], "error": str(e)}
@@ -520,7 +519,7 @@ async def get_profile(
         if org_id:
             query["org_id"] = org_id
         
-        profile = await db.profiles.find_one(query, {"_id": 0})
+        profile = await get_db().profiles.find_one(query, {"_id": 0})
         if not profile:
             raise HTTPException(status_code=404, detail="Profile not found")
         
@@ -549,7 +548,7 @@ async def create_profile(
             "last_modified_at": datetime.now(timezone.utc)
         })
         
-        await db.profiles.insert_one(profile_doc)
+        await get_db().profiles.insert_one(profile_doc)
         return {"success": True, "message": "Profile created successfully", "profile": {**profile_doc, "_id": None}}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -566,7 +565,7 @@ async def update_profile(
         if org_id:
             query["org_id"] = org_id
         
-        existing = await db.profiles.find_one(query, {"_id": 0})
+        existing = await get_db().profiles.find_one(query, {"_id": 0})
         if not existing:
             raise HTTPException(status_code=404, detail="Profile not found")
         
@@ -574,7 +573,7 @@ async def update_profile(
         update_data["last_modified_by"] = "system"
         update_data["last_modified_at"] = datetime.now(timezone.utc)
         
-        await db.profiles.update_one(query, {"$set": update_data})
+        await get_db().profiles.update_one(query, {"$set": update_data})
         
         return {"success": True, "message": "Profile updated successfully"}
     except HTTPException:
@@ -593,7 +592,7 @@ async def delete_profile(
         if org_id:
             query["org_id"] = org_id
         
-        result = await db.profiles.delete_one(query)
+        result = await get_db().profiles.delete_one(query)
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Profile not found")
         
@@ -616,7 +615,7 @@ async def get_vendor(
         if org_id:
             query["org_id"] = org_id
         
-        vendor = await db.parties_vendors.find_one(query, {"_id": 0})
+        vendor = await get_db().parties_vendors.find_one(query, {"_id": 0})
         if not vendor:
             raise HTTPException(status_code=404, detail="Vendor not found")
         
@@ -638,7 +637,7 @@ async def update_vendor(
         if org_id:
             query["org_id"] = org_id
         
-        existing = await db.parties_vendors.find_one(query, {"_id": 0})
+        existing = await get_db().parties_vendors.find_one(query, {"_id": 0})
         if not existing:
             raise HTTPException(status_code=404, detail="Vendor not found")
         
@@ -646,7 +645,7 @@ async def update_vendor(
         update_data["last_modified_by"] = "system"
         update_data["last_modified_at"] = datetime.now(timezone.utc)
         
-        await db.vendors.update_one(query, {"$set": update_data})
+        await get_db().vendors.update_one(query, {"$set": update_data})
         
         return {"success": True, "message": "Vendor updated successfully"}
     except HTTPException:
@@ -665,7 +664,7 @@ async def delete_vendor(
         if org_id:
             query["org_id"] = org_id
         
-        result = await db.parties_vendors.delete_one(query)
+        result = await get_db().parties_vendors.delete_one(query)
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Vendor not found")
         
@@ -688,23 +687,23 @@ async def get_dashboard_stats(
         query = {"org_id": org_id} if org_id else {}
         
         # Get counts for each party type
-        customers = await db.parties_customers.count_documents(query)
-        vendors = await db.parties_vendors.count_documents(query)
-        partners = await db.partners.count_documents(query)
-        channels = await db.channels.count_documents(query)
-        profiles = await db.profiles.count_documents(query)
+        customers = await get_db().parties_customers.count_documents(query)
+        vendors = await get_db().parties_vendors.count_documents(query)
+        partners = await get_db().partners.count_documents(query)
+        channels = await get_db().channels.count_documents(query)
+        profiles = await get_db().profiles.count_documents(query)
         
         # Get active counts
         active_query = {**query, "status": "active"}
-        customers_active = await db.parties_customers.count_documents(active_query)
-        vendors_active = await db.parties_vendors.count_documents(active_query)
-        partners_active = await db.partners.count_documents(active_query)
-        channels_active = await db.channels.count_documents(active_query)
-        profiles_active = await db.profiles.count_documents(active_query)
+        customers_active = await get_db().parties_customers.count_documents(active_query)
+        vendors_active = await get_db().parties_vendors.count_documents(active_query)
+        partners_active = await get_db().partners.count_documents(active_query)
+        channels_active = await get_db().channels.count_documents(active_query)
+        profiles_active = await get_db().profiles.count_documents(active_query)
         
         # Get critical vendors
         critical_query = {**query, "critical_vendor_flag": True}
-        critical_vendors = await db.vendors.count_documents(critical_query)
+        critical_vendors = await get_db().vendors.count_documents(critical_query)
         
         return {
             "success": True,
@@ -744,7 +743,7 @@ async def bulk_create_customers(
                     "created_at": datetime.now(timezone.utc)
                 })
                 
-                await db.parties_customers.insert_one(customer_doc)
+                await get_db().parties_customers.insert_one(customer_doc)
                 created.append(customer_id)
             except Exception as e:
                 errors.append({"index": idx, "error": str(e)})
@@ -783,7 +782,7 @@ async def bulk_create_vendors(
                     "created_at": datetime.now(timezone.utc)
                 })
                 
-                await db.vendors.insert_one(vendor_doc)
+                await get_db().vendors.insert_one(vendor_doc)
                 created.append(vendor_id)
             except Exception as e:
                 errors.append({"index": idx, "error": str(e)})

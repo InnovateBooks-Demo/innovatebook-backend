@@ -10,11 +10,19 @@ from typing import Dict, List
 
 router = APIRouter(prefix="/api/financial-reports", tags=["Financial Reports"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-DB_NAME = os.environ['DB_NAME']
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+# MongoDB connection (Lazy loaded)
+_mongo_client = None
+_db_instance = None
+
+def get_db():
+    global _mongo_client, _db_instance
+    if _db_instance is None:
+        print("[Antigravity] Initializing Lazy MongoDB client in financial_reports_routes")
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+        db_name = os.environ['DB_NAME']
+        _mongo_client = AsyncIOMotorClient(mongo_url)
+        _db_instance = _mongo_client[db_name]
+    return _db_instance
 
 @router.get("/profit-loss")
 async def get_profit_loss_statement():
@@ -245,12 +253,12 @@ async def get_trial_balance():
 async def get_general_ledger(account_code: str):
     """Get General Ledger for specific account"""
     try:
-        account = await db.chart_of_accounts.find_one({"account_code": account_code}, {"_id": 0})
+        account = await get_db().chart_of_accounts.find_one({"account_code": account_code}, {"_id": 0})
         if not account:
             raise HTTPException(status_code=404, detail="Account not found")
         
         # Get all journal entries for this account
-        journal_entries = await db.journal_entries.find({}, {"_id": 0}).to_list(1000)
+        journal_entries = await get_db().journal_entries.find({}, {"_id": 0}).to_list(1000)
         
         ledger_entries = []
         running_balance = 0

@@ -19,11 +19,19 @@ from enterprise_middleware import (
 
 router = APIRouter(prefix="/api/finance", tags=["Finance"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-DB_NAME = os.environ['DB_NAME']
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+# MongoDB connection (Lazy loaded)
+_mongo_client = None
+_db_instance = None
+
+def get_db():
+    global _mongo_client, _db_instance
+    if _db_instance is None:
+        print("[Antigravity] Initializing Lazy MongoDB client in finance_routes")
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+        db_name = os.environ['DB_NAME']
+        _mongo_client = AsyncIOMotorClient(mongo_url)
+        _db_instance = _mongo_client[db_name]
+    return _db_instance
 
 # ========================
 # CUSTOMERS
@@ -34,7 +42,7 @@ async def get_customers(org_id: Optional[str] = Depends(get_org_scope)):
     """Get all customers (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        customers = await db.customers.find(query, {"_id": 0}).to_list(1000)
+        customers = await get_db().customers.find(query, {"_id": 0}).to_list(1000)
         return {"success": True, "customers": customers}
     except Exception as e:
         return {"success": False, "customers": [], "error": str(e)}
@@ -46,7 +54,7 @@ async def get_customer(customer_id: str, org_id: Optional[str] = Depends(get_org
         query = {"customer_id": customer_id}
         if org_id:
             query["org_id"] = org_id
-        customer = await db.customers.find_one(query, {"_id": 0})
+        customer = await get_db().customers.find_one(query, {"_id": 0})
         if not customer:
             raise HTTPException(status_code=404, detail="Customer not found")
         return {"success": True, "customer": customer}
@@ -58,13 +66,13 @@ async def create_customer(customer_data: dict, org_id: Optional[str] = Depends(g
     """Create new customer (org-scoped, requires active subscription)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        customer_data["id"] = f"CUST-{str(await db.customers.count_documents(query) + 1).zfill(4)}"
+        customer_data["id"] = f"CUST-{str(await get_db().customers.count_documents(query) + 1).zfill(4)}"
         customer_data["created_at"] = datetime.now(timezone.utc)
         if org_id:
             customer_data["org_id"] = org_id
         
         # Insert to DB
-        result = await db.customers.insert_one(customer_data)
+        result = await get_db().customers.insert_one(customer_data)
         
         # Return without MongoDB _id
         customer_data.pop("_id", None)
@@ -79,7 +87,7 @@ async def update_customer(customer_id: str, customer_data: dict, org_id: Optiona
         query = {"id": customer_id}
         if org_id:
             query["org_id"] = org_id
-        result = await db.customers.update_one(query, {"$set": customer_data})
+        result = await get_db().customers.update_one(query, {"$set": customer_data})
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Customer not found")
         return {"success": True, "message": "Customer updated"}
@@ -95,7 +103,7 @@ async def get_vendors(org_id: Optional[str] = Depends(get_org_scope)):
     """Get all vendors (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        vendors = await db.vendors.find(query, {"_id": 0}).to_list(1000)
+        vendors = await get_db().vendors.find(query, {"_id": 0}).to_list(1000)
         return {"success": True, "vendors": vendors}
     except Exception as e:
         return {"success": False, "vendors": [], "error": str(e)}
@@ -107,7 +115,7 @@ async def get_vendor(vendor_id: str, org_id: Optional[str] = Depends(get_org_sco
         query = {"id": vendor_id}
         if org_id:
             query["org_id"] = org_id
-        vendor = await db.vendors.find_one(query, {"_id": 0})
+        vendor = await get_db().vendors.find_one(query, {"_id": 0})
         if not vendor:
             raise HTTPException(status_code=404, detail="Vendor not found")
         return {"success": True, "vendor": vendor}
@@ -119,11 +127,11 @@ async def create_vendor(vendor_data: dict, org_id: Optional[str] = Depends(get_o
     """Create new vendor (org-scoped, requires active subscription)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        vendor_data["id"] = f"VEND-{str(await db.vendors.count_documents(query) + 1).zfill(4)}"
+        vendor_data["id"] = f"VEND-{str(await get_db().vendors.count_documents(query) + 1).zfill(4)}"
         vendor_data["created_at"] = datetime.utcnow()
         if org_id:
             vendor_data["org_id"] = org_id
-        await db.vendors.insert_one(vendor_data)
+        await get_db().vendors.insert_one(vendor_data)
         return {"success": True, "vendor": vendor_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -135,7 +143,7 @@ async def update_vendor(vendor_id: str, vendor_data: dict, org_id: Optional[str]
         query = {"id": vendor_id}
         if org_id:
             query["org_id"] = org_id
-        result = await db.vendors.update_one(query, {"$set": vendor_data})
+        result = await get_db().vendors.update_one(query, {"$set": vendor_data})
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Vendor not found")
         return {"success": True, "message": "Vendor updated"}
@@ -151,7 +159,7 @@ async def get_invoices(org_id: Optional[str] = Depends(get_org_scope)):
     """Get all invoices (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        invoices = await db.invoices.find(query, {"_id": 0}).sort("invoice_date", -1).to_list(1000)
+        invoices = await get_db().invoices.find(query, {"_id": 0}).sort("invoice_date", -1).to_list(1000)
         return {"success": True, "invoices": invoices}
     except Exception as e:
         return {"success": False, "invoices": [], "error": str(e)}
@@ -163,7 +171,7 @@ async def get_invoice(invoice_id: str, org_id: Optional[str] = Depends(get_org_s
         query = {"id": invoice_id}
         if org_id:
             query["org_id"] = org_id
-        invoice = await db.invoices.find_one(query, {"_id": 0})
+        invoice = await get_db().invoices.find_one(query, {"_id": 0})
         if not invoice:
             raise HTTPException(status_code=404, detail="Invoice not found")
         return {"success": True, "invoice": invoice}
@@ -177,11 +185,11 @@ async def create_invoice(invoice_data: dict, org_id: Optional[str] = Depends(get
         from uuid import uuid4
         query = {"org_id": org_id} if org_id else {}
         invoice_data["id"] = str(uuid4())
-        invoice_data["invoice_number"] = f"INV-{str(await db.invoices.count_documents(query) + 2001)}"
+        invoice_data["invoice_number"] = f"INV-{str(await get_db().invoices.count_documents(query) + 2001)}"
         if org_id:
             invoice_data["org_id"] = org_id
         invoice_data["created_at"] = datetime.utcnow()
-        await db.invoices.insert_one(invoice_data)
+        await get_db().invoices.insert_one(invoice_data)
         return {"success": True, "invoice": invoice_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -193,7 +201,7 @@ async def update_invoice(invoice_id: str, invoice_data: dict, org_id: Optional[s
         query = {"id": invoice_id}
         if org_id:
             query["org_id"] = org_id
-        result = await db.invoices.update_one(query, {"$set": invoice_data})
+        result = await get_db().invoices.update_one(query, {"$set": invoice_data})
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Invoice not found")
         return {"success": True, "message": "Invoice updated"}
@@ -209,7 +217,7 @@ async def get_bills(org_id: Optional[str] = Depends(get_org_scope)):
     """Get all bills (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        bills = await db.bills.find(query, {"_id": 0}).sort("bill_date", -1).to_list(1000)
+        bills = await get_db().bills.find(query, {"_id": 0}).sort("bill_date", -1).to_list(1000)
         return {"success": True, "bills": bills}
     except Exception as e:
         return {"success": False, "bills": [], "error": str(e)}
@@ -221,7 +229,7 @@ async def get_bill(bill_id: str, org_id: Optional[str] = Depends(get_org_scope))
         query = {"id": bill_id}
         if org_id:
             query["org_id"] = org_id
-        bill = await db.bills.find_one(query, {"_id": 0})
+        bill = await get_db().bills.find_one(query, {"_id": 0})
         if not bill:
             raise HTTPException(status_code=404, detail="Bill not found")
         return {"success": True, "bill": bill}
@@ -235,11 +243,11 @@ async def create_bill(bill_data: dict, org_id: Optional[str] = Depends(get_org_s
         from uuid import uuid4
         query = {"org_id": org_id} if org_id else {}
         bill_data["id"] = str(uuid4())
-        bill_data["bill_number"] = f"BILL-{str(await db.bills.count_documents(query) + 2001)}"
+        bill_data["bill_number"] = f"BILL-{str(await get_db().bills.count_documents(query) + 2001)}"
         bill_data["created_at"] = datetime.utcnow()
         if org_id:
             bill_data["org_id"] = org_id
-        await db.bills.insert_one(bill_data)
+        await get_db().bills.insert_one(bill_data)
         return {"success": True, "bill": bill_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -251,7 +259,7 @@ async def update_bill(bill_id: str, bill_data: dict, org_id: Optional[str] = Dep
         query = {"id": bill_id}
         if org_id:
             query["org_id"] = org_id
-        result = await db.bills.update_one(query, {"$set": bill_data})
+        result = await get_db().bills.update_one(query, {"$set": bill_data})
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Bill not found")
         return {"success": True, "message": "Bill updated"}
@@ -267,7 +275,7 @@ async def get_collections(org_id: Optional[str] = Depends(get_org_scope)):
     """Get all collections (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        collections = await db.collections.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        collections = await get_db().collections.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
         return {"success": True, "collections": collections}
     except Exception as e:
         return {"success": False, "collections": [], "error": str(e)}
@@ -281,7 +289,7 @@ async def get_payments(org_id: Optional[str] = Depends(get_org_scope)):
     """Get all payments (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        payments = await db.payments.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+        payments = await get_db().payments.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
         return {"success": True, "payments": payments}
     except Exception as e:
         return {"success": False, "payments": [], "error": str(e)}
@@ -295,7 +303,7 @@ async def get_banking_accounts(org_id: Optional[str] = Depends(get_org_scope)):
     """Get all banking accounts (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        accounts = await db.bank_accounts.find(query, {"_id": 0}).to_list(1000)
+        accounts = await get_db().bank_accounts.find(query, {"_id": 0}).to_list(1000)
         return {"success": True, "accounts": accounts}
     except Exception as e:
         return {"success": False, "accounts": [], "error": str(e)}
@@ -304,7 +312,7 @@ async def get_banking_accounts(org_id: Optional[str] = Depends(get_org_scope)):
 async def get_banking_transactions():
     """Get all banking transactions"""
     try:
-        transactions = await db.banking_transactions.find({}, {"_id": 0}).sort("date", -1).to_list(1000)
+        transactions = await get_db().banking_transactions.find({}, {"_id": 0}).sort("date", -1).to_list(1000)
         return {"success": True, "transactions": transactions}
     except Exception as e:
         return {"success": False, "transactions": [], "error": str(e)}
@@ -317,7 +325,7 @@ async def get_banking_transactions():
 async def get_cashflow_summary(month: int, year: int):
     """Get cash flow summary for a specific month"""
     try:
-        actual = await db.cashflow_actuals.find_one(
+        actual = await get_db().cashflow_actuals.find_one(
             {"month": month, "year": year},
             {"_id": 0}
         )
@@ -352,7 +360,7 @@ async def get_cashflow_summary(month: int, year: int):
 async def get_cashflow_transactions(month: int, year: int):
     """Get cash flow transactions for a specific month"""
     try:
-        actual = await db.cashflow_actuals.find_one(
+        actual = await get_db().cashflow_actuals.find_one(
             {"month": month, "year": year},
             {"_id": 0}
         )
@@ -368,7 +376,7 @@ async def get_cashflow_transactions(month: int, year: int):
 async def get_cashflow_budgets(year: int):
     """Get cash flow budgets for a year"""
     try:
-        budgets = await db.cashflow_budgets.find(
+        budgets = await get_db().cashflow_budgets.find(
             {"year": year},
             {"_id": 0}
         ).to_list(12)
@@ -381,12 +389,12 @@ async def get_cashflow_budgets(year: int):
 async def get_cashflow_variance(month: int, year: int):
     """Get cash flow variance for a specific month"""
     try:
-        actual = await db.cashflow_actuals.find_one(
+        actual = await get_db().cashflow_actuals.find_one(
             {"month": month, "year": year},
             {"_id": 0}
         )
         
-        budget = await db.cashflow_budgets.find_one(
+        budget = await get_db().cashflow_budgets.find_one(
             {"month": month, "year": year},
             {"_id": 0}
         )
@@ -414,7 +422,7 @@ async def get_cashflow_forecast(months: int = 6):
     """Get cash flow forecast"""
     try:
         # Simple forecast based on historical averages
-        actuals = await db.cashflow_actuals.find({}, {"_id": 0}).sort("month", -1).limit(6).to_list(6)
+        actuals = await get_db().cashflow_actuals.find({}, {"_id": 0}).sort("month", -1).limit(6).to_list(6)
         
         if not actuals:
             return {"success": True, "predictions": []}

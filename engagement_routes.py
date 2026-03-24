@@ -2,13 +2,17 @@
 Engagement Routes for Lead Module
 Handles activity tracking, follow-ups, and engagement scoring
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
 import uuid
 
 engagement_router = APIRouter(prefix="/api/commerce/leads", tags=["Lead Engagement"])
+
+def get_db():
+    from main import db
+    return db
 
 # Pydantic Models
 class EngagementCreate(BaseModel):
@@ -37,7 +41,7 @@ class Engagement(BaseModel):
 
 
 @engagement_router.post("/{lead_id}/engagements")
-async def create_engagement(lead_id: str, engagement: EngagementCreate, db):
+async def create_engagement(lead_id: str, engagement: EngagementCreate, db = Depends(get_db)):
     """Log a new engagement activity"""
     try:
         # Get lead
@@ -115,7 +119,7 @@ async def create_engagement(lead_id: str, engagement: EngagementCreate, db):
 
 
 @engagement_router.get("/{lead_id}/engagements")
-async def get_lead_engagements(lead_id: str, db):
+async def get_lead_engagements(lead_id: str, db = Depends(get_db)):
     """Get all engagements for a lead"""
     try:
         engagements = await db.lead_engagements.find(

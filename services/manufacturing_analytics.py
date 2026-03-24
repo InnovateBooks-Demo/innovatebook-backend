@@ -8,9 +8,19 @@ from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(MONGO_URL)
-db = client['innovate_books_db']
+_client = None
+_db = None
+
+def get_db():
+    """Get database instance (Lazy loaded)"""
+    global _client, _db
+    if _db is None:
+        from motor.motor_asyncio import AsyncIOMotorClient
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+        db_name = os.environ.get('DB_NAME', 'innovate_books_db')
+        _client = AsyncIOMotorClient(mongo_url)
+        _db = _client[db_name]
+    return _db
 
 
 class ManufacturingAnalytics:
@@ -67,7 +77,7 @@ class ManufacturingAnalytics:
             {'$sort': {'_id': 1}}
         ])
         
-        results = await db['mfg_leads'].aggregate(pipeline).to_list(length=100)
+        results = await get_db()['mfg_leads'].aggregate(pipeline).to_list(length=100)
         
         # Format results
         stages = ['Intake', 'Feasibility', 'Costing', 'Approval', 'Won', 'Lost']
@@ -127,7 +137,7 @@ class ManufacturingAnalytics:
             if filters.get('date_from'):
                 match_query['created_at'] = {'$gte': filters['date_from']}
         
-        leads = await db['mfg_leads'].find(match_query).to_list(length=10000)
+        leads = await get_db()['mfg_leads'].find(match_query).to_list(length=10000)
         
         # Calculate funnel metrics
         funnel = {
@@ -184,7 +194,7 @@ class ManufacturingAnalytics:
             if filters.get('industry'):
                 match_query['customer_industry'] = filters['industry']
         
-        leads_in_approval = await db['mfg_leads'].find(match_query).to_list(length=1000)
+        leads_in_approval = await get_db()['mfg_leads'].find(match_query).to_list(length=1000)
         
         approval_stats = {
             'total_in_approval': len(leads_in_approval),
@@ -259,7 +269,7 @@ class ManufacturingAnalytics:
             if filters.get('date_from'):
                 match_query['created_at'] = {'$gte': filters['date_from']}
         
-        won_leads = await db['mfg_leads'].find(match_query).to_list(length=1000)
+        won_leads = await get_db()['mfg_leads'].find(match_query).to_list(length=1000)
         
         total_time = 0
         lead_times = []
@@ -324,7 +334,7 @@ class ManufacturingAnalytics:
             {'$sort': {'total_value': -1}}
         ]
         
-        results = await db['mfg_leads'].aggregate(pipeline).to_list(length=100)
+        results = await get_db()['mfg_leads'].aggregate(pipeline).to_list(length=100)
         
         # Calculate metrics
         industry_performance = []
@@ -376,7 +386,7 @@ class ManufacturingAnalytics:
             {'$sort': {'total_value': -1}}
         ]
         
-        results = await db['mfg_leads'].aggregate(pipeline).to_list(length=100)
+        results = await get_db()['mfg_leads'].aggregate(pipeline).to_list(length=100)
         
         # Calculate metrics
         rep_performance = []
@@ -421,7 +431,7 @@ class ManufacturingAnalytics:
             }
         ]
         
-        results = await db['mfg_leads'].aggregate(pipeline).to_list(length=100)
+        results = await get_db()['mfg_leads'].aggregate(pipeline).to_list(length=100)
         
         risk_data = {
             'Low': {'count': 0, 'value': 0},
@@ -438,7 +448,7 @@ class ManufacturingAnalytics:
                 }
         
         # Get high risk leads
-        high_risk_leads = await db['mfg_leads'].find(
+        high_risk_leads = await get_db()['mfg_leads'].find(
             {'risk_level': 'High'}
         ).sort('risk_score', -1).limit(10).to_list(length=10)
         
@@ -491,14 +501,14 @@ class ManufacturingAnalytics:
             {'$sort': {'total_leads': -1}}
         ]
         
-        results = await db['mfg_leads'].aggregate(pipeline).to_list(length=100)
+        results = await get_db()['mfg_leads'].aggregate(pipeline).to_list(length=100)
         
         plant_data = []
         for result in results:
             plant_id = result['_id']
             
             # Get plant name from master
-            plant = await db['mfg_plants'].find_one({'id': plant_id})
+            plant = await get_db()['mfg_plants'].find_one({'id': plant_id})
             plant_name = plant.get('plant_name') if plant else plant_id
             
             plant_data.append({
@@ -554,7 +564,7 @@ class ManufacturingAnalytics:
         ]
         
         try:
-            results = await db['mfg_leads'].aggregate(pipeline).to_list(length=100)
+            results = await get_db()['mfg_leads'].aggregate(pipeline).to_list(length=100)
         except:
             # Fallback if date parsing fails
             results = []

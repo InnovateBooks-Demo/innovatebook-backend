@@ -32,10 +32,19 @@ except ImportError:
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
-mongo_url = os.environ.get('MONGO_URL')
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+_client = None
+_db = None
+
+def get_db():
+    """Get database instance (Lazy loaded)"""
+    global _client, _db
+    if _db is None:
+        from motor.motor_asyncio import AsyncIOMotorClient
+        mongo_url = os.environ.get('MONGO_URL')
+        db_name = os.environ.get('DB_NAME', 'innovatebooks')
+        _client = AsyncIOMotorClient(mongo_url)
+        _db = _client[db_name]
+    return _db
 
 # Create router
 lead_router = APIRouter(prefix="/commerce/leads", tags=["Lead Management"])
@@ -44,9 +53,6 @@ lead_router = APIRouter(prefix="/commerce/leads", tags=["Lead Management"])
 EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
 
 
-def get_db():
-    """Database dependency"""
-    return db
 
 
 def generate_fingerprint(lead_data: Dict[str, Any]) -> str:
@@ -99,7 +105,7 @@ async def create_lead(lead_data: LeadCreate, db=Depends(get_db)):
     """
     try:
         # Generate lead_id
-        lead_count = await db.commerce_leads.count_documents({})
+        lead_count = await get_db().commerce_leads.count_documents({})
         year = datetime.now().year
         lead_id = f"LD-{year}-{str(lead_count + 1).zfill(6)}"
         
@@ -157,7 +163,7 @@ async def create_lead(lead_data: LeadCreate, db=Depends(get_db)):
         lead_dict['created_at'] = lead_dict['created_at'].isoformat() if isinstance(lead_dict['created_at'], datetime) else lead_dict['created_at']
         lead_dict['updated_at'] = lead_dict['updated_at'].isoformat() if isinstance(lead_dict['updated_at'], datetime) else lead_dict['updated_at']
         
-        await db.commerce_leads.insert_one(lead_dict)
+        await get_db().commerce_leads.insert_one(lead_dict)
         
         # Automatically trigger enrichment
         # (In real implementation, this would be async background task)
@@ -192,7 +198,7 @@ async def list_leads(
         if assigned_to:
             query["assigned_to"] = assigned_to
         
-        leads = await db.commerce_leads.find(query).skip(skip).limit(limit).to_list(length=limit)
+        leads = await get_db().commerce_leads.find(query).skip(skip).limit(limit).to_list(length=limit)
         return leads
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -204,7 +210,7 @@ async def get_lead(lead_id: str, db=Depends(get_db)):
     try:
         from bson import ObjectId as BSONObjectId
         
-        lead = await db.commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -236,7 +242,7 @@ async def update_lead(lead_id: str, update_data: Dict[str, Any], db=Depends(get_
     try:
         print(f"📝 Updating lead {lead_id} with data: {update_data}")
         
-        lead = await db.commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -248,7 +254,7 @@ async def update_lead(lead_id: str, update_data: Dict[str, Any], db=Depends(get_
         update_data['updated_at'] = datetime.now(timezone.utc)
         update_data['modified_by'] = "current_user"
         
-        await db.commerce_leads.update_one(
+        await get_db().commerce_leads.update_one(
             {"lead_id": lead_id},
             {"$set": update_data}
         )
@@ -266,7 +272,7 @@ async def partial_update_lead(lead_id: str, update_data: dict, db=Depends(get_db
     try:
         print(f"📝 Partial update for lead {lead_id} with data: {update_data}")
         
-        lead = await db.commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -275,7 +281,7 @@ async def partial_update_lead(lead_id: str, update_data: dict, db=Depends(get_db
         update_data['modified_by'] = "current_user"
         
         # Update the lead
-        await db.commerce_leads.update_one(
+        await get_db().commerce_leads.update_one(
             {"lead_id": lead_id},
             {"$set": update_data}
         )
@@ -301,7 +307,7 @@ async def enrich_lead(lead_id: str, db=Depends(get_db)):
         print(f"🚀 Starting GPT-5 enrichment for lead: {lead_id}")
         from gpt_enrichment_service import enrich_lead_with_gpt
         
-        lead = await db.commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -411,7 +417,7 @@ async def enrich_lead(lead_id: str, db=Depends(get_db)):
             status = "Partial"
             print(f"⚠️ GPT enrichment failed: {gpt_result.get('error')}")
         
-        await db.commerce_leads.update_one(
+        await get_db().commerce_leads.update_one(
             {"lead_id": lead_id},
             {
                 "$set": {
@@ -466,7 +472,7 @@ async def validate_lead(lead_id: str, db=Depends(get_db)):
     Validates email, phone, checks blacklist, verifies business registry
     """
     try:
-        lead = await db.commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -499,7 +505,7 @@ async def validate_lead(lead_id: str, db=Depends(get_db)):
         # Duplicate detection
         fingerprint = lead.get('fingerprint', '')
         if fingerprint:
-            existing = await db.commerce_leads.find_one({
+            existing = await get_db().commerce_leads.find_one({
                 "fingerprint": fingerprint,
                 "lead_id": {"$ne": lead_id}
             })
@@ -523,7 +529,7 @@ async def validate_lead(lead_id: str, db=Depends(get_db)):
         else:
             status = ValidationStatus.VERIFIED
         
-        await db.commerce_leads.update_one(
+        await get_db().commerce_leads.update_one(
             {"lead_id": lead_id},
             {
                 "$set": {
@@ -575,7 +581,7 @@ async def qualify_lead(lead_id: str, db=Depends(get_db)):
     Calculates Fit (40%) + Intent (30%) + Potential (30%) = Lead Score
     """
     try:
-        lead = await db.commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -665,7 +671,7 @@ async def qualify_lead(lead_id: str, db=Depends(get_db)):
         
         reasoning = f"Fit: {fit_score}/40 (Industry match, size, geography) | Intent: {intent_score}/30 (Source quality, engagement) | Potential: {potential_score}/30 (Deal value ₹{deal_value:,.0f}, decision maker)"
         
-        await db.commerce_leads.update_one(
+        await get_db().commerce_leads.update_one(
             {"lead_id": lead_id},
             {
                 "$set": {
@@ -729,7 +735,7 @@ async def assign_lead(
     Rule-based + AI-optimized assignment with follow-up tracking
     """
     try:
-        lead = await db.commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -763,7 +769,7 @@ async def assign_lead(
         
         follow_up_due = datetime.now(timezone.utc) + timedelta(hours=follow_up_hours)
         
-        await db.commerce_leads.update_one(
+        await get_db().commerce_leads.update_one(
             {"lead_id": lead_id},
             {
                 "$set": {
@@ -821,7 +827,7 @@ async def log_engagement(
     Log interaction activities (calls, emails, meetings)
     """
     try:
-        lead = await db.commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -843,7 +849,7 @@ async def log_engagement(
         potential = lead.get('potential_score', 0)
         new_total = fit + new_intent + potential
         
-        await db.commerce_leads.update_one(
+        await get_db().commerce_leads.update_one(
             {"lead_id": lead_id},
             {
                 "$push": {
@@ -893,7 +899,7 @@ async def review_lead(lead_id: str, db=Depends(get_db)):
     Check for dormant leads, update status
     """
     try:
-        lead = await db.commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -906,7 +912,7 @@ async def review_lead(lead_id: str, db=Depends(get_db)):
             
             if days_since_activity >= 30:
                 # Mark as dormant
-                await db.commerce_leads.update_one(
+                await get_db().commerce_leads.update_one(
                     {"lead_id": lead_id},
                     {
                         "$set": {
@@ -968,7 +974,7 @@ async def close_lead(
 ):
     """Close a lead with reason"""
     try:
-        await db.commerce_leads.update_one(
+        await get_db().commerce_leads.update_one(
             {"lead_id": lead_id},
             {
                 "$set": {
@@ -1007,7 +1013,7 @@ async def convert_lead(lead_id: str, db=Depends(get_db)):
     Convert qualified lead to Evaluate module
     """
     try:
-        lead = await db.commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -1028,7 +1034,7 @@ async def convert_lead(lead_id: str, db=Depends(get_db)):
             }
         
         # Create evaluation record
-        eval_count = await db.commerce_evaluate.count_documents({})
+        eval_count = await get_db().commerce_evaluate.count_documents({})
         year = datetime.now().year
         eval_id = f"EV-{year}-{str(eval_count + 1).zfill(5)}"
         
@@ -1046,10 +1052,10 @@ async def convert_lead(lead_id: str, db=Depends(get_db)):
             "updated_at": datetime.now(timezone.utc)
         }
         
-        await db.commerce_evaluate.insert_one(evaluation_data)
+        await get_db().commerce_evaluate.insert_one(evaluation_data)
         
         # Update lead
-        await db.commerce_leads.update_one(
+        await get_db().commerce_leads.update_one(
             {"lead_id": lead_id},
             {
                 "$set": {
@@ -1099,7 +1105,7 @@ async def get_audit_trail(lead_id: str, db=Depends(get_db)):
     Get complete history of all actions
     """
     try:
-        lead = await db.commerce_leads.find_one({"lead_id": lead_id})
+        lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
         if not lead:
             raise HTTPException(status_code=404, detail="Lead not found")
         
@@ -1130,7 +1136,7 @@ async def review_dormant_leads(db=Depends(get_db)):
         cutoff_date = datetime.now(timezone.utc) - timedelta(days=30)
         
         # Find leads with no activity in 30 days
-        dormant_leads = await db.commerce_leads.find({
+        dormant_leads = await get_db().commerce_leads.find({
             "last_activity_date": {"$lt": cutoff_date},
             "dormant_flag": False,
             "lead_status": {"$nin": [LeadStatus.CONVERTED.value, LeadStatus.CLOSED.value]}
@@ -1138,7 +1144,7 @@ async def review_dormant_leads(db=Depends(get_db)):
         
         count = 0
         for lead in dormant_leads:
-            await db.commerce_leads.update_one(
+            await get_db().commerce_leads.update_one(
                 {"lead_id": lead['lead_id']},
                 {
                     "$set": {
@@ -1164,7 +1170,7 @@ async def get_lead_raw(lead_id: str, db=Depends(get_db)):
     from bson import json_util
     import json
     
-    lead = await db.commerce_leads.find_one({"lead_id": lead_id})
+    lead = await get_db().commerce_leads.find_one({"lead_id": lead_id})
     if not lead:
         return {"error": "Not found"}
     

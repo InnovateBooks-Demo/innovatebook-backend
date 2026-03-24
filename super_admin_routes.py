@@ -16,7 +16,15 @@ import os
 router = APIRouter(prefix="/super-admin", tags=["Super Admin"])
 
 # Import shared dependencies
-from main import db, pwd_context
+def get_db():
+    """Get database instance from main"""
+    from main import db
+    return db
+
+def get_pwd_context():
+    """Get password context from main"""
+    from main import pwd_context
+    return pwd_context
 
 # JWT configuration (same as enterprise auth)
 JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
@@ -36,12 +44,12 @@ async def get_current_user_enterprise(credentials: HTTPAuthorizationCredentials 
             raise HTTPException(status_code=401, detail="Invalid token")
         
         # Check enterprise_users first
-        user = await db.enterprise_users.find_one({"user_id": user_id}, {"_id": 0})
+        user = await get_db().enterprise_users.find_one({"user_id": user_id}, {"_id": 0})
         if not user:
             # Fallback to users collection
-            user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+            user = await get_db().users.find_one({"user_id": user_id}, {"_id": 0})
         if not user:
-            user = await db.users.find_one({"id": user_id}, {"_id": 0})
+            user = await get_db().users.find_one({"id": user_id}, {"_id": 0})
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
         
@@ -165,11 +173,11 @@ async def verify_super_admin(current_user: dict = Depends(get_current_user_enter
 @router.get("/organizations")
 async def list_organizations(current_user: dict = Depends(verify_super_admin)):
     """List all organizations (Super Admin only)"""
-    orgs = await db.organizations.find({}).to_list(1000)
+    orgs = await get_db().organizations.find({}).to_list(1000)
     
     # Get user counts for each org
     for org in orgs:
-        user_count = await db.users.count_documents({"org_id": org.get("org_id")})
+        user_count = await get_db().users.count_documents({"org_id": org.get("org_id")})
         org["user_count"] = user_count
     
     return {"organizations": serialize_docs(orgs)}
@@ -177,19 +185,19 @@ async def list_organizations(current_user: dict = Depends(verify_super_admin)):
 @router.get("/organizations/{org_id}")
 async def get_organization(org_id: str, current_user: dict = Depends(verify_super_admin)):
     """Get organization details"""
-    org = await db.organizations.find_one({"org_id": org_id})
+    org = await get_db().organizations.find_one({"org_id": org_id})
     if not org:
         raise HTTPException(status_code=404, detail="Organization not found")
     
     # Get users in this org
-    users = await db.users.find({"org_id": org_id}, {"password_hash": 0}).to_list(100)
+    users = await get_db().users.find({"org_id": org_id}, {"password_hash": 0}).to_list(100)
     org["users"] = serialize_docs(users)
     
     # Get usage stats
     org["stats"] = {
         "user_count": len(users),
-        "invoices": await db.invoices.count_documents({"org_id": org_id}),
-        "transactions": await db.transactions.count_documents({"org_id": org_id}),
+        "invoices": await get_db().invoices.count_documents({"org_id": org_id}),
+        "transactions": await get_db().transactions.count_documents({"org_id": org_id}),
     }
     
     return serialize_doc(org)
@@ -198,7 +206,7 @@ async def get_organization(org_id: str, current_user: dict = Depends(verify_supe
 async def create_organization(org_data: OrganizationCreate, current_user: dict = Depends(verify_super_admin)):
     """Create a new organization"""
     # Check if org name already exists
-    existing = await db.organizations.find_one({"name": org_data.name})
+    existing = await get_db().organizations.find_one({"name": org_data.name})
     if existing:
         raise HTTPException(status_code=400, detail="Organization name already exists")
     
@@ -221,7 +229,7 @@ async def create_organization(org_data: OrganizationCreate, current_user: dict =
         "subscription_end": None
     }
     
-    await db.organizations.insert_one(new_org)
+    await get_db().organizations.insert_one(new_org)
     
     # Broadcast to super admins
     await manager.broadcast_to_super_admins({
@@ -235,7 +243,7 @@ async def create_organization(org_data: OrganizationCreate, current_user: dict =
 @router.put("/organizations/{org_id}")
 async def update_organization(org_id: str, org_data: OrganizationUpdate, current_user: dict = Depends(verify_super_admin)):
     """Update organization"""
-    existing = await db.organizations.find_one({"org_id": org_id})
+    existing = await get_db().organizations.find_one({"org_id": org_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Organization not found")
     
@@ -243,9 +251,9 @@ async def update_organization(org_id: str, org_data: OrganizationUpdate, current
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     update_data["updated_by"] = current_user.get("user_id")
     
-    await db.organizations.update_one({"org_id": org_id}, {"$set": update_data})
+    await get_db().organizations.update_one({"org_id": org_id}, {"$set": update_data})
     
-    updated = await db.organizations.find_one({"org_id": org_id})
+    updated = await get_db().organizations.find_one({"org_id": org_id})
     
     # Broadcast update
     await manager.broadcast_to_super_admins({
@@ -259,11 +267,11 @@ async def update_organization(org_id: str, org_data: OrganizationUpdate, current
 @router.delete("/organizations/{org_id}")
 async def deactivate_organization(org_id: str, current_user: dict = Depends(verify_super_admin)):
     """Deactivate an organization (soft delete)"""
-    existing = await db.organizations.find_one({"org_id": org_id})
+    existing = await get_db().organizations.find_one({"org_id": org_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Organization not found")
     
-    await db.organizations.update_one(
+    await get_db().organizations.update_one(
         {"org_id": org_id},
         {"$set": {
             "is_active": False,
@@ -273,7 +281,7 @@ async def deactivate_organization(org_id: str, current_user: dict = Depends(veri
     )
     
     # Deactivate all users in this org
-    await db.users.update_many(
+    await get_db().users.update_many(
         {"org_id": org_id},
         {"$set": {"is_active": False}}
     )
@@ -296,26 +304,26 @@ async def list_all_users(org_id: Optional[str] = None, current_user: dict = Depe
     if org_id:
         query["org_id"] = org_id
     
-    users = await db.users.find(query, {"password_hash": 0}).to_list(1000)
+    users = await get_db().users.find(query, {"password_hash": 0}).to_list(1000)
     return {"users": serialize_docs(users)}
 
 @router.post("/users")
 async def create_user(user_data: UserCreate, current_user: dict = Depends(verify_super_admin)):
     """Create a new user for an organization"""
     # Check if email exists
-    existing = await db.users.find_one({"email": user_data.email})
+    existing = await get_db().users.find_one({"email": user_data.email})
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
     
     # Check if org exists and is active
-    org = await db.organizations.find_one({"org_id": user_data.org_id})
+    org = await get_db().organizations.find_one({"org_id": user_data.org_id})
     if not org:
         raise HTTPException(status_code=404, detail="Organization not found")
     if not org.get("is_active", True):
         raise HTTPException(status_code=400, detail="Organization is not active")
     
     # Check user limit
-    user_count = await db.users.count_documents({"org_id": user_data.org_id})
+    user_count = await get_db().users.count_documents({"org_id": user_data.org_id})
     if user_count >= org.get("max_users", 5):
         raise HTTPException(status_code=400, detail=f"Organization has reached maximum users ({org.get('max_users')})")
     
@@ -325,7 +333,7 @@ async def create_user(user_data: UserCreate, current_user: dict = Depends(verify
     new_user = {
         "user_id": user_id,
         "email": user_data.email,
-        "password_hash": pwd_context.hash(user_data.password),
+        "password_hash": get_pwd_context().hash(user_data.password),
         "first_name": user_data.first_name,
         "last_name": user_data.last_name,
         "role": user_data.role,
@@ -335,7 +343,7 @@ async def create_user(user_data: UserCreate, current_user: dict = Depends(verify
         "created_by": current_user.get("user_id")
     }
     
-    await db.users.insert_one(new_user)
+    await get_db().users.insert_one(new_user)
     
     # Remove password hash from response
     del new_user["password_hash"]
@@ -358,16 +366,16 @@ async def create_user(user_data: UserCreate, current_user: dict = Depends(verify
 @router.put("/users/{user_id}")
 async def update_user(user_id: str, user_data: UserUpdate, current_user: dict = Depends(verify_super_admin)):
     """Update a user"""
-    existing = await db.users.find_one({"user_id": user_id})
+    existing = await get_db().users.find_one({"user_id": user_id})
     if not existing:
         raise HTTPException(status_code=404, detail="User not found")
     
     update_data = {k: v for k, v in user_data.dict().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    await db.users.update_one({"user_id": user_id}, {"$set": update_data})
+    await get_db().users.update_one({"user_id": user_id}, {"$set": update_data})
     
-    updated = await db.users.find_one({"user_id": user_id}, {"password_hash": 0})
+    updated = await get_db().users.find_one({"user_id": user_id}, {"password_hash": 0})
     
     # Broadcast
     await manager.broadcast_to_super_admins({
@@ -381,14 +389,14 @@ async def update_user(user_id: str, user_data: UserUpdate, current_user: dict = 
 @router.delete("/users/{user_id}")
 async def deactivate_user(user_id: str, current_user: dict = Depends(verify_super_admin)):
     """Deactivate a user"""
-    existing = await db.users.find_one({"user_id": user_id})
+    existing = await get_db().users.find_one({"user_id": user_id})
     if not existing:
         raise HTTPException(status_code=404, detail="User not found")
     
     if existing.get("role") == "super_admin":
         raise HTTPException(status_code=400, detail="Cannot deactivate super admin")
     
-    await db.users.update_one(
+    await get_db().users.update_one(
         {"user_id": user_id},
         {"$set": {"is_active": False, "deactivated_at": datetime.now(timezone.utc).isoformat()}}
     )
@@ -398,14 +406,14 @@ async def deactivate_user(user_id: str, current_user: dict = Depends(verify_supe
 @router.post("/users/{user_id}/reset-password")
 async def reset_user_password(user_id: str, new_password: str, current_user: dict = Depends(verify_super_admin)):
     """Reset a user's password"""
-    existing = await db.users.find_one({"user_id": user_id})
+    existing = await get_db().users.find_one({"user_id": user_id})
     if not existing:
         raise HTTPException(status_code=404, detail="User not found")
     
-    await db.users.update_one(
+    await get_db().users.update_one(
         {"user_id": user_id},
         {"$set": {
-            "password_hash": pwd_context.hash(new_password),
+            "password_hash": get_pwd_context().hash(new_password),
             "password_reset_at": datetime.now(timezone.utc).isoformat(),
             "password_reset_by": current_user.get("user_id")
         }}
@@ -418,19 +426,19 @@ async def reset_user_password(user_id: str, new_password: str, current_user: dic
 @router.get("/dashboard")
 async def get_super_admin_dashboard(current_user: dict = Depends(verify_super_admin)):
     """Get super admin dashboard stats"""
-    total_orgs = await db.organizations.count_documents({})
-    active_orgs = await db.organizations.count_documents({"is_active": True})
-    total_users = await db.users.count_documents({})
-    active_users = await db.users.count_documents({"is_active": True})
+    total_orgs = await get_db().organizations.count_documents({})
+    active_orgs = await get_db().organizations.count_documents({"is_active": True})
+    total_users = await get_db().users.count_documents({})
+    active_users = await get_db().users.count_documents({"is_active": True})
     
     # Get subscription breakdown
-    plans = await db.organizations.aggregate([
+    plans = await get_db().organizations.aggregate([
         {"$group": {"_id": "$subscription_plan", "count": {"$sum": 1}}}
     ]).to_list(100)
     
     # Get recent activity
-    recent_orgs = await db.organizations.find({}).sort("created_at", -1).limit(5).to_list(5)
-    recent_users = await db.users.find({}, {"password_hash": 0}).sort("created_at", -1).limit(5).to_list(5)
+    recent_orgs = await get_db().organizations.find({}).sort("created_at", -1).limit(5).to_list(5)
+    recent_users = await get_db().users.find({}, {"password_hash": 0}).sort("created_at", -1).limit(5).to_list(5)
     
     return {
         "stats": {
@@ -479,18 +487,18 @@ async def admin_websocket_endpoint(websocket: WebSocket):
 async def seed_super_admin():
     """Create initial super admin user (no auth required - run once)"""
     # Check if super admin exists in enterprise_users
-    existing = await db.enterprise_users.find_one({"is_super_admin": True})
+    existing = await get_db().enterprise_users.find_one({"is_super_admin": True})
     if existing:
         return {"message": "Super admin already exists", "email": existing.get("email")}
     
     # Also check users collection
-    existing_user = await db.users.find_one({"role": "super_admin"})
+    existing_user = await get_db().users.find_one({"role": "super_admin"})
     
     # Create default organization for super admin
     org_id = "ORG-SUPERADMIN"
-    org_exists = await db.organizations.find_one({"org_id": org_id})
+    org_exists = await get_db().organizations.find_one({"org_id": org_id})
     if not org_exists:
-        await db.organizations.insert_one({
+        await get_db().organizations.insert_one({
             "org_id": org_id,
             "name": "InnovateBooks Admin",
             "display_name": "InnovateBooks Administration",
@@ -503,7 +511,7 @@ async def seed_super_admin():
     
     # Create super admin user in both collections
     user_id = f"USR-{uuid.uuid4().hex[:8].upper()}"
-    password_hash = pwd_context.hash("Admin@123")
+    password_hash = get_pwd_context().hash("Admin@123")
     now = datetime.now(timezone.utc).isoformat()
     
     # For enterprise_users collection (used by enterprise auth)
@@ -521,7 +529,7 @@ async def seed_super_admin():
         "created_at": now
     }
     
-    await db.enterprise_users.insert_one(enterprise_user)
+    await get_db().enterprise_users.insert_one(enterprise_user)
     
     # For users collection (used by standard auth)
     if not existing_user:
@@ -537,7 +545,7 @@ async def seed_super_admin():
             "is_active": True,
             "created_at": now
         }
-        await db.users.insert_one(standard_user)
+        await get_db().users.insert_one(standard_user)
     
     return {
         "success": True,

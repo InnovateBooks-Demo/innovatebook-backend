@@ -1,3 +1,4 @@
+print("STEP 1: Starting imports")
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, UploadFile, File
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
@@ -40,18 +41,30 @@ load_dotenv(ROOT_DIR / '.env')
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# MongoDB connection with error handling
+# MongoDB connection with error handling (Deferred to startup)
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 db_name = os.environ.get('DB_NAME', 'innovate_books_db')
 
-try:
-    client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000)
-    db = client[db_name]
-    logger.info(f"MongoDB client initialized for database: {db_name}")
-except Exception as e:
-    logger.error(f"Failed to initialize MongoDB client: {e}")
-    client = None
-    db = None
+client = None
+db = None
+
+async def init_mongo():
+    global client, db
+    if db is not None:
+        return
+    
+    print("STEP 3.1: Initializing MongoDB in startup")
+    try:
+        client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000)
+        db = client[db_name]
+        print(f"STEP 4: MongoDB client initialized for database: {db_name}")
+        logger.info(f"MongoDB client initialized for database: {db_name}")
+    except Exception as e:
+        print(f"STEP 4 ERROR: Failed to initialize MongoDB: {e}")
+        logger.error(f"Failed to initialize MongoDB client: {e}")
+        client = None
+        db = None
+
 
 
 
@@ -67,7 +80,15 @@ security = HTTPBearer()
 from auth_utils import create_access_token, verify_token
 
 # Create the main app without a prefix
+print("STEP 5: Creating FastAPI app")
 app = FastAPI()
+print("STEP 6: App created")
+
+@app.on_event("startup")
+async def startup_event():
+    print("STEP 10: Startup event triggered")
+    await init_mongo()
+    print("STEP 11: Startup complete")
 
 
 # app.include_router(public_invite_router)
@@ -4542,8 +4563,8 @@ async def create_bill_journal_entry(bill_id: str, bill_data: dict, user_id: str)
     return journal_dict
 
 # Import Commerce routes
-from commerce_routes import commerce_router
-from lead_sop_complete import lead_router
+from commerce_routes import router as commerce_router
+from lead_sop_complete import router as lead_router
 from engagement_routes import engagement_router
 from auth_routes import router as auth_router
 # from routes.auth.auth_routes import router as auth_router
@@ -4560,21 +4581,34 @@ from auth_routes import router as auth_router
 from legacy_chat_adapter import router as legacy_chat_router
 from user_management_routes import router as user_management_router
 from routes.integrations.webrtc_routes import router as webrtc_router
+print("STEP 7: Starting Route Imports")
 from manufacturing_routes import router as manufacturing_router
 from manufacturing_routes_phase2 import router as manufacturing_phase2_router
+print("STEP 8: Before manufacturing_routes_phase3 import")
 from manufacturing_routes_phase3 import router as manufacturing_phase3_router
+print("STEP 9: After manufacturing_routes_phase3 import")
 from finance_routes import router as finance_router
+print("STEP 9.1: After finance_routes import")
 from workforce_routes import router as workforce_router
+print("STEP 9.2: After workforce_routes import")
 from operations_routes import router as operations_router
+print("STEP 9.3: After operations_routes import")
 from ib_finance.router import router as ib_finance_router
+print("STEP 9.4: After ib_finance.router import")
 from ib_workforce_routes import router as ib_workforce_router
+print("STEP 9.5: After ib_workforce_routes import")
 from ib_capital_routes import router as ib_capital_router
+print("STEP 9.6: After ib_capital_routes import")
 from sla_monitoring_routes import router as sla_monitoring_router
+print("STEP 9.7: After sla_monitoring_routes import")
 from capital_routes import router as capital_router
+print("STEP 9.8: After capital_routes import")
 from financial_reports_routes import router as financial_reports_router
+print("STEP 9.9: After financial_reports_routes import")
 from finance_events_routes import router as finance_events_router
 from finance_export_routes import router as finance_export_router
 from finance_advanced_routes import router as finance_advanced_router
+print("STEP 10: All Route Imports Complete")
 
 # Import Enterprise routes
 from enterprise_auth_routes import router as enterprise_auth_router

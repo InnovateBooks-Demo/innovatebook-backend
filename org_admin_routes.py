@@ -13,19 +13,16 @@ from enterprise_auth_service import hash_password
 from enterprise_middleware import verify_token, validate_tenant
 from rbac_engine import assign_permissions_to_role
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
+# from motor.motor_asyncio import AsyncIOMotorClient # Removed to prevent startup hang
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/enterprise/org-admin", tags=["Organization Admin"])
 
-# Direct MongoDB connection (avoid circular import)
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
 
 def get_db():
-    """Get database instance"""
+    """Get database instance from main"""
+    from main import db
     return db
 
 def require_org_admin(token_payload: dict = Depends(validate_tenant)):

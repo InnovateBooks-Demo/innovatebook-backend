@@ -15,26 +15,51 @@ import os
 
 router = APIRouter(prefix="/api/ib-capital", tags=["IB Capital"])
 
-# MongoDB connection
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-db_name = os.environ.get('DB_NAME', 'innovate_books_db')
-client = AsyncIOMotorClient(mongo_url)
-db = client[db_name]
+# MongoDB connection (Lazy loaded)
+_mongo_client = None
+_db_instance = None
+
+def get_db():
+    global _mongo_client, _db_instance
+    if _db_instance is None:
+        print("[Antigravity] Initializing Lazy MongoDB client in ib_capital_routes")
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+        db_name = os.environ.get('DB_NAME', 'innovate_books_db')
+        _mongo_client = AsyncIOMotorClient(mongo_url)
+        _db_instance = _mongo_client[db_name]
+    return _db_instance
+
+# Helper proxies for collections
+class CollectionProxy:
+    def __init__(self, name):
+        self.name = name
+    def __getattr__(self, item):
+        return getattr(get_db()[self.name], item)
+    def find(self, *args, **kwargs):
+        return get_db()[self.name].find(*args, **kwargs)
+    def find_one(self, *args, **kwargs):
+        return get_db()[self.name].find_one(*args, **kwargs)
+    def insert_one(self, *args, **kwargs):
+        return get_db()[self.name].insert_one(*args, **kwargs)
+    def update_one(self, *args, **kwargs):
+        return get_db()[self.name].update_one(*args, **kwargs)
+    def count_documents(self, *args, **kwargs):
+        return get_db()[self.name].count_documents(*args, **kwargs)
 
 # Collections
-owners_col = db.capital_owners
-instruments_col = db.capital_instruments
-ownership_lots_col = db.capital_ownership_lots
-funding_rounds_col = db.capital_funding_rounds
-equity_issues_col = db.capital_equity_issues
-debts_col = db.capital_debts
-covenants_col = db.capital_covenants
-treasury_accounts_col = db.capital_treasury_accounts
-cash_inflows_col = db.capital_cash_inflows
-cash_outflows_col = db.capital_cash_outflows
-return_declarations_col = db.capital_returns
-governance_rules_col = db.capital_governance_rules
-approvals_col = db.capital_approvals
+owners_col = CollectionProxy("capital_owners")
+instruments_col = CollectionProxy("capital_instruments")
+ownership_lots_col = CollectionProxy("capital_ownership_lots")
+funding_rounds_col = CollectionProxy("capital_funding_rounds")
+equity_issues_col = CollectionProxy("capital_equity_issues")
+debts_col = CollectionProxy("capital_debts")
+covenants_col = CollectionProxy("capital_covenants")
+treasury_accounts_col = CollectionProxy("capital_treasury_accounts")
+cash_inflows_col = CollectionProxy("capital_cash_inflows")
+cash_outflows_col = CollectionProxy("capital_cash_outflows")
+return_declarations_col = CollectionProxy("capital_returns")
+governance_rules_col = CollectionProxy("capital_governance_rules")
+approvals_col = CollectionProxy("capital_approvals")
 
 # ============== ENUMS ==============
 
@@ -817,8 +842,8 @@ async def settle_return(return_id: str):
 # ============== ESOP VESTING ENDPOINTS ==============
 
 # New collections for ESOP
-esop_grants_col = db.capital_esop_grants
-esop_vesting_events_col = db.capital_esop_vesting_events
+esop_grants_col = CollectionProxy("capital_esop_grants")
+esop_vesting_events_col = CollectionProxy("capital_esop_vesting_events")
 
 class ESOPGrantCreate(BaseModel):
     employee_id: str

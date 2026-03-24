@@ -19,8 +19,16 @@ router = APIRouter(prefix="/api/manufacturing", tags=["Manufacturing Phase 3"])
 
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(MONGO_URL)
-db = client['innovate_books_db']
+_client = None
+_db = None
+
+def get_db():
+    global _client, _db
+    if _db is None:
+        print("[Antigravity] Initializing Lazy MongoDB client in manufacturing_routes_phase3")
+        _client = AsyncIOMotorClient(MONGO_URL)
+        _db = _client['innovate_books_db']
+    return _db
 
 
 # ============================================================================
@@ -440,31 +448,31 @@ async def get_dashboard_summary():
     pipeline_summary = await analytics_engine.get_pipeline_summary()
     
     # Get pending approvals count
-    pending_approvals = await db['mfg_leads'].count_documents({
+    pending_approvals = await get_db()['mfg_leads'].count_documents({
         'current_stage': 'Approval',
         'approval_status': 'Pending'
     })
     
     # Get high risk leads count
-    high_risk_count = await db['mfg_leads'].count_documents({
+    high_risk_count = await get_db()['mfg_leads'].count_documents({
         'risk_level': 'High',
         'current_stage': {'$in': ['Feasibility', 'Costing', 'Approval']}
     })
     
     # Get recent leads (last 24 hours)
     from datetime import timedelta
-    recent_leads = await db['mfg_leads'].count_documents({
+    recent_leads = await get_db()['mfg_leads'].count_documents({
         'created_at': {'$gte': (datetime.utcnow() - timedelta(days=1)).isoformat()}
     })
     
     # Get overdue tasks
-    overdue_tasks = await db['mfg_tasks'].count_documents({
+    overdue_tasks = await get_db()['mfg_tasks'].count_documents({
         'status': 'Open',
         'due_date': {'$lt': datetime.utcnow().isoformat()}
     })
     
     # Get open exceptions
-    open_exceptions = await db['mfg_exceptions'].count_documents({
+    open_exceptions = await get_db()['mfg_exceptions'].count_documents({
         'status': 'Open'
     })
     

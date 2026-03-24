@@ -11,17 +11,23 @@ from pymongo import MongoClient
 
 router = APIRouter(prefix="/commerce/governance-engine", tags=["Governance Engine"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL")
-client = MongoClient(MONGO_URL)
-db = client[os.environ.get("DB_NAME", "innovatebooks")]
+_sync_db = None
 
-# Collections
-policies_collection = db["governance_policies"]
-limits_collection = db["governance_limits"]
-authority_collection = db["governance_authority"]
-risk_rules_collection = db["governance_risk_rules"]
-audit_logs_collection = db["governance_audit_logs"]
+def get_db():
+    """Lazy-load synchronous MongoDB database instance"""
+    global _sync_db
+    if _sync_db is None:
+        from pymongo import MongoClient
+        mongo_url = os.environ.get("MONGO_URL")
+        db_name = os.environ.get("DB_NAME", "innovatebooks")
+        # Initialize client but don't connect immediately to avoid blocking
+        client = MongoClient(mongo_url, connect=False)
+        _sync_db = client[db_name]
+    return _sync_db
+
+# Removed module-level collections to prevent startup hang
+# policies_collection = db["governance_policies"] ...
+
 
 # ==================== PYDANTIC MODELS ====================
 
@@ -83,7 +89,7 @@ def serialize_doc(doc):
 
 def log_governance_audit(context_type: str, context_id: str, action: str, decision: dict, actor: str = "system"):
     """Log governance decision for audit"""
-    audit_logs_collection.insert_one({
+    get_db()["governance_audit_logs"].insert_one({
         "context_type": context_type,
         "context_id": context_id,
         "action": action,
@@ -147,7 +153,7 @@ def resolve_authority(context: dict) -> List[dict]:
     """Resolve which approvers are required based on context"""
     approvers = []
     
-    rules = list(authority_collection.find({"active": True}, {"_id": 0}))
+    rules = list(get_db()["governance_authority"].find({"active": True}, {"_id": 0}))
     deal_value = context.get("deal_value", 0)
     margin = context.get("margin_percent", 100)
     risk_score = context.get("risk_score", 0)
@@ -199,7 +205,7 @@ async def list_policies(scope: Optional[str] = None, active: Optional[bool] = No
     if active is not None:
         query["active"] = active
     
-    policies = list(policies_collection.find(query, {"_id": 0}))
+    policies = list(get_db()["governance_policies"].find(query, {"_id": 0}))
     stats = {
         "total": len(policies),
         "active": len([p for p in policies if p.get("active")]),
@@ -211,7 +217,7 @@ async def list_policies(scope: Optional[str] = None, active: Optional[bool] = No
 @router.post("/policies")
 async def create_policy(policy: PolicyCreate):
     """Create a new policy"""
-    count = policies_collection.count_documents({}) + 1
+    count = get_db()["governance_policies"].count_documents({}) + 1
     policy_id = f"POL-{count:04d}"
     
     policy_doc = {
@@ -221,13 +227,13 @@ async def create_policy(policy: PolicyCreate):
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     
-    policies_collection.insert_one(policy_doc)
+    get_db()["governance_policies"].insert_one(policy_doc)
     return {"success": True, "policy_id": policy_id}
 
 @router.get("/policies/{policy_id}")
 async def get_policy(policy_id: str):
     """Get policy details"""
-    policy = policies_collection.find_one({"policy_id": policy_id}, {"_id": 0})
+    policy = get_db()["governance_policies"].find_one({"policy_id": policy_id}, {"_id": 0})
     if not policy:
         raise HTTPException(status_code=404, detail="Policy not found")
     return {"success": True, "policy": policy}
@@ -235,7 +241,7 @@ async def get_policy(policy_id: str):
 @router.put("/policies/{policy_id}")
 async def update_policy(policy_id: str, policy: PolicyCreate):
     """Update a policy"""
-    result = policies_collection.update_one(
+    result = get_db()["governance_policies"].update_one(
         {"policy_id": policy_id},
         {"$set": {**policy.dict(), "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
@@ -246,7 +252,7 @@ async def update_policy(policy_id: str, policy: PolicyCreate):
 @router.delete("/policies/{policy_id}")
 async def delete_policy(policy_id: str):
     """Deactivate a policy"""
-    result = policies_collection.update_one(
+    result = get_db()["governance_policies"].update_one(
         {"policy_id": policy_id},
         {"$set": {"active": False, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
@@ -265,7 +271,7 @@ async def list_limits(scope: Optional[str] = None, limit_type: Optional[str] = N
     if limit_type:
         query["limit_type"] = limit_type
     
-    limits = list(limits_collection.find(query, {"_id": 0}))
+    limits = list(get_db()["governance_limits"].find(query, {"_id": 0}))
     
     # Calculate utilization for each limit
     for limit in limits:
@@ -278,7 +284,7 @@ async def list_limits(scope: Optional[str] = None, limit_type: Optional[str] = N
 @router.post("/limits")
 async def create_limit(limit: LimitCreate):
     """Create a new limit"""
-    count = limits_collection.count_documents({}) + 1
+    count = get_db()["governance_limits"].count_documents({}) + 1
     limit_id = f"LIM-{count:04d}"
     
     limit_doc = {
@@ -288,13 +294,13 @@ async def create_limit(limit: LimitCreate):
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     
-    limits_collection.insert_one(limit_doc)
+    get_db()["governance_limits"].insert_one(limit_doc)
     return {"success": True, "limit_id": limit_id}
 
 @router.get("/limits/{limit_id}")
 async def get_limit(limit_id: str):
     """Get limit details"""
-    limit = limits_collection.find_one({"limit_id": limit_id}, {"_id": 0})
+    limit = get_db()["governance_limits"].find_one({"limit_id": limit_id}, {"_id": 0})
     if not limit:
         raise HTTPException(status_code=404, detail="Limit not found")
     return {"success": True, "limit": limit}
@@ -302,7 +308,7 @@ async def get_limit(limit_id: str):
 @router.put("/limits/{limit_id}")
 async def update_limit(limit_id: str, limit: LimitCreate):
     """Update a limit"""
-    result = limits_collection.update_one(
+    result = get_db()["governance_limits"].update_one(
         {"limit_id": limit_id},
         {"$set": {**limit.dict(), "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
@@ -313,7 +319,7 @@ async def update_limit(limit_id: str, limit: LimitCreate):
 @router.post("/limits/{limit_id}/update-usage")
 async def update_limit_usage(limit_id: str, amount: float):
     """Update limit usage"""
-    result = limits_collection.update_one(
+    result = get_db()["governance_limits"].update_one(
         {"limit_id": limit_id},
         {"$inc": {"current_usage": amount}, "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}}
     )
@@ -330,13 +336,13 @@ async def list_authority_rules(scope: Optional[str] = None):
     if scope:
         query["$or"] = [{"scope": scope}, {"scope": "both"}]
     
-    rules = list(authority_collection.find(query, {"_id": 0}))
+    rules = list(get_db()["governance_authority"].find(query, {"_id": 0}))
     return {"success": True, "authority_rules": rules}
 
 @router.post("/authority")
 async def create_authority_rule(authority: AuthorityCreate):
     """Create a new authority rule"""
-    count = authority_collection.count_documents({}) + 1
+    count = get_db()["governance_authority"].count_documents({}) + 1
     authority_id = f"AUTH-{count:04d}"
     
     authority_doc = {
@@ -346,13 +352,13 @@ async def create_authority_rule(authority: AuthorityCreate):
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     
-    authority_collection.insert_one(authority_doc)
+    get_db()["governance_authority"].insert_one(authority_doc)
     return {"success": True, "authority_id": authority_id}
 
 @router.get("/authority/{authority_id}")
 async def get_authority_rule(authority_id: str):
     """Get authority rule details"""
-    rule = authority_collection.find_one({"authority_id": authority_id}, {"_id": 0})
+    rule = get_db()["governance_authority"].find_one({"authority_id": authority_id}, {"_id": 0})
     if not rule:
         raise HTTPException(status_code=404, detail="Authority rule not found")
     return {"success": True, "authority_rule": rule}
@@ -360,7 +366,7 @@ async def get_authority_rule(authority_id: str):
 @router.put("/authority/{authority_id}")
 async def update_authority_rule(authority_id: str, authority: AuthorityCreate):
     """Update an authority rule"""
-    result = authority_collection.update_one(
+    result = get_db()["governance_authority"].update_one(
         {"authority_id": authority_id},
         {"$set": {**authority.dict(), "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
@@ -373,13 +379,13 @@ async def update_authority_rule(authority_id: str, authority: AuthorityCreate):
 @router.get("/risk-rules")
 async def list_risk_rules():
     """List all risk rules"""
-    rules = list(risk_rules_collection.find({}, {"_id": 0}))
+    rules = list(get_db()["governance_risk_rules"].find({}, {"_id": 0}))
     return {"success": True, "risk_rules": rules}
 
 @router.post("/risk-rules")
 async def create_risk_rule(rule: RiskRuleCreate):
     """Create a new risk rule"""
-    count = risk_rules_collection.count_documents({}) + 1
+    count = get_db()["governance_risk_rules"].count_documents({}) + 1
     rule_id = f"RISK-{count:04d}"
     
     rule_doc = {
@@ -388,7 +394,7 @@ async def create_risk_rule(rule: RiskRuleCreate):
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    risk_rules_collection.insert_one(rule_doc)
+    get_db()["governance_risk_rules"].insert_one(rule_doc)
     return {"success": True, "rule_id": rule_id}
 
 # ==================== AUDIT LOGS ====================
@@ -407,8 +413,8 @@ async def list_audit_logs(
     if context_id:
         query["context_id"] = context_id
     
-    logs = list(audit_logs_collection.find(query, {"_id": 0}).sort("timestamp", -1).skip(skip).limit(limit))
-    total = audit_logs_collection.count_documents(query)
+    logs = list(get_db()["governance_audit_logs"].find(query, {"_id": 0}).sort("timestamp", -1).skip(skip).limit(limit))
+    total = get_db()["governance_audit_logs"].count_documents(query)
     return {"success": True, "audit_logs": logs, "total": total}
 
 # ==================== GOVERNANCE EVALUATION ENGINE ====================
@@ -433,7 +439,7 @@ async def evaluate_governance(evaluation: GovernanceEvaluation):
     }
     
     # 1. POLICY EVALUATION
-    policies = list(policies_collection.find({"active": True}, {"_id": 0}))
+    policies = list(get_db()["governance_policies"].find({"active": True}, {"_id": 0}))
     for policy in policies:
         # Check scope matches
         if policy["scope"] != "both" and policy["scope"] != evaluation.context_type:
@@ -450,7 +456,7 @@ async def evaluate_governance(evaluation: GovernanceEvaluation):
                 result["soft_blocks"].append(policy_result["message"])
     
     # 2. LIMIT EVALUATION
-    limits = list(limits_collection.find({"active": True}, {"_id": 0}))
+    limits = list(get_db()["governance_limits"].find({"active": True}, {"_id": 0}))
     for limit in limits:
         limit_result = evaluate_limit(limit, context)
         result["limit_results"].append(limit_result)
@@ -464,7 +470,7 @@ async def evaluate_governance(evaluation: GovernanceEvaluation):
     
     # 3. RISK EVALUATION
     risk_score = evaluation.risk_score or 0
-    risk_rules = list(risk_rules_collection.find({"active": True}, {"_id": 0}))
+    risk_rules = list(get_db()["governance_risk_rules"].find({"active": True}, {"_id": 0}))
     for rule in risk_rules:
         if risk_score >= rule["threshold"]:
             if rule["enforcement_type"] == "HARD":
@@ -518,8 +524,8 @@ async def seed_governance():
     
     for i, policy in enumerate(sample_policies):
         policy_id = f"POL-{i+1:04d}"
-        if not policies_collection.find_one({"policy_id": policy_id}):
-            policies_collection.insert_one({**policy, "policy_id": policy_id, "created_at": datetime.now(timezone.utc).isoformat()})
+        if not get_db()["governance_policies"].find_one({"policy_id": policy_id}):
+            get_db()["governance_policies"].insert_one({**policy, "policy_id": policy_id, "created_at": datetime.now(timezone.utc).isoformat()})
     
     # Seed Limits
     sample_limits = [
@@ -531,8 +537,8 @@ async def seed_governance():
     
     for i, limit in enumerate(sample_limits):
         limit_id = f"LIM-{i+1:04d}"
-        if not limits_collection.find_one({"limit_id": limit_id}):
-            limits_collection.insert_one({**limit, "limit_id": limit_id, "created_at": datetime.now(timezone.utc).isoformat()})
+        if not get_db()["governance_limits"].find_one({"limit_id": limit_id}):
+            get_db()["governance_limits"].insert_one({**limit, "limit_id": limit_id, "created_at": datetime.now(timezone.utc).isoformat()})
     
     # Seed Authority Rules
     sample_authority = [
@@ -544,8 +550,8 @@ async def seed_governance():
     
     for i, auth in enumerate(sample_authority):
         auth_id = f"AUTH-{i+1:04d}"
-        if not authority_collection.find_one({"authority_id": auth_id}):
-            authority_collection.insert_one({**auth, "authority_id": auth_id, "created_at": datetime.now(timezone.utc).isoformat()})
+        if not get_db()["governance_authority"].find_one({"authority_id": auth_id}):
+            get_db()["governance_authority"].insert_one({**auth, "authority_id": auth_id, "created_at": datetime.now(timezone.utc).isoformat()})
     
     # Seed Risk Rules
     sample_risk_rules = [
@@ -556,7 +562,7 @@ async def seed_governance():
     
     for i, rule in enumerate(sample_risk_rules):
         rule_id = f"RISK-{i+1:04d}"
-        if not risk_rules_collection.find_one({"rule_id": rule_id}):
-            risk_rules_collection.insert_one({**rule, "rule_id": rule_id, "created_at": datetime.now(timezone.utc).isoformat()})
+        if not get_db()["governance_risk_rules"].find_one({"rule_id": rule_id}):
+            get_db()["governance_risk_rules"].insert_one({**rule, "rule_id": rule_id, "created_at": datetime.now(timezone.utc).isoformat()})
     
     return {"success": True, "message": "Governance data seeded"}

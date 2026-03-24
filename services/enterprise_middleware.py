@@ -24,14 +24,19 @@ security = HTTPBearer()
 JWT_SECRET = os.environ.get('JWT_SECRET_KEY')
 JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
 
-# Direct MongoDB connection (avoid circular import)
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db_instance = client[os.environ['DB_NAME']]
+_client = None
+_db = None
 
 def get_db():
-    """Get database instance"""
-    return db_instance
+    """Get database instance (Lazy loaded)"""
+    global _client, _db
+    if _db is None:
+        from motor.motor_asyncio import AsyncIOMotorClient
+        mongo_url = os.environ['MONGO_URL']
+        db_name = os.environ['DB_NAME']
+        _client = AsyncIOMotorClient(mongo_url)
+        _db = _client[db_name]
+    return _db
 
 # ==================== AUTHENTICATION MIDDLEWARE ====================
 

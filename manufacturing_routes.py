@@ -27,22 +27,30 @@ router = APIRouter(prefix="/api/manufacturing", tags=["Manufacturing"])
 
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(MONGO_URL)
-db = client['innovate_books_db']
+_client = None
+_db = None
 
-# Collections
-leads_collection = db['mfg_leads']
-customers_collection = db['mfg_customers']
-product_families_collection = db['mfg_product_families']
-skus_collection = db['mfg_skus']
-boms_collection = db['mfg_boms']
-raw_materials_collection = db['mfg_raw_materials']
-plants_collection = db['mfg_plants']
-price_lists_collection = db['mfg_price_lists']
-uoms_collection = db['mfg_uoms']
-currencies_collection = db['mfg_currencies']
-taxes_collection = db['mfg_taxes']
-roles_collection = db['mfg_roles']
+def get_db():
+    global _client, _db
+    if _db is None:
+        print("[Antigravity] Initializing Lazy MongoDB client in manufacturing_routes")
+        _client = AsyncIOMotorClient(MONGO_URL)
+        _db = _client['innovate_books_db']
+    return _db
+
+# Collection getters
+def get_leads_collection(): return get_db()['mfg_leads']
+def get_customers_collection(): return get_db()['mfg_customers']
+def get_product_families_collection(): return get_db()['mfg_product_families']
+def get_skus_collection(): return get_db()['mfg_skus']
+def get_boms_collection(): return get_db()['mfg_boms']
+def get_raw_materials_collection(): return get_db()['mfg_raw_materials']
+def get_plants_collection(): return get_db()['mfg_plants']
+def get_price_lists_collection(): return get_db()['mfg_price_lists']
+def get_uoms_collection(): return get_db()['mfg_uoms']
+def get_currencies_collection(): return get_db()['mfg_currencies']
+def get_taxes_collection(): return get_db()['mfg_taxes']
+def get_roles_collection(): return get_db()['mfg_roles']
 
 
 # ============================================================================
@@ -199,10 +207,10 @@ async def create_lead(lead_data: ManufacturingLeadCreate):
                     value[sub_key] = sub_value.isoformat()
     
     # Insert to database
-    result = await leads_collection.insert_one(lead_dict)
+    result = await get_leads_collection().insert_one(lead_dict)
     
     if result.inserted_id:
-        created_lead = await leads_collection.find_one({"_id": result.inserted_id})
+        created_lead = await get_leads_collection().find_one({"_id": result.inserted_id})
         
         # Phase 3: Run validation
         validation_result = validation_engine.validate_lead(created_lead)

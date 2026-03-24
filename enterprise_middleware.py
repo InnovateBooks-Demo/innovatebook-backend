@@ -23,13 +23,18 @@ logger = logging.getLogger(__name__)
 security = HTTPBearer()
 
 # Direct MongoDB connection (avoid circular import)
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db_instance = client[os.environ['DB_NAME']]
+_mongo_client = None
+_db_instance = None
 
 def get_db():
-    """Get database instance"""
-    return db_instance
+    """Get database instance (lazy-loaded)"""
+    global _mongo_client, _db_instance
+    if _db_instance is None:
+        print("[Antigravity] Initializing Lazy MongoDB client in enterprise_middleware")
+        mongo_url = os.environ['MONGO_URL']
+        _mongo_client = AsyncIOMotorClient(mongo_url)
+        _db_instance = _mongo_client[os.environ['DB_NAME']]
+    return _db_instance
 
 # ==================== AUTHENTICATION MIDDLEWARE ====================
 

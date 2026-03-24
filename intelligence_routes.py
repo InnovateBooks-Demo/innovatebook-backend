@@ -26,7 +26,10 @@ load_dotenv()
 router = APIRouter(prefix="/intelligence", tags=["Intelligence"])
 
 # Import shared dependencies
-from main import db
+def get_db():
+    """Get database instance from main"""
+    from main import db
+    return db
 
 # JWT configuration
 JWT_SECRET = os.environ["JWT_SECRET_KEY"]  # must be set in backend/.env
@@ -315,15 +318,15 @@ async def get_signals(
     if signal_type:
         query["signal_type"] = signal_type
     
-    signals = await db.intel_signals.find(query, {"_id": 0}).sort("detected_at", -1).skip(skip).limit(limit).to_list(limit)
-    total = await db.intel_signals.count_documents(query)
+    signals = await get_db().intel_signals.find(query, {"_id": 0}).sort("detected_at", -1).skip(skip).limit(limit).to_list(limit)
+    total = await get_db().intel_signals.count_documents(query)
     
     # Severity counts for this org
     base_query = get_org_filter(current_user)
     severity_counts = {
-        "info": await db.intel_signals.count_documents({**base_query, "severity": "info"}),
-        "warning": await db.intel_signals.count_documents({**base_query, "severity": "warning"}),
-        "critical": await db.intel_signals.count_documents({**base_query, "severity": "critical"})
+        "info": await get_db().intel_signals.count_documents({**base_query, "severity": "info"}),
+        "warning": await get_db().intel_signals.count_documents({**base_query, "severity": "warning"}),
+        "critical": await get_db().intel_signals.count_documents({**base_query, "severity": "critical"})
     }
     
     return {"signals": signals, "total": total, "severity_counts": severity_counts}
@@ -348,7 +351,7 @@ async def create_signal(
         "acknowledged_at": None
     }
     
-    await db.intel_signals.insert_one(signal_doc)
+    await get_db().intel_signals.insert_one(signal_doc)
     
     # Broadcast via WebSocket
     ws_message = {
@@ -374,7 +377,7 @@ async def acknowledge_signal(
     """Acknowledge a signal"""
     query = {"signal_id": signal_id, **get_org_filter(current_user)}
     
-    result = await db.intel_signals.update_one(
+    result = await get_db().intel_signals.update_one(
         query,
         {"$set": {
             "acknowledged": True,
@@ -411,7 +414,7 @@ async def get_signals_summary(current_user: dict = Depends(get_current_user)):
         }}
     ]
     
-    results = await db.intel_signals.aggregate(pipeline).to_list(100)
+    results = await get_db().intel_signals.aggregate(pipeline).to_list(100)
     
     by_source = {}
     by_severity = {"info": 0, "warning": 0, "critical": 0}
@@ -427,7 +430,7 @@ async def get_signals_summary(current_user: dict = Depends(get_current_user)):
         by_source[source]["total"] += count
         by_severity[severity] += count
     
-    recent_critical = await db.intel_signals.find(
+    recent_critical = await get_db().intel_signals.find(
         {**base_query, "severity": "critical", "acknowledged": False},
         {"_id": 0}
     ).sort("detected_at", -1).limit(5).to_list(5)
@@ -456,7 +459,7 @@ async def get_metrics(
     if period:
         query["period"] = period
     
-    metrics = await db.intel_metrics.find(query, {"_id": 0}).sort("updated_at", -1).limit(limit).to_list(limit)
+    metrics = await get_db().intel_metrics.find(query, {"_id": 0}).sort("updated_at", -1).limit(limit).to_list(limit)
     return {"metrics": metrics, "total": len(metrics)}
 
 @router.post("/metrics")
@@ -468,7 +471,7 @@ async def create_or_update_metric(
     now = datetime.now(timezone.utc).isoformat()
     org_id = current_user.get("org_id")
     
-    existing = await db.intel_metrics.find_one({
+    existing = await get_db().intel_metrics.find_one({
         "name": metric.name, 
         "domain": metric.domain,
         **get_org_filter(current_user)
@@ -477,7 +480,7 @@ async def create_or_update_metric(
     if existing:
         history_entry = {"value": existing.get("value"), "recorded_at": existing.get("updated_at")}
         
-        await db.intel_metrics.update_one(
+        await get_db().intel_metrics.update_one(
             {"metric_id": existing["metric_id"]},
             {
                 "$set": {"value": metric.value, "updated_at": now, "confidence_level": metric.confidence_level},
@@ -494,7 +497,7 @@ async def create_or_update_metric(
             "updated_at": now,
             "history": []
         }
-        await db.intel_metrics.insert_one(metric_doc)
+        await get_db().intel_metrics.insert_one(metric_doc)
         return {"success": True, "metric_id": metric_doc["metric_id"], "action": "created"}
 
 @router.get("/metrics/dashboard")
@@ -505,14 +508,14 @@ async def get_metrics_dashboard(current_user: dict = Depends(get_current_user)):
     
     dashboard = {}
     for domain in domains:
-        metrics = await db.intel_metrics.find(
+        metrics = await get_db().intel_metrics.find(
             {**base_query, "domain": domain},
             {"_id": 0, "history": 0}
         ).sort("updated_at", -1).limit(10).to_list(10)
         
         dashboard[domain] = {"metrics": metrics, "count": len(metrics)}
     
-    total_metrics = await db.intel_metrics.count_documents(base_query)
+    total_metrics = await get_db().intel_metrics.count_documents(base_query)
     
     return {
         "domains": dashboard,
@@ -524,7 +527,7 @@ async def get_metrics_dashboard(current_user: dict = Depends(get_current_user)):
 async def get_metric_history(metric_id: str, current_user: dict = Depends(get_current_user)):
     """Get historical values for a metric"""
     query = {"metric_id": metric_id, **get_org_filter(current_user)}
-    metric = await db.intel_metrics.find_one(query, {"_id": 0})
+    metric = await get_db().intel_metrics.find_one(query, {"_id": 0})
     
     if not metric:
         raise HTTPException(status_code=404, detail="Metric not found")
@@ -558,7 +561,7 @@ async def get_risks(
     if min_score is not None:
         query["risk_score"] = {"$gte": min_score}
     
-    risks = await db.intel_risks.find(query, {"_id": 0}).sort("risk_score", -1).limit(limit).to_list(limit)
+    risks = await get_db().intel_risks.find(query, {"_id": 0}).sort("risk_score", -1).limit(limit).to_list(limit)
     return {"risks": risks, "total": len(risks)}
 
 @router.post("/risks")
@@ -583,7 +586,7 @@ async def create_risk(
         "history": []
     }
     
-    await db.intel_risks.insert_one(risk_doc)
+    await get_db().intel_risks.insert_one(risk_doc)
     
     # Auto-generate recommendation for high-risk items
     if risk_score >= 5:
@@ -612,7 +615,7 @@ async def update_risk_status(
     now = datetime.now(timezone.utc).isoformat()
     query = {"risk_id": risk_id, **get_org_filter(current_user)}
     
-    result = await db.intel_risks.update_one(
+    result = await get_db().intel_risks.update_one(
         query,
         {
             "$set": {"status": status.value, "updated_at": now},
@@ -645,7 +648,7 @@ async def get_risk_heatmap(current_user: dict = Depends(get_current_user)):
     """Get risk heatmap data"""
     base_query = get_org_filter(current_user)
     
-    risks = await db.intel_risks.find(
+    risks = await get_db().intel_risks.find(
         {**base_query, "status": {"$ne": "closed"}},
         {"_id": 0, "risk_id": 1, "title": 1, "domain": 1, "risk_type": 1, 
          "probability_score": 1, "impact_score": 1, "risk_score": 1, "status": 1}
@@ -699,7 +702,7 @@ async def get_forecasts(
     if horizon:
         query["horizon"] = horizon
     
-    forecasts = await db.intel_forecasts.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    forecasts = await get_db().intel_forecasts.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
     return {"forecasts": forecasts, "total": len(forecasts)}
 
 @router.post("/forecasts")
@@ -726,7 +729,7 @@ async def create_forecast(
         "accuracy": None
     }
     
-    await db.intel_forecasts.insert_one(forecast_doc)
+    await get_db().intel_forecasts.insert_one(forecast_doc)
     return {"success": True, "forecast_id": forecast_doc["forecast_id"]}
 
 @router.post("/forecasts/{forecast_id}/actual")
@@ -737,7 +740,7 @@ async def record_actual_value(
 ):
     """Record actual value for a forecast"""
     query = {"forecast_id": forecast_id, **get_org_filter(current_user)}
-    forecast = await db.intel_forecasts.find_one(query)
+    forecast = await get_db().intel_forecasts.find_one(query)
     
     if not forecast:
         raise HTTPException(status_code=404, detail="Forecast not found")
@@ -745,7 +748,7 @@ async def record_actual_value(
     projected = forecast.get("projected_value", 0)
     accuracy = 1 - abs(projected - actual_value) / max(projected, actual_value, 1) if projected else 0
     
-    await db.intel_forecasts.update_one(
+    await get_db().intel_forecasts.update_one(
         {"forecast_id": forecast_id},
         {"$set": {
             "actual_value": actual_value,
@@ -756,7 +759,7 @@ async def record_actual_value(
     )
     
     # Create learning record
-    await db.intel_learning.insert_one({
+    await get_db().intel_learning.insert_one({
         "record_id": generate_id("LRN"),
         "org_id": current_user.get("org_id"),
         "model_id": "forecast_engine",
@@ -882,13 +885,13 @@ async def ai_generate_forecast(
     base_query = get_org_filter(current_user)
     
     # Get historical metrics
-    historical = await db.intel_metrics.find(
+    historical = await get_db().intel_metrics.find(
         {**base_query, "domain": domain},
         {"_id": 0}
     ).sort("updated_at", -1).limit(30).to_list(30)
     
     # Get recent signals for context
-    signals = await db.intel_signals.find(
+    signals = await get_db().intel_signals.find(
         {**base_query, "source_solution": domain},
         {"_id": 0}
     ).sort("detected_at", -1).limit(10).to_list(10)
@@ -921,7 +924,7 @@ async def ai_generate_forecast(
             "created_by": current_user.get("user_id"),
             "status": "active"
         }
-        await db.intel_forecasts.insert_one(forecast_doc)
+        await get_db().intel_forecasts.insert_one(forecast_doc)
         return {"success": True, "forecast": {k: v for k, v in forecast_doc.items() if k != "_id"}}
     
     return {"success": False, "message": "AI could not generate forecast", "fallback_response": ai_response}
@@ -948,7 +951,7 @@ async def get_recommendations(
     if status:
         query["status"] = status
     
-    recommendations = await db.intel_recommendations.find(query, {"_id": 0}).sort([("priority", 1), ("created_at", -1)]).limit(limit).to_list(limit)
+    recommendations = await get_db().intel_recommendations.find(query, {"_id": 0}).sort([("priority", 1), ("created_at", -1)]).limit(limit).to_list(limit)
     return {"recommendations": recommendations, "total": len(recommendations)}
 
 @router.post("/recommendations")
@@ -974,7 +977,7 @@ async def create_recommendation(
         "ai_generated": False
     }
     
-    await db.intel_recommendations.insert_one(rec_doc)
+    await get_db().intel_recommendations.insert_one(rec_doc)
     
     # Broadcast
     if org_id:
@@ -999,7 +1002,7 @@ async def act_on_recommendation(
     now = datetime.now(timezone.utc).isoformat()
     query = {"recommendation_id": rec_id, **get_org_filter(current_user)}
     
-    result = await db.intel_recommendations.update_one(
+    result = await get_db().intel_recommendations.update_one(
         query,
         {"$set": {
             "status": action,
@@ -1014,9 +1017,9 @@ async def act_on_recommendation(
         raise HTTPException(status_code=404, detail="Recommendation not found")
     
     # Learning record
-    rec = await db.intel_recommendations.find_one({"recommendation_id": rec_id}, {"_id": 0})
+    rec = await get_db().intel_recommendations.find_one({"recommendation_id": rec_id}, {"_id": 0})
     if rec:
-        await db.intel_learning.insert_one({
+        await get_db().intel_learning.insert_one({
             "record_id": generate_id("LRN"),
             "org_id": current_user.get("org_id"),
             "model_id": "recommendation_engine",
@@ -1044,12 +1047,12 @@ async def get_recommendations_summary(current_user: dict = Depends(get_current_u
     """Get recommendations summary"""
     base_query = get_org_filter(current_user)
     
-    pending = await db.intel_recommendations.count_documents({**base_query, "status": "pending"})
-    accepted = await db.intel_recommendations.count_documents({**base_query, "status": "accepted"})
-    dismissed = await db.intel_recommendations.count_documents({**base_query, "status": "dismissed"})
-    deferred = await db.intel_recommendations.count_documents({**base_query, "status": "deferred"})
+    pending = await get_db().intel_recommendations.count_documents({**base_query, "status": "pending"})
+    accepted = await get_db().intel_recommendations.count_documents({**base_query, "status": "accepted"})
+    dismissed = await get_db().intel_recommendations.count_documents({**base_query, "status": "dismissed"})
+    deferred = await get_db().intel_recommendations.count_documents({**base_query, "status": "deferred"})
     
-    high_priority = await db.intel_recommendations.find(
+    high_priority = await get_db().intel_recommendations.find(
         {**base_query, "status": "pending", "priority": {"$lte": 2}},
         {"_id": 0}
     ).sort("priority", 1).limit(5).to_list(5)
@@ -1058,7 +1061,7 @@ async def get_recommendations_summary(current_user: dict = Depends(get_current_u
         {"$match": {**base_query, "status": "pending"}},
         {"$group": {"_id": "$action_type", "count": {"$sum": 1}}}
     ]
-    by_type = await db.intel_recommendations.aggregate(pipeline).to_list(10)
+    by_type = await get_db().intel_recommendations.aggregate(pipeline).to_list(10)
     
     return {
         "counts": {
@@ -1122,7 +1125,7 @@ async def auto_generate_recommendation_for_signal(signal: dict, user: dict):
             "source_signal_id": signal.get("signal_id")
         }
     
-    await db.intel_recommendations.insert_one(rec_doc)
+    await get_db().intel_recommendations.insert_one(rec_doc)
     
     # Broadcast
     org_id = user.get("org_id")
@@ -1181,7 +1184,7 @@ async def auto_generate_recommendation_for_risk(risk: dict, user: dict):
             "source_risk_id": risk.get("risk_id")
         }
     
-    await db.intel_recommendations.insert_one(rec_doc)
+    await get_db().intel_recommendations.insert_one(rec_doc)
 
 # ==================== LIVE DATA CONNECTION ====================
 
@@ -1195,13 +1198,13 @@ async def scan_solutions_for_signals(
     signals_created = []
     
     # Scan Commerce - Overdue Invoices
-    overdue_invoices = await db.fin_invoices.find({
+    overdue_invoices = await get_db().fin_invoices.find({
         "status": "overdue",
         "due_date": {"$lt": datetime.now(timezone.utc).isoformat()}
     }, {"_id": 0}).to_list(50)
     
     for inv in overdue_invoices:
-        existing = await db.intel_signals.find_one({
+        existing = await get_db().intel_signals.find_one({
             "entity_reference": inv.get("invoice_id"),
             "signal_type": "payment_overdue"
         })
@@ -1222,16 +1225,16 @@ async def scan_solutions_for_signals(
                 "acknowledged": False,
                 "metadata": {"amount": inv.get("amount"), "customer": inv.get("customer_name")}
             }
-            await db.intel_signals.insert_one(signal)
+            await get_db().intel_signals.insert_one(signal)
             signals_created.append(signal["signal_id"])
     
     # Scan Workforce - Over-allocation
-    over_allocated = await db.wf_allocations.find({
+    over_allocated = await get_db().wf_allocations.find({
         "allocation_percentage": {"$gt": 100}
     }, {"_id": 0}).to_list(50)
     
     for alloc in over_allocated:
-        existing = await db.intel_signals.find_one({
+        existing = await get_db().intel_signals.find_one({
             "entity_reference": alloc.get("person_id"),
             "signal_type": "over_allocation",
             "detected_at": {"$gte": (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()}
@@ -1253,18 +1256,18 @@ async def scan_solutions_for_signals(
                 "acknowledged": False,
                 "metadata": {"allocation": alloc.get("allocation_percentage")}
             }
-            await db.intel_signals.insert_one(signal)
+            await get_db().intel_signals.insert_one(signal)
             signals_created.append(signal["signal_id"])
     
     # Scan Operations - Project Delays
-    delayed_projects = await db.ops_projects.find({
+    delayed_projects = await get_db().ops_projects.find({
         "status": "in_progress",
         "end_date": {"$lt": datetime.now(timezone.utc).isoformat()},
         "actual_end_date": {"$exists": False}
     }, {"_id": 0}).to_list(50)
     
     for proj in delayed_projects:
-        existing = await db.intel_signals.find_one({
+        existing = await get_db().intel_signals.find_one({
             "entity_reference": proj.get("project_id"),
             "signal_type": "project_delay"
         })
@@ -1285,17 +1288,17 @@ async def scan_solutions_for_signals(
                 "acknowledged": False,
                 "metadata": {"end_date": proj.get("end_date")}
             }
-            await db.intel_signals.insert_one(signal)
+            await get_db().intel_signals.insert_one(signal)
             signals_created.append(signal["signal_id"])
     
     # Scan Commerce - Low Margin Deals
-    low_margin_deals = await db.deals.find({
+    low_margin_deals = await get_db().deals.find({
         "status": "in_progress",
         "margin": {"$lt": 20}
     }, {"_id": 0}).to_list(50)
     
     for deal in low_margin_deals:
-        existing = await db.intel_signals.find_one({
+        existing = await get_db().intel_signals.find_one({
             "entity_reference": deal.get("deal_id"),
             "signal_type": "margin_erosion"
         })
@@ -1316,7 +1319,7 @@ async def scan_solutions_for_signals(
                 "acknowledged": False,
                 "metadata": {"margin": deal.get("margin")}
             }
-            await db.intel_signals.insert_one(signal)
+            await get_db().intel_signals.insert_one(signal)
             signals_created.append(signal["signal_id"])
     
     # Broadcast new signals
@@ -1344,9 +1347,9 @@ async def auto_analyze_and_recommend(
     base_query = get_org_filter(current_user)
     
     # Gather context
-    signals = await db.intel_signals.find({**base_query, "acknowledged": False}, {"_id": 0}).limit(20).to_list(20)
-    risks = await db.intel_risks.find({**base_query, "status": {"$in": ["open", "escalating"]}}, {"_id": 0}).limit(20).to_list(20)
-    metrics = await db.intel_metrics.find(base_query, {"_id": 0, "history": 0}).limit(30).to_list(30)
+    signals = await get_db().intel_signals.find({**base_query, "acknowledged": False}, {"_id": 0}).limit(20).to_list(20)
+    risks = await get_db().intel_risks.find({**base_query, "status": {"$in": ["open", "escalating"]}}, {"_id": 0}).limit(20).to_list(20)
+    metrics = await get_db().intel_metrics.find(base_query, {"_id": 0, "history": 0}).limit(30).to_list(30)
     
     context = {
         "unacknowledged_signals": len(signals),
@@ -1386,7 +1389,7 @@ async def auto_analyze_and_recommend(
                 "created_by": "ai_engine",
                 "ai_generated": True
             }
-            await db.intel_recommendations.insert_one(rec_doc)
+            await get_db().intel_recommendations.insert_one(rec_doc)
             recommendations_created.append(rec_doc["recommendation_id"])
     
     # Also extract risks from AI analysis
@@ -1410,7 +1413,7 @@ async def auto_analyze_and_recommend(
                 "affected_entities": [],
                 "history": []
             }
-            await db.intel_risks.insert_one(risk_doc)
+            await get_db().intel_risks.insert_one(risk_doc)
             risks_created.append(risk_doc["risk_id"])
     
     return {
@@ -1435,7 +1438,7 @@ async def get_learning_records(
     if model_id:
         query["model_id"] = model_id
     
-    records = await db.intel_learning.find(query, {"_id": 0}).sort("recorded_at", -1).limit(limit).to_list(limit)
+    records = await get_db().intel_learning.find(query, {"_id": 0}).sort("recorded_at", -1).limit(limit).to_list(limit)
     return {"records": records, "total": len(records)}
 
 @router.get("/learning/accuracy")
@@ -1451,13 +1454,13 @@ async def get_model_accuracy(current_user: dict = Depends(get_current_user)):
             "count": {"$sum": 1}
         }}
     ]
-    forecast_accuracy = await db.intel_learning.aggregate(forecast_pipeline).to_list(20)
+    forecast_accuracy = await get_db().intel_learning.aggregate(forecast_pipeline).to_list(20)
     
     rec_pipeline = [
         {"$match": {**base_query, "model_id": "recommendation_engine"}},
         {"$group": {"_id": "$feedback", "count": {"$sum": 1}}}
     ]
-    rec_feedback = await db.intel_learning.aggregate(rec_pipeline).to_list(10)
+    rec_feedback = await get_db().intel_learning.aggregate(rec_pipeline).to_list(10)
     
     return {
         "forecast_accuracy": {r["_id"]: {"accuracy": round(r["avg_accuracy"] * 100, 1), "samples": r["count"]} for r in forecast_accuracy},
@@ -1495,7 +1498,7 @@ async def submit_feedback(
         "submitted_by": current_user.get("user_id")
     }
     
-    await db.intel_learning.insert_one(learning_doc)
+    await get_db().intel_learning.insert_one(learning_doc)
     return {"success": True, "record_id": learning_doc["record_id"]}
 
 # ==================== EXECUTIVE DASHBOARD ====================
@@ -1506,39 +1509,39 @@ async def get_executive_dashboard(current_user: dict = Depends(get_current_user)
     base_query = get_org_filter(current_user)
     
     # Intelligence Summary
-    signals_critical = await db.intel_signals.count_documents({**base_query, "severity": "critical", "acknowledged": False})
-    signals_warning = await db.intel_signals.count_documents({**base_query, "severity": "warning", "acknowledged": False})
-    risks_open = await db.intel_risks.count_documents({**base_query, "status": {"$in": ["open", "escalating"]}})
-    recs_pending = await db.intel_recommendations.count_documents({**base_query, "status": "pending"})
+    signals_critical = await get_db().intel_signals.count_documents({**base_query, "severity": "critical", "acknowledged": False})
+    signals_warning = await get_db().intel_signals.count_documents({**base_query, "severity": "warning", "acknowledged": False})
+    risks_open = await get_db().intel_risks.count_documents({**base_query, "status": {"$in": ["open", "escalating"]}})
+    recs_pending = await get_db().intel_recommendations.count_documents({**base_query, "status": "pending"})
     
     # Commerce KPIs
     total_revenue = 0
-    total_deals = await db.deals.count_documents({})
-    active_deals = await db.deals.count_documents({"status": "in_progress"})
+    total_deals = await get_db().deals.count_documents({})
+    active_deals = await get_db().deals.count_documents({"status": "in_progress"})
     
     # Finance KPIs
-    outstanding_ar = await db.fin_invoices.find({"status": {"$in": ["pending", "overdue"]}}).to_list(1000)
+    outstanding_ar = await get_db().fin_invoices.find({"status": {"$in": ["pending", "overdue"]}}).to_list(1000)
     total_ar = sum(inv.get("amount", 0) for inv in outstanding_ar)
     overdue_ar = sum(inv.get("amount", 0) for inv in outstanding_ar if inv.get("status") == "overdue")
     
     # Workforce KPIs
-    total_people = await db.wf_people.count_documents({})
+    total_people = await get_db().wf_people.count_documents({})
     
     # Operations KPIs
-    active_projects = await db.ops_projects.count_documents({"status": "in_progress"})
+    active_projects = await get_db().ops_projects.count_documents({"status": "in_progress"})
     
     # Capital KPIs
     total_funding = 0
-    funding_rounds = await db.ic_funding_rounds.find({}, {"_id": 0, "amount": 1}).to_list(100)
+    funding_rounds = await get_db().ic_funding_rounds.find({}, {"_id": 0, "amount": 1}).to_list(100)
     for f in funding_rounds:
         total_funding += f.get("amount", 0)
     
     # Key Metrics
-    key_metrics = await db.intel_metrics.find(base_query, {"_id": 0, "history": 0}).sort("updated_at", -1).limit(10).to_list(10)
+    key_metrics = await get_db().intel_metrics.find(base_query, {"_id": 0, "history": 0}).sort("updated_at", -1).limit(10).to_list(10)
     
     # Recent Activity
-    recent_signals = await db.intel_signals.find(base_query, {"_id": 0}).sort("detected_at", -1).limit(5).to_list(5)
-    recent_recommendations = await db.intel_recommendations.find({**base_query, "status": "pending"}, {"_id": 0}).sort("created_at", -1).limit(5).to_list(5)
+    recent_signals = await get_db().intel_signals.find(base_query, {"_id": 0}).sort("detected_at", -1).limit(5).to_list(5)
+    recent_recommendations = await get_db().intel_recommendations.find({**base_query, "status": "pending"}, {"_id": 0}).sort("created_at", -1).limit(5).to_list(5)
     
     return {
         "intelligence_health": {
@@ -1584,18 +1587,18 @@ async def get_intelligence_dashboard(current_user: dict = Depends(get_current_us
     """Get comprehensive intelligence dashboard"""
     base_query = get_org_filter(current_user)
     
-    signals_critical = await db.intel_signals.count_documents({**base_query, "severity": "critical", "acknowledged": False})
-    signals_warning = await db.intel_signals.count_documents({**base_query, "severity": "warning", "acknowledged": False})
+    signals_critical = await get_db().intel_signals.count_documents({**base_query, "severity": "critical", "acknowledged": False})
+    signals_warning = await get_db().intel_signals.count_documents({**base_query, "severity": "warning", "acknowledged": False})
     
-    risks_open = await db.intel_risks.count_documents({**base_query, "status": {"$in": ["open", "escalating"]}})
-    risks_critical = await db.intel_risks.count_documents({**base_query, "status": {"$in": ["open", "escalating"]}, "risk_score": {"$gte": 7}})
+    risks_open = await get_db().intel_risks.count_documents({**base_query, "status": {"$in": ["open", "escalating"]}})
+    risks_critical = await get_db().intel_risks.count_documents({**base_query, "status": {"$in": ["open", "escalating"]}, "risk_score": {"$gte": 7}})
     
-    recs_pending = await db.intel_recommendations.count_documents({**base_query, "status": "pending"})
-    recs_high_priority = await db.intel_recommendations.count_documents({**base_query, "status": "pending", "priority": {"$lte": 2}})
+    recs_pending = await get_db().intel_recommendations.count_documents({**base_query, "status": "pending"})
+    recs_high_priority = await get_db().intel_recommendations.count_documents({**base_query, "status": "pending", "priority": {"$lte": 2}})
     
-    recent_signals = await db.intel_signals.find(base_query, {"_id": 0}).sort("detected_at", -1).limit(5).to_list(5)
-    recent_recommendations = await db.intel_recommendations.find({**base_query, "status": "pending"}, {"_id": 0}).sort("created_at", -1).limit(5).to_list(5)
-    key_metrics = await db.intel_metrics.find(base_query, {"_id": 0, "history": 0}).sort("updated_at", -1).limit(8).to_list(8)
+    recent_signals = await get_db().intel_signals.find(base_query, {"_id": 0}).sort("detected_at", -1).limit(5).to_list(5)
+    recent_recommendations = await get_db().intel_recommendations.find({**base_query, "status": "pending"}, {"_id": 0}).sort("created_at", -1).limit(5).to_list(5)
+    key_metrics = await get_db().intel_metrics.find(base_query, {"_id": 0, "history": 0}).sort("updated_at", -1).limit(8).to_list(8)
     
     return {
         "summary": {
@@ -1630,11 +1633,11 @@ async def seed_intelligence_data(current_user: dict = Depends(get_current_user))
     org_id = current_user.get("org_id")
     
     # Clear existing data for this org
-    await db.intel_signals.delete_many(get_org_filter(current_user))
-    await db.intel_metrics.delete_many(get_org_filter(current_user))
-    await db.intel_risks.delete_many(get_org_filter(current_user))
-    await db.intel_forecasts.delete_many(get_org_filter(current_user))
-    await db.intel_recommendations.delete_many(get_org_filter(current_user))
+    await get_db().intel_signals.delete_many(get_org_filter(current_user))
+    await get_db().intel_metrics.delete_many(get_org_filter(current_user))
+    await get_db().intel_risks.delete_many(get_org_filter(current_user))
+    await get_db().intel_forecasts.delete_many(get_org_filter(current_user))
+    await get_db().intel_recommendations.delete_many(get_org_filter(current_user))
     
     # Sample signals
     signals = [
@@ -1732,15 +1735,15 @@ async def seed_intelligence_data(current_user: dict = Depends(get_current_user))
     
     # Insert all data
     if signals:
-        await db.intel_signals.insert_many(signals)
+        await get_db().intel_signals.insert_many(signals)
     if metrics:
-        await db.intel_metrics.insert_many(metrics)
+        await get_db().intel_metrics.insert_many(metrics)
     if risks:
-        await db.intel_risks.insert_many(risks)
+        await get_db().intel_risks.insert_many(risks)
     if forecasts:
-        await db.intel_forecasts.insert_many(forecasts)
+        await get_db().intel_forecasts.insert_many(forecasts)
     if recommendations:
-        await db.intel_recommendations.insert_many(recommendations)
+        await get_db().intel_recommendations.insert_many(recommendations)
     
     return {
         "success": True,
@@ -1767,12 +1770,12 @@ async def connect_finance_data(
     metrics_updated = []
     
     # 1. Scan Receivables for Overdue Invoices
-    overdue_receivables = await db.fin_receivables.find({
+    overdue_receivables = await get_db().fin_receivables.find({
         "status": "overdue"
     }, {"_id": 0}).to_list(100)
     
     for rec in overdue_receivables:
-        existing = await db.intel_signals.find_one({
+        existing = await get_db().intel_signals.find_one({
             "entity_reference": rec.get("receivable_id"),
             "signal_type": "payment_overdue",
             "detected_at": {"$gte": (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()}
@@ -1796,7 +1799,7 @@ async def connect_finance_data(
                 "acknowledged": False,
                 "metadata": {"amount": amount, "customer": rec.get("customer_name"), "days_overdue": rec.get("days_overdue")}
             }
-            await db.intel_signals.insert_one(signal)
+            await get_db().intel_signals.insert_one(signal)
             signals_created.append(signal["signal_id"])
             
             # Auto-generate recommendation for high-value overdue
@@ -1818,17 +1821,17 @@ async def connect_finance_data(
                     "ai_generated": False,
                     "source_signal_id": signal["signal_id"]
                 }
-                await db.intel_recommendations.insert_one(rec_doc)
+                await get_db().intel_recommendations.insert_one(rec_doc)
                 recommendations_created.append(rec_doc["recommendation_id"])
     
     # 2. Scan Payables for Payment Due Soon
-    upcoming_payables = await db.fin_payables.find({
+    upcoming_payables = await get_db().fin_payables.find({
         "status": "approved",
         "due_date": {"$lte": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()}
     }, {"_id": 0}).to_list(100)
     
     for pay in upcoming_payables:
-        existing = await db.intel_signals.find_one({
+        existing = await get_db().intel_signals.find_one({
             "entity_reference": pay.get("payable_id"),
             "signal_type": "payment_due"
         })
@@ -1850,26 +1853,26 @@ async def connect_finance_data(
                 "acknowledged": False,
                 "metadata": {"amount": amount, "vendor": pay.get("vendor_name"), "due_date": pay.get("due_date")}
             }
-            await db.intel_signals.insert_one(signal)
+            await get_db().intel_signals.insert_one(signal)
             signals_created.append(signal["signal_id"])
     
     # 3. Calculate and Update Finance Metrics
-    total_receivables = await db.fin_receivables.find({"status": {"$in": ["open", "overdue"]}}, {"_id": 0, "amount": 1}).to_list(1000)
+    total_receivables = await get_db().fin_receivables.find({"status": {"$in": ["open", "overdue"]}}, {"_id": 0, "amount": 1}).to_list(1000)
     total_ar = sum(r.get("amount", 0) for r in total_receivables)
     
-    total_payables = await db.fin_payables.find({"status": {"$in": ["pending", "approved"]}}, {"_id": 0, "amount": 1}).to_list(1000)
+    total_payables = await get_db().fin_payables.find({"status": {"$in": ["pending", "approved"]}}, {"_id": 0, "amount": 1}).to_list(1000)
     total_ap = sum(p.get("amount", 0) for p in total_payables)
     
     # Update AR metric
-    ar_metric = await db.intel_metrics.find_one({"name": "Total AR", "org_id": org_id})
+    ar_metric = await get_db().intel_metrics.find_one({"name": "Total AR", "org_id": org_id})
     if ar_metric:
-        await db.intel_metrics.update_one(
+        await get_db().intel_metrics.update_one(
             {"metric_id": ar_metric["metric_id"]},
             {"$set": {"value": total_ar, "updated_at": datetime.now(timezone.utc).isoformat()},
              "$push": {"history": {"$each": [{"value": ar_metric.get("value"), "recorded_at": ar_metric.get("updated_at")}], "$slice": -30}}}
         )
     else:
-        await db.intel_metrics.insert_one({
+        await get_db().intel_metrics.insert_one({
             "metric_id": generate_id("MET"),
             "org_id": org_id,
             "name": "Total AR",
@@ -1886,14 +1889,14 @@ async def connect_finance_data(
     metrics_updated.append("Total AR")
     
     # Update AP metric
-    ap_metric = await db.intel_metrics.find_one({"name": "Total AP", "org_id": org_id})
+    ap_metric = await get_db().intel_metrics.find_one({"name": "Total AP", "org_id": org_id})
     if ap_metric:
-        await db.intel_metrics.update_one(
+        await get_db().intel_metrics.update_one(
             {"metric_id": ap_metric["metric_id"]},
             {"$set": {"value": total_ap, "updated_at": datetime.now(timezone.utc).isoformat()}}
         )
     else:
-        await db.intel_metrics.insert_one({
+        await get_db().intel_metrics.insert_one({
             "metric_id": generate_id("MET"),
             "org_id": org_id,
             "name": "Total AP",
@@ -1939,13 +1942,13 @@ async def connect_commerce_data(
     metrics_updated = []
     
     # 1. Scan Leads for Stale Leads
-    stale_leads = await db.leads.find({
+    stale_leads = await get_db().leads.find({
         "lead_status": {"$in": ["New", "Contacted"]},
         "created_at": {"$lt": (datetime.now(timezone.utc) - timedelta(days=14)).isoformat()}
     }, {"_id": 0}).to_list(100)
     
     for lead in stale_leads:
-        existing = await db.intel_signals.find_one({
+        existing = await get_db().intel_signals.find_one({
             "entity_reference": lead.get("lead_id"),
             "signal_type": "stale_lead"
         })
@@ -1966,17 +1969,17 @@ async def connect_commerce_data(
                 "acknowledged": False,
                 "metadata": {"company": lead.get("company"), "status": lead.get("lead_status"), "owner": lead.get("lead_owner")}
             }
-            await db.intel_signals.insert_one(signal)
+            await get_db().intel_signals.insert_one(signal)
             signals_created.append(signal["signal_id"])
     
     # 2. Scan Contracts Nearing Expiry
-    expiring_contracts = await db.contracts.find({
+    expiring_contracts = await get_db().contracts.find({
         "status": "active",
         "end_date": {"$lte": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()}
     }, {"_id": 0}).to_list(100)
     
     for contract in expiring_contracts:
-        existing = await db.intel_signals.find_one({
+        existing = await get_db().intel_signals.find_one({
             "entity_reference": contract.get("contract_id"),
             "signal_type": "contract_expiring"
         })
@@ -1999,7 +2002,7 @@ async def connect_commerce_data(
                 "acknowledged": False,
                 "metadata": {"value": value, "customer": contract.get("customer_name"), "end_date": contract.get("end_date")}
             }
-            await db.intel_signals.insert_one(signal)
+            await get_db().intel_signals.insert_one(signal)
             signals_created.append(signal["signal_id"])
             
             # Auto-generate recommendation for renewal
@@ -2020,27 +2023,27 @@ async def connect_commerce_data(
                 "ai_generated": False,
                 "source_signal_id": signal["signal_id"]
             }
-            await db.intel_recommendations.insert_one(rec_doc)
+            await get_db().intel_recommendations.insert_one(rec_doc)
             recommendations_created.append(rec_doc["recommendation_id"])
     
     # 3. Scan Revenue Pipeline for Low Conversion
-    total_leads = await db.leads.count_documents({})
-    qualified_leads = await db.leads.count_documents({"lead_status": {"$in": ["Qualified", "Proposal Sent", "Negotiation"]}})
-    converted_leads = await db.leads.count_documents({"lead_status": "Converted"})
+    total_leads = await get_db().leads.count_documents({})
+    qualified_leads = await get_db().leads.count_documents({"lead_status": {"$in": ["Qualified", "Proposal Sent", "Negotiation"]}})
+    converted_leads = await get_db().leads.count_documents({"lead_status": "Converted"})
     
     if total_leads > 0:
         conversion_rate = (converted_leads / total_leads) * 100
         qualification_rate = (qualified_leads / total_leads) * 100
         
         # Update Conversion Rate metric
-        conv_metric = await db.intel_metrics.find_one({"name": "Lead Conversion Rate", "org_id": org_id})
+        conv_metric = await get_db().intel_metrics.find_one({"name": "Lead Conversion Rate", "org_id": org_id})
         if conv_metric:
-            await db.intel_metrics.update_one(
+            await get_db().intel_metrics.update_one(
                 {"metric_id": conv_metric["metric_id"]},
                 {"$set": {"value": round(conversion_rate, 1), "updated_at": datetime.now(timezone.utc).isoformat()}}
             )
         else:
-            await db.intel_metrics.insert_one({
+            await get_db().intel_metrics.insert_one({
                 "metric_id": generate_id("MET"),
                 "org_id": org_id,
                 "name": "Lead Conversion Rate",
@@ -2058,7 +2061,7 @@ async def connect_commerce_data(
         
         # Check for low conversion rate
         if conversion_rate < 15:
-            existing_risk = await db.intel_risks.find_one({
+            existing_risk = await get_db().intel_risks.find_one({
                 "org_id": org_id,
                 "title": {"$regex": "Lead Conversion.*Low"}
             })
@@ -2080,20 +2083,20 @@ async def connect_commerce_data(
                     "affected_entities": [],
                     "history": []
                 }
-                await db.intel_risks.insert_one(risk_doc)
+                await get_db().intel_risks.insert_one(risk_doc)
     
     # 4. Calculate Pipeline Value
-    active_leads = await db.leads.find({"lead_status": {"$in": ["Qualified", "Proposal Sent", "Negotiation"]}}, {"_id": 0, "annual_revenue": 1}).to_list(1000)
+    active_leads = await get_db().leads.find({"lead_status": {"$in": ["Qualified", "Proposal Sent", "Negotiation"]}}, {"_id": 0, "annual_revenue": 1}).to_list(1000)
     pipeline_value = sum(l.get("annual_revenue", 0) for l in active_leads)
     
-    pipeline_metric = await db.intel_metrics.find_one({"name": "Pipeline Value", "org_id": org_id})
+    pipeline_metric = await get_db().intel_metrics.find_one({"name": "Pipeline Value", "org_id": org_id})
     if pipeline_metric:
-        await db.intel_metrics.update_one(
+        await get_db().intel_metrics.update_one(
             {"metric_id": pipeline_metric["metric_id"]},
             {"$set": {"value": pipeline_value, "updated_at": datetime.now(timezone.utc).isoformat()}}
         )
     else:
-        await db.intel_metrics.insert_one({
+        await get_db().intel_metrics.insert_one({
             "metric_id": generate_id("MET"),
             "org_id": org_id,
             "name": "Pipeline Value",

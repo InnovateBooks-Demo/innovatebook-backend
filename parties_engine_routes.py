@@ -12,19 +12,23 @@ from pymongo import MongoClient
 
 router = APIRouter(prefix="/commerce/parties-engine", tags=["Parties Engine"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL")
-client = MongoClient(MONGO_URL)
-db = client[os.environ.get("DB_NAME", "innovatebooks")]
+_sync_db = None
 
-# Collections
-parties_collection = db["parties_engine"]
-party_identities = db["party_identities"]
-party_legal_profiles = db["party_legal_profiles"]
-party_tax_profiles = db["party_tax_profiles"]
-party_risk_profiles = db["party_risk_profiles"]
-party_compliance_profiles = db["party_compliance_profiles"]
-party_audit_logs = db["party_audit_logs"]
+def get_db():
+    """Lazy-load synchronous MongoDB database instance"""
+    global _sync_db
+    if _sync_db is None:
+        from pymongo import MongoClient
+        mongo_url = os.environ.get("MONGO_URL")
+        db_name = os.environ.get("DB_NAME", "innovatebooks")
+        # Initialize client but don't connect immediately to avoid blocking
+        client = MongoClient(mongo_url, connect=False)
+        _sync_db = client[db_name]
+    return _sync_db
+
+# Removed module-level collections to prevent startup hang
+# parties_collection = db["parties_engine"] ...
+
 
 # ==================== PYDANTIC MODELS ====================
 
@@ -131,7 +135,7 @@ def calculate_risk_score(risk_profile: dict) -> tuple:
 
 def calculate_readiness(party_id: str) -> PartyReadiness:
     """Calculate party readiness for commercial transactions"""
-    party = parties_collection.find_one({"party_id": party_id})
+    party = get_db()["parties_engine"].find_one({"party_id": party_id})
     if not party:
         return PartyReadiness(
             party_id=party_id,
@@ -139,11 +143,11 @@ def calculate_readiness(party_id: str) -> PartyReadiness:
             blocking_reasons=["Party not found"]
         )
     
-    identity = party_identities.find_one({"party_id": party_id})
-    legal = party_legal_profiles.find_one({"party_id": party_id})
-    tax = party_tax_profiles.find_one({"party_id": party_id})
-    risk = party_risk_profiles.find_one({"party_id": party_id})
-    compliance = party_compliance_profiles.find_one({"party_id": party_id})
+    identity = get_db()["party_identities"].find_one({"party_id": party_id})
+    legal = get_db()["party_legal_profiles"].find_one({"party_id": party_id})
+    tax = get_db()["party_tax_profiles"].find_one({"party_id": party_id})
+    risk = get_db()["party_risk_profiles"].find_one({"party_id": party_id})
+    compliance = get_db()["party_compliance_profiles"].find_one({"party_id": party_id})
     
     missing = []
     blocking = []
@@ -219,7 +223,7 @@ def calculate_readiness(party_id: str) -> PartyReadiness:
 
 def log_audit(party_id: str, action: str, actor: str, details: dict = None):
     """Log audit entry for party changes"""
-    party_audit_logs.insert_one({
+    get_db()["party_audit_logs"].insert_one({
         "party_id": party_id,
         "action": action,
         "actor": actor,
@@ -258,8 +262,8 @@ async def list_parties(
             {"party_id": {"$regex": search, "$options": "i"}}
         ]
     
-    parties = list(parties_collection.find(query, {"_id": 0}).skip(skip).limit(limit))
-    total = parties_collection.count_documents(query)
+    parties = list(get_db()["parties_engine"].find(query, {"_id": 0}).skip(skip).limit(limit))
+    total = get_db()["parties_engine"].count_documents(query)
     
     # Add readiness info to each party
     for party in parties:
@@ -273,12 +277,12 @@ async def list_parties(
     
     # Get stats
     stats = {
-        "total": parties_collection.count_documents({}),
-        "draft": parties_collection.count_documents({"status": "draft"}),
-        "minimum_ready": parties_collection.count_documents({"status": "minimum_ready"}),
-        "verified": parties_collection.count_documents({"status": "verified"}),
-        "restricted": parties_collection.count_documents({"status": "restricted"}),
-        "blocked": parties_collection.count_documents({"status": "blocked"})
+        "total": get_db()["parties_engine"].count_documents({}),
+        "draft": get_db()["parties_engine"].count_documents({"status": "draft"}),
+        "minimum_ready": get_db()["parties_engine"].count_documents({"status": "minimum_ready"}),
+        "verified": get_db()["parties_engine"].count_documents({"status": "verified"}),
+        "restricted": get_db()["parties_engine"].count_documents({"status": "restricted"}),
+        "blocked": get_db()["parties_engine"].count_documents({"status": "blocked"})
     }
     
     return {"success": True, "parties": parties, "total": total, "stats": stats}
@@ -287,7 +291,7 @@ async def list_parties(
 async def create_party(party: PartyCreate):
     """Create a new party"""
     # Generate party ID
-    count = parties_collection.count_documents({}) + 1
+    count = get_db()["parties_engine"].count_documents({}) + 1
     party_id = f"PTY-{count:04d}"
     
     party_doc = {
@@ -302,10 +306,10 @@ async def create_party(party: PartyCreate):
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     
-    parties_collection.insert_one(party_doc)
+    get_db()["parties_engine"].insert_one(party_doc)
     
     # Create empty identity profile
-    party_identities.insert_one({
+    get_db()["party_identities"].insert_one({
         "party_id": party_id,
         "legal_name": party.legal_name,
         "country": party.country,
@@ -320,22 +324,22 @@ async def create_party(party: PartyCreate):
 @router.get("/parties/{party_id}")
 async def get_party(party_id: str):
     """Get party details with all profiles"""
-    party = parties_collection.find_one({"party_id": party_id}, {"_id": 0})
+    party = get_db()["parties_engine"].find_one({"party_id": party_id}, {"_id": 0})
     if not party:
         raise HTTPException(status_code=404, detail="Party not found")
     
     # Get all profiles
-    identity = serialize_doc(party_identities.find_one({"party_id": party_id}))
-    legal = serialize_doc(party_legal_profiles.find_one({"party_id": party_id}))
-    tax = serialize_doc(party_tax_profiles.find_one({"party_id": party_id}))
-    risk = serialize_doc(party_risk_profiles.find_one({"party_id": party_id}))
-    compliance = serialize_doc(party_compliance_profiles.find_one({"party_id": party_id}))
+    identity = serialize_doc(get_db()["party_identities"].find_one({"party_id": party_id}))
+    legal = serialize_doc(get_db()["party_legal_profiles"].find_one({"party_id": party_id}))
+    tax = serialize_doc(get_db()["party_tax_profiles"].find_one({"party_id": party_id}))
+    risk = serialize_doc(get_db()["party_risk_profiles"].find_one({"party_id": party_id}))
+    compliance = serialize_doc(get_db()["party_compliance_profiles"].find_one({"party_id": party_id}))
     
     # Calculate readiness
     readiness = calculate_readiness(party_id)
     
     # Get recent audit logs
-    audits = list(party_audit_logs.find(
+    audits = list(get_db()["party_audit_logs"].find(
         {"party_id": party_id}, {"_id": 0}
     ).sort("timestamp", -1).limit(20))
     
@@ -356,14 +360,14 @@ async def get_party(party_id: str):
 @router.put("/parties/{party_id}")
 async def update_party(party_id: str, update: PartyUpdate):
     """Update party basic info"""
-    party = parties_collection.find_one({"party_id": party_id})
+    party = get_db()["parties_engine"].find_one({"party_id": party_id})
     if not party:
         raise HTTPException(status_code=404, detail="Party not found")
     
     update_data = {k: v for k, v in update.dict().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    parties_collection.update_one(
+    get_db()["parties_engine"].update_one(
         {"party_id": party_id},
         {"$set": update_data}
     )
@@ -375,7 +379,7 @@ async def update_party(party_id: str, update: PartyUpdate):
 @router.delete("/parties/{party_id}")
 async def delete_party(party_id: str):
     """Delete a party (soft delete - set to blocked)"""
-    result = parties_collection.update_one(
+    result = get_db()["parties_engine"].update_one(
         {"party_id": party_id},
         {"$set": {"status": "blocked", "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
@@ -390,13 +394,13 @@ async def delete_party(party_id: str):
 @router.get("/parties/{party_id}/identity")
 async def get_identity(party_id: str):
     """Get party identity profile"""
-    identity = party_identities.find_one({"party_id": party_id}, {"_id": 0})
+    identity = get_db()["party_identities"].find_one({"party_id": party_id}, {"_id": 0})
     return {"success": True, "identity": identity}
 
 @router.put("/parties/{party_id}/identity")
 async def update_identity(party_id: str, identity: PartyIdentity):
     """Update party identity profile"""
-    party = parties_collection.find_one({"party_id": party_id})
+    party = get_db()["parties_engine"].find_one({"party_id": party_id})
     if not party:
         raise HTTPException(status_code=404, detail="Party not found")
     
@@ -404,7 +408,7 @@ async def update_identity(party_id: str, identity: PartyIdentity):
     identity_doc["party_id"] = party_id
     identity_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    party_identities.update_one(
+    get_db()["party_identities"].update_one(
         {"party_id": party_id},
         {"$set": identity_doc},
         upsert=True
@@ -412,7 +416,7 @@ async def update_identity(party_id: str, identity: PartyIdentity):
     
     # Also update party's legal_name if changed
     if identity.legal_name:
-        parties_collection.update_one(
+        get_db()["parties_engine"].update_one(
             {"party_id": party_id},
             {"$set": {"legal_name": identity.legal_name, "updated_at": datetime.now(timezone.utc).isoformat()}}
         )
@@ -425,13 +429,13 @@ async def update_identity(party_id: str, identity: PartyIdentity):
 @router.get("/parties/{party_id}/legal")
 async def get_legal_profile(party_id: str):
     """Get party legal profile"""
-    legal = party_legal_profiles.find_one({"party_id": party_id}, {"_id": 0})
+    legal = get_db()["party_legal_profiles"].find_one({"party_id": party_id}, {"_id": 0})
     return {"success": True, "legal": legal}
 
 @router.put("/parties/{party_id}/legal")
 async def update_legal_profile(party_id: str, legal: LegalProfile):
     """Update party legal profile"""
-    party = parties_collection.find_one({"party_id": party_id})
+    party = get_db()["parties_engine"].find_one({"party_id": party_id})
     if not party:
         raise HTTPException(status_code=404, detail="Party not found")
     
@@ -439,7 +443,7 @@ async def update_legal_profile(party_id: str, legal: LegalProfile):
     legal_doc["party_id"] = party_id
     legal_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    party_legal_profiles.update_one(
+    get_db()["party_legal_profiles"].update_one(
         {"party_id": party_id},
         {"$set": legal_doc},
         upsert=True
@@ -451,7 +455,7 @@ async def update_legal_profile(party_id: str, legal: LegalProfile):
 @router.post("/parties/{party_id}/legal/verify")
 async def verify_legal_profile(party_id: str, verified_by: str = "system"):
     """Verify party legal profile"""
-    party_legal_profiles.update_one(
+    get_db()["party_legal_profiles"].update_one(
         {"party_id": party_id},
         {"$set": {
             "verification_status": "verified",
@@ -468,13 +472,13 @@ async def verify_legal_profile(party_id: str, verified_by: str = "system"):
 @router.get("/parties/{party_id}/tax")
 async def get_tax_profile(party_id: str):
     """Get party tax profile"""
-    tax = party_tax_profiles.find_one({"party_id": party_id}, {"_id": 0})
+    tax = get_db()["party_tax_profiles"].find_one({"party_id": party_id}, {"_id": 0})
     return {"success": True, "tax": tax}
 
 @router.put("/parties/{party_id}/tax")
 async def update_tax_profile(party_id: str, tax: TaxProfile):
     """Update party tax profile"""
-    party = parties_collection.find_one({"party_id": party_id})
+    party = get_db()["parties_engine"].find_one({"party_id": party_id})
     if not party:
         raise HTTPException(status_code=404, detail="Party not found")
     
@@ -482,7 +486,7 @@ async def update_tax_profile(party_id: str, tax: TaxProfile):
     tax_doc["party_id"] = party_id
     tax_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    party_tax_profiles.update_one(
+    get_db()["party_tax_profiles"].update_one(
         {"party_id": party_id},
         {"$set": tax_doc},
         upsert=True
@@ -494,7 +498,7 @@ async def update_tax_profile(party_id: str, tax: TaxProfile):
 @router.post("/parties/{party_id}/tax/verify")
 async def verify_tax_profile(party_id: str, verified_by: str = "system"):
     """Verify party tax profile"""
-    party_tax_profiles.update_one(
+    get_db()["party_tax_profiles"].update_one(
         {"party_id": party_id},
         {"$set": {
             "verification_status": "verified",
@@ -510,13 +514,13 @@ async def verify_tax_profile(party_id: str, verified_by: str = "system"):
 @router.get("/parties/{party_id}/risk")
 async def get_risk_profile(party_id: str):
     """Get party risk profile"""
-    risk = party_risk_profiles.find_one({"party_id": party_id}, {"_id": 0})
+    risk = get_db()["party_risk_profiles"].find_one({"party_id": party_id}, {"_id": 0})
     return {"success": True, "risk": risk}
 
 @router.put("/parties/{party_id}/risk")
 async def update_risk_profile(party_id: str, risk: RiskProfile):
     """Update party risk profile"""
-    party = parties_collection.find_one({"party_id": party_id})
+    party = get_db()["parties_engine"].find_one({"party_id": party_id})
     if not party:
         raise HTTPException(status_code=404, detail="Party not found")
     
@@ -529,7 +533,7 @@ async def update_risk_profile(party_id: str, risk: RiskProfile):
     risk_doc["party_id"] = party_id
     risk_doc["last_evaluated_at"] = datetime.now(timezone.utc).isoformat()
     
-    party_risk_profiles.update_one(
+    get_db()["party_risk_profiles"].update_one(
         {"party_id": party_id},
         {"$set": risk_doc},
         upsert=True
@@ -537,13 +541,13 @@ async def update_risk_profile(party_id: str, risk: RiskProfile):
     
     # Update party status if risk is too high
     if score >= 80:
-        parties_collection.update_one(
+        get_db()["parties_engine"].update_one(
             {"party_id": party_id},
             {"$set": {"status": "blocked", "updated_at": datetime.now(timezone.utc).isoformat()}}
         )
         log_audit(party_id, "party_blocked_high_risk", "system", {"risk_score": score})
     elif score >= 60:
-        parties_collection.update_one(
+        get_db()["parties_engine"].update_one(
             {"party_id": party_id},
             {"$set": {"status": "restricted", "updated_at": datetime.now(timezone.utc).isoformat()}}
         )
@@ -556,13 +560,13 @@ async def update_risk_profile(party_id: str, risk: RiskProfile):
 @router.get("/parties/{party_id}/compliance")
 async def get_compliance_profile(party_id: str):
     """Get party compliance profile"""
-    compliance = party_compliance_profiles.find_one({"party_id": party_id}, {"_id": 0})
+    compliance = get_db()["party_compliance_profiles"].find_one({"party_id": party_id}, {"_id": 0})
     return {"success": True, "compliance": compliance}
 
 @router.put("/parties/{party_id}/compliance")
 async def update_compliance_profile(party_id: str, compliance: ComplianceProfile):
     """Update party compliance profile"""
-    party = parties_collection.find_one({"party_id": party_id})
+    party = get_db()["parties_engine"].find_one({"party_id": party_id})
     if not party:
         raise HTTPException(status_code=404, detail="Party not found")
     
@@ -570,7 +574,7 @@ async def update_compliance_profile(party_id: str, compliance: ComplianceProfile
     compliance_doc["party_id"] = party_id
     compliance_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    party_compliance_profiles.update_one(
+    get_db()["party_compliance_profiles"].update_one(
         {"party_id": party_id},
         {"$set": compliance_doc},
         upsert=True
@@ -582,7 +586,7 @@ async def update_compliance_profile(party_id: str, compliance: ComplianceProfile
 @router.post("/parties/{party_id}/compliance/verify")
 async def verify_compliance(party_id: str, verified_by: str = "system"):
     """Verify party compliance"""
-    party_compliance_profiles.update_one(
+    get_db()["party_compliance_profiles"].update_one(
         {"party_id": party_id},
         {"$set": {
             "verification_status": "verified",
@@ -608,7 +612,7 @@ async def get_readiness(party_id: str):
 @router.post("/parties/{party_id}/update-status")
 async def update_party_status(party_id: str):
     """Recalculate and update party status based on profiles"""
-    party = parties_collection.find_one({"party_id": party_id})
+    party = get_db()["parties_engine"].find_one({"party_id": party_id})
     if not party:
         raise HTTPException(status_code=404, detail="Party not found")
     
@@ -623,14 +627,14 @@ async def update_party_status(party_id: str):
         new_status = "draft"
     
     # Check if blocked or restricted from risk
-    risk = party_risk_profiles.find_one({"party_id": party_id})
+    risk = get_db()["party_risk_profiles"].find_one({"party_id": party_id})
     if risk:
         if risk.get("risk_score", 0) >= 80:
             new_status = "blocked"
         elif risk.get("risk_score", 0) >= 60:
             new_status = "restricted"
     
-    parties_collection.update_one(
+    get_db()["parties_engine"].update_one(
         {"party_id": party_id},
         {"$set": {"status": new_status, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
@@ -691,7 +695,7 @@ async def seed_parties():
         party_id = f"PTY-{i+1:04d}"
         
         # Check if exists
-        if parties_collection.find_one({"party_id": party_id}):
+        if get_db()["parties_engine"].find_one({"party_id": party_id}):
             continue
         
         party_doc = {
@@ -700,10 +704,10 @@ async def seed_parties():
             "created_at": datetime.now(timezone.utc).isoformat(),
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
-        parties_collection.insert_one(party_doc)
+        get_db()["parties_engine"].insert_one(party_doc)
         
         # Create identity
-        party_identities.insert_one({
+        get_db()["party_identities"].insert_one({
             "party_id": party_id,
             "legal_name": party_data["legal_name"],
             "trade_name": party_data["legal_name"].split()[0],
@@ -716,7 +720,7 @@ async def seed_parties():
         
         # Create legal profile
         is_verified = party_data["status"] in ["verified", "minimum_ready"]
-        party_legal_profiles.insert_one({
+        get_db()["party_legal_profiles"].insert_one({
             "party_id": party_id,
             "incorporation_certificate": f"cert_{party_id}.pdf" if is_verified else None,
             "certificate_verified": is_verified,
@@ -727,7 +731,7 @@ async def seed_parties():
         })
         
         # Create tax profile
-        party_tax_profiles.insert_one({
+        get_db()["party_tax_profiles"].insert_one({
             "party_id": party_id,
             "tax_residency": party_data["country"],
             "tax_id": party_data["registration_number"],
@@ -739,7 +743,7 @@ async def seed_parties():
         
         # Create risk profile
         risk_score = 85 if party_data["status"] == "blocked" else (65 if party_data["status"] == "restricted" else 25)
-        party_risk_profiles.insert_one({
+        get_db()["party_risk_profiles"].insert_one({
             "party_id": party_id,
             "country_risk": risk_score // 4,
             "industry_risk": risk_score // 5,
@@ -753,7 +757,7 @@ async def seed_parties():
         })
         
         # Create compliance profile
-        party_compliance_profiles.insert_one({
+        get_db()["party_compliance_profiles"].insert_one({
             "party_id": party_id,
             "kyc_status": "verified" if party_data["status"] == "verified" else "pending",
             "kyc_documents": [{"type": "incorporation", "uploaded": True}] if is_verified else [],

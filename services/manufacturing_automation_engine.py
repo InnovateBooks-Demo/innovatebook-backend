@@ -9,9 +9,19 @@ import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(MONGO_URL)
-db = client['innovate_books_db']
+_client = None
+_db = None
+
+def get_db():
+    """Get database instance (Lazy loaded)"""
+    global _client, _db
+    if _db is None:
+        from motor.motor_asyncio import AsyncIOMotorClient
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+        db_name = os.environ.get('DB_NAME', 'innovate_books_db')
+        _client = AsyncIOMotorClient(mongo_url)
+        _db = _client[db_name]
+    return _db
 
 
 class ManufacturingAutomationEngine:
@@ -86,7 +96,7 @@ class ManufacturingAutomationEngine:
         assigned_to = sales_rep_mapping.get(customer_region, 'sales-rep-general')
         
         # Update lead
-        await db['mfg_leads'].update_one(
+        await get_db()['mfg_leads'].update_one(
             {'lead_id': lead_data['lead_id']},
             {'$set': {'assigned_to': assigned_to, 'assigned_to_name': f'Sales Rep - {customer_region}'}}
         )
@@ -106,7 +116,7 @@ class ManufacturingAutomationEngine:
         }
         
         # Log email event
-        await db['mfg_automation_logs'].insert_one({
+        await get_db()['mfg_automation_logs'].insert_one({
             "lead_id": lead_data['lead_id'],
             "automation_type": "email_sent",
             "details": email_content,
@@ -121,7 +131,7 @@ class ManufacturingAutomationEngine:
             return None
         
         # Search for potential duplicates
-        duplicates = await db['mfg_leads'].find({
+        duplicates = await get_db()['mfg_leads'].find({
             'customer_id': lead_data.get('customer_id'),
             'product_description': lead_data.get('product_description'),
             'lead_id': {'$ne': lead_data['lead_id']},
@@ -130,7 +140,7 @@ class ManufacturingAutomationEngine:
         
         if duplicates:
             # Flag as potential duplicate
-            await db['mfg_leads'].update_one(
+            await get_db()['mfg_leads'].update_one(
                 {'lead_id': lead_data['lead_id']},
                 {'$set': {'potential_duplicate': True, 'duplicate_lead_ids': [d['lead_id'] for d in duplicates]}}
             )
@@ -154,7 +164,7 @@ class ManufacturingAutomationEngine:
             "enriched_at": datetime.utcnow()
         }
         
-        await db['mfg_customers'].update_one(
+        await get_db()['mfg_customers'].update_one(
             {'id': customer_id},
             {'$set': enrichment_data}
         )
@@ -176,7 +186,7 @@ class ManufacturingAutomationEngine:
             suggestions.append({'sku_id': 'SKU-ENG-001', 'confidence': 0.9})
         
         if suggestions:
-            await db['mfg_leads'].update_one(
+            await get_db()['mfg_leads'].update_one(
                 {'lead_id': lead_data['lead_id']},
                 {'$set': {'suggested_skus': suggestions}}
             )
@@ -200,7 +210,7 @@ class ManufacturingAutomationEngine:
             "created_at": datetime.utcnow()
         }
         
-        await db['mfg_tasks'].insert_one(task)
+        await get_db()['mfg_tasks'].insert_one(task)
         
         return {"rule": "auto_create_engineering_task", "action": "Engineering task created"}
     
@@ -219,7 +229,7 @@ class ManufacturingAutomationEngine:
             "created_at": datetime.utcnow()
         }
         
-        await db['mfg_tasks'].insert_one(task)
+        await get_db()['mfg_tasks'].insert_one(task)
         
         return {"rule": "auto_create_production_task", "action": "Production task created"}
     
@@ -238,7 +248,7 @@ class ManufacturingAutomationEngine:
             "created_at": datetime.utcnow()
         }
         
-        await db['mfg_tasks'].insert_one(task)
+        await get_db()['mfg_tasks'].insert_one(task)
         
         return {"rule": "auto_create_qc_task", "action": "QC task created"}
     
@@ -264,7 +274,7 @@ class ManufacturingAutomationEngine:
             "calculated_at": datetime.utcnow()
         }
         
-        await db['mfg_leads'].update_one(
+        await get_db()['mfg_leads'].update_one(
             {'lead_id': lead_data['lead_id']},
             {'$set': {'costing': costing}}
         )
@@ -281,7 +291,7 @@ class ManufacturingAutomationEngine:
         
         # Flag if margin is below threshold (e.g., 15%)
         if margin_pct < 15:
-            await db['mfg_leads'].update_one(
+            await get_db()['mfg_leads'].update_one(
                 {'lead_id': lead_data['lead_id']},
                 {'$set': {'margin_exception': True, 'requires_pricing_manager_approval': True}}
             )
@@ -314,7 +324,7 @@ class ManufacturingAutomationEngine:
                 "submitted_at": datetime.utcnow()
             })
         
-        await db['mfg_leads'].update_one(
+        await get_db()['mfg_leads'].update_one(
             {'lead_id': lead_data['lead_id']},
             {'$set': {'approvals': approvals, 'approval_status': 'Pending'}}
         )
@@ -339,7 +349,7 @@ class ManufacturingAutomationEngine:
             "created_at": datetime.utcnow()
         }
         
-        await db['mfg_work_orders'].insert_one(work_order)
+        await get_db()['mfg_work_orders'].insert_one(work_order)
         
         return {"rule": "auto_create_sample_work_order", "action": f"Sample WO {work_order['wo_number']} created"}
     
@@ -349,7 +359,7 @@ class ManufacturingAutomationEngine:
             return None
         
         # Find overdue tasks
-        overdue_tasks = await db['mfg_tasks'].find({
+        overdue_tasks = await get_db()['mfg_tasks'].find({
             'lead_id': lead_data['lead_id'],
             'status': 'Open',
             'due_date': {'$lt': datetime.utcnow().isoformat()}
@@ -358,7 +368,7 @@ class ManufacturingAutomationEngine:
         if overdue_tasks:
             # Escalate to manager
             for task in overdue_tasks:
-                await db['mfg_tasks'].update_one(
+                await get_db()['mfg_tasks'].update_one(
                     {'id': task['id']},
                     {'$set': {'escalated': True, 'escalated_at': datetime.utcnow()}}
                 )
@@ -382,7 +392,7 @@ class ManufacturingAutomationEngine:
         
         if missing_fields and (datetime.utcnow() - datetime.fromisoformat(lead_data['created_at'])).days > 2:
             # Send reminder email
-            await db['mfg_automation_logs'].insert_one({
+            await get_db()['mfg_automation_logs'].insert_one({
                 "lead_id": lead_data['lead_id'],
                 "automation_type": "reminder_sent",
                 "details": {"missing_fields": missing_fields},
@@ -398,7 +408,7 @@ class ManufacturingAutomationEngine:
         if trigger != "lead_converted":
             return None
         
-        await db['mfg_leads'].update_one(
+        await get_db()['mfg_leads'].update_one(
             {'lead_id': lead_data['lead_id']},
             {'$set': {'locked': True, 'locked_at': datetime.utcnow(), 'locked_by': 'System'}}
         )
@@ -419,7 +429,7 @@ class ManufacturingAutomationEngine:
             "created_at": datetime.utcnow()
         }
         
-        await db['evaluates'].insert_one(evaluate_record)
+        await get_db()['evaluates'].insert_one(evaluate_record)
         
         return {"rule": "auto_create_evaluate_record", "action": f"Evaluate {evaluate_record['evaluate_id']} created"}
     
@@ -434,7 +444,7 @@ class ManufacturingAutomationEngine:
             "timestamp": datetime.utcnow()
         }
         
-        await db['mfg_analytics_events'].insert_one(analytics_event)
+        await get_db()['mfg_analytics_events'].insert_one(analytics_event)
         
         return {"rule": "auto_generate_analytics_events", "action": "Analytics event generated"}
     
@@ -451,7 +461,7 @@ class ManufacturingAutomationEngine:
         capacity_available = True  # Mock
         
         if not capacity_available:
-            await db['mfg_leads'].update_one(
+            await get_db()['mfg_leads'].update_one(
                 {'lead_id': lead_data['lead_id']},
                 {'$set': {'capacity_constraint': True}}
             )
@@ -469,7 +479,7 @@ class ManufacturingAutomationEngine:
         rm_available = True  # Mock
         
         if not rm_available:
-            await db['mfg_leads'].update_one(
+            await get_db()['mfg_leads'].update_one(
                 {'lead_id': lead_data['lead_id']},
                 {'$set': {'rm_constraint': True}}
             )
@@ -487,7 +497,7 @@ class ManufacturingAutomationEngine:
         min_lead_time = 60  # days
         
         if (delivery_date - datetime.now()).days < min_lead_time:
-            await db['mfg_leads'].update_one(
+            await get_db()['mfg_leads'].update_one(
                 {'lead_id': lead_data['lead_id']},
                 {'$set': {'delivery_date_risk': True, 'risk_level': 'High'}}
             )
@@ -505,7 +515,7 @@ class ManufacturingAutomationEngine:
         if lead_data.get('tooling_required'):
             # Find available tooling
             # Mock assignment
-            await db['mfg_leads'].update_one(
+            await get_db()['mfg_leads'].update_one(
                 {'lead_id': lead_data['lead_id']},
                 {'$set': {'assigned_tooling_id': 'TOOL-001'}}
             )
@@ -527,7 +537,7 @@ class ManufacturingAutomationEngine:
             missing_certs = []
             
             if missing_certs:
-                await db['mfg_leads'].update_one(
+                await get_db()['mfg_leads'].update_one(
                     {'lead_id': lead_data['lead_id']},
                     {'$set': {'certification_gap': True, 'missing_certifications': missing_certs}}
                 )
@@ -561,7 +571,7 @@ class ManufacturingAutomationEngine:
         else:
             risk_level = 'Low'
         
-        await db['mfg_leads'].update_one(
+        await get_db()['mfg_leads'].update_one(
             {'lead_id': lead_data['lead_id']},
             {'$set': {'risk_score': risk_score, 'risk_level': risk_level}}
         )
@@ -573,7 +583,7 @@ class ManufacturingAutomationEngine:
         # Notify on key events
         if trigger in ["lead_created", "stage_changed", "approval_completed"]:
             # Mock notification
-            await db['mfg_notifications'].insert_one({
+            await get_db()['mfg_notifications'].insert_one({
                 "lead_id": lead_data['lead_id'],
                 "notification_type": trigger,
                 "recipients": ["sales-manager", "assigned-rep"],

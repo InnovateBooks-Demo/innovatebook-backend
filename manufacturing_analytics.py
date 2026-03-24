@@ -9,12 +9,21 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(MONGO_URL)
-db = client['innovate_books_db']
-
 
 class ManufacturingAnalytics:
     """Analytics engine for manufacturing leads"""
+    
+    def __init__(self):
+        self._client = None
+        self._db = None
+
+    @property
+    def db(self):
+        if self._db is None:
+            print("[Antigravity] Initializing Lazy MongoDB client in ManufacturingAnalytics")
+            self._client = AsyncIOMotorClient(MONGO_URL)
+            self._db = self._client['innovate_books_db']
+        return self._db
     
     async def get_pipeline_summary(self, filters: Dict[str, Any] = None) -> Dict[str, Any]:
         """
@@ -491,14 +500,14 @@ class ManufacturingAnalytics:
             {'$sort': {'total_leads': -1}}
         ]
         
-        results = await db['mfg_leads'].aggregate(pipeline).to_list(length=100)
+        results = await self.db['mfg_leads'].aggregate(pipeline).to_list(length=100)
         
         plant_data = []
         for result in results:
             plant_id = result['_id']
             
             # Get plant name from master
-            plant = await db['mfg_plants'].find_one({'id': plant_id})
+            plant = await self.db['mfg_plants'].find_one({'id': plant_id})
             plant_name = plant.get('plant_name') if plant else plant_id
             
             plant_data.append({

@@ -15,19 +15,16 @@ from razorpay_service import (
     handle_subscription_charged
 )
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
+# from motor.motor_asyncio import AsyncIOMotorClient # Removed to prevent startup hang
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/webhooks", tags=["Webhooks"])
 
-# Direct MongoDB connection (avoid circular import)
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
 
 def get_db():
-    """Get database instance"""
+    """Get database instance from main"""
+    from main import db
     return db
 
 # Razorpay webhook secret (set this in production)

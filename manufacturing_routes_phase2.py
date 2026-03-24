@@ -16,9 +16,17 @@ from manufacturing_models_phase2_part2 import *
 router = APIRouter(prefix="/api/manufacturing/phase2", tags=["Manufacturing Phase 2"])
 
 # MongoDB connection
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(MONGO_URL)
-db = client['innovate_books_db']
+_mongo_client = None
+_db_instance = None
+
+def get_db():
+    global _mongo_client, _db_instance
+    if _db_instance is None:
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+        _mongo_client = AsyncIOMotorClient(mongo_url)
+        _db_instance = _mongo_client['innovate_books_db']
+    return _db_instance
+
 
 # Helper function
 def serialize_doc(doc):
@@ -137,7 +145,7 @@ async def get_masters(master_type: str, skip: int = 0, limit: int = 100):
         raise HTTPException(status_code=404, detail=f"Master type '{master_type}' not found")
     
     collection_name = MASTER_COLLECTIONS[master_type]
-    collection = db[collection_name]
+    collection = get_db()[collection_name]
     
     total = await collection.count_documents({})
     items = await collection.find().skip(skip).limit(limit).to_list(length=limit)
@@ -157,7 +165,7 @@ async def create_master(master_type: str, data: dict):
         raise HTTPException(status_code=404, detail=f"Master type '{master_type}' not found")
     
     collection_name = MASTER_COLLECTIONS[master_type]
-    collection = db[collection_name]
+    collection = get_db()[collection_name]
     
     # Add metadata
     if 'id' not in data:
@@ -183,7 +191,7 @@ async def get_master_by_id(master_type: str, item_id: str):
         raise HTTPException(status_code=404, detail=f"Master type '{master_type}' not found")
     
     collection_name = MASTER_COLLECTIONS[master_type]
-    collection = db[collection_name]
+    collection = get_db()[collection_name]
     
     item = await collection.find_one({"id": item_id})
     
@@ -200,7 +208,7 @@ async def update_master(master_type: str, item_id: str, data: dict):
         raise HTTPException(status_code=404, detail=f"Master type '{master_type}' not found")
     
     collection_name = MASTER_COLLECTIONS[master_type]
-    collection = db[collection_name]
+    collection = get_db()[collection_name]
     
     # Add updated timestamp
     data['updated_at'] = datetime.utcnow()
@@ -224,7 +232,7 @@ async def delete_master(master_type: str, item_id: str):
         raise HTTPException(status_code=404, detail=f"Master type '{master_type}' not found")
     
     collection_name = MASTER_COLLECTIONS[master_type]
-    collection = db[collection_name]
+    collection = get_db()[collection_name]
     
     result = await collection.update_one(
         {"id": item_id},
@@ -244,14 +252,14 @@ async def delete_master(master_type: str, item_id: str):
 @router.get("/roles")
 async def get_all_roles():
     """Get all 25+ roles with permissions"""
-    roles = await db['mfg_roles_extended'].find().to_list(length=50)
+    roles = await get_db()['mfg_roles_extended'].find().to_list(length=50)
     return {"roles": [serialize_doc(r) for r in roles]}
 
 
 @router.get("/roles/{role_name}")
 async def get_role_details(role_name: str):
     """Get specific role details"""
-    role = await db['mfg_roles_extended'].find_one({"role": role_name})
+    role = await get_db()['mfg_roles_extended'].find_one({"role": role_name})
     
     if not role:
         raise HTTPException(status_code=404, detail="Role not found")
@@ -310,7 +318,7 @@ async def get_master_statistics():
     stats = {}
     
     for master_type, collection_name in MASTER_COLLECTIONS.items():
-        collection = db[collection_name]
+        collection = get_db()[collection_name]
         total = await collection.count_documents({})
         active = await collection.count_documents({"is_active": True})
         

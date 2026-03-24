@@ -20,11 +20,19 @@ from enterprise_middleware import (
 
 router = APIRouter(prefix="/api/workforce", tags=["Workforce"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-DB_NAME = os.environ['DB_NAME']
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+# MongoDB connection (Lazy loaded)
+_mongo_client = None
+_db_instance = None
+
+def get_db():
+    global _mongo_client, _db_instance
+    if _db_instance is None:
+        print("[Antigravity] Initializing Lazy MongoDB client in workforce_routes")
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+        db_name = os.environ['DB_NAME']
+        _mongo_client = AsyncIOMotorClient(mongo_url)
+        _db_instance = _mongo_client[db_name]
+    return _db_instance
 
 # ========================
 # EMPLOYEES
@@ -35,7 +43,7 @@ async def get_employees(org_id: Optional[str] = Depends(get_org_scope)):
     """Get all employees (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        employees = await db.employees.find(query, {"_id": 0}).to_list(1000)
+        employees = await get_db().employees.find(query, {"_id": 0}).to_list(1000)
         return {"success": True, "employees": employees}
     except Exception as e:
         return {"success": False, "employees": [], "error": str(e)}
@@ -47,7 +55,7 @@ async def get_employee(employee_id: str, org_id: Optional[str] = Depends(get_org
         query = {"id": employee_id}
         if org_id:
             query["org_id"] = org_id
-        employee = await db.employees.find_one(query, {"_id": 0})
+        employee = await get_db().employees.find_one(query, {"_id": 0})
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
         return {"success": True, "employee": employee}
@@ -60,11 +68,11 @@ async def create_employee(employee_data: dict, org_id: Optional[str] = Depends(g
     try:
         query = {"org_id": org_id} if org_id else {}
         employee_data["id"] = str(uuid4())
-        employee_data["employee_code"] = f"EMP-{str(await db.employees.count_documents(query) + 1001)}"
+        employee_data["employee_code"] = f"EMP-{str(await get_db().employees.count_documents(query) + 1001)}"
         employee_data["created_at"] = datetime.utcnow()
         if org_id:
             employee_data["org_id"] = org_id
-        await db.employees.insert_one(employee_data)
+        await get_db().employees.insert_one(employee_data)
         return {"success": True, "employee": employee_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -76,7 +84,7 @@ async def update_employee(employee_id: str, employee_data: dict, org_id: Optiona
         query = {"id": employee_id}
         if org_id:
             query["org_id"] = org_id
-        result = await db.employees.update_one(query, {"$set": employee_data})
+        result = await get_db().employees.update_one(query, {"$set": employee_data})
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Employee not found")
         return {"success": True, "message": "Employee updated"}
@@ -90,7 +98,7 @@ async def delete_employee(employee_id: str, org_id: Optional[str] = Depends(get_
         query = {"id": employee_id}
         if org_id:
             query["org_id"] = org_id
-        result = await db.employees.delete_one(query)
+        result = await get_db().employees.delete_one(query)
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Employee not found")
         return {"success": True, "message": "Employee deleted"}
@@ -106,7 +114,7 @@ async def get_payroll(org_id: Optional[str] = Depends(get_org_scope)):
     """Get all payroll records (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        payroll = await db.payroll.find(query, {"_id": 0}).to_list(1000)
+        payroll = await get_db().payroll.find(query, {"_id": 0}).to_list(1000)
         return {"success": True, "payroll": payroll}
     except Exception as e:
         return {"success": False, "payroll": [], "error": str(e)}
@@ -120,7 +128,7 @@ async def get_attendance(org_id: Optional[str] = Depends(get_org_scope)):
     """Get attendance records (org-scoped)"""
     try:
         query = {"org_id": org_id} if org_id else {}
-        attendance = await db.attendance.find(query, {"_id": 0}).to_list(1000)
+        attendance = await get_db().attendance.find(query, {"_id": 0}).to_list(1000)
         return {"success": True, "attendance": attendance}
     except Exception as e:
         return {"success": False, "attendance": [], "error": str(e)}

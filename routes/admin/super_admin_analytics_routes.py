@@ -13,10 +13,18 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/super-admin/analytics", tags=["Super Admin Analytics"])
 
-# Direct MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Direct MongoDB connection (Lazy loaded)
+_mongo_client = None
+_db_instance = None
+
+def get_db():
+    global _mongo_client, _db_instance
+    if _db_instance is None:
+        print("[Antigravity] Initializing Lazy MongoDB client in super_admin_analytics_routes")
+        mongo_url = os.environ['MONGO_URL']
+        _mongo_client = AsyncIOMotorClient(mongo_url)
+        _db_instance = _mongo_client[os.environ['DB_NAME']]
+    return _db_instance
 
 def require_super_admin(token_payload: dict = Depends(verify_token)):
     """Middleware to ensure user is super admin"""

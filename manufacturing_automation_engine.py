@@ -10,16 +10,23 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(MONGO_URL)
-db = client['innovate_books_db']
-
 
 class ManufacturingAutomationEngine:
     """Automation engine for manufacturing leads"""
     
     def __init__(self):
+        self._client = None
+        self._db = None
         self.automation_rules = []
         self.register_all_rules()
+
+    @property
+    def db(self):
+        if self._db is None:
+            print("[Antigravity] Initializing Lazy MongoDB client in ManufacturingAutomationEngine")
+            self._client = AsyncIOMotorClient(MONGO_URL)
+            self._db = self._client['innovate_books_db']
+        return self._db
     
     def register_all_rules(self):
         """Register all 20+ automation rules"""
@@ -573,7 +580,7 @@ class ManufacturingAutomationEngine:
         # Notify on key events
         if trigger in ["lead_created", "stage_changed", "approval_completed"]:
             # Mock notification
-            await db['mfg_notifications'].insert_one({
+            await self.db['mfg_notifications'].insert_one({
                 "lead_id": lead_data['lead_id'],
                 "notification_type": trigger,
                 "recipients": ["sales-manager", "assigned-rep"],

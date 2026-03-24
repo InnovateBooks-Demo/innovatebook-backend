@@ -15,33 +15,20 @@ from enterprise_auth_service import (
     is_refresh_token_revoked, revoke_refresh_token
 )
 from enterprise_middleware import verify_token
-import os
-from motor.motor_asyncio import AsyncIOMotorClient
 from log_utils import get_logger
+import os
 
 logger = logging.getLogger(__name__)
 auth_logger = get_logger(__name__)
 
 router = APIRouter(prefix="/enterprise/auth", tags=["Enterprise Auth"])
 
-# Direct MongoDB connection (avoid circular import)
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
-
 def get_db():
-    """Get database instance"""
+    """Get database instance from main"""
+    from main import db
     return db
 
 # ==================== LOGIN ====================
-
-# ... existing imports
-from log_utils import get_logger
-
-logger = logging.getLogger(__name__)
-auth_logger = get_logger(__name__)
-
-# ...
 
 # ==================== LOGIN ====================
 
