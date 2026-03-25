@@ -12,9 +12,17 @@ from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 import os
 import uuid
-from routes.deps import get_current_user, User, security, get_db
+from routes.deps import get_current_user, User, security, get_db, require_non_viewer, get_current_user_member
+from auth_utils import verify_token
 
 router = APIRouter(tags=["Workspace"])
+
+@router.get("/roles/options")
+async def get_role_options(current_user: User = Depends(get_current_user)):
+    """Return available roles for selection"""
+    return [
+        "admin", "manager", "member", "viewer"
+    ]
 from typing import List, Optional, Dict, Any
 # workspace_models imports
 
@@ -742,44 +750,50 @@ async def get_channel_messages(
 @router.post("/chats", response_model=WorkspaceChat)
 async def create_chat(
     data: WorkspaceChatCreate,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_non_viewer)
 ):
     """Create a new context-bound chat"""
     db = get_db()
 
-    existing_chat = await db.workspace_chats.find_one({
-        "context_id": data.context_id,
-        "chat_type": data.chat_type,
-        "is_archived": False
-    })
+    # Deduplicate based on context if provided
+    if data.context_id:
+        existing_chat = await db.workspace_chats.find_one({
+            "context_id": data.context_id,
+            "chat_type": data.chat_type,
+            "is_archived": False
+        })
 
-    if existing_chat:
-        existing_chat["created_at"] = datetime.fromisoformat(existing_chat["created_at"])
-        if existing_chat.get("last_message_at"):
-            existing_chat["last_message_at"] = datetime.fromisoformat(existing_chat["last_message_at"])
-        return WorkspaceChat(**existing_chat)
+        if existing_chat:
+            return WorkspaceChat(**existing_chat)
 
-    chat_id = f"CHAT-{str(uuid.uuid4())[:8].upper()}"
+    chat_id = f"CHAT-{uuid.uuid4().hex[:8].upper()}"
     now = datetime.now(timezone.utc)
 
     # Ensure creator is in participants
-    participants = list(set([current_user.id] + data.participants))
+    input_participants = data.participants or []
+    participants = list(set(input_participants + [current_user.id]))
 
-    # Validate participants exist
+    # Validate participants exist (strictly using user_id)
+    valid_participants = []
     if participants:
-        found_ids = set()
-        async for u in db.users.find({"_id": {"$in": participants}}, {"_id": 1}):
-            found_ids.add(u["_id"])
+        # Filter valid user_ids from the database
         async for u in db.users.find({"user_id": {"$in": participants}}, {"user_id": 1}):
-            found_ids.add(u["user_id"])
-
-        if len(found_ids) != len(set(participants)):
-            missing = set(participants) - found_ids
-            raise HTTPException(status_code=400, detail=f"Invalid participants: {', '.join(missing)}")
+            valid_participants.append(u["user_id"])
+        
+        # Cross-check for IDs that might be in _id but we want them to be user_id
+        # However, per user request, we standardize on user_id as single source of truth.
+    
+    # Ensure creator is always included even if validation fails for others
+    if current_user.id not in valid_participants:
+        valid_participants.append(current_user.id)
+    
+    participants = list(set(valid_participants))
 
     chat_doc = {
+        "_id": chat_id,
         "chat_id": chat_id,
         "context_id": data.context_id,
+        "name": data.name,
         "chat_type": data.chat_type,
         "created_by": current_user.id,
         "participants": participants,
@@ -789,6 +803,10 @@ async def create_chat(
         "is_archived": False,
         "last_message_at": None
     }
+
+    print("CHAT ID:", chat_id)
+    print("CHAT:", chat_doc)
+    print("PARTICIPANTS:", chat_doc["participants"])
 
     await db.workspace_chats.insert_one(chat_doc)
 
@@ -805,7 +823,7 @@ async def get_chats(
     db = get_db()
     query = {
         "org_id": current_user.org_id,
-        "participants": current_user.id,
+        "participants": {"$in": [current_user.id]},
         "is_archived": False
     }
 
@@ -832,13 +850,14 @@ async def get_chat(
     """Get chat details"""
     db = get_db()
     chat = await db.workspace_chats.find_one({
-        "chat_id": chat_id,
+        "_id": chat_id,
         "org_id": current_user.org_id
     })
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
 
-    if current_user.id not in chat["participants"]:
+    participants = chat.get("participants", [])
+    if current_user.id not in participants:
         raise HTTPException(status_code=403, detail="Not a participant")
 
     chat["created_at"] = datetime.fromisoformat(chat["created_at"])
@@ -856,11 +875,12 @@ async def send_chat_message(
 ):
     """Send a message in a chat (REST) + Broadcast real-time event"""
     db = get_db()
-    chat = await db.workspace_chats.find_one({"chat_id": chat_id})
+    chat = await db.workspace_chats.find_one({"_id": chat_id})
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
 
-    if current_user.id not in chat["participants"]:
+    participants = chat.get("participants", [])
+    if current_user.id not in participants:
         raise HTTPException(status_code=403, detail="Not a participant")
 
     message_id = f"MSG-{str(uuid.uuid4())[:8].upper()}"
@@ -883,7 +903,7 @@ async def send_chat_message(
     await db.workspace_chat_messages.insert_one(message_doc)
 
     await db.workspace_chats.update_one(
-        {"chat_id": chat_id},
+        {"_id": chat_id},
         {"$set": {"last_message_at": now.isoformat()}}
     )
 
@@ -929,11 +949,12 @@ async def get_chat_messages(
 ):
     """Get messages from a chat"""
     db = get_db()
-    chat = await db.workspace_chats.find_one({"chat_id": chat_id})
+    chat = await db.workspace_chats.find_one({"_id": chat_id})
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
 
-    if current_user.id not in chat["participants"]:
+    participants = chat.get("participants", [])
+    if current_user.id not in participants:
         raise HTTPException(status_code=403, detail="Not a participant")
 
     messages = await db.workspace_chat_messages.find({"chat_id": chat_id}).sort("created_at", -1).limit(limit).to_list(limit)
@@ -1310,7 +1331,7 @@ async def upload_chat_attachment(
 ):
     """Upload a file attachment to a chat"""
     db = get_db()
-    chat = await db.workspace_chats.find_one({"chat_id": chat_id})
+    chat = await db.workspace_chats.find_one({"_id": chat_id})
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
 
@@ -1354,13 +1375,13 @@ async def upload_chat_attachment(
     await db.workspace_chat_messages.insert_one(message_doc)
 
     await db.workspace_chats.update_one(
-        {"chat_id": chat_id},
+        {"_id": chat_id},
         {"$set": {"last_message_at": now.isoformat()}}
     )
 
     # Broadcast to WebSocket (match frontend listener)
     try:
-        chat = await db.workspace_chats.find_one({"chat_id": chat_id})
+        chat = await db.workspace_chats.find_one({"_id": chat_id})
         participant_ids = chat.get("participants", []) if chat else []
         
         await manager.broadcast_to_users(participant_ids, {
@@ -1398,7 +1419,7 @@ async def get_chat_attachment(
 ):
     """Serve a chat attachment"""
     db = get_db()
-    chat = await db.workspace_chats.find_one({"chat_id": chat_id})
+    chat = await db.workspace_chats.find_one({"_id": chat_id})
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
 

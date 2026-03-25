@@ -644,7 +644,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, EmailStr, Field
 
 from utils.email import send_invite_email
-from ..deps import get_db, get_current_user_admin,get_current_user_member
+from ..deps import get_db, get_current_user_admin, get_current_user_member, require_non_viewer, User
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -704,7 +704,7 @@ class SettingsUpdateIn(BaseModel):
 # ==================== DASHBOARD ====================
 
 @router.get("/dashboard")
-async def get_admin_dashboard(db=Depends(get_db), current_user=Depends(get_current_user_admin)):
+async def get_admin_dashboard(db=Depends(get_db), current_user=Depends(get_current_user_member)):
     try:
         org_id = current_user["org_id"]
 
@@ -738,10 +738,10 @@ async def get_admin_dashboard(db=Depends(get_db), current_user=Depends(get_curre
 
 @router.get("/users")
 async def get_users(
-    current_user: dict = Depends(get_current_user_member),
+    current_user: User = Depends(require_non_viewer),
     db=Depends(get_db),
 ):
-    org_id = current_user.get("org_id")
+    org_id = current_user.org_id
 
     query = {}
     if org_id:
@@ -768,8 +768,8 @@ async def get_users(
         "users": normalized_users,
     }
 @router.post("/users/{user_id}/deactivate")
-async def deactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
-    org_id = current_user["org_id"]
+async def deactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(require_non_viewer)):
+    org_id = current_user.org_id
 
     result = await db.users.update_one(
         {"user_id": user_id, "org_id": org_id},
@@ -777,7 +777,7 @@ async def deactivate_user(user_id: str, db=Depends(get_db), current_user=Depends
             "is_active": False,
             "deactivated_at": utc_now(),
             "updated_at": utc_now(),
-            "updated_by": current_user["user_id"],
+            "updated_by": current_user.id,
         }}
     )
 
@@ -788,8 +788,8 @@ async def deactivate_user(user_id: str, db=Depends(get_db), current_user=Depends
 
 
 @router.post("/users/{user_id}/reactivate")
-async def reactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(get_current_user_admin)):
-    org_id = current_user["org_id"]
+async def reactivate_user(user_id: str, db=Depends(get_db), current_user=Depends(require_non_viewer)):
+    org_id = current_user.org_id
 
     result = await db.users.update_one(
         {"user_id": user_id, "org_id": org_id},
@@ -797,7 +797,7 @@ async def reactivate_user(user_id: str, db=Depends(get_db), current_user=Depends
             "is_active": True,
             "deactivated_at": None,
             "updated_at": utc_now(),
-            "updated_by": current_user["user_id"],
+            "updated_by": current_user.id,
         }}
     )
 
@@ -810,8 +810,8 @@ async def reactivate_user(user_id: str, db=Depends(get_db), current_user=Depends
 # ==================== INVITES ====================
 
 @router.get("/invites")
-async def list_invites(db=Depends(get_db), current_user=Depends(get_current_user_member)):
-    org_id = current_user["org_id"]
+async def list_invites(db=Depends(get_db), current_user=Depends(require_non_viewer)):
+    org_id = current_user.org_id
 
     invites = await db.user_invites.find(
         {"org_id": org_id, "status": "pending"},
@@ -826,26 +826,11 @@ async def create_invite(
     payload: InviteCreateIn,
     background_tasks: BackgroundTasks,
     db=Depends(get_db),
-    current_user=Depends(get_current_user_member),
+    current_user=Depends(require_non_viewer),
 ):
-    org_id = current_user["org_id"]
+    org_id = current_user.org_id
     email = payload.email.strip().lower()
     role_id = (payload.role_id or "member").strip()
-
-    # 1. Validate Allowed Roles
-    allowed_roles = ["member", "manager", "admin"]
-    if role_id not in allowed_roles:
-         raise HTTPException(status_code=400, detail=f"Role must be one of {allowed_roles}")
-
-    # 2. Privileged Role Check
-    if role_id == "admin":
-        inviter_role = current_user.get("role_id")
-        is_super = current_user.get("is_super_admin", False)
-        if not is_super and inviter_role not in ["owner"]:
-             raise HTTPException(
-                 status_code=403, 
-                 detail="Only Owners or Super Admins can invite Admins."
-             )
 
     # validate role exists
     role = await db.roles.find_one(

@@ -109,6 +109,9 @@ def serialize_doc(doc):
         return None
     doc = dict(doc)
     if "_id" in doc:
+        # If user_id is missing (common in some Atlas docs), backfill it from _id
+        if not doc.get("user_id"):
+            doc["user_id"] = str(doc["_id"])
         del doc["_id"]
     return doc
 

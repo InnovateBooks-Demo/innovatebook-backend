@@ -37,4 +37,8 @@ uploads/
 
 # OS
 .DS_Store
-Thumbs.db
+Thumbs.dbcheck_*.py
+verify_*.py
+find_*.py
+list_*.py
+*_fix.py

@@ -499,9 +499,29 @@ class EvaluateStageUpdate(BaseModel):
     evaluate_stage: EvaluateStage
 
 
+class CommitStageUpdate(BaseModel):
+    commit_stage: str
+
+
 class EvaluationDataUpdate(BaseModel):
     stage: EvaluateStage
     data: Dict[str, Any]
+
+class CommitPricingUpdate(BaseModel):
+    """Payload for saving pricing data in the Commit/Price sub-stage."""
+    unit_price: float = Field(..., ge=0)
+    discount: float = Field(0.0, ge=0, le=100)
+    # Fallback cost-per-unit if not available in evaluate items
+    # cost_per_unit is now required to ensure safe margin calculations
+    cost_per_unit: float = Field(..., ge=0)
+
+
+class CommitApprovalAction(BaseModel):
+    """Payload for submitting an approval decision in Commit/Approve sub-stage."""
+    action: str       # approve | reject | request_change
+    approver_id: str
+    approval_note: Optional[str] = None
+
 
 # ============== PROCUREMENT MODELS ==============
 
@@ -881,6 +901,55 @@ def _compute_lead_fields(lead: dict) -> dict:
         (1 if company_size in _ICP_TARGET_SIZES else 0)
     )
     icp_fit = "Strong" if icp_score == 2 else ("Medium" if icp_score == 1 else "Weak")
+
+    # Resolve Main Stage & Sub-stage (Stage-Aware) from canonical 'stage' field
+    raw_stage = str(lead.get("stage") or lead.get("main_stage") or "new").lower()
+    
+    # Map sub-stage-as-stage (legacy) to groups
+    if raw_stage == "qualified":
+        main_stage = "evaluate"
+        sub_stage = _normalize_evaluate_stage(lead.get("evaluate_stage") or "explore")
+    elif raw_stage in ["new", "contacted", "disqualified", "imported", "proposal_sent"]:
+        main_stage = "lead"
+        sub_stage = raw_stage
+    else:
+        # Use stage as main_stage, resolve specific sub-stage
+        main_stage = raw_stage
+        if main_stage == "lead":
+             sub_stage = lead.get("lead_stage") or "new"
+        elif main_stage == "evaluate":
+            sub_stage = _normalize_evaluate_stage(lead.get("evaluate_stage") or "explore")
+        elif main_stage == "commit":
+            sub_stage = lead.get("commit_stage") or "review"
+        elif main_stage == "contract":
+            sub_stage = (lead.get("contract_data") or {}).get("status") or "draft"
+        elif main_stage == "handoff":
+            sub_stage = (lead.get("handoff_at") or {}).get("status") or "pending"
+        else:
+            sub_stage = raw_stage
+
+    # Response-level normalization: attach main_stage for frontend compatibility (not persisted)
+    lead["main_stage"] = main_stage
+
+    # Extract Stage Data for summary
+    eval_data = _normalize_evaluation_dict(lead.get("evaluation_data") or {})
+    commit_data = lead.get("commit_data") or {}
+    pricing = commit_data.get("pricing") or {}
+    
+    lead["_pipeline"] = {
+        "main_stage": main_stage,
+        "sub_stage": sub_stage,
+        "product": eval_data.get("propose", {}).get("proposed_product") or lead.get("product_interest") or "—",
+        "quantity": eval_data.get("propose", {}).get("proposal_quantity") or pricing.get("quantity_used") or 0,
+        "deal_value": pricing.get("total_value") or lead.get("estimated_deal_value") or 0,
+        "unit_price": pricing.get("unit_price"),
+        "discount": pricing.get("discount"),
+        "margin": pricing.get("margin"),
+        "risk_score": commit_data.get("risk", {}).get("risk_score"),
+        "approval_status": commit_data.get("approval", {}).get("approval_status"),
+        "timeline": eval_data.get("scope", {}).get("timeline") or "—",
+        "decision_maker": eval_data.get("scope", {}).get("decision_maker") or "—"
+    }
 
     lead["_computed"] = {
         "age_days": age_days,
@@ -1839,9 +1908,12 @@ async def get_revenue_lead(
             })
 
     # Recompute computed fields on the fly for detail view accuracy
+    # PASSIVE NORMALIZATION: If stage is missing but evaluate_stage exists, treat as evaluate
+    if not lead.get("stage") and lead.get("evaluate_stage"):
+        lead["stage"] = "evaluate"
+
     lead = _compute_lead_fields(lead)
     if lead.get("evaluation_data"):
-        # The helper should be available globally
         lead["evaluation_data"] = _normalize_evaluation_dict(lead["evaluation_data"])
         
     return {"success": True, "lead": lead}
@@ -2200,35 +2272,39 @@ async def update_lead_status(
                 "detail": "Advisory signals missing for qualification."
             }
 
-    # Execute update
+    # Transition Logic & Gating
     update_doc: Dict[str, Any] = {
-        "stage": new_status,
         "updated_at": now_iso,
         "qualification_override": req.force
     }
-    
-    # Transition Logic: If qualified, move to 'evaluate' main stage
+
     if new_status == "qualified":
-        update_doc["main_stage"] = MainStage.EVALUATE
+        # Rule: Lead -> Evaluate explicitly Sets stage to evaluate
+        update_doc["stage"] = MainStage.EVALUATE
         update_doc["evaluate_stage"] = EvaluateStage.EXPLORE
+        update_doc["lead_stage"] = "qualified" # Store original sub-stage status
         # Initialize evaluation_data if not present
         if not lead.get("evaluation_data"):
              update_doc["evaluation_data"] = EvaluationData().dict()
-    
-    # NEW Phase 3 Logic: Transition from Evaluate to Commit
-    if new_status == "commit":
-        current_main = lead.get("main_stage")
-        if current_main != MainStage.EVALUATE:
+             
+    elif new_status == "commit":
+        # Rule: Evaluate -> Commit 
+        # Source must be EVALUATE (normalize check)
+        current_canonical = lead.get("stage") or lead.get("main_stage") or "lead"
+        if str(current_canonical).lower() != "evaluate":
             raise HTTPException(status_code=400, detail="Leads must be in Evaluate stage before moving to Commit.")
         
         current_eval_stage = _normalize_evaluate_stage(lead.get("evaluate_stage") or "propose")
-        # Be defensive
+        
+        # Rule: Only allow from PROPOSE stage
+        if current_eval_stage != "propose":
+             raise HTTPException(status_code=400, detail=f"Cannot move to Commit. Current Evaluate stage is '{current_eval_stage}'. Must be 'propose'.")
+
+        # Context-aware sub-stage validation
         raw_eval_data = lead.get("evaluation_data")
         eval_data = raw_eval_data if isinstance(raw_eval_data, dict) else {}
         
-        # Final validation of entire evaluate workflow before allowing COMMIT
-
-        # Final validation of entire evaluate workflow before allowing COMMIT
+        # Final validation of entire evaluate workflow
         is_valid, error_detail, missing_fields = _validate_evaluation_progression(eval_data, current_eval_stage, target_stage=None)
         if not is_valid:
             return JSONResponse(
@@ -2241,18 +2317,47 @@ async def update_lead_status(
                 }
             )
             
-        update_doc["main_stage"] = MainStage.COMMIT
+        update_doc["stage"] = MainStage.COMMIT
+        update_doc["main_stage"] = MainStage.COMMIT # Sync
+        update_doc["commit_stage"] = "review"
         
-        # Insert activity for Move to Commit
+        # Only init commit_data if missing
+        if not lead.get("commit_data"):
+            update_doc["commit_data"] = {
+                "review": {},
+                "pricing": {
+                    "unit_price": None,
+                    "discount": None,
+                    "final_price": None,
+                    "total_value": None,
+                    "cost_per_unit": None,
+                    "total_cost": None,
+                    "margin": None,
+                },
+                "validation": { "required_fields_ok": None, "margin_ok": None, "deal_structure_ok": None, "missing_fields": [] },
+                "risk": { "country_risk": None, "deal_size_risk": None, "risk_score": None },
+                "approval": { "approval_required": None, "approval_status": None, "approver_id": None, "approval_timestamp": None, "approval_note": None },
+            }
+        
         await db.revenue_workflow_activities.insert_one({
             "lead_id": lead_id,
             "type": "status_change",
-            "summary": "Lead moved to Commit stage",
-            "description": f"Evaluation completed and lead progressed to {MainStage.COMMIT}.",
+            "summary": "Lead moved to Commit",
+            "description": "Evaluation successfully completed. Phase changed to COMMIT.",
             "performed_by": "User",
             "created_at": now_iso
         })
-    
+
+    elif new_status in ["new", "contacted", "disqualified", "imported"]:
+        # Rule: Internal lead sub-stages
+        update_doc["stage"] = MainStage.LEAD
+        update_doc["main_stage"] = MainStage.LEAD
+        update_doc["lead_stage"] = new_status
+    else:
+        # Fallback for direct stage sets (contract, handoff, evaluate)
+        update_doc["stage"] = new_status
+        update_doc["main_stage"] = new_status
+
     await db.revenue_workflow_leads.update_one(
         {"lead_id": lead_id, "org_id": current_user.org_id},
         {"$set": update_doc}
@@ -2429,6 +2534,7 @@ async def update_evaluate_stage(
         await db.revenue_workflow_leads.update_one(
             {"lead_id": lead_id, "org_id": current_user.org_id},
             {"$set": {
+                "stage": "evaluate", # Reinforce canonical stage
                 "evaluate_stage": new_stage,
                 "updated_at": now_iso
             }}
@@ -2456,11 +2562,67 @@ async def update_evaluate_stage(
         return {"success": True, "message": f"Stage updated to {new_stage}"}
     except Exception as e:
         logger.error(f"Error in update_evaluate_stage: {str(e)}", exc_info=True)
-        return JSONResponse(
-            status_code=500,
-            content={"success": False, "detail": f"Internal system error: {str(e)}"}
+        return {
+            "success": False,
+            "detail": f"Internal Server Error: {str(e)}",
+            "error_type": "SYSTEM_ERROR"
+        }
+
+
+@router.patch("/revenue/leads/{lead_id}/commit-stage", dependencies=[Depends(_require_role(["member", "manager", "admin", "owner"]))])
+async def update_commit_stage(
+    lead_id: str, 
+    req: CommitStageUpdate, 
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    """Update commit sub-stage (review -> price -> check -> approve)"""
+    try:
+        lead = await db.revenue_workflow_leads.find_one({
+            "lead_id": lead_id,
+            "org_id": current_user.org_id
+        })
+        if not lead:
+            raise HTTPException(status_code=404, detail="Lead not found")
+        
+        # Verify main stage is commit
+        current_main_stage = str(lead.get("stage") or lead.get("main_stage") or "").lower()
+        if current_main_stage != "commit":
+             return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "detail": "Lead is not in COMMIT stage",
+                    "error_type": "VALIDATION_ERROR"
+                }
+            )
+
+        new_sub_stage = req.commit_stage.lower()
+        current_sub_stage = lead.get("commit_stage") or "review"
+
+        now_iso = datetime.now(timezone.utc).isoformat()
+        
+        # Update lead
+        await db.revenue_workflow_leads.update_one(
+            {"lead_id": lead_id, "org_id": current_user.org_id},
+            {"$set": {
+                "commit_stage": new_sub_stage,
+                "updated_at": now_iso
+            }}
         )
-        logger.exception(f"Unexpected crash in update_evaluate_stage for lead {lead_id}")
+
+        # Audit
+        await db.revenue_workflow_audits.insert_one({
+            "lead_id": lead_id,
+            "action": "commit_stage_changed",
+            "before": current_sub_stage,
+            "after": new_sub_stage,
+            "timestamp": now_iso
+        })
+
+        return {"success": True, "message": f"Commit stage updated to {new_sub_stage}"}
+    except Exception as e:
+        logger.error(f"Error in update_commit_stage: {str(e)}", exc_info=True)
         return {
             "success": False,
             "detail": f"Internal Server Error: {str(e)}",
@@ -2669,6 +2831,627 @@ async def convert_lead_to_evaluate(
         "stage": eval_data["stage"],
         "status": eval_data["status"]
     }
+
+
+# ============== COMMIT WORKFLOW ENDPOINTS ==============
+# All commit data lives inside the revenue_workflow_leads document.
+# Sub-stages: review → price → check → approve
+
+# Countries considered high-risk for the commit risk engine (simple, transparent list)
+_HIGH_RISK_COUNTRIES = {
+    "iran", "north korea", "syria", "cuba", "russia", "myanmar", "sudan",
+    "venezuela", "zimbabwe", "somalia", "liberia", "iraq"
+}
+
+# Minimum margin % policy — can be overridden via env var
+_COMMIT_MIN_MARGIN_PCT = float(os.environ.get("COMMIT_MIN_MARGIN_PCT", "25.0"))
+
+# Valid commit sub-stages in order
+_COMMIT_STAGES_ORDER = ["review", "price", "check", "approve"]
+
+
+def _get_commit_data(lead: dict) -> dict:
+    """Return commit_data from lead, guaranteed to be a dict (safe for old records)."""
+    cd = lead.get("commit_data")
+    return cd if isinstance(cd, dict) else {}
+
+
+# ── 1. Move to Commit ─────────────────────────────────────────────────────────
+
+@router.post(
+    "/revenue/leads/{lead_id}/move-to-commit",
+    dependencies=[Depends(_require_role(["manager", "admin", "owner"]))]
+)
+async def move_lead_to_commit(
+    lead_id: str,
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    """
+    Transition a lead from Evaluate/Propose into Commit/Review.
+    Guards: main_stage must be 'evaluate', evaluate_stage must be 'propose'.
+    Initializes commit_data skeleton if not already present.
+    """
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    lead = await db.revenue_workflow_leads.find_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id}
+    )
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    main_stage = str(lead.get("main_stage") or "").lower()
+    eval_stage = _normalize_evaluate_stage(lead.get("evaluate_stage") or "")
+
+    # Gate: must be in evaluate/propose
+    if main_stage != "evaluate":
+        return JSONResponse(
+            status_code=400,
+            content={
+                "success": False,
+                "detail": f"Lead must be in Evaluate stage to move to Commit (current: '{main_stage}').",
+                "error_type": "INVALID_TRANSITION"
+            }
+        )
+    if eval_stage != "propose":
+        return JSONResponse(
+            status_code=400,
+            content={
+                "success": False,
+                "detail": f"Lead must be at Evaluate/Propose sub-stage to move to Commit (current evaluate_stage: '{eval_stage}').",
+                "error_type": "INVALID_TRANSITION"
+            }
+        )
+
+    # Prevent double-transition if already in commit
+    if str(lead.get("commit_stage") or "") in _COMMIT_STAGES_ORDER:
+        return {
+            "success": True,
+            "message": "Lead is already in Commit stage.",
+            "commit_stage": lead["commit_stage"],
+            "already_in_commit": True
+        }
+
+    update_fields: Dict[str, Any] = {
+        "main_stage": "commit",
+        "commit_stage": "review",
+        "updated_at": now_iso,
+    }
+
+    # Initialize commit_data only if absent (explicit $set, not setdefault)
+    if not lead.get("commit_data"):
+        update_fields["commit_data"] = {
+            "review": {},
+            "pricing": {
+                "unit_price": None, "discount": None, "final_price": None,
+                "total_value": None, "cost_per_unit": None, "total_cost": None, "margin": None,
+            },
+            "validation": {
+                "required_fields_ok": None, "margin_ok": None,
+                "deal_structure_ok": None, "missing_fields": [],
+            },
+            "risk": {
+                "country_risk": None, "deal_size_risk": None, "risk_score": None,
+            },
+            "approval": {
+                "approval_required": None, "approval_status": None,
+                "approver_id": None, "approval_timestamp": None, "approval_note": None,
+            },
+        }
+
+    await db.revenue_workflow_leads.update_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id},
+        {"$set": update_fields}
+    )
+
+    # Audit
+    await db.revenue_workflow_audits.insert_one({
+        "lead_id": lead_id,
+        "action": "moved_to_commit",
+        "before": "evaluate",
+        "after": "commit",
+        "actor": current_user.user_id,
+        "timestamp": now_iso,
+    })
+
+    return {"success": True, "commit_stage": "review", "message": "Lead moved to Commit/Review"}
+
+
+# ── 2. Get Commit Data ────────────────────────────────────────────────────────
+
+@router.get("/revenue/leads/{lead_id}/commit-data")
+async def get_commit_data(
+    lead_id: str,
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    """
+    Return commit_data and a read-only snapshot of evaluate_data.
+    Evaluate data is NOT editable from the Commit stage.
+    """
+    lead = await db.revenue_workflow_leads.find_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id},
+        {"_id": 0}
+    )
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    commit_data = _get_commit_data(lead)
+    # Normalize evaluate snapshot (read-only) with metadata enrichment
+    evaluate_status = _normalize_evaluate_stage(lead.get("evaluate_stage"))
+    evaluate_snapshot = _normalize_evaluation_dict(lead.get("evaluation_data") or {})
+    evaluate_snapshot["_metadata"] = {
+        "captured_at": datetime.now(timezone.utc).isoformat(),
+        "source_stage": evaluate_status
+    }
+
+    return {
+        "success": True,
+        "lead_id": lead_id,
+        "main_stage": lead.get("main_stage"),
+        "commit_stage": lead.get("commit_stage"),
+        "commit_data": commit_data,
+        # Read-only summary from Evaluate
+        "evaluate_snapshot": evaluate_snapshot,
+        "evaluate_stage": evaluate_status,
+    }
+
+
+# ── 3. Save Commit Pricing ────────────────────────────────────────────────────
+
+@router.patch(
+    "/revenue/leads/{lead_id}/commit-pricing",
+    dependencies=[Depends(_require_role(["manager", "admin", "owner"]))]
+)
+async def save_commit_pricing(
+    lead_id: str,
+    req: CommitPricingUpdate,
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    """
+    Save pricing inputs and auto-calculate derived fields.
+    - final_price = unit_price - (unit_price * discount / 100)
+    - quantity resolved from first evaluate item or defaults to 1
+    - cost_per_unit taken from evaluate items if not supplied in payload
+    - total_value = final_price * quantity
+    - total_cost = cost_per_unit * quantity
+    - margin = ((final_price - cost_per_unit) / final_price) * 100 (divide-by-zero safe)
+    Does NOT unconditionally advance commit_stage; leaves stage control to the caller.
+    """
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    lead = await db.revenue_workflow_leads.find_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id}
+    )
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    # Require lead to be in commit stage
+    if str(lead.get("main_stage") or "").lower() != "commit":
+        raise HTTPException(
+            status_code=400,
+            detail="Pricing can only be saved when the lead is in Commit stage."
+        )
+
+    # Resolve quantity and cost_per_unit from evaluate items (safe fallback to 1 / 0)
+    eval_items = []
+    eval_data = lead.get("evaluation_data") or {}
+    propose_data = eval_data.get("propose") if isinstance(eval_data, dict) else None
+    if isinstance(propose_data, dict):
+        qty_raw = propose_data.get("proposal_quantity")
+        try:
+            quantity = max(1, int(qty_raw or 1))
+        except (TypeError, ValueError):
+            quantity = 1
+    else:
+        quantity = 1
+
+    # Resolve cost_per_unit: payload > first evaluate item > 0
+    cost_per_unit = req.cost_per_unit
+    if cost_per_unit is None:
+        # Try to extract from the existing evaluation items list on the lead
+        items_raw = lead.get("evaluation_items") or lead.get("items") or []
+        if items_raw and isinstance(items_raw, list) and isinstance(items_raw[0], dict):
+            cost_per_unit = float(items_raw[0].get("cost_price") or 0)
+        else:
+            cost_per_unit = 0.0
+
+    # Auto-calculate
+    unit_price = float(req.unit_price)
+    discount = float(req.discount)
+
+    final_price = unit_price - (unit_price * discount / 100.0)
+    total_value = final_price * quantity
+    total_cost = cost_per_unit * quantity
+
+    # Margin — divide-by-zero safe
+    if final_price > 0:
+        margin = round(((final_price - cost_per_unit) / final_price) * 100, 2)
+    else:
+        margin = 0.0
+
+    pricing_data = {
+        "unit_price": unit_price,
+        "discount": discount,
+        "final_price": round(final_price, 2),
+        "total_value": round(total_value, 2),
+        "cost_per_unit": cost_per_unit,
+        "total_cost": round(total_cost, 2),
+        "margin": margin,
+        "quantity_used": quantity,
+    }
+
+    # Determine next commit_stage contextually:
+    # Any pricing update while in 'check' or 'approve' resets the stage to 'price'
+    # to enforce re-validation.
+    current_commit_stage = str(lead.get("commit_stage") or "review").lower()
+    if current_commit_stage in ["check", "approve"]:
+        next_commit_stage = "price"
+    elif current_commit_stage == "review":
+        next_commit_stage = "price"
+    else:
+        next_commit_stage = current_commit_stage
+
+    await db.revenue_workflow_leads.update_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id},
+        {"$set": {
+            "commit_data.pricing": pricing_data,
+            "commit_stage": next_commit_stage,
+            "updated_at": now_iso,
+        }}
+    )
+
+    await db.revenue_workflow_audits.insert_one({
+        "lead_id": lead_id,
+        "action": "commit_pricing_saved",
+        "actor": current_user.user_id,
+        "timestamp": now_iso,
+        "data": {"unit_price": unit_price, "discount": discount, "margin": margin},
+    })
+
+    return {
+        "success": True,
+        "commit_stage": next_commit_stage,
+        "pricing": pricing_data,
+        "message": "Commit pricing saved and calculations applied."
+    }
+
+
+# ── 4. Commit Check (Validation + Risk) ──────────────────────────────────────
+
+@router.post(
+    "/revenue/leads/{lead_id}/commit-check",
+    dependencies=[Depends(_require_role(["manager", "admin", "owner"]))]
+)
+async def run_commit_check(
+    lead_id: str,
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    """
+    Run system-side validation and risk scoring for the Commit stage.
+    Writes commit_data.validation and commit_data.risk into the lead record.
+    Advances commit_stage to 'check' on success.
+    Returns check_status: ready | needs_approval | blocked
+    """
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    lead = await db.revenue_workflow_leads.find_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id}
+    )
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    if str(lead.get("main_stage") or "").lower() != "commit":
+        raise HTTPException(status_code=400, detail="Commit check can only run in Commit stage.")
+
+    commit_data = _get_commit_data(lead)
+    pricing = commit_data.get("pricing") or {}
+
+    # ── Validation ──────────────────────────────────────────────────────────
+    missing_fields = []
+
+    # Required pricing fields
+    for field in ["unit_price", "discount", "final_price", "total_value", "margin"]:
+        if pricing.get(field) is None:
+            missing_fields.append(f"pricing.{field}")
+
+    required_fields_ok = len(missing_fields) == 0
+    margin = float(pricing.get("margin") or 0)
+    margin_ok = margin >= _COMMIT_MIN_MARGIN_PCT
+
+    # Deal structure: evaluate_data.propose must exist with proposal_quantity > 0
+    eval_data = lead.get("evaluation_data") or {}
+    propose_data = eval_data.get("propose") if isinstance(eval_data, dict) else {}
+    deal_structure_ok = bool(
+        isinstance(propose_data, dict) and
+        propose_data.get("proposed_product") and
+        (propose_data.get("proposal_quantity") or 0) > 0
+    )
+    if not deal_structure_ok:
+        missing_fields.append("evaluate.propose.proposed_product / proposal_quantity")
+
+    validation = {
+        "required_fields_ok": required_fields_ok,
+        "margin_ok": margin_ok,
+        "deal_structure_ok": deal_structure_ok,
+        "missing_fields": missing_fields,
+    }
+
+    # ── Risk Score ───────────────────────────────────────────────────────────
+    country = str(lead.get("country") or "").lower().strip()
+    country_risk = "high" if country in _HIGH_RISK_COUNTRIES else "low"
+
+    total_value = float(pricing.get("total_value") or 0)
+    if total_value > 10_000_000:
+        deal_size_risk = "high"
+    elif total_value > 1_000_000:
+        deal_size_risk = "medium"
+    else:
+        deal_size_risk = "low"
+
+    # Transparent additive scoring
+    risk_score = 20  # base
+    if country_risk == "high":
+        risk_score += 30
+    if deal_size_risk == "high":
+        risk_score += 30
+    elif deal_size_risk == "medium":
+        risk_score += 15
+    if not margin_ok:
+        risk_score += 15  # thin/negative margin is a risk signal
+    risk_score = min(risk_score, 100)
+
+    risk = {
+        "country_risk": country_risk,
+        "deal_size_risk": deal_size_risk,
+        "risk_score": risk_score,
+    }
+
+    # ── Approval Requirement (Enriched Logic) ────────────────────────────────
+    # Approval is required if margin is below policy OR risk score is high
+    # OR if it's a high-risk country.
+    approval_required = (not margin_ok) or (risk_score >= 70) or (country_risk == "high")
+
+    # ── Check Status ─────────────────────────────────────────────────────────
+    if not required_fields_ok or not deal_structure_ok:
+        check_status = "blocked"
+    elif approval_required:
+        check_status = "needs_approval"
+    else:
+        check_status = "ready"
+
+    # Persist all validation + risk + approval_required into lead via explicit $set
+    await db.revenue_workflow_leads.update_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id},
+        {"$set": {
+            "commit_data.validation": validation,
+            "commit_data.risk": risk,
+            "commit_data.approval.approval_required": approval_required,
+            "commit_stage": "check",
+            "updated_at": now_iso,
+        }}
+    )
+
+    await db.revenue_workflow_audits.insert_one({
+        "lead_id": lead_id,
+        "action": "commit_check_run",
+        "actor": current_user.user_id,
+        "timestamp": now_iso,
+        "data": {"check_status": check_status, "risk_score": risk_score, "margin_ok": margin_ok},
+    })
+
+    return {
+        "success": True,
+        "commit_stage": "check",
+        "check_status": check_status,
+        "validation": validation,
+        "risk": risk,
+        "approval_required": approval_required,
+        "message": f"Commit check complete. Status: {check_status}."
+    }
+
+
+# ── 5. Submit Approval Action ─────────────────────────────────────────────────
+
+@router.post(
+    "/revenue/leads/{lead_id}/commit-approval",
+    dependencies=[Depends(_require_role(["manager", "admin", "owner"]))]
+)
+async def submit_commit_approval(
+    lead_id: str,
+    req: CommitApprovalAction,
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    """
+    Submit an approval decision for the Commit stage.
+    - approve          → approval_status='approved', commit_stage='approve'
+    - reject           → approval_status='rejected', commit_stage reverts to 'price'
+    - request_change   → approval_status='changes_requested', commit_stage reverts to 'price'
+    Contract transition is NOT triggered here; use move-to-contract separately.
+    """
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    action = str(req.action or "").strip().lower()
+    valid_actions = {"approve", "reject", "request_change"}
+    if action not in valid_actions:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid action '{action}'. Must be one of: {', '.join(sorted(valid_actions))}."
+        )
+
+    lead = await db.revenue_workflow_leads.find_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id}
+    )
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    if str(lead.get("main_stage") or "").lower() != "commit":
+        raise HTTPException(status_code=400, detail="Approval can only be submitted in Commit stage.")
+
+    commit_data = _get_commit_data(lead)
+    validation = commit_data.get("validation") or {}
+
+    # Block approval if validation did not pass (blocked state)
+    if action == "approve":
+        if not validation.get("required_fields_ok", False):
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot approve: required fields validation has not passed. Run commit-check first."
+            )
+        if not validation.get("deal_structure_ok", False):
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot approve: deal structure validation failed. Resolve issues and re-run commit-check."
+            )
+
+    # Determine outcome
+    if action == "approve":
+        approval_status = "approved"
+        next_commit_stage = "approve"  # advances forward
+    elif action == "reject":
+        approval_status = "rejected"
+        next_commit_stage = "price"    # reverts to price for rework
+    else:  # request_change
+        approval_status = "changes_requested"
+        next_commit_stage = "price"    # reverts to price for rework
+
+    approval_fields = {
+        "commit_data.approval.approval_status": approval_status,
+        "commit_data.approval.approver_id": req.approver_id,
+        "commit_data.approval.approval_timestamp": now_iso,
+        "commit_data.approval.approval_note": req.approval_note,
+        "commit_stage": next_commit_stage,
+        "updated_at": now_iso,
+    }
+
+    await db.revenue_workflow_leads.update_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id},
+        {"$set": approval_fields}
+    )
+
+    await db.revenue_workflow_audits.insert_one({
+        "lead_id": lead_id,
+        "action": f"commit_approval_{action}",
+        "actor": req.approver_id,
+        "timestamp": now_iso,
+        "data": {"approval_status": approval_status, "note": req.approval_note},
+    })
+
+    return {
+        "success": True,
+        "action": action,
+        "approval_status": approval_status,
+        "commit_stage": next_commit_stage,
+        "message": f"Approval action '{action}' recorded. Commit stage is now '{next_commit_stage}'."
+    }
+
+
+# ── 6. Move to Contract ───────────────────────────────────────────────────────
+
+@router.post(
+    "/revenue/leads/{lead_id}/move-to-contract",
+    dependencies=[Depends(_require_role(["manager", "admin", "owner"]))]
+)
+async def move_lead_to_contract(
+    lead_id: str,
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    """
+    Final Commit → Contract transition.
+    Guards:
+    - commit_stage must be 'approve'
+    - If approval_required=True, approval_status must be 'approved'
+    - Validations (required_fields_ok, deal_structure_ok) must have passed
+    Sets main_stage='contract'.
+    """
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    lead = await db.revenue_workflow_leads.find_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id}
+    )
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    if str(lead.get("main_stage") or "").lower() != "commit":
+        raise HTTPException(
+            status_code=400,
+            detail="Lead must be in Commit stage before moving to Contract."
+        )
+
+    commit_stage = str(lead.get("commit_stage") or "").lower()
+    if commit_stage != "approve":
+        return JSONResponse(
+            status_code=400,
+            content={
+                "success": False,
+                "detail": f"Lead must be at Commit/Approve sub-stage to move to Contract. Currently at '{commit_stage}'.",
+                "error_type": "INVALID_COMMIT_SUBSTAGE"
+            }
+        )
+
+    commit_data = _get_commit_data(lead)
+    validation = commit_data.get("validation") or {}
+    approval = commit_data.get("approval") or {}
+
+    # Validation must have completed and passed
+    if not validation.get("required_fields_ok"):
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot move to Contract: required fields validation has not passed."
+        )
+    if not validation.get("deal_structure_ok"):
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot move to Contract: deal structure validation failed."
+        )
+
+    # If approval was required, it must be approved
+    approval_required = approval.get("approval_required")
+    approval_status = str(approval.get("approval_status") or "").lower()
+    if approval_required and approval_status != "approved":
+        raise HTTPException(
+            status_code=400,
+            detail=f"Approval is required for this deal. Current approval status: '{approval_status}'. "
+                   "Obtain approval before transitioning to Contract."
+        )
+
+    await db.revenue_workflow_leads.update_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id},
+        {"$set": {
+            "main_stage": "contract",
+            "commit_completed_at": now_iso,
+            "updated_at": now_iso,
+        }}
+    )
+
+    await db.revenue_workflow_audits.insert_one({
+        "lead_id": lead_id,
+        "action": "moved_to_contract",
+        "before": "commit",
+        "after": "contract",
+        "actor": current_user.user_id,
+        "timestamp": now_iso,
+    })
+
+    await db.revenue_workflow_activities.insert_one({
+        "lead_id": lead_id,
+        "type": "stage_change",
+        "summary": "Lead moved to Contract stage",
+        "description": "Commit phase completed. Lead advanced to Contract.",
+        "performed_by": current_user.user_id,
+        "created_at": now_iso,
+    })
+
+    return {
+        "success": True,
+        "main_stage": "contract",
+        "message": "Lead successfully moved to Contract stage."
+    }
+
 
 # --- INTERNAL EVALUATE SUBSYSTEM SERVICES ---
 async def internal_create_evaluation_scope(db, scope_data: EvaluationScope):

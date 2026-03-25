@@ -129,6 +129,7 @@ class WorkspaceChat(BaseModel):
     chat_id: str
     context_id: str
     chat_type: ChatType
+    name: Optional[str] = None
     created_by: str
     participants: List[str] = []  # user_ids
     visibility_scope: VisibilityScope
@@ -138,7 +139,8 @@ class WorkspaceChat(BaseModel):
 
 
 class WorkspaceChatCreate(BaseModel):
-    context_id: str
+    context_id: Optional[str] = None
+    name: Optional[str] = "New Chat"
     chat_type: ChatType = ChatType.INTERNAL
     participants: List[str] = []
     visibility_scope: VisibilityScope = VisibilityScope.INTERNAL_ONLY
