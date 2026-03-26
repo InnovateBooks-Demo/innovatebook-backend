@@ -18,9 +18,16 @@ router = APIRouter(prefix="/api/users", tags=["User Management"])
 from main import get_current_user, get_database
 
 # Create uploads directory if it doesn't exist
-UPLOAD_DIR = "/app/backend/uploads/profile_photos"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+#UPLOAD_DIR = "/app/backend/uploads/profile_photos"
+#os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+
+# This path is safe and inside your project folder on Render
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
+
+# Create the directory if it doesn't exist
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 class UserCreate(BaseModel):
     email: EmailStr
     full_name: str
