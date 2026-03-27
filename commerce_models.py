@@ -1152,6 +1152,40 @@ class Govern(BaseModel):
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
+# ==================== CONTRACT MODULE ====================
+
+class AcceptanceMetadata(BaseModel):
+    signer_name: str
+    signer_email: str
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    ip_address: str
+    user_agent: str
+    contract_hash: str
+
+class RevenueContract(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    contract_id: str  # AUTO: CON-2025-001
+    lead_id: str
+    contract_stage: str = "Draft"  # Draft | Review | Send | Sign
+    contract_status: str = "Active"  # Active | Signed | Rejected
+    contract_template: Optional[str] = "standard_v1"
+    contract_version: int = 1
+    contract_data: Dict[str, Any] = {}
+    onboarding_checklist: Dict[str, Any] = {}
+    onboarding_status: str = "PENDING"  # PENDING | IN_PROGRESS | VERIFIED
+    acceptance_metadata: Optional[AcceptanceMetadata] = None
+    signed_at: Optional[datetime] = None
+    sent_at: Optional[datetime] = None
+    contract_audit_log: List[Dict[str, Any]] = []
+    
+    versions: List[Dict[str, Any]] = []  # Version history storage
+    
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
 # ==================== RESPONSE MODELS ====================
 
 class LeadList(BaseModel):

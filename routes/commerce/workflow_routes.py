@@ -3,10 +3,12 @@ IB Commerce - Revenue & Procurement 5-Stage Workflow
 Full enterprise-grade implementation with stage transitions, governance, and approvals
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Query, Header, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, Query, Header, UploadFile, File, Request, Body, BackgroundTasks
 from fastapi.security import HTTPAuthorizationCredentials
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
+import json
+import hashlib
 from typing import List, Optional, Dict, Any, Tuple
 from datetime import datetime, timezone, timedelta,date
 from enum import Enum
@@ -230,12 +232,17 @@ class CommitStatus(str, Enum):
     APPROVED = "approved"
     REJECTED = "rejected"
 
+class ContractStage(str, Enum):
+    DRAFT = "Draft"
+    REVIEW = "Review"
+    SEND = "Send"
+    SIGN = "Sign"
+
 class ContractStatus(str, Enum):
-    DRAFT = "draft"
-    REVIEW = "review"
-    PENDING_ACCEPTANCE = "pending_acceptance"
-    SIGNED = "signed"
-    CANCELLED = "cancelled"
+    ACTIVE = "Active"
+    SIGNED = "Signed"
+    REJECTED = "Rejected"
+    CANCELLED = "Cancelled"
 
 class HandoffStatus(str, Enum):
     PENDING = "pending"
@@ -3419,10 +3426,42 @@ async def move_lead_to_contract(
                    "Obtain approval before transitioning to Contract."
         )
 
+    # Create RevenueContract record
+    contract_id = f"CON-{datetime.now().year}-{lead_id[:8].upper()}"
+    new_contract = {
+        "contract_id": contract_id,
+        "lead_id": lead_id,
+        "contract_stage": ContractStage.DRAFT.value,
+        "contract_status": ContractStatus.ACTIVE.value,
+        "contract_template": "standard_v1",
+        "contract_version": 1,
+        "contract_data": {
+            "party_name": lead.get("company_name"),
+            "total_value": commit_data.get("total_value"),
+            "currency": commit_data.get("currency", "INR"),
+            "items": commit_data.get("items", [])
+        },
+        "onboarding_checklist": {
+            "company_info": True,
+            "contacts": True,
+            "tax_info": False,
+            "documents": False
+        },
+        "onboarding_status": "PENDING",
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "versions": []
+    }
+    await db.revenue_workflow_contracts.insert_one(new_contract)
+    
+    # Log creation
+    await append_audit_log(contract_id, "CONTRACT_CREATED", "system", db)
+
     await db.revenue_workflow_leads.update_one(
         {"lead_id": lead_id, "org_id": current_user.org_id},
         {"$set": {
             "main_stage": "contract",
+            "contract_id": contract_id,
             "commit_completed_at": now_iso,
             "updated_at": now_iso,
         }}
@@ -4890,7 +4929,8 @@ async def create_contract_from_commit(commit_id: str, db = Depends(get_db)):
         "total_value": commit.get("total_value"),
         "currency": evaluation.get("currency", "INR") if evaluation else "INR",
         "payment_terms": "net-30",
-        "status": ContractStatus.DRAFT.value,
+        "status": ContractStatus.ACTIVE.value,
+        "contract_stage": ContractStage.DRAFT.value,
         "created_at": now,
         "updated_at": now
     }
@@ -4954,31 +4994,175 @@ async def get_revenue_contract(contract_id: str, db = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Contract not found")
     return {"success": True, "contract": contract}
 
+async def append_audit_log(contract_id: str, action: str, performed_by: str, db, metadata: Optional[Dict[str, Any]] = None):
+    """Append entry to contract audit log. Fail-safe."""
+    try:
+        log_entry = {
+            "action": action,
+            "performed_by": performed_by,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "metadata": metadata or {}
+        }
+        await db.revenue_workflow_contracts.update_one(
+            {"contract_id": contract_id},
+            {"$push": {"contract_audit_log": log_entry}}
+        )
+    except Exception as e:
+        logging.error(f"Audit log failed for {contract_id}: {e}")
+
+async def trigger_notification(event_type: str, payload: Dict[str, Any]):
+    """Send asynchronous notification (Mocked)"""
+    # In production, this would use a background task to send emails/slack messages
+    logging.info(f"NOTIFICATION [{event_type}]: {json.dumps(payload)}")
+
 @router.put("/revenue/contracts/{contract_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
-async def update_revenue_contract(contract_id: str, data: RevenueContractCreate, db = Depends(get_db)):
-    """Update contract terms (only legal text editable)"""
-    update_data = {
-        "payment_terms": data.payment_terms,
-        "special_terms": data.special_terms,
-        "legal_clauses": data.legal_clauses,
-        "updated_at": datetime.now(timezone.utc).isoformat()
-    }
-    result = await db.revenue_workflow_contracts.update_one({"contract_id": contract_id}, {"$set": update_data})
-    if result.matched_count == 0:
+async def update_revenue_contract(contract_id: str, data: Dict[str, Any], db = Depends(get_db)):
+    """Update contract terms with versioning"""
+    contract = await db.revenue_workflow_contracts.find_one({"contract_id": contract_id})
+    if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
+
+    if contract.get("contract_status") == ContractStatus.SIGNED.value:
+        raise HTTPException(status_code=400, detail="Cannot update a signed contract")
+
+    now = datetime.now(timezone.utc).isoformat()
+    current_stage = contract.get("contract_stage", ContractStage.DRAFT.value)
+    
+    update_data = {
+        "contract_data": data.get("contract_data", contract.get("contract_data", {})),
+        "onboarding_checklist": data.get("onboarding_checklist", contract.get("onboarding_checklist", {})),
+        "updated_at": now
+    }
+
+    # Versioning logic: Trigger only if stage >= Review AND data is modified
+    is_modified = any(update_data.get(k) != contract.get(k) for k in ["contract_data"])
+    if current_stage in [ContractStage.REVIEW.value, ContractStage.SEND.value] and is_modified:
+        # Save snapshot to versions array
+        version_snapshot = {
+            "version": contract.get("contract_version", 1),
+            "contract_data": contract.get("contract_data"),
+            "timestamp": contract.get("updated_at")
+        }
+        await db.revenue_workflow_contracts.update_one(
+            {"contract_id": contract_id},
+            {
+                "$push": {"versions": version_snapshot},
+                "$inc": {"contract_version": 1}
+            }
+        )
+
+    await db.revenue_workflow_contracts.update_one({"contract_id": contract_id}, {"$set": update_data})
+    
+    # Log update
+    await append_audit_log(contract_id, "CONTRACT_EDITED", "sales_user", db)
+    
     return {"success": True, "message": "Contract updated"}
 
-@router.post("/revenue/contracts/{contract_id}/sign", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
-async def sign_revenue_contract(contract_id: str, db = Depends(get_db)):
-    """Sign contract - freeze it"""
-    now = datetime.now(timezone.utc).isoformat()
+@router.post("/revenue/contracts/{contract_id}/review")
+async def review_revenue_contract(contract_id: str, db = Depends(get_db)):
+    """Move contract from Draft to Review"""
     result = await db.revenue_workflow_contracts.update_one(
-        {"contract_id": contract_id},
-        {"$set": {"status": ContractStatus.SIGNED.value, "signed_at": now, "updated_at": now}}
+        {"contract_id": contract_id, "contract_stage": ContractStage.DRAFT.value},
+        {"$set": {"contract_stage": ContractStage.REVIEW.value, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
     if result.matched_count == 0:
+        raise HTTPException(status_code=400, detail="Invalid contract or stage transition")
+    
+    await append_audit_log(contract_id, "STAGE_CHANGED", "sales_user", db, {"to": "Review"})
+    
+    return {"success": True, "message": "Contract moved to Review"}
+
+@router.post("/revenue/contracts/{contract_id}/send")
+async def send_revenue_contract(contract_id: str, db = Depends(get_db)):
+    """Generate secure token and move to Send stage"""
+    secure_token = str(uuid.uuid4())
+    result = await db.revenue_workflow_contracts.update_one(
+        {"contract_id": contract_id, "contract_stage": ContractStage.REVIEW.value},
+        {"$set": {
+            "contract_stage": ContractStage.SEND.value,
+            "access_token": secure_token,
+            "sent_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=400, detail="Invalid contract or stage transition")
+    
+    await append_audit_log(contract_id, "CONTRACT_SENT", "sales_user", db, {"token": secure_token})
+    
+    # Trigger notification
+    await trigger_notification("CONTRACT_SENT", {"contract_id": contract_id, "token": secure_token})
+    
+    return {"success": True, "message": "Contract sent to client", "public_link": f"/portal/contract/{secure_token}"}
+
+@router.post("/revenue/contracts/{contract_id}/sign")
+async def sign_revenue_contract(
+    contract_id: str, 
+    request: Request,
+    signer_name: str = Body(...),
+    signer_email: str = Body(...),
+    db = Depends(get_db)
+):
+    """Securely sign contract with metadata capture"""
+    contract = await db.revenue_workflow_contracts.find_one({"contract_id": contract_id})
+    if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
-    return {"success": True, "message": "Contract signed"}
+
+    if contract.get("onboarding_status") != "VERIFIED":
+        raise HTTPException(status_code=400, detail="Onboarding must be VERIFIED before signing")
+
+    now = datetime.now(timezone.utc).isoformat()
+    # Generate contract hash (simple hash of contract_data for brevity)
+    contract_content = json.dumps(contract.get("contract_data", {}), sort_keys=True)
+    contract_hash = hashlib.sha256(contract_content.encode()).hexdigest()
+
+    metadata = {
+        "signer_name": signer_name,
+        "signer_email": signer_email,
+        "timestamp": now,
+        "ip_address": request.client.host,
+        "user_agent": request.headers.get("user-agent", "unknown"),
+        "contract_hash": contract_hash
+    }
+
+    result = await db.revenue_workflow_contracts.update_one(
+        {"contract_id": contract_id, "contract_stage": ContractStage.SEND.value},
+        {"$set": {
+            "contract_stage": ContractStage.SIGN.value,
+            "contract_status": ContractStatus.SIGNED.value,
+            "acceptance_metadata": metadata,
+            "signed_at": now,
+            "updated_at": now
+        }}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=400, detail="Invalid contract or stage transition")
+    
+    # TRIGGER AUTO HANDOFF
+    await db.revenue_workflow_leads.update_one(
+        {"lead_id": contract["lead_id"]},
+        {"$set": {"main_stage": "handoff", "stage": "handoff"}}
+    )
+    
+    await append_audit_log(contract_id, "CONTRACT_SIGNED", "sales_user", db)
+    await trigger_notification("CONTRACT_SIGNED", {"contract_id": contract_id})
+
+    return {"success": True, "message": "Contract signed successfully"}
+
+@router.post("/revenue/contracts/{contract_id}/reject")
+async def reject_revenue_contract(contract_id: str, db = Depends(get_db)):
+    """Move contract from Send back to Review"""
+    result = await db.revenue_workflow_contracts.update_one(
+        {"contract_id": contract_id, "contract_stage": ContractStage.SEND.value},
+        {"$set": {
+            "contract_stage": ContractStage.REVIEW.value,
+            "contract_status": ContractStatus.REJECTED.value,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=400, detail="Invalid contract or stage transition")
+    return {"success": True, "message": "Contract rejected and returned to Review"}
 
 @router.post("/revenue/contracts/{contract_id}/handoff", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
 async def create_handoff_from_contract(contract_id: str, authorization: str = Header(None), db = Depends(get_db)):
@@ -5486,7 +5670,8 @@ async def create_procure_contract(commit_id: str, db = Depends(get_db)):
         "items": evaluation.get("items", []) if evaluation else [],
         "total_value": commit.get("total_cost"),
         "payment_terms": "net-30",
-        "status": ContractStatus.DRAFT.value,
+        "status": ContractStatus.ACTIVE.value,
+        "contract_stage": ContractStage.DRAFT.value,
         "created_at": now,
         "updated_at": now
     }
@@ -5664,6 +5849,69 @@ async def complete_procure_handoff(handoff_id: str, db = Depends(get_db)):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Handoff not found")
     return {"success": True, "message": "Handoff completed - Procurement workflow finished"}
+
+
+@router.get("/revenue/public/contract/{token}")
+async def get_public_contract(token: str, db = Depends(get_db)):
+    """Publicly accessible contract view (unauthenticated)"""
+    contract = await db.revenue_workflow_contracts.find_one({"access_token": token}, {"_id": 0, "access_token": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    return {"success": True, "contract": contract}
+
+@router.post("/revenue/public/contract/{token}/sign")
+async def sign_public_contract(
+    token: str, 
+    request: Request,
+    background_tasks: BackgroundTasks,
+    signer_name: str = Body(...),
+    db = Depends(get_db)
+):
+    """Public signing endpoint (unauthenticated)"""
+    contract = await db.revenue_workflow_contracts.find_one({"access_token": token})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+
+    if contract.get("onboarding_status") != "VERIFIED":
+        raise HTTPException(status_code=400, detail="Onboarding must be VERIFIED before signing")
+
+    now = datetime.now(timezone.utc).isoformat()
+    contract_content = json.dumps(contract.get("contract_data", {}), sort_keys=True)
+    contract_hash = hashlib.sha256(contract_content.encode()).hexdigest()
+
+    metadata = {
+        "signer_name": signer_name,
+        "signer_email": "client@public-access", 
+        "timestamp": now,
+        "ip_address": request.client.host,
+        "user_agent": request.headers.get("user-agent", "unknown"),
+        "contract_hash": contract_hash
+    }
+
+    result = await db.revenue_workflow_contracts.update_one(
+        {"access_token": token, "contract_stage": ContractStage.SEND.value},
+        {"$set": {
+            "contract_stage": ContractStage.SIGN.value,
+            "contract_status": ContractStatus.SIGNED.value,
+            "acceptance_metadata": metadata,
+            "signed_at": now,
+            "updated_at": now
+        }}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=400, detail="Contract already signed or invalid link state")
+    
+    # TRIGGER AUTO HANDOFF
+    await db.revenue_workflow_leads.update_one(
+        {"lead_id": contract["lead_id"]},
+        {"$set": {"main_stage": "handoff", "stage": "handoff"}}
+    )
+    
+    # BACKGROUND TASKS
+    background_tasks.add_task(append_audit_log, contract["contract_id"], "CONTRACT_SIGNED", f"client:{signer_name}", db)
+    background_tasks.add_task(trigger_notification, "CONTRACT_SIGNED", {"contract_id": contract["contract_id"], "signer": signer_name})
+
+    return {"success": True, "message": "Signature captured"}
 
 # ============== SEED DATA ==============
 
