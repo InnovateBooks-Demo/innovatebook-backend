@@ -4609,7 +4609,9 @@ app.include_router(workspace_router, prefix="/api/workspace")
 
 # Import IB Commerce Workflow routes (Revenue & Procurement 5-stage)
 from routes.commerce.workflow_routes import router as workflow_router
+from routes.commerce.handoff_routes import router as handoff_router
 app.include_router(workflow_router, prefix="/api")
+app.include_router(handoff_router, prefix="/api")
 # workflow_legacy_router already imported and registered above (line ~4555)
 
 # Import Enhanced Parties Engine (Commercial Identity & Readiness)

@@ -21,6 +21,7 @@ import os
 import re
 import httpx
 from routes.deps import get_current_user, User, security, JWT_ALGORITHM
+from services.handoff_service import HandoffService
 
 # Auth moved to routes.deps
 import os
@@ -2288,6 +2289,7 @@ async def update_lead_status(
     if new_status == "qualified":
         # Rule: Lead -> Evaluate explicitly Sets stage to evaluate
         update_doc["stage"] = MainStage.EVALUATE
+        update_doc["main_stage"] = "evaluate" # Sync main_stage
         update_doc["evaluate_stage"] = EvaluateStage.EXPLORE
         update_doc["lead_stage"] = "qualified" # Store original sub-stage status
         # Initialize evaluation_data if not present
@@ -2542,6 +2544,7 @@ async def update_evaluate_stage(
             {"lead_id": lead_id, "org_id": current_user.org_id},
             {"$set": {
                 "stage": "evaluate", # Reinforce canonical stage
+                "main_stage": "evaluate", # Sync main_stage
                 "evaluate_stage": new_stage,
                 "updated_at": now_iso
             }}
@@ -2613,6 +2616,8 @@ async def update_commit_stage(
         await db.revenue_workflow_leads.update_one(
             {"lead_id": lead_id, "org_id": current_user.org_id},
             {"$set": {
+                "stage": "commit", # Reinforce canonical stage
+                "main_stage": "commit", # Sync main_stage
                 "commit_stage": new_sub_stage,
                 "updated_at": now_iso
             }}
@@ -3034,11 +3039,12 @@ async def save_commit_pricing(
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
 
-    # Require lead to be in commit stage
-    if str(lead.get("main_stage") or "").lower() != "commit":
+    # Require lead to be in commit stage (resilient check)
+    current_ms = str(lead.get("main_stage") or lead.get("stage") or "").lower()
+    if current_ms != "commit":
         raise HTTPException(
             status_code=400,
-            detail="Pricing can only be saved when the lead is in Commit stage."
+            detail=f"Pricing can only be saved when the lead is in Commit stage (current: {current_ms})."
         )
 
     # Resolve quantity and cost_per_unit from evaluate items (safe fallback to 1 / 0)
@@ -3150,8 +3156,9 @@ async def run_commit_check(
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
 
-    if str(lead.get("main_stage") or "").lower() != "commit":
-        raise HTTPException(status_code=400, detail="Commit check can only run in Commit stage.")
+    current_ms = str(lead.get("main_stage") or lead.get("stage") or "").lower()
+    if current_ms != "commit":
+        raise HTTPException(status_code=400, detail=f"Commit check can only run in Commit stage (current: {current_ms}).")
 
     commit_data = _get_commit_data(lead)
     pricing = commit_data.get("pricing") or {}
@@ -3295,8 +3302,9 @@ async def submit_commit_approval(
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
 
-    if str(lead.get("main_stage") or "").lower() != "commit":
-        raise HTTPException(status_code=400, detail="Approval can only be submitted in Commit stage.")
+    current_ms = str(lead.get("main_stage") or lead.get("stage") or "").lower()
+    if current_ms != "commit":
+        raise HTTPException(status_code=400, detail=f"Approval can only be submitted in Commit stage (current: {current_ms}).")
 
     commit_data = _get_commit_data(lead)
     validation = commit_data.get("validation") or {}
@@ -3383,10 +3391,12 @@ async def move_lead_to_contract(
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
 
-    if str(lead.get("main_stage") or "").lower() != "commit":
+    # Resilient stage check: look at both main_stage and legacy stage field
+    current_ms = str(lead.get("main_stage") or lead.get("stage") or "").lower()
+    if current_ms != "commit":
         raise HTTPException(
             status_code=400,
-            detail="Lead must be in Commit stage before moving to Contract."
+            detail=f"Lead must be in Commit stage before moving to Contract (current stage: {current_ms})."
         )
 
     commit_stage = str(lead.get("commit_stage") or "").lower()
@@ -5908,6 +5918,7 @@ async def sign_public_contract(
     )
     
     # BACKGROUND TASKS
+    background_tasks.add_task(HandoffService.auto_create_handoff, contract["lead_id"], f"client:{signer_name}", db)
     background_tasks.add_task(append_audit_log, contract["contract_id"], "CONTRACT_SIGNED", f"client:{signer_name}", db)
     background_tasks.add_task(trigger_notification, "CONTRACT_SIGNED", {"contract_id": contract["contract_id"], "signer": signer_name})
 

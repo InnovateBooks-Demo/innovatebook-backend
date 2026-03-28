@@ -145,6 +145,20 @@ class MainStage(str, Enum):
     HANDOFF = "handoff"
 
 
+class HandoffStage(str, Enum):
+    INIT = "init"
+    MAP = "map"
+    PUSH = "push"
+    DONE = "done"
+
+
+class HandoffStatus(str, Enum):
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
 class EvaluateStage(str, Enum):
     EXPLORE = "explore"
     DEFINE = "define"
@@ -785,6 +799,48 @@ class Collect(BaseModel):
     payment_method: Optional[str] = None  # Bank/UPI/Card/Cheque
     payment_reference: Optional[str] = None  # UTR/Cheque No
     bank_account: Optional[str] = None
+
+
+# ==================== MODULE 13: REVENUE HANDOFF ====================
+
+class RevenueHandoffCreate(BaseModel):
+    lead_id: str
+    initiated_by: str
+
+
+class RevenueHandoffMappingUpdate(BaseModel):
+    delivery_owner_id: Optional[str] = None
+    billing_cycle: Optional[str] = None  # monthly, one_time
+    tax_config: Optional[str] = None    # e.g., GST_18
+
+
+class RevenueHandoff(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    handoff_id: str  # AUTO: REV-HANDOFF-2025-001
+    lead_id: str
+    handoff_stage: HandoffStage = HandoffStage.INIT
+    handoff_status: HandoffStatus = HandoffStatus.PENDING
+    
+    # Mapping Data
+    delivery_owner_id: Optional[str] = None
+    billing_cycle: Optional[str] = None
+    tax_config: Optional[str] = None
+    
+    # Integration Records
+    operations_record_id: Optional[str] = None
+    finance_record_id: Optional[str] = None
+    
+    # Execution Metadata
+    initiated_by: str
+    initiated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    completed_at: Optional[datetime] = None
+    error_message: Optional[str] = None
+    
+    # Timestamps
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
     # Dispute & Resolution
     dispute_flag: bool = False
