@@ -47,22 +47,11 @@ def _require_role(allowed_roles: list):
     """Dependency factory: reject if caller's role rank < min allowed rank."""
     min_rank = min(_ROLE_RANK.get(r, 0) for r in allowed_roles)
 
-    async def _check(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
-        try:
-            payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        except jwt.ExpiredSignatureError:
-            raise HTTPException(status_code=401, detail="Token has expired")
-        except jwt.PyJWTError:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        if payload.get("is_super_admin"):
-            return payload
-        role = (payload.get("role_id") or "member").strip().lower()
+    async def _check(current_user: User = Depends(get_current_user)) -> User:
+        role = (current_user.role_id or "member").strip().lower()
         if _ROLE_RANK.get(role, 0) < min_rank:
-            raise HTTPException(
-                status_code=403,
-                detail=f"Insufficient permissions. Required: {' or '.join(allowed_roles)}. Your role: '{role}'.",
-            )
-        return payload
+            raise HTTPException(status_code=403, detail=f"Insufficient permissions (Role: {role})")
+        return current_user
 
     return _check
 
@@ -2864,6 +2853,7 @@ _COMMIT_STAGES_ORDER = ["review", "price", "check", "approve"]
 
 def _get_commit_data(lead: dict) -> dict:
     """Return commit_data from lead, guaranteed to be a dict (safe for old records)."""
+    if not lead: return {}
     cd = lead.get("commit_data")
     return cd if isinstance(cd, dict) else {}
 
@@ -3267,6 +3257,7 @@ async def run_commit_check(
     }
 
 
+
 # ── 5. Submit Approval Action ─────────────────────────────────────────────────
 
 @router.post(
@@ -3366,9 +3357,38 @@ async def submit_commit_approval(
 
 # ── 6. Move to Contract ───────────────────────────────────────────────────────
 
+@router.get("/revenue/leads/{lead_id}/contract-data")
+async def get_lead_contract_data(
+    lead_id: str,
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    """Retrieves the contract associated with a lead."""
+    contract = await db.revenue_workflow_contracts.find_one(
+        {"lead_id": lead_id, "org_id": current_user.org_id}
+    )
+    
+    if not contract:
+        # Fallback: check if the lead even exists
+        lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id})
+        if not lead:
+            raise HTTPException(status_code=404, detail="Lead not found")
+        
+        return JSONResponse(
+            status_code=404, 
+            content={"detail": "Contract not yet created for this lead.", "lead_stage": lead.get("main_stage")}
+        )
+
+    # Serialize MongoDB _id
+    if "_id" in contract:
+        contract["_id"] = str(contract["_id"])
+        
+    return contract
+
+
 @router.post(
     "/revenue/leads/{lead_id}/move-to-contract",
-    dependencies=[Depends(_require_role(["manager", "admin", "owner"]))]
+    dependencies=[Depends(_require_role(["manager", "admin", "owner", "member"]))]
 )
 async def move_lead_to_contract(
     lead_id: str,
@@ -3377,130 +3397,287 @@ async def move_lead_to_contract(
 ):
     """
     Final Commit → Contract transition.
-    Guards:
-    - commit_stage must be 'approve'
-    - If approval_required=True, approval_status must be 'approved'
-    - Validations (required_fields_ok, deal_structure_ok) must have passed
-    Sets main_stage='contract'.
+    Handles auto-repair of missing items and ensures unique contract ID generation.
     """
-    now_iso = datetime.now(timezone.utc).isoformat()
+    try:
+        now_iso = datetime.now(timezone.utc).isoformat()
 
-    lead = await db.revenue_workflow_leads.find_one(
-        {"lead_id": lead_id, "org_id": current_user.org_id}
-    )
-    if not lead:
-        raise HTTPException(status_code=404, detail="Lead not found")
+        lead = await db.revenue_workflow_leads.find_one(
+            {"lead_id": lead_id, "org_id": current_user.org_id}
+        )
+        if not lead:
+            raise HTTPException(status_code=404, detail="Lead not found")
 
-    # Resilient stage check: look at both main_stage and legacy stage field
-    current_ms = str(lead.get("main_stage") or lead.get("stage") or "").lower()
-    if current_ms != "commit":
-        raise HTTPException(
-            status_code=400,
-            detail=f"Lead must be in Commit stage before moving to Contract (current stage: {current_ms})."
+        # 1. RESILIENT STAGE CHECK
+        current_ms = str(lead.get("main_stage") or lead.get("stage") or "").lower()
+        
+        # IDEMPOTENCY: If already in contract stage, return existing contract
+        if current_ms == "contract":
+            existing_contract = await db.revenue_workflow_contracts.find_one(
+                {"lead_id": lead_id}
+            )
+            if existing_contract:
+                if "_id" in existing_contract:
+                    existing_contract["_id"] = str(existing_contract["_id"])
+                
+                return {
+                    "success": True, 
+                    "message": "Lead is already in Contract stage (idempotent)",
+                    "contract_id": existing_contract.get("contract_id"),
+                    "contract": existing_contract
+                }
+
+        if current_ms != "commit":
+            raise HTTPException(
+                status_code=400,
+                detail=f"Lead must be in Commit stage before moving to Contract (current stage: {current_ms})."
+            )
+
+        # 2. SUB-STAGE & VALIDATION GUARDS
+        commit_stage = str(lead.get("commit_stage") or "").lower()
+        if commit_stage != "approve":
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "detail": f"Lead must be at Commit/Approve sub-stage. Currently at '{commit_stage}'.",
+                    "error_type": "INVALID_COMMIT_SUBSTAGE"
+                }
+            )
+
+        commit_data = _get_commit_data(lead)
+        validation = commit_data.get("validation") or {}
+        approval = commit_data.get("approval") or {}
+        pricing = commit_data.get("pricing") or {}
+
+        # 3. DATA EXTRACTION & AUTO-REPAIR
+        # Note: 'expected_deal_value' is the canonical field for Evaluate stage results
+        total_val = pricing.get("total_value") or lead.get("expected_deal_value") or lead.get("estimated_deal_value") or 0
+        eval_dict = lead.get("evaluation_data") or {}
+        items = lead.get("items") or lead.get("evaluation_items") or commit_data.get("items") or eval_dict.get("items") or []
+
+        # Logic for synthesizing items if they are missing but total_value exists
+        if not items and total_val > 0:
+            logger.info(f"Synthesizing items for lead {lead_id} from Proposal data.")
+            propose_block = eval_dict.get("propose") or {}
+            items = [{
+                "item_name": propose_block.get("proposed_product") or "Standard Services",
+                "quantity": propose_block.get("proposal_quantity") or 1,
+                "unit_price": pricing.get("final_price") or total_val,
+                "total_price": total_val
+            }]
+
+        if not total_val or not items:
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "detail": "Data Integrity Violation: Pricing or Line Items are missing.",
+                    "error_type": "DATA_INTEGRITY_VIOLATION"
+                }
+            )
+
+        # 4. FINAL GUARDS (Validation & Approval)
+        if not validation.get("required_fields_ok") or not validation.get("deal_structure_ok"):
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot move to Contract: validation checks have not passed."
+            )
+
+        approval_required = approval.get("approval_required")
+        approval_status = str(approval.get("approval_status") or "").lower()
+        if approval_required and approval_status != "approved":
+            raise HTTPException(
+                status_code=400,
+                detail=f"Approval required. Current status: '{approval_status}'."
+            )
+
+        # 5. UNIQUE CONTRACT ID GENERATION
+        # Uses the last 6 characters of the lead_id to ensure uniqueness
+        unique_suffix = lead_id[-6:] if len(lead_id) > 6 else lead_id
+        contract_id = f"CON-{datetime.now().year}-{unique_suffix.upper()}"
+
+        # 6. CREATE CONTRACT RECORD
+        new_contract = {
+            "contract_id": contract_id,
+            "lead_id": lead_id,
+            "org_id": current_user.org_id,
+            "contract_stage": ContractStage.DRAFT.value,
+            "contract_status": ContractStatus.ACTIVE.value,
+            "contract_template": "standard_v1",
+            "contract_version": 1,
+            "contract_data": {
+                "party_name": lead.get("company_name"),
+                "total_value": total_val,
+                "currency": commit_data.get("currency", "INR"),
+                "items": items
+            },
+            "onboarding_checklist": {
+                "company_info": True,
+                "contacts": True,
+                "tax_info": False,
+                "documents": False
+            },
+            "onboarding_status": "PENDING",
+            "contract_audit_log": [],
+            "created_at": now_iso,
+            "updated_at": now_iso,
+            "versions": []
+        }
+        
+        await db.revenue_workflow_contracts.insert_one(new_contract)
+        
+        # 7. LOGS & ATOMIC UPDATES
+        await append_audit_log(contract_id, "CONTRACT_CREATED", current_user.user_id, db)
+
+        await db.revenue_workflow_leads.update_one(
+            {"lead_id": lead_id, "org_id": current_user.org_id},
+            {"$set": {
+                "main_stage": "contract",
+                "stage": "contract",
+                "is_qualified": True,
+                "contract_id": contract_id,
+                "commit_completed_at": now_iso,
+                "updated_at": now_iso,
+            }}
         )
 
-    commit_stage = str(lead.get("commit_stage") or "").lower()
-    if commit_stage != "approve":
+        # Activity & Audit Inserts
+        await db.revenue_workflow_audits.insert_one({
+            "lead_id": lead_id,
+            "action": "moved_to_contract",
+            "before": "commit",
+            "after": "contract",
+            "actor": current_user.user_id,
+            "timestamp": now_iso,
+        })
+
+        await db.revenue_workflow_activities.insert_one({
+            "lead_id": lead_id,
+            "type": "stage_change",
+            "summary": "Lead moved to Contract stage",
+            "description": "Commit phase completed. Lead advanced to Contract.",
+            "performed_by": current_user.user_id,
+            "created_at": now_iso,
+        })
+
+        return {
+            "success": True,
+            "main_stage": "contract",
+            "contract_id": contract_id,
+            "message": "Lead successfully moved to Contract stage."
+        }
+
+    except Exception as e:
+        logger.error(f"TRANSITION CRASH for lead {lead_id}: {str(e)}", exc_info=True)
         return JSONResponse(
-            status_code=400,
+            status_code=500,
             content={
                 "success": False,
-                "detail": f"Lead must be at Commit/Approve sub-stage to move to Contract. Currently at '{commit_stage}'.",
-                "error_type": "INVALID_COMMIT_SUBSTAGE"
+                "detail": f"System Transition Error: {str(e)}",
+                "error_type": "UNHANDLED_EXCEPTION"
             }
         )
 
-    commit_data = _get_commit_data(lead)
-    validation = commit_data.get("validation") or {}
-    approval = commit_data.get("approval") or {}
+class SendContractRequest(BaseModel):
+    email: str
+    name: str
 
-    # Validation must have completed and passed
-    if not validation.get("required_fields_ok"):
-        raise HTTPException(
-            status_code=400,
-            detail="Cannot move to Contract: required fields validation has not passed."
+@router.post(
+    "/revenue/leads/{lead_id}/contract/send",
+    dependencies=[Depends(_require_role(["manager", "admin", "owner", "member"]))]
+)
+async def send_contract_to_client(
+    lead_id: str,
+    payload: SendContractRequest,
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    """Generates portal link and transitions contract to Send sub-stage."""
+    try:
+        now_iso = datetime.now(timezone.utc).isoformat()
+        
+        contract = await db.revenue_workflow_contracts.find_one({"lead_id": lead_id, "org_id": current_user.org_id})
+        if not contract:
+            raise HTTPException(status_code=404, detail="Contract not found for this lead")
+            
+        contract_id = contract["contract_id"]
+        
+        from services.token_service import generate_portal_token, generate_token_expiry
+
+        token, hashed = generate_portal_token()
+        expiry = generate_token_expiry(7)
+        
+        # Save token with rollback handling
+        try:
+            await db.revenue_portal_tokens.insert_one({
+                "token_hash": hashed,
+                "contract_id": contract_id,
+                "lead_id": lead_id,
+                "org_id": current_user.org_id,
+                "created_by": current_user.user_id,
+                "sender_user_id": current_user.user_id,
+                "email": payload.email,
+                "name": payload.name,
+                "expires_at": expiry,
+                "status": "active",
+                "created_at": now_iso
+            })
+        except Exception as e:
+            logger.error(f"Failed to insert portal token: {e}")
+            raise HTTPException(status_code=500, detail="Database error while saving token")
+        
+        # Update contract sub-stage
+        update_result = await db.revenue_workflow_contracts.update_one(
+            {"contract_id": contract_id},
+            {"$set": {
+                "contract_stage": "Send",
+                "sent_to_email": payload.email,
+                "sent_to_name": payload.name,
+                "sent_at": now_iso
+            }}
         )
-    if not validation.get("deal_structure_ok"):
-        raise HTTPException(
-            status_code=400,
-            detail="Cannot move to Contract: deal structure validation failed."
-        )
-
-    # If approval was required, it must be approved
-    approval_required = approval.get("approval_required")
-    approval_status = str(approval.get("approval_status") or "").lower()
-    if approval_required and approval_status != "approved":
-        raise HTTPException(
-            status_code=400,
-            detail=f"Approval is required for this deal. Current approval status: '{approval_status}'. "
-                   "Obtain approval before transitioning to Contract."
-        )
-
-    # Create RevenueContract record
-    contract_id = f"CON-{datetime.now().year}-{lead_id[:8].upper()}"
-    new_contract = {
-        "contract_id": contract_id,
-        "lead_id": lead_id,
-        "contract_stage": ContractStage.DRAFT.value,
-        "contract_status": ContractStatus.ACTIVE.value,
-        "contract_template": "standard_v1",
-        "contract_version": 1,
-        "contract_data": {
-            "party_name": lead.get("company_name"),
-            "total_value": commit_data.get("total_value"),
-            "currency": commit_data.get("currency", "INR"),
-            "items": commit_data.get("items", [])
-        },
-        "onboarding_checklist": {
-            "company_info": True,
-            "contacts": True,
-            "tax_info": False,
-            "documents": False
-        },
-        "onboarding_status": "PENDING",
-        "created_at": now_iso,
-        "updated_at": now_iso,
-        "versions": []
-    }
-    await db.revenue_workflow_contracts.insert_one(new_contract)
-    
-    # Log creation
-    await append_audit_log(contract_id, "CONTRACT_CREATED", "system", db)
-
-    await db.revenue_workflow_leads.update_one(
-        {"lead_id": lead_id, "org_id": current_user.org_id},
-        {"$set": {
-            "main_stage": "contract",
-            "contract_id": contract_id,
-            "commit_completed_at": now_iso,
-            "updated_at": now_iso,
-        }}
-    )
-
-    await db.revenue_workflow_audits.insert_one({
-        "lead_id": lead_id,
-        "action": "moved_to_contract",
-        "before": "commit",
-        "after": "contract",
-        "actor": current_user.user_id,
-        "timestamp": now_iso,
-    })
-
-    await db.revenue_workflow_activities.insert_one({
-        "lead_id": lead_id,
-        "type": "stage_change",
-        "summary": "Lead moved to Contract stage",
-        "description": "Commit phase completed. Lead advanced to Contract.",
-        "performed_by": current_user.user_id,
-        "created_at": now_iso,
-    })
-
-    return {
-        "success": True,
-        "main_stage": "contract",
-        "message": "Lead successfully moved to Contract stage."
-    }
-
+        
+        if update_result.modified_count == 0 and update_result.matched_count == 0:
+            # Rollback logic if update failed bizarrely (e.g. deleted while inserting)
+            await db.revenue_portal_tokens.delete_one({"token_hash": hashed})
+            raise HTTPException(status_code=500, detail="Failed to transition contract stage")
+        
+        # In real life, trigger an email here via Sendgrid/AWS SES
+        portal_link = f"http://localhost:3002/portal/{token}"
+        
+        sender_context = {
+            "name": getattr(current_user, "full_name", getattr(current_user, "user_id", "Your Representative")),
+            "org_name": getattr(current_user, "org_name", "InnovateBook")
+        }
+        
+        try:
+            from utils.email import send_email, build_contract_email
+            
+            subject, body = build_contract_email(payload, portal_link, sender_context)
+            
+            print("Contract email sent to:", payload.email)
+            send_email(
+                to_email=payload.email,
+                subject=subject,
+                html_body=body
+            )
+            print("Email sent successfully")
+        except Exception as e:
+            print("EMAIL ERROR:", str(e))   # IMPORTANT
+            logger.error(f"Email delivery failed: {e}")
+            raise HTTPException(status_code=500, detail=f"Email failed: {str(e)}")
+        
+        return {
+            "success": True,
+            "message": "Email sent successfully",
+            "portal_link": portal_link # Keep for dev/testing ease
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error sending contract: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 # --- INTERNAL EVALUATE SUBSYSTEM SERVICES ---
 async def internal_create_evaluation_scope(db, scope_data: EvaluationScope):
@@ -4998,10 +5175,77 @@ async def get_revenue_contracts(status: Optional[str] = None, db = Depends(get_d
 
 @router.get("/revenue/contracts/{contract_id}")
 async def get_revenue_contract(contract_id: str, db = Depends(get_db)):
-    """Get contract details"""
+    """Get contract details with real-time portal enrichment"""
     contract = await db.revenue_workflow_contracts.find_one({"contract_id": contract_id}, {"_id": 0})
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
+    
+    # --- PORTAL ENRICHMENT ---
+    onboarding = await db.revenue_workflow_onboarding.find_one({"contract_id": contract_id}, {"_id": 0})
+    
+    portal_data = {
+        "onboarding_status": "NOT_STARTED",
+        "onboarding_checklist": {
+            "company_info": False,
+            "contacts": False,
+            "tax_info": False,
+            "documents": False
+        },
+        "documents": {},
+        "last_activity": None
+    }
+    
+    if onboarding:
+        # 1. Normalize Onboarding Status Logic (Backend Computed)
+        docs_collection = onboarding.get("documents", {})
+        
+        has_company = bool(onboarding.get("legal_name") and onboarding.get("address"))
+        has_contacts = bool(onboarding.get("billing_contact"))
+        has_tax = bool(onboarding.get("gst"))
+        has_docs = bool(docs_collection.get("gst_certificate") and docs_collection.get("pan_card"))
+        
+        portal_data["onboarding_checklist"] = {
+            "company_info": has_company,
+            "contacts": has_contacts,
+            "tax_info": has_tax,
+            "documents": has_docs
+        }
+        
+        # Determine overall status string
+        portal_data["onboarding_status"] = onboarding.get("status", "IN_PROGRESS")
+        if has_company and has_contacts and has_tax and has_docs:
+            if not onboarding.get("status") or onboarding.get("status") == "IN_PROGRESS":
+                portal_data["onboarding_status"] = "COMPLETED"
+        
+        # 2. Document Metadata Mapping
+        for key, val in docs_collection.items():
+            if isinstance(val, str) and val:
+                portal_data["documents"][key] = {
+                    "url": val,
+                    "uploaded_at": onboarding.get("updated_at"),
+                    "uploaded_by": "client"
+                }
+            elif isinstance(val, list):
+                portal_data["documents"][key] = [{
+                    "url": v,
+                    "uploaded_at": onboarding.get("updated_at"),
+                    "uploaded_by": "client"
+                } for v in val if v]
+
+        # 3. Last Activity Tracking
+        last_audit = await db.revenue_workflow_audits.find_one(
+            {"contract_id": contract_id},
+            sort=[("timestamp", -1)]
+        )
+        if last_audit:
+            portal_data["last_activity"] = {
+                "timestamp": last_audit.get("timestamp"),
+                "event": last_audit.get("event_type")
+            }
+
+    # Attach enriched data
+    contract["portal_data"] = portal_data
+    
     return {"success": True, "contract": contract}
 
 async def append_audit_log(contract_id: str, action: str, performed_by: str, db, metadata: Optional[Dict[str, Any]] = None):
@@ -5025,7 +5269,7 @@ async def trigger_notification(event_type: str, payload: Dict[str, Any]):
     # In production, this would use a background task to send emails/slack messages
     logging.info(f"NOTIFICATION [{event_type}]: {json.dumps(payload)}")
 
-@router.put("/revenue/contracts/{contract_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner"]))])
+@router.put("/revenue/contracts/{contract_id}", dependencies=[Depends(_require_role(["manager", "admin", "owner", "member"]))])
 async def update_revenue_contract(contract_id: str, data: Dict[str, Any], db = Depends(get_db)):
     """Update contract terms with versioning"""
     contract = await db.revenue_workflow_contracts.find_one({"contract_id": contract_id})

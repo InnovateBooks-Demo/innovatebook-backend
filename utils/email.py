@@ -55,3 +55,32 @@ def send_invite_email(to_email: str, invite_token: str, org_name: str):
     # print("Invite email:", to_email)
 
     send_email(to_email, subject, html)
+
+
+def build_contract_email(payload, portal_link: str, sender: dict):
+    subject = "Secure Contract Document – Action Required"
+    
+    sender_name = sender.get("name", "Your Representative")
+    org_name = sender.get("org_name", "InnovateBook")
+    client_name = payload.name
+
+    body = f"""
+    <p>Hello {client_name},</p>
+    <p>You have received a contract from {sender_name} ({org_name}).</p>
+    <p>Please review and complete your onboarding using the secure link below:</p>
+    <p>👉 <a href="{portal_link}">{portal_link}</a></p>
+    <br/>
+    <p>This link will expire in 7 days.</p>
+    <p><strong>For security reasons:</strong></p>
+    <ul>
+        <li>Do not share this link</li>
+        <li>This link is unique to your organization</li>
+    </ul>
+    <p>If you have any questions, please contact your representative.</p>
+    <br/>
+    <p>Best regards,<br/>
+    {sender_name}<br/>
+    {org_name}</p>
+    """
+    
+    return subject, body

@@ -80,6 +80,7 @@ security = HTTPBearer()
 from auth_utils import create_access_token, verify_token
 from routes.rbac_deps import require_min_role
 from routes.deps import get_db, User, get_current_user
+from services.reminder_service import start_reminder_scheduler
 
 # Create the main app without a prefix
 print("STEP 5: Creating FastAPI app")
@@ -90,6 +91,8 @@ print("STEP 6: App created")
 async def startup_event():
     print("STEP 10: Startup event triggered")
     await init_mongo()
+    # Start automated reminders
+    start_reminder_scheduler(db)
     print("STEP 11: Startup complete")
 
 
@@ -122,6 +125,26 @@ from routes.public_invite_routes import router as public_invite_router
 # api_router.include_router(public_invite_router)
 
 app.include_router(public_invite_router, prefix="/api")
+
+# Mount Client Portal Sub-module
+import os
+import sys
+
+portal_routes_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'client-portal', 'backend', 'routes'))
+portal_services_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'client-portal', 'backend'))
+
+try:
+    if portal_routes_path not in sys.path:
+        sys.path.insert(0, portal_routes_path)
+    if portal_services_path not in sys.path:
+        sys.path.insert(0, portal_services_path)
+        
+    import client_portal_routes
+    app.include_router(client_portal_routes.router)
+    logger.info("Successfully mounted Client Portal Sub-App natively")
+except Exception as e:
+    logger.error(f"Failed to mount Client Portal Sub-App: {e}")
+
 # ==================== HEALTH CHECK ENDPOINT ====================
 @app.get("/health")
 async def health_check():
@@ -4696,9 +4719,9 @@ app.include_router(workflow_builder_router)
 
 
 # Mount static files for uploads
-uploads_dir = "/app/backend/uploads"
+uploads_dir = ROOT_DIR / "uploads"
 os.makedirs(uploads_dir, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
+app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
 
 app.add_middleware(
