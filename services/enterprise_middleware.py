@@ -10,19 +10,14 @@ import os
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 import logging
-from dotenv import load_dotenv
-from pathlib import Path
-
-# Load environment variables
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+from config import settings
 
 logger = logging.getLogger(__name__)
 
 security = HTTPBearer()
 
-JWT_SECRET = os.environ.get('JWT_SECRET_KEY')
-JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
+JWT_SECRET = settings.JWT_SECRET_KEY
+JWT_ALGORITHM = settings.JWT_ALGORITHM
 
 _client = None
 _db = None
@@ -31,11 +26,8 @@ def get_db():
     """Get database instance (Lazy loaded)"""
     global _client, _db
     if _db is None:
-        from motor.motor_asyncio import AsyncIOMotorClient
-        mongo_url = os.environ['MONGO_URL']
-        db_name = os.environ['DB_NAME']
-        _client = AsyncIOMotorClient(mongo_url)
-        _db = _client[db_name]
+        _mongo_client = AsyncIOMotorClient(settings.MONGO_URL)
+        _db = _mongo_client[settings.DB_NAME]
     return _db
 
 # ==================== AUTHENTICATION MIDDLEWARE ====================

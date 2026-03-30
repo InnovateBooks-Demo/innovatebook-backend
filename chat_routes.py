@@ -18,9 +18,11 @@ from routes.deps import get_database, get_current_user
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
+from config import settings
+
 # ✅ JWT settings for WS auth (match your token generator settings)
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", os.getenv("SECRET_KEY", "change-me"))
-JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+JWT_SECRET_KEY = settings.JWT_SECRET_KEY
+JWT_ALGORITHM = settings.JWT_ALGORITHM
 
 
 # =======================

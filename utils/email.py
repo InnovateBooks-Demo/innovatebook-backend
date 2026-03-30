@@ -1,20 +1,16 @@
-import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-
+from config import settings
 
 def send_email(to_email: str, subject: str, html_body: str):
-    smtp_host = os.getenv("SMTP_HOST")
-    smtp_port = int(os.getenv("SMTP_PORT"))
-    smtp_user = os.getenv("SMTP_USER")
-    smtp_pass = os.getenv("SMTP_PASS")
+    smtp_host = settings.SMTP_HOST
+    smtp_port = settings.SMTP_PORT
+    smtp_user = settings.SMTP_USER
+    smtp_pass = settings.SMTP_PASS
 
-
-    print("SMTP_HOST:", os.getenv("SMTP_HOST"))
-    print("SMTP_PORT:", os.getenv("SMTP_PORT"))
-    print("SMTP_USER:", os.getenv("SMTP_USER"))
-    print("SMTP_PASS exists:", bool(os.getenv("SMTP_PASS")))
+    if not all([smtp_host, smtp_port, smtp_user, smtp_pass]):
+        raise RuntimeError("SMTP configuration is incomplete in environment variables")
 
 
     msg = MIMEMultipart()
@@ -37,7 +33,8 @@ def send_email(to_email: str, subject: str, html_body: str):
 
 
 def send_invite_email(to_email: str, invite_token: str, org_name: str):
-    invite_link = f"http://localhost:3000/accept-invite?token={invite_token}"
+    frontend_url = settings.FRONTEND_URL
+    invite_link = f"{frontend_url}/accept-invite?token={invite_token}"
 
     subject = "You're Invited to Join"
 

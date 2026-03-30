@@ -8,8 +8,10 @@ from services.token_service import generate_portal_token, generate_token_expiry
 
 logger = logging.getLogger(__name__)
 
-# Base configuration from environment
-FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3002")
+from config import settings
+
+# Base configuration from settings
+PORTAL_URL = settings.PORTAL_URL
 
 async def check_pending_contracts(db):
     """
@@ -96,7 +98,7 @@ async def process_contract_reminder(db, contract, milestone, now):
     
     portal_link = ""
     if client_user:
-        portal_link = f"{FRONTEND_URL}/dashboard"
+        portal_link = f"{PORTAL_URL}/dashboard"
     else:
         # Generate a NEW token for the reminder to ensure it works
         raw_token, hashed = generate_portal_token()
@@ -121,7 +123,7 @@ async def process_contract_reminder(db, contract, milestone, now):
             "status": "active",
             "created_at": now.isoformat()
         })
-        portal_link = f"{FRONTEND_URL}/portal/{raw_token}"
+        portal_link = f"{PORTAL_URL}/portal/{raw_token}"
         
     # 6. Send Email
     subject = "Reminder: Action Required on Your Contract"

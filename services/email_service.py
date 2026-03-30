@@ -1,21 +1,20 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import os
 import logging
+from config import settings
 
 logger = logging.getLogger(__name__)
 
 def send_email(to_email: str, subject: str, body: str):
     """
-    Sends a real email using Gmail SMTP.
+    Sends a real email using SMTP.
     """
-    # Replace these with real credentials or set in .env
-    sender_email = os.environ.get("GMAIL_USER", "your_email@gmail.com")
-    app_password = os.environ.get("GMAIL_APP_PASSWORD", "your_app_password_without_spaces")
+    sender_email = settings.SMTP_USER
+    app_password = settings.SMTP_PASS
 
-    if not sender_email or "your_email" in sender_email or "your_app_password" in app_password:
-        raise ValueError("Please configure your Gmail ID and App Password in services/email_service.py or .env file.")
+    if not sender_email or not app_password:
+        raise ValueError("SMTP_USER and SMTP_PASS must be configured in environment variables.")
 
     msg = MIMEMultipart()
     msg['From'] = f"InnovateBook <{sender_email}>"

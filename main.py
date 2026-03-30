@@ -32,8 +32,8 @@ import io
 
 
 
+from config import settings
 ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
 
 
 
@@ -41,9 +41,9 @@ load_dotenv(ROOT_DIR / '.env')
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# MongoDB connection with error handling (Deferred to startup)
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-db_name = os.environ.get('DB_NAME', 'innovate_books_db')
+# MongoDB connection from settings
+mongo_url = settings.MONGO_URL
+db_name = settings.DB_NAME
 
 client = None
 db = None
@@ -126,24 +126,10 @@ from routes.public_invite_routes import router as public_invite_router
 
 app.include_router(public_invite_router, prefix="/api")
 
-# Mount Client Portal Sub-module
-import os
-import sys
-
-portal_routes_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'client-portal', 'backend', 'routes'))
-portal_services_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'client-portal', 'backend'))
-
-try:
-    if portal_routes_path not in sys.path:
-        sys.path.insert(0, portal_routes_path)
-    if portal_services_path not in sys.path:
-        sys.path.insert(0, portal_services_path)
-        
-    import client_portal_routes
-    app.include_router(client_portal_routes.router)
-    logger.info("Successfully mounted Client Portal Sub-App natively")
-except Exception as e:
-    logger.error(f"Failed to mount Client Portal Sub-App: {e}")
+# Mount Client Portal
+from routes.portal import client_portal_routes
+app.include_router(client_portal_routes.router)
+logger.info("Successfully mounted Client Portal (Refactored)")
 
 # ==================== HEALTH CHECK ENDPOINT ====================
 @app.get("/health")

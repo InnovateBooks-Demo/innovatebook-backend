@@ -24,14 +24,14 @@ router = APIRouter(prefix="/api/workforce", tags=["Workforce"])
 _mongo_client = None
 _db_instance = None
 
+from config import settings
+
 def get_db():
     global _mongo_client, _db_instance
     if _db_instance is None:
         print("[Antigravity] Initializing Lazy MongoDB client in workforce_routes")
-        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-        db_name = os.environ['DB_NAME']
-        _mongo_client = AsyncIOMotorClient(mongo_url)
-        _db_instance = _mongo_client[db_name]
+        _mongo_client = AsyncIOMotorClient(settings.MONGO_URL)
+        _db_instance = _mongo_client[settings.DB_NAME]
     return _db_instance
 
 # ========================

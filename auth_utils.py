@@ -5,15 +5,13 @@ from fastapi import HTTPException, status
 from typing import Optional, Dict, Any
 import secrets
 
-# Initial Configuration (will be loaded from env)
-JWT_SECRET = os.getenv("JWT_SECRET_KEY")
-if not JWT_SECRET:
-    raise RuntimeError("JWT_SECRET_KEY is missing in environment variables")
+from config import settings
 
-JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
-REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
-DEBUG = os.getenv("DEBUG", "false").lower() == "true" or os.getenv("ENVIRONMENT") == "development"
+JWT_SECRET = settings.JWT_SECRET_KEY
+JWT_ALGORITHM = settings.JWT_ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+REFRESH_TOKEN_EXPIRE_DAYS = settings.REFRESH_TOKEN_EXPIRE_DAYS
+DEBUG = settings.DEBUG
 
 def create_access_token(
     user_id: str,
