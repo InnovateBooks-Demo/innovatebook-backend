@@ -146,10 +146,10 @@ class MainStage(str, Enum):
 
 
 class HandoffStage(str, Enum):
-    INIT = "init"
-    MAP = "map"
-    PUSH = "push"
-    DONE = "done"
+    INIT = "Init"
+    MAP = "Map"
+    PUSH = "Push"
+    DONE = "Done"
 
 
 class HandoffStatus(str, Enum):
@@ -157,6 +157,7 @@ class HandoffStatus(str, Enum):
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
     FAILED = "failed"
+    PARTIAL = "partial_success"
 
 
 class EvaluateStage(str, Enum):
@@ -168,12 +169,9 @@ class EvaluateStage(str, Enum):
 
 
 class ValidationStatus(str, Enum):
-    PENDING = "Pending"
-    VERIFIED = "Verified"
-    VALID = "Valid"
-    INVALID = "Invalid"
-    WARNING = "Warning"
-    FAILED = "Failed"
+    PENDING = "pending"
+    PASSED = "passed"
+    FAILED = "failed"
 
 
 class LeadScoreCategory(str, Enum):
@@ -808,57 +806,49 @@ class RevenueHandoffCreate(BaseModel):
     initiated_by: str
 
 
-class RevenueHandoffMappingUpdate(BaseModel):
-    delivery_owner_id: Optional[str] = None
-    billing_cycle: Optional[str] = None  # monthly, one_time
-    tax_config: Optional[str] = None    # e.g., GST_18
+class HandoffMetadata(BaseModel):
+    """Locked commercial terms from the contract snapshot"""
+    currency: str
+    total_value: float
+    payment_terms: str
+    captured_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class MappingSnapshot(BaseModel):
+    """Immutable snapshot of mapping logic"""
+    ops_mapping: List[Dict[str, Any]] = []
+    finance_mapping: List[Dict[str, Any]] = []
+    immutable: bool = False
 
 
 class RevenueHandoff(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    handoff_id: str  # AUTO: REV-HANDOFF-2025-001
+    handoff_id: str  # AUTO: REV-HO-2026-0001
     lead_id: str
+    contract_id: str
+    onboarding_id: str  # Explicit reference
+    
     handoff_stage: HandoffStage = HandoffStage.INIT
     handoff_status: HandoffStatus = HandoffStatus.PENDING
     
-    # Mapping Data
-    delivery_owner_id: Optional[str] = None
-    billing_cycle: Optional[str] = None
-    tax_config: Optional[str] = None
-    
-    # Integration Records
+    # External References (populated after Push)
     operations_record_id: Optional[str] = None
     finance_record_id: Optional[str] = None
     
-    # Execution Metadata
-    initiated_by: str
-    initiated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    # Mapping Data
+    handoff_metadata: HandoffMetadata
+    mapped_data: MappingSnapshot = Field(default_factory=MappingSnapshot)
+    
+    # System Status
+    validation_status: ValidationStatus = ValidationStatus.PENDING
+    errors: List[str] = []
+    
+    # Timestamps
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
     completed_at: Optional[datetime] = None
-    error_message: Optional[str] = None
-    
-    # Timestamps
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    
-    # Dispute & Resolution
-    dispute_flag: bool = False
-    dispute_reason: Optional[str] = None
-    dispute_resolution_date: Optional[date] = None
-    partial_settlement: bool = False
-    writeoff_flag: bool = False
-    writeoff_amount: float = 0.0
-    writeoff_reason: Optional[str] = None
-    writeoff_approved_by: Optional[str] = None
-    
-    # Customer Behavior Analysis
-    customer_payment_behavior: str = "Good"  # Excellent/Good/Average/Poor
-    avg_payment_delay_days: int = 0
-    
-    # Timestamps
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 # ==================== MODULE 7: PROCURE ====================

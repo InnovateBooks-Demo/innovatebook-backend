@@ -3452,7 +3452,15 @@ async def move_lead_to_contract(
 
         # 3. DATA EXTRACTION & AUTO-REPAIR
         # Note: 'expected_deal_value' is the canonical field for Evaluate stage results
-        total_val = pricing.get("total_value") or lead.get("expected_deal_value") or lead.get("estimated_deal_value") or 0
+        # Deep search for value if pricing is missing
+        total_val = (
+            pricing.get("total_value") or 
+            lead.get("expected_deal_value") or 
+            lead.get("estimated_deal_value") or 
+            lead.get("evaluation_data", {}).get("propose", {}).get("deal_value") or
+            lead.get("evaluation_data", {}).get("scope", {}).get("deal_size") or
+            0
+        )
         eval_dict = lead.get("evaluation_data") or {}
         items = lead.get("items") or lead.get("evaluation_items") or commit_data.get("items") or eval_dict.get("items") or []
 
@@ -3510,7 +3518,22 @@ async def move_lead_to_contract(
                 "party_name": lead.get("company_name"),
                 "total_value": total_val,
                 "currency": commit_data.get("currency", "INR"),
-                "items": items
+                "items": items,
+                "commercial_snapshot": {
+                    "total_value": total_val,
+                    "unit_price": pricing.get("final_price") or pricing.get("unit_price") or (total_val / items[0]["quantity"] if items else 0),
+                    "discount": pricing.get("discount") or 0,
+                    "total_quantity": sum(item.get("quantity", 0) for item in items),
+                    "currency": commit_data.get("currency", "INR"),
+                    "captured_at": now_iso,
+                    "version": 1,
+                    "source_stage": current_ms,
+                    "items": json.loads(json.dumps(items)), # Deep copy snapshot
+                    "metadata": {
+                        "immutable": True,
+                        "captured_by": current_user.user_id
+                    }
+                }
             },
             "onboarding_checklist": {
                 "company_info": True,
@@ -5282,8 +5305,20 @@ async def update_revenue_contract(contract_id: str, data: Dict[str, Any], db = D
     now = datetime.now(timezone.utc).isoformat()
     current_stage = contract.get("contract_stage", ContractStage.DRAFT.value)
     
+    new_contract_data = data.get("contract_data", contract.get("contract_data", {}))
+    
+    # ENFORCE IMMUTABILITY: If snapshot already exists, block any external override
+    if "commercial_snapshot" in contract.get("contract_data", {}):
+        # Even if the incoming data contains a snapshot, reject it if it differs
+        # For simplicity and security, we just restore the original snapshot
+        new_contract_data["commercial_snapshot"] = contract["contract_data"]["commercial_snapshot"]
+    elif "commercial_snapshot" in new_contract_data:
+        # If it didn't exist but is being added now, we allow it (e.g., first initialization)
+        # But here we'll assume it's created via move-to-contract specifically
+        pass
+
     update_data = {
-        "contract_data": data.get("contract_data", contract.get("contract_data", {})),
+        "contract_data": new_contract_data,
         "onboarding_checklist": data.get("onboarding_checklist", contract.get("onboarding_checklist", {})),
         "updated_at": now
     }

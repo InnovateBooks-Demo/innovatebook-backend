@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 from datetime import datetime, timezone, timedelta
 import logging
+from services.handoff_service import HandoffService
 
 import hashlib
 import json
@@ -758,8 +759,51 @@ async def authenticate_and_sign(contract_id: str, payload: SignPayload, request:
         }}
     )
     
+    # ✅ ONBOARDING COMPLETION CHECK (Triggered on contract signature)
+    try:
+        onboarding_doc = await db.revenue_workflow_onboarding.find_one({"contract_id": contract_id})
+        if not onboarding_doc:
+            logger.warning(f"Onboarding record not found for contract {contract_id}. Cannot complete onboarding.")
+        else:
+            onb_data = dict(onboarding_doc)
+            missing_fields = []
+
+            # Validate mandatory fields
+            if not onb_data.get("gst"):
+                missing_fields.append("GST")
+            if not onb_data.get("address") and not onb_data.get("billing_address"):
+                missing_fields.append("billing_address")
+            if not onb_data.get("documents"):
+                missing_fields.append("documents")
+
+            # Validate checklist if present
+            checklist = onb_data.get("onboarding_checklist", {})
+            if isinstance(checklist, dict):
+                failed_items = [k for k, v in checklist.items() if not v]
+                if failed_items:
+                    missing_fields.append(f"checklist items incomplete: {failed_items}")
+
+            if not missing_fields:
+                await db.revenue_workflow_onboarding.update_one(
+                    {"contract_id": contract_id},
+                    {"$set": {
+                        "onboarding_status": "COMPLETED",
+                        "completed_at": now_iso,
+                        "updated_at": now_iso
+                    }}
+                )
+                logger.info(f"Onboarding COMPLETED for contract {contract_id} upon signing.")
+            else:
+                logger.warning(f"Onboarding remains PENDING for contract {contract_id}. Missing: {missing_fields}")
+    except Exception as onb_err:
+        logger.error(f"Onboarding completion check failed for contract {contract_id}: {str(onb_err)}")
+
     # Trigger Background Notifications
     background_tasks.add_task(notify_contract_signed, contract_id, payload.client_name, payload.client_email, payload.timestamp, db)
+    
+    # ❗ TRIGGER REVENUE HANDOFF (Async)
+    logger.info(f"Contract {contract_id} signed by {payload.client_email}. Initiating handoff auto-creation for lead {contract.get('lead_id')}.")
+    background_tasks.add_task(HandoffService.auto_create_handoff, contract.get("lead_id"), contract_id, db)
     
     # Log CONTRACT_SIGNED Audit
     await log_audit_event(db, EVENT_TYPES["CONTRACT_SIGNED"], contract_id, client_user["user_id"], client_user["org_id"], request, {
@@ -767,7 +811,7 @@ async def authenticate_and_sign(contract_id: str, payload: SignPayload, request:
         "signed_at_client_ts": payload.timestamp
     })
 
-    return {"success": True, "message": "Successfully Signed"}
+    return {"success": True, "message": "Successfully Signed - Handoff Module Initiated"}
 
 # ==========================
 # (DEPRECATED) LEGACY APIs
