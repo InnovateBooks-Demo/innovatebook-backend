@@ -14,6 +14,15 @@ from models.commerce_models import (
     MappingSnapshot,
     ValidationStatus
 )
+from services.handoff_observability import (
+    log,
+    PushTimer,
+    increment_retry_count,
+    notify_push_success,
+    notify_push_partial,
+    notify_push_failure,
+    with_timeout
+)
 
 logger = logging.getLogger(__name__)
 
@@ -83,12 +92,16 @@ class HandoffService:
         count = await db.revenue_workflow_handoffs.count_documents({})
         handoff_id = f"REV-HO-2026-{str(count + 1).zfill(4)}"
 
+        # Carry org_id from contract for future org-scoped isolation queries
+        org_id = contract.get("org_id") or contract.get("organization_id") or None
+
         handoff_doc = {
             "id": str(uuid.uuid4()),
             "handoff_id": handoff_id,
             "lead_id": lead_id,
             "contract_id": contract_id,
             "onboarding_id": onboarding_id,
+            "org_id": org_id,
             "handoff_stage": HandoffStage.INIT,
             "handoff_status": HandoffStatus.PENDING,
             "handoff_metadata": metadata.model_dump() if hasattr(metadata, "model_dump") else metadata.dict(),
@@ -166,7 +179,7 @@ class HandoffService:
         }
 
     @staticmethod
-    async def execute_handoff_push(lead_id: str, user_id: str, db) -> Dict[str, Any]:
+    async def execute_handoff_push(lead_id: str, user_id: str, db, org_id: Optional[str] = None) -> Dict[str, Any]:
         """
         Executes record creation in Ops and Finance modules.
         Fully wrapped — NEVER returns HTTP 500 for business errors.
@@ -189,6 +202,8 @@ class HandoffService:
             # Safe copy — strip MongoDB internal _id
             handoff_data = dict(handoff_doc)
             handoff_data.pop("_id", None)
+            # Use org_id from the caller (JWT) or fall back to stored value
+            effective_org_id = org_id or handoff_data.get("org_id")
             logger.info(f"[HANDOFF PUSH] Found handoff {handoff_data.get('handoff_id')} stage={handoff_data.get('handoff_stage')} status={handoff_data.get('handoff_status')}")
 
             # 2. Idempotency — already fully completed
@@ -233,7 +248,9 @@ class HandoffService:
                     "errors": val_result["errors"]
                 }
 
-            # 4. Transition to IN_PROGRESS
+            # 4. Transition to IN_PROGRESS & Increment Retry Count
+            retry_cnt = await increment_retry_count(lead_id, db)
+            
             await db.revenue_workflow_handoffs.update_one(
                 {"lead_id": lead_id},
                 {"$set": {
@@ -242,7 +259,7 @@ class HandoffService:
                     "updated_at": datetime.now(timezone.utc)
                 }}
             )
-            logger.info(f"[HANDOFF PUSH] Stage set to PUSH/IN_PROGRESS")
+            log.info("handoff.push.started", lead_id=lead_id, user_id=user_id, retry_count=retry_cnt)
 
             success_count = 0
             total_tasks = 2
@@ -250,71 +267,81 @@ class HandoffService:
             wo_id = handoff_data.get("operations_record_id")
             inv_id = handoff_data.get("finance_record_id")
 
-            # 5. CREATE OPERATIONS RECORD (Work Order)
-            if not wo_id:
-                try:
-                    wo_id = f"WO-{lead_id}-{str(uuid.uuid4())[:8]}"
-                    logger.info(f"[HANDOFF PUSH] Creating Work Order {wo_id}")
+            async with PushTimer(lead_id, user_id):
+                # 5. CREATE OPERATIONS RECORD (Work Order)
+                if not wo_id:
+                    try:
+                        wo_id = f"WO-{lead_id}-{str(uuid.uuid4())[:8]}"
+                        log.info("handoff.push.ops.start", lead_id=lead_id, work_order_id=wo_id)
 
-                    contract = await db.revenue_workflow_contracts.find_one(
-                        {"contract_id": handoff_data.get("contract_id")}
-                    )
-                    lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id})
-                    lead_safe = dict(lead) if lead else {}
-                    contract_safe = dict(contract) if contract else {}
+                        async def _create_wo():
+                            contract = await db.revenue_workflow_contracts.find_one(
+                                {"contract_id": handoff_data.get("contract_id")}
+                            )
+                            lead = await db.revenue_workflow_leads.find_one({"lead_id": lead_id})
+                            lead_safe = dict(lead) if lead else {}
+                            contract_safe = dict(contract) if contract else {}
 
-                    work_order = {
-                        "work_order_id": wo_id,
-                        "source_contract_id": handoff_data.get("contract_id", ""),
-                        "source_type": "revenue",
-                        "party_id": lead_id,
-                        "party_name": (
-                            lead_safe.get("company_name")
-                            or lead_safe.get("party_name")
-                            or contract_safe.get("party_name", "")
-                        ),
-                        "status": "pending",
-                        "created_by": user_id,
-                        "created_at": datetime.now(timezone.utc).isoformat()
-                    }
-                    await db.ops_work_orders.insert_one(work_order)
+                            work_order = {
+                                "work_order_id": wo_id,
+                                "source_contract_id": handoff_data.get("contract_id", ""),
+                                "source_type": "revenue",
+                                "party_id": lead_id,
+                                "org_id": effective_org_id,
+                                "party_name": (
+                                    lead_safe.get("company_name")
+                                    or lead_safe.get("party_name")
+                                    or contract_safe.get("party_name", "")
+                                ),
+                                "status": "pending",
+                                "created_by": user_id,
+                                "created_at": datetime.now(timezone.utc).isoformat()
+                            }
+                            await db.ops_work_orders.insert_one(work_order)
+                            return True
+
+                        await with_timeout(_create_wo(), "Operations (Work Order) Creation")
+                        success_count += 1
+                        log.info("handoff.push.ops.success", lead_id=lead_id, work_order_id=wo_id)
+                    except Exception as ops_err:
+                        log.error("handoff.push.ops.error", lead_id=lead_id, error=str(ops_err))
+                        errors.append(f"Ops record creation failed: {str(ops_err)}")
+                else:
+                    log.info("handoff.push.ops.skipped", lead_id=lead_id, work_order_id=wo_id, reason="already_exists")
                     success_count += 1
-                    logger.info(f"[HANDOFF PUSH] Work Order created: {wo_id}")
-                except Exception as ops_err:
-                    logger.error(f"[HANDOFF PUSH OPS ERROR] {ops_err}", exc_info=True)
-                    errors.append(f"Ops record creation failed: {str(ops_err)}")
-            else:
-                logger.info(f"[HANDOFF PUSH] Work Order already exists: {wo_id} — skipping.")
-                success_count += 1  # Count pre-existing as success for idempotent retry
 
-            # 6. CREATE FINANCE RECORD (Invoice Draft)
-            if not inv_id:
-                try:
-                    inv_id = f"INV-DRAFT-{lead_id}-{str(uuid.uuid4())[:8]}"
-                    logger.info(f"[HANDOFF PUSH] Creating Invoice {inv_id}")
+                # 6. CREATE FINANCE RECORD (Invoice Draft)
+                if not inv_id:
+                    try:
+                        inv_id = f"INV-DRAFT-{lead_id}-{str(uuid.uuid4())[:8]}"
+                        log.info("handoff.push.finance.start", lead_id=lead_id, invoice_id=inv_id)
 
-                    metadata = handoff_data.get("handoff_metadata") or {}
+                        async def _create_inv():
+                            metadata = handoff_data.get("handoff_metadata") or {}
+                            invoice = {
+                                "id": inv_id,
+                                "customer_id": lead_id,
+                                "contract_id": handoff_data.get("contract_id", ""),
+                                "org_id": effective_org_id,
+                                "amount": metadata.get("total_value", 0),
+                                "currency": metadata.get("currency", "INR"),
+                                "payment_terms": metadata.get("payment_terms", "Net 30"),
+                                "status": "draft",
+                                "created_by": user_id,
+                                "created_at": datetime.now(timezone.utc)
+                            }
+                            await db.invoices.insert_one(invoice)
+                            return True
 
-                    invoice = {
-                        "id": inv_id,
-                        "customer_id": lead_id,
-                        "contract_id": handoff_data.get("contract_id", ""),
-                        "amount": metadata.get("total_value", 0),
-                        "currency": metadata.get("currency", "INR"),
-                        "payment_terms": metadata.get("payment_terms", "Net 30"),
-                        "status": "draft",
-                        "created_by": user_id,
-                        "created_at": datetime.now(timezone.utc)
-                    }
-                    await db.invoices.insert_one(invoice)
+                        await with_timeout(_create_inv(), "Finance (Invoice Draft) Creation")
+                        success_count += 1
+                        log.info("handoff.push.finance.success", lead_id=lead_id, invoice_id=inv_id)
+                    except Exception as fin_err:
+                        log.error("handoff.push.finance.error", lead_id=lead_id, error=str(fin_err))
+                        errors.append(f"Finance record creation failed: {str(fin_err)}")
+                else:
+                    log.info("handoff.push.finance.skipped", lead_id=lead_id, invoice_id=inv_id, reason="already_exists")
                     success_count += 1
-                    logger.info(f"[HANDOFF PUSH] Invoice created: {inv_id}")
-                except Exception as fin_err:
-                    logger.error(f"[HANDOFF PUSH FINANCE ERROR] {fin_err}", exc_info=True)
-                    errors.append(f"Finance record creation failed: {str(fin_err)}")
-            else:
-                logger.info(f"[HANDOFF PUSH] Invoice already exists: {inv_id} — skipping.")
-                success_count += 1  # Count pre-existing as success for idempotent retry
 
             # 7. Determine Final Status
             if success_count == total_tasks:
@@ -343,18 +370,27 @@ class HandoffService:
                 }}
             )
 
+            # 9. Trigger Notifications
+            if final_status == HandoffStatus.COMPLETED:
+                await notify_push_success(lead_id, handoff_data.get("handoff_id"), wo_id, inv_id, user_id, effective_org_id)
+            elif final_status == HandoffStatus.PARTIAL:
+                await notify_push_partial(lead_id, handoff_data.get("handoff_id"), errors, wo_id, inv_id, user_id)
+            else:
+                await notify_push_failure(lead_id, handoff_data.get("handoff_id"), errors, user_id)
+
             return {
                 "success":               final_status == HandoffStatus.COMPLETED,
                 "handoff_status":        final_status,
                 "handoff_stage":         final_stage,
                 "operations_record_id":  wo_id,
                 "finance_record_id":     inv_id,
-                "errors":                errors
+                "errors":                errors,
+                "retry_count":           retry_cnt
             }
 
         # ── ABSOLUTE SAFETY NET — catches anything that escaped above ────────
         except Exception as fatal_err:
-            logger.error(f"[HANDOFF PUSH FATAL] lead_id={lead_id} error={fatal_err}", exc_info=True)
+            log.error("handoff.push.fatal", lead_id=lead_id, error=str(fatal_err))
             try:
                 await db.revenue_workflow_handoffs.update_one(
                     {"lead_id": lead_id},
@@ -364,6 +400,7 @@ class HandoffService:
                         "updated_at":     datetime.now(timezone.utc)
                     }}
                 )
+                await notify_push_failure(lead_id, "unknown", [str(fatal_err)], user_id)
             except Exception:
                 pass  # DB write failure — still must not raise
             return {

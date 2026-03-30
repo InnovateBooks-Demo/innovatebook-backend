@@ -829,6 +829,7 @@ class RevenueHandoff(BaseModel):
     lead_id: str
     contract_id: str
     onboarding_id: str  # Explicit reference
+    org_id: Optional[str] = None # Multi-tenancy isolation
     
     handoff_stage: HandoffStage = HandoffStage.INIT
     handoff_status: HandoffStatus = HandoffStatus.PENDING
@@ -841,6 +842,11 @@ class RevenueHandoff(BaseModel):
     handoff_metadata: HandoffMetadata
     mapped_data: MappingSnapshot = Field(default_factory=MappingSnapshot)
     
+    # Observability & Audit
+    retry_count: int = 0
+    last_mapped_by: Optional[str] = None
+    stage_advanced_by: Optional[str] = None
+
     # System Status
     validation_status: ValidationStatus = ValidationStatus.PENDING
     errors: List[str] = []
