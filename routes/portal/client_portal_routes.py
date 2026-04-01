@@ -190,8 +190,8 @@ async def log_audit_event(db, event_type: str, contract_id: str, user_id: str, o
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/client-portal", tags=["Client Portal"])
-
+# router = APIRouter(prefix="/api/client-portal", tags=["Client Portal"])
+router = APIRouter(prefix="/client-portal", tags=["Client Portal"])
 # NOTE: We inject the database connection via app state in the main application
 class ClientDocuments(BaseModel):
     gst_certificate: Optional[str] = None

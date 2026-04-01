@@ -128,7 +128,8 @@ app.include_router(public_invite_router, prefix="/api")
 
 # Mount Client Portal
 from routes.portal import client_portal_routes
-app.include_router(client_portal_routes.router)
+# app.include_router(client_portal_routes.router)
+app.include_router(client_portal_routes.router, prefix="/api")
 logger.info("Successfully mounted Client Portal (Refactored)")
 
 # ==================== HEALTH CHECK ENDPOINT ====================
